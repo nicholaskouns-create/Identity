@@ -3,7 +3,20 @@ const DB='mnemosyne-archive', STORE='records';
 const el=id=>document.getElementById(id);
 const status=msg=>{el('status').textContent=msg};
 function openDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB,1);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains(STORE))db.createObjectStore(STORE,{keyPath:'id'})};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
-async function transaction(mode,action){const db=await openDB();try{return await new Promise((resolve,reject)=>{const tx=db.transaction(STORE,mode),store=tx.objectStore(STORE),req=action(store);req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);tx.onabort=()=>reject(tx.error)})}finally{db.close()}}
+async function transaction(mode,action){
+  const db=await openDB();
+  try{return await new Promise((resolve,reject)=>{
+    const tx=db.transaction(STORE,mode);
+    let result;
+    tx.oncomplete=()=>resolve(result);
+    tx.onabort=()=>reject(tx.error || new Error('Archive transaction aborted'));
+    try{
+      const req=action(tx.objectStore(STORE));
+      if(req)req.onsuccess=()=>{result=req.result};
+    }catch(err){tx.abort();reject(err)}
+  })}finally{db.close()}
+}
+const putMany=records=>transaction('readwrite',store=>{for(const record of records)store.put(record)});
 const all=()=>transaction('readonly',s=>s.getAll());
 const put=x=>transaction('readwrite',s=>s.put(x));
 const digest=async text=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text)))).map(x=>x.toString(16).padStart(2,'0')).join('');
@@ -13,5 +26,5 @@ async function render(){const query=el('search').value.toLowerCase();const list=
 el('record').addEventListener('submit',async e=>{e.preventDefault();try{const f=new FormData(e.target),r={id:crypto.randomUUID(),title:String(f.get('title')).trim(),kind:String(f.get('kind')),content:String(f.get('content')),created_at:new Date().toISOString()};r.sha256=await digest(canonical(r));await put(r);e.target.reset();status('Saved with verifiable receipt.');await render()}catch(err){status('Save failed: '+err.message)}});
 el('search').addEventListener('input',()=>render().catch(err=>status(err.message)));
 el('export').addEventListener('click',async()=>{try{const records=await all(),blob=new Blob([JSON.stringify({format:'mnemosyne-archive-v1',records},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='mnemosyne-archive.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);status('Exported '+records.length+' records.')}catch(err){status(err.message)}});
-el('import').addEventListener('change',async e=>{try{const file=e.target.files[0];if(!file)return;if(file.size>20_000_000)throw Error('Import exceeds 20 MB');const data=JSON.parse(await file.text());if(data.format!=='mnemosyne-archive-v1'||!Array.isArray(data.records)||data.records.length>10000)throw Error('Unsupported archive');for(const r of data.records){if(!r||typeof r.id!=='string'||typeof r.title!=='string'||typeof r.kind!=='string'||typeof r.content!=='string'||typeof r.created_at!=='string'||typeof r.sha256!=='string'||!(await verify(r)))throw Error('Invalid or altered record');await put(r)}status('Imported '+data.records.length+' verified records.');await render()}catch(err){status('Import rejected: '+err.message)}finally{e.target.value=''}});
+el('import').addEventListener('change',async e=>{try{const file=e.target.files[0];if(!file)return;if(file.size>20_000_000)throw Error('Import exceeds 20 MB');const data=JSON.parse(await file.text());if(!data||data.format!=='mnemosyne-archive-v1'||!Array.isArray(data.records)||data.records.length>10000)throw Error('Unsupported archive');for(const r of data.records){if(!r||typeof r.id!=='string'||typeof r.title!=='string'||typeof r.kind!=='string'||typeof r.content!=='string'||typeof r.created_at!=='string'||typeof r.sha256!=='string'||!(await verify(r)))throw Error('Invalid or altered record')}await putMany(data.records);status('Imported '+data.records.length+' verified records.');await render()}catch(err){status('Import rejected: '+err.message)}finally{e.target.value=''}});
 render().catch(err=>status('Archive unavailable: '+err.message));
