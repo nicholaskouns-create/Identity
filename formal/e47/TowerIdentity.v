@@ -30,7 +30,7 @@ Proof.
   - rewrite Nat.even_succ.
     destruct (Nat.even n) eqn:E; simpl in *;
       destruct IH as [H0 [H1 H2]];
-      repeat split; simpl; nia.
+      repeat split; try (replace (fib (S (S n))) with (fib (S n) + fib n) by reflexivity); try (replace (luc (S (S n))) with (luc (S n) + luc n) by reflexivity); nia.
 Qed.
 
 Theorem lucas_fibonacci_odd : forall n : nat,
