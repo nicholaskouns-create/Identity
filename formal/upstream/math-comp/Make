@@ -1,0 +1,153 @@
+algebra/algebra.v
+algebra/all_algebra.v
+algebra/archimedean.v
+algebra/binnums.v
+algebra/countalg.v
+algebra/finalg.v
+algebra/fraction.v
+algebra/intdiv.v
+algebra/interval_inference.v
+algebra/arithmetic_tactic.v
+algebra/lra.v
+algebra/matrix.v
+algebra/mxalgebra.v
+algebra/mxpoly.v
+algebra/mxred.v
+algebra/numeric_hierarchy/numdomain.v
+algebra/numeric_hierarchy/numfield.v
+algebra/numeric_hierarchy/ssrnum.v
+algebra/polydiv.v
+algebra/poly.v
+algebra/polyXY.v
+algebra/qpoly.v
+algebra/rat.v
+algebra/ring_tactic.v
+algebra/field_tactic.v
+algebra/ring.v
+algebra/ring_quotient.v
+algebra/algebraic_hierarchy/rings_modules_and_algebras.v
+algebra/algebraic_hierarchy/divalg.v
+algebra/algebraic_hierarchy/decfield.v
+algebra/algebraic_hierarchy/ssralg.v
+algebra/ssrint.v
+algebra/vector.v
+algebra/zmodp.v
+algebra/sesquilinear.v
+algebra/spectral.v
+algebra/tensor.v
+all/all.v
+group_representation/group_representation.v
+group_representation/all_character.v
+group_representation/character.v
+group_representation/classfun.v
+group_representation/inertia.v
+group_representation/integral_char.v
+group_representation/mxabelem.v
+group_representation/mxrepresentation.v
+group_representation/vcharacter.v
+field/algC.v
+field/algebraics_fundamentals.v
+field/algnum.v
+field/field.v
+field/all_field.v
+field/closed_field.v
+field/cyclotomic.v
+field/falgebra.v
+field/fieldext.v
+field/finfield.v
+field/galois.v
+field/qfpoly.v
+field/separable.v
+finite_group/action.v
+finite_group/finite_group.v
+finite_group/all_fingroup.v
+finite_group/automorphism.v
+finite_group/fingroup.v
+finite_group/gproduct.v
+finite_group/morphism.v
+finite_group/perm.v
+finite_group/presentation.v
+finite_group/quotient.v
+solvable/abelian.v
+solvable/solvable.v
+solvable/all_solvable.v
+solvable/alt.v
+solvable/burnside_app.v
+solvable/center.v
+solvable/commutator.v
+solvable/cyclic.v
+solvable/extraspecial.v
+solvable/extremal.v
+solvable/finmodule.v
+solvable/frobenius.v
+solvable/gfunctor.v
+solvable/gseries.v
+solvable/hall.v
+solvable/jordanholder.v
+solvable/maximal.v
+solvable/nilpotent.v
+solvable/pgroup.v
+solvable/primitive_action.v
+solvable/sylow.v
+boot/boot.v
+boot/all_boot.v
+boot/bigop.v
+boot/binomial.v
+boot/choice.v
+boot/div.v
+boot/eqtype.v
+boot/finfun.v
+boot/fingraph.v
+boot/finset.v
+boot/fintype.v
+boot/generic_quotient.v
+boot/monoid.v
+boot/nmodule.v
+boot/path.v
+boot/prime.v
+boot/seq.v
+boot/ssrAC.v
+boot/ssrbool.v
+boot/ssreflect.v
+boot/ssrfun.v
+boot/ssrmatching.v
+boot/ssrnat.v
+boot/ssrnotations.v
+boot/tuple.v
+order/all_order.v
+order/preorder.v
+order/porder.v
+order/lattice.v
+order/lattice_instances.v
+order/total_order.v
+order/total_order_instances.v
+order/complemented_lattice.v
+order/complemented_lattice_instances.v
+order/order.v
+order/order_instances.v
+order/interval.v
+order/orderedzmod.v
+ssreflect/all_ssreflect.v
+
+-I .
+-R . mathcomp
+
+# Warnings set as error to avoid (re)introducing them
+-arg -w -arg +duplicate-clear
+-arg -w -arg +non-primitive-record
+-arg -w -arg +undeclared-scope
+-arg -w -arg +deprecated-hint-without-locality
+-arg -w -arg +deprecated-hint-rewrite-without-locality
+# Warnings we don't really know how to handle
+-arg -w -arg -projection-no-head-constant
+-arg -w -arg -redundant-canonical-projection
+-arg -w -arg -notation-overridden
+-arg -w -arg -ambiguous-paths
+-arg -w -arg -elpi.add-const-for-axiom-or-sectionvar
+# introduced in Rocq 9.2
+-arg -w -arg +level-tolerance
+-arg -w -arg -notation-for-abbreviation
+-arg -w -arg -deprecated-lookup-elim-by-name
+-arg -w -arg -implicit-create-rewrite-hint-db
+# introduced in Rocq 9.3
+-arg -w -arg -rewrite-rw

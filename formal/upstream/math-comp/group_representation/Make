@@ -1,0 +1,29 @@
+group_representation.v
+all_character.v
+character.v
+classfun.v
+inertia.v
+integral_char.v
+mxabelem.v
+mxrepresentation.v
+vcharacter.v
+
+-R . mathcomp.group_representation
+
+# Warnings set as error to avoid (re)introducing them
+-arg -w -arg +duplicate-clear
+-arg -w -arg +undeclared-scope
+-arg -w -arg +deprecated-hint-without-locality
+-arg -w -arg +deprecated-hint-rewrite-without-locality
+# Warnings we don't really know how to handle
+-arg -w -arg -projection-no-head-constant
+-arg -w -arg -redundant-canonical-projection
+-arg -w -arg -notation-overridden
+-arg -w -arg -ambiguous-paths
+# introduced in Rocq 9.2
+-arg -w -arg +level-tolerance
+-arg -w -arg -notation-for-abbreviation
+-arg -w -arg -deprecated-lookup-elim-by-name
+-arg -w -arg -implicit-create-rewrite-hint-db
+# introduced in Rocq 9.3
+-arg -w -arg -rewrite-rw

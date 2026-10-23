@@ -1,0 +1,1711 @@
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
+From HB Require Import structures.
+From mathcomp Require Import boot order finmap ssralg ssrnum ssrint.
+From mathcomp Require Import interval interval_inference archimedean.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
+From mathcomp Require Import boolp classical_sets functions cardinality.
+From mathcomp Require Import set_interval ereal reals topology.
+From mathcomp Require Import num_normedtype.
+
+(**md**************************************************************************)
+(* # Normed topological abelian groups                                        *)
+(*                                                                            *)
+(* This directory (`normed_theory`) file extends the topological hierarchy    *)
+(* with norm-related notions. Note that balls in `topology_theory` are not    *)
+(* necessarily open, here they are.                                           *)
+(*                                                                            *)
+(* ## Helper functions                                                        *)
+(* To be used in `normed_module.v`.                                           *)
+(* ```                                                                        *)
+(*                      shift x y == y + x                                    *)
+(*                       center c := shift (- c)                              *)
+(*                                   This is a notation.                      *)
+(* ```                                                                        *)
+(*                                                                            *)
+(* ## Left and right filters                                                  *)
+(* ```                                                                        *)
+(*                     x^'-, x^'+ == filters on real numbers for predicates   *)
+(*                                   s.t. nbhs holds on the left/right of x   *)
+(* ```                                                                        *)
+(*                                                                            *)
+(* ## Normed topological abelian groups                                       *)
+(* ```                                                                        *)
+(*                   NbhsZmodule == HB class, join of Nbhs and Zmodule        *)
+(*                   NbhsNmodule == HB class, join of Nbhs and Nmodule        *)
+(*         PreTopologicalNmodule == HB class, join of Topological and Nmodule *)
+(*            topologicalNmodType == PreTopologicalNmodule with a continuous  *)
+(*                                   addition                                 *)
+(*                                   The HB class is TopologicalNmodule.      *)
+(*         PreTopologicalZmodule == HB class, join of Topological and Zmodule *)
+(*           topologicalZmodType == topological abelian group                 *)
+(*                                  The HB class is TopologicalZmodule, join  *)
+(*                                  of TopologicalNmodule and Zmodule with a  *)
+(*                                  continuous opposite operator              *)
+(*             PreUniformNmodule == HB class, join of Uniform and Nmodule     *)
+(*                UniformNmodule == HB class, join of Uniform and Nmodule     *)
+(*                                  with a uniformly continuous addition      *)
+(*             PreUniformZmodule == HB class, join of Uniform and Zmodule     *)
+(*                UniformZmodule == HB class, join of UniformNmodule and      *)
+(*                                  Zmodule with uniformly continuous         *)
+(*                                  opposite operator                         *)
+(*   PseudoMetricNormedZmodule R == interface type for a normed topological   *)
+(*                                  abelian group equipped with a norm        *)
+(*        metricNormedZmodType R == PseudoMetricNormedZmodule R + Metric R    *)
+(*                                  The HB class is MetricNormedZmod.         *)
+(*           NormedZmoduleMetric == factory for pseudoMetricNormedZmodType    *)
+(*                                  based on metric structures                *)
+(* ```                                                                        *)
+(*                                                                            *)
+(* ## Domination                                                              *)
+(* ```                                                                        *)
+(*              dominated_by h k f F == `|f| <= k * `|h|, near F              *)
+(*     strictly_dominated_by h k f F == `|f| < k * `|h|, near F               *)
+(*                  bounded_near f F == f is bounded near F                   *)
+(*            [bounded f x | x in A] == f is bounded on A, ie F := globally A *)
+(*   [locally [bounded f x | x in A] == f is locally bounded on A             *)
+(*                       bounded_set == set of bounded sets                   *)
+(*                                   := [set A | [bounded x | x in A]]        *)
+(*                       bounded_fun == set of functions bounded on their     *)
+(*                                      whole domain                          *)
+(*                                   := [set f | [bounded f x | x in setT]]   *)
+(*                   fun1 : T -> K^o := fun=> 1                               *)
+(*                                      where K : numFiedlType                *)
+(* ```                                                                        *)
+(*                                                                            *)
+(******************************************************************************)
+
+Reserved Notation "[ 'bounded' E | x 'in' A ]"
+  (at level 0, x name, format "[ 'bounded'  E  |  x  'in'  A ]").
+
+Set Implicit Arguments.
+Unset Strict Implicit.
+Unset Printing Implicit Defensive.
+
+Import Order.TTheory GRing.Theory Num.Theory.
+Import numFieldTopology.Exports.
+
+Local Open Scope classical_set_scope.
+Local Open Scope ring_scope.
+
+Section Shift.
+Context {R : zmodType} {T : Type}.
+
+Definition shift (x y : R) := y + x.
+Notation center c := (shift (- c)).
+Arguments shift x / y.
+
+Lemma comp_shiftK (x : R) (f : R -> T) : (f \o shift x) \o center x = f.
+Proof. by rewrite funeqE => y /=; rewrite addrNK. Qed.
+
+Lemma comp_centerK (x : R) (f : R -> T) : (f \o center x) \o shift x = f.
+Proof. by rewrite funeqE => y /=; rewrite addrK. Qed.
+
+Lemma shift0 : shift 0 = id.
+Proof. by rewrite funeqE => x /=; rewrite addr0. Qed.
+
+Lemma center0 : center 0 = id.
+Proof. by rewrite oppr0 shift0. Qed.
+
+End Shift.
+Arguments shift {R} x / y.
+Notation center c := (shift (- c)).
+
+Lemma itv_center_shift {R : numFieldType} x y (a b : R) : (a < b) ->
+  let c := (a + b) / 2 in let r := (b - a) / 2 in
+  Interval (BSide x a) (BSide y b) =
+  Interval (BSide x (center r c (*c - r*) )) (BSide y (shift r c (*c + r*))).
+Proof.
+move=> ab c r; rewrite /shift /c /r -mulrBl addrKA opprK -mulrDl.
+rewrite [in X in _ = Interval _ X]addrC subrKA -!mulr2n.
+by rewrite -(mulr_natr a) -(mulr_natr b) !mulfK.
+Qed.
+
+HB.structure Definition NbhsNmodule := {M of Nbhs M & GRing.Nmodule M}.
+HB.structure Definition NbhsZmodule := {M of Nbhs M & GRing.Zmodule M}.
+HB.structure Definition PreTopologicalNmodule :=
+  {M of Topological M & GRing.Nmodule M}.
+
+HB.mixin Record PreTopologicalNmodule_isTopologicalNmodule M
+    & PreTopologicalNmodule M := {
+  add_continuous : continuous (fun x : M * M => x.1 + x.2) ;
+}.
+
+#[short(type="topologicalNmodType")]
+HB.structure Definition TopologicalNmodule :=
+  {M of PreTopologicalNmodule M & PreTopologicalNmodule_isTopologicalNmodule M}.
+
+Section TopologicalNmodule_theory.
+Context {E : Type} {F : topologicalNmodType} (U : set_system E).
+
+Lemma cvg_sum (I : Type) (r : seq I) (P : pred I)
+    (Ff : I -> E -> F) (Fa : I -> F) :
+  Filter U -> (forall i, P i -> Ff i x @[x --> U] --> Fa i) ->
+  \sum_(i <- r | P i) Ff i x @[x --> U] --> \sum_(i <- r| P i) Fa i.
+Proof. by move=> FF Ffa; apply: cvg_big => //; exact: add_continuous. Qed.
+
+Lemma continuous_shift (x y : F) : {for x, continuous (+%R^~ y)}.
+Proof.
+have -> : +%R^~ y = (fun z => z.1 + z.2) \o (fun z => (z, y)) by exact: funext.
+apply: continuous_comp (@add_continuous _ (x, y)).
+by apply: cvg_pair => //=; exact: cvg_cst.
+Qed.
+
+End TopologicalNmodule_theory.
+
+Section TopologicalNmodule_theory.
+Context {E : topologicalType} {F : topologicalNmodType}.
+
+Lemma sum_continuous (I : Type) (r : seq I) (P : pred I) (f : I -> E -> F) :
+    (forall i, P i -> continuous (f i)) ->
+  continuous (fun x => \sum_(i <- r | P i) f i x).
+Proof. by move=> FC0; apply: continuous_big => //; exact: add_continuous. Qed.
+
+End TopologicalNmodule_theory.
+
+Section cvg_composition_topologicalNmodType.
+Context {T : Type} {V : topologicalNmodType} (F : set_system T)
+    {FF : Filter F}.
+Implicit Types (f g : T -> V) (a b : V).
+
+Lemma cvgD f g a b : f @ F --> a -> g @ F --> b -> (f + g) @ F --> a + b.
+Proof.
+by move=> fa ga; apply: continuous2_cvg; [exact: (add_continuous (a, b))|..].
+Qed.
+
+Lemma cvg0D f g a : f @ F --> 0 -> g @ F --> a -> f x + g x @[x --> F] --> a.
+Proof. by move=> /cvgD /[apply]; rewrite add0r. Qed.
+
+Lemma cvgD0 f g a : f @ F --> a -> g @ F --> 0 -> f x + g x @[x --> F] --> a.
+Proof. by move=> /cvgD /[apply]; rewrite addr0. Qed.
+
+End cvg_composition_topologicalNmodType.
+#[deprecated(since="mathcomp-analysis 1.19.0", use=cvgD)]
+Notation fun_cvgD := cvgD (only parsing).
+
+Section within_continuous_topologicalNmodType.
+Context {T : topologicalType} {V : topologicalNmodType} (A : set T).
+Implicit Types f g : T -> V.
+
+Lemma within_continuousD f g :
+  {within A, continuous f} -> {within A, continuous g} ->
+  {within A, continuous (f + g)}.
+Proof. by move=> cf cg x; apply: cvgD; [exact: cf|exact: cg]. Qed.
+
+End within_continuous_topologicalNmodType.
+
+HB.structure Definition PreTopologicalZmodule :=
+  {M of Topological M & GRing.Zmodule M}.
+
+Section PreTopologicalZmoduleTheory.
+Context {M : PreTopologicalZmodule.type}.
+
+Lemma nbhsB_subproof (U : set M) (f : continuous (fun x : M * M => x.1 + x.2))
+    (z x : M) :
+  nbhs z U -> nbhs (x + z) (+%R x @` U).
+Proof.
+move=> U0; have /= := f (x + z, -x) U; rewrite [x + z]addrC addrK.
+move=> /(_ U0)[B] [B1 B2] BU; near=> x0.
+exists (x0 - x); last by rewrite addrC subrK.
+by apply: (BU (x0, -x)); split; [near: x0; rewrite nearE|exact: nbhs_singleton].
+Unshelve. all: by end_near. Qed.
+
+Lemma nbhsT_subproof (U : set M) (f : continuous (fun x : M * M => x.1 + x.2))
+    (x : M) :
+  nbhs 0 U -> nbhs x (+%R x @` U).
+Proof.
+move => U0; have /= := f (x, -x) U; rewrite subrr => /(_ U0).
+move=> [B] [B1 B2] BU; near=> x0.
+exists (x0 - x); last by rewrite addrC subrK.
+by apply: (BU (x0, -x)); split; [near: x0; rewrite nearE|exact: nbhs_singleton].
+Unshelve. all: by end_near. Qed.
+
+End PreTopologicalZmoduleTheory.
+
+HB.mixin Record TopologicalNmodule_isTopologicalZmodule M
+    & PreTopologicalZmodule M := {
+  opp_continuous : continuous (-%R : M -> M) ;
+}.
+
+#[short(type="topologicalZmodType")]
+HB.structure Definition TopologicalZmodule :=
+  {M of TopologicalNmodule M & GRing.Zmodule M
+        & TopologicalNmodule_isTopologicalZmodule M}.
+
+Section TopologicalZmoduleTheory.
+Context {M : topologicalZmodType}.
+
+Lemma sub_continuous : continuous (fun x : M * M => x.1 - x.2).
+Proof.
+move=> x; apply: (@continuous_comp _ _ _ (fun x => (x.1, - x.2))
+  (fun x : M * M => x.1 + x.2)); last exact: add_continuous.
+apply: cvg_pair; first exact: cvg_fst.
+by apply: continuous_comp; [exact: cvg_snd|exact: opp_continuous].
+Qed.
+
+Lemma nbhsB (U : set M) (z x : M) : nbhs z U -> nbhs (x + z) (+%R x @` U).
+Proof. exact/nbhsB_subproof/add_continuous. Qed.
+
+Lemma nbhs_add1set x (A : set M) : nbhs 0 A <-> nbhs x ([set x] `+ A).
+Proof.
+split=> [|nx].
+  rewrite -(subrr x) => /continuous_shift.
+  suff -> : [set x] `+  A = +%R^~ (- x) @^-1` A by [].
+  apply: funext => z /=; apply: propext; split => [|Azx].
+    by move=> [? -> [y By] <-]; rewrite addrAC subrr add0r.
+  by exists x => //; exists (z - x) => //; rewrite addrCA subrr addr0.
+suff -> : A = +%R^~ x @^-1` ([set x] `+  A).
+  by apply: continuous_shift; rewrite add0r.
+apply: funext => z /=; apply: propext; split=> [Az|[_ -> [y By]]].
+  by exists x => //; exists z => //; rewrite addrC.
+by rewrite addrC => /addIr <-.
+Qed.
+
+End TopologicalZmoduleTheory.
+
+HB.factory Record PreTopologicalNmodule_isTopologicalZmodule M
+    & PreTopologicalZmodule M := {
+  sub_continuous : continuous (fun x : M * M => x.1 - x.2) ;
+}.
+
+HB.builders Context M & PreTopologicalNmodule_isTopologicalZmodule M.
+
+Let opp_continuous : continuous (-%R : M -> M).
+Proof.
+move=> x; rewrite /continuous_at.
+rewrite -(@eq_cvg _ _ _ (fun x => 0 - x)); first by move=> y; exact: add0r.
+rewrite -[- x]add0r.
+apply: (@continuous_comp _ _ _ (fun x => (0, x)) (fun x : M * M => x.1 - x.2)).
+  exact: cvg_pair.
+exact: sub_continuous.
+Qed.
+
+Let add_continuous : continuous (fun x : M * M => x.1 + x.2).
+Proof.
+move=> x; rewrite /continuous_at.
+rewrite -(@eq_cvg _ _ _ (fun x => x.1 - (- x.2))).
+  by move=> y; rewrite opprK.
+rewrite -[in x.1 + _](opprK x.2).
+apply: (@continuous_comp _ _ _ (fun x => (x.1, - x.2)) (fun x => x.1 - x.2)).
+  apply: cvg_pair; first exact: cvg_fst.
+  by apply: continuous_comp; [exact: cvg_snd|exact: opp_continuous].
+exact: sub_continuous.
+Qed.
+
+HB.instance Definition _ :=
+  PreTopologicalNmodule_isTopologicalNmodule.Build M add_continuous.
+
+HB.instance Definition _ :=
+  TopologicalNmodule_isTopologicalZmodule.Build M opp_continuous.
+
+HB.end.
+
+Section cvg_composition_topologicalZmodType.
+Context {T : Type} (V : topologicalZmodType) (F : set_system T)
+    {FF : Filter F}.
+Implicit Types (f g : T -> V) (a b : V).
+
+Lemma cvgN f a : f @ F --> a -> - f @ F --> - a.
+Proof. by move=> ?; apply: continuous_cvg => //; exact: opp_continuous. Qed.
+
+Lemma cvgNP f a : - f @ F --> - a <-> f @ F --> a.
+Proof. by split=> /cvgN//; rewrite !opprK. Qed.
+
+Lemma cvgB f g a b : f @ F --> a -> g @ F --> b -> (f - g) @ F --> a - b.
+Proof. by move=> ? ?; apply: cvgD => //; exact: cvgN. Qed.
+
+Lemma cvg0B f g a : f @ F --> 0 -> g @ F --> a -> f x - g x @[x --> F] --> - a.
+Proof. by move=> /cvgB /[apply]; rewrite add0r. Qed.
+
+Lemma cvgB0 f g a : f @ F --> a -> g @ F --> 0 -> f x - g x @[x --> F] --> a.
+Proof. by move=> /cvgB /[apply]; rewrite subr0. Qed.
+
+Lemma cvgN0 f : f @ F --> 0 -> - f @ F --> 0.
+Proof. by rewrite -{2}oppr0; exact: cvgN. Qed.
+
+Lemma cvg_sub0 f g a : (f - g) @ F --> (0 : V) -> g @ F --> a -> f @ F --> a.
+Proof.
+by move=> Cfg Cg; have := cvgD Cfg Cg; rewrite subrK add0r; exact.
+Qed.
+
+Lemma cvg_zero f a : (f - cst a) @ F --> (0 : V) -> f @ F --> a.
+Proof. by move=> Cfa; exact: cvg_sub0 Cfa (cvg_cst _). Qed.
+
+Lemma subr_cvg0 f a : (fun x => f x - a) @ F --> 0 <-> f @ F --> a.
+Proof.
+split=> [?|fFk]; first exact: cvg_zero.
+by rewrite -(@subrr _ a)//; exact: cvgB.
+Qed.
+
+End cvg_composition_topologicalZmodType.
+#[deprecated(since="mathcomp-analysis 1.19.0", use=cvgN)]
+Notation fun_cvgN := cvgN (only parsing).
+
+Section within_continuous_topologicalZmodType.
+Context {T : topologicalType} {V : topologicalZmodType} (A : set T).
+Implicit Types f g : T -> V.
+
+Lemma within_continuousB f g :
+  {within A, continuous f} -> {within A, continuous g} ->
+  {within A, continuous (f - g)}.
+Proof. by move=> cf cg x; apply: cvgB; [exact: cf|exact: cg]. Qed.
+
+Lemma within_continuousN f :
+  {within A, continuous f} -> {within A, continuous - f}.
+Proof. move=> cf x; apply: cvgN; exact: cf. Qed.
+
+End within_continuous_topologicalZmodType.
+
+HB.structure Definition PreUniformNmodule := {M of Uniform M & GRing.Nmodule M}.
+
+HB.mixin Record PreUniformNmodule_isUniformNmodule M & PreUniformNmodule M := {
+  add_unif_continuous : unif_continuous (fun x : M * M => x.1 + x.2)
+}.
+
+HB.structure Definition UniformNmodule :=
+  {M of PreUniformNmodule M & PreUniformNmodule_isUniformNmodule M & TopologicalNmodule M}.
+
+Section prod_TopologicalNmodule.
+Context {E F : topologicalNmodType}.
+
+Let prod_add_continuous : continuous (fun x : (E * F) * (E * F) => x.1 + x.2).
+Proof.
+move => [/= x y] /= U /= [[/= A B]] /= [xyA xyB] ABU.
+have [/= A0 [A01 A02] A0A] := @add_continuous E (x.1, y.1) _ xyA.
+have [/= B0 [B01 B02] B0B] := @add_continuous F (x.2, y.2) _ xyB.
+exists ([set x | A0.1 x.1 /\ B0.1 x.2], [set xy | A0.2 xy.1 /\ B0.2 xy.2]).
+  by split; [exists (A0.1, B0.1)|exists (A0.2, B0.2)].
+move => [[x1 y1][x2 y2]] /= [[? ?] [? ?]].
+by apply: ABU; split; [exact: (A0A (x1, x2))|exact: (B0B (y1, y2))].
+Qed.
+
+HB.instance Definition _ := PreTopologicalNmodule_isTopologicalNmodule.Build
+  (E * F)%type prod_add_continuous.
+
+End prod_TopologicalNmodule.
+
+Section prod_UniformNmodule.
+Context {E F : UniformNmodule.type}.
+
+Let prod_add_unif_continuous :
+  unif_continuous (fun x : (E * F) * (E * F) => x.1 + x.2).
+Proof.
+move=> P /= /entourage_prod_exS[A [B [entA entB ABP]]].
+have [/= A1 [A2 [entA1 entA2 A12]]] :=
+  entourage_prod_exS (@add_unif_continuous _ _ entA).
+have [/= B1 [B2 [entB1 entB2 B12]]] :=
+  entourage_prod_exS (@add_unif_continuous _ _ entB).
+have entAB1 := prod_entP entA1 entB1.
+have entAB2 := prod_entP entA2 entB2.
+pose AB1 := [set xy | A1 (xy.1.1, xy.2.1) /\ B1 (xy.1.2, xy.2.2)].
+pose AB2 := [set xy | A2 (xy.1.1, xy.2.1) /\ B2 (xy.1.2, xy.2.2)].
+exists (AB1, AB2) => //=.
+move=> -[[[a1 a2] [b1 b2]] [[a1' a2'] [b1' b2']]] /=.
+move=> [[/= A1a B1a] [/= A2b B2b]].
+exists ((a1, a2), (a1', a2'), ((b1, b2), (b1', b2'))) =>//=.
+by apply: ABP  => /=; split;
+  [exact: (A12 (a1, a1', (b1, b1')))|exact: (B12 (a2, a2', (b2, b2')))].
+Qed.
+
+HB.instance Definition _ := PreUniformNmodule_isUniformNmodule.Build
+  (E * F)%type prod_add_unif_continuous.
+
+End prod_UniformNmodule.
+
+HB.structure Definition PreUniformZmodule := {M of Uniform M & GRing.Zmodule M}.
+
+HB.mixin Record UniformNmodule_isUniformZmodule M
+    & PreUniformZmodule M := {
+  opp_unif_continuous : unif_continuous (-%R : M -> M)
+}.
+
+HB.structure Definition UniformZmodule :=
+  {M of UniformNmodule M & GRing.Zmodule M & UniformNmodule_isUniformZmodule M
+     & TopologicalZmodule M}.
+
+Section prod_TopologicalZmodule.
+Context {E F : TopologicalZmodule.type}.
+
+Let prod_opp_continuous : continuous (-%R : E * F -> E * F).
+Proof.
+move => [/= x y] /= U /= [[/= A B]] /= [xA yB] ABU.
+have Ax := @opp_continuous E x _ xA.
+have By := @opp_continuous F y _ yB.
+exists (-%R @^-1` A, -%R @^-1` B) => //=.
+by move=> [a b] []/= ANa BNb; exact: ABU.
+Qed.
+
+HB.instance Definition _ := TopologicalNmodule_isTopologicalZmodule.Build
+  (E * F)%type prod_opp_continuous.
+
+End prod_TopologicalZmodule.
+
+Section prod_UniformZmodule.
+Context {E F : UniformZmodule.type}.
+
+Lemma prod_opp_unif_continuous : unif_continuous (-%R : E * F -> E * F).
+Proof.
+move=> P /= /entourage_prod_exS[A [B [entA entB ABP]]].
+have entAN := @opp_unif_continuous _ _ entA.
+have entBN := @opp_unif_continuous _ _ entB.
+apply: filterS (prod_entP entAN entBN) => -[[a1 a2] [b1 b2]] /= [A1 B2].
+exact: (ABP ((- a1, - a2), (- b1, - b2))).
+Qed.
+
+HB.instance Definition _ := UniformNmodule_isUniformZmodule.Build
+  (E * F)%type prod_opp_unif_continuous.
+
+End prod_UniformZmodule.
+
+HB.factory Record PreUniformNmodule_isUniformZmodule M
+    & PreUniformZmodule M := {
+  sub_unif_continuous : unif_continuous (fun x : M * M => x.1 - x.2)
+}.
+
+HB.builders Context M & PreUniformNmodule_isUniformZmodule M.
+
+Lemma opp_unif_continuous : unif_continuous (-%R : M -> M).
+Proof.
+have unif : unif_continuous (fun x => (0, x) : M * M).
+  move=> /= U [[]] /= U1 U2 [] U1e U2e /subsetP U12.
+  apply: filterS U2e => x xU2/=.
+  have /U12 : ((0, 0), x) \in U1 `*` U2.
+    by rewrite in_setX/= (mem_set xU2) andbT inE; exact: entourage_refl.
+  by rewrite inE/= => -[[[a1 a2] [b1 b2]]]/= /[swap]-[] -> -> <-.
+move=> /= U /sub_unif_continuous /unif /=.
+rewrite -comp_preimage/= /comp/= /nbhs/=.
+congr entourage => /=; rewrite eqEsubset.
+by split=> x //=; rewrite /map_pair !sub0r.
+Qed.
+
+Lemma add_unif_continuous : unif_continuous (fun x : M * M => x.1 + x.2).
+Proof.
+have unif: unif_continuous (fun x => (x.1, -x.2) : M * M).
+  move=> /= U [[]]/= U1 U2 [] U1e /opp_unif_continuous.
+  rewrite /nbhs/= => U2e /subsetP U12.
+  apply: (@filterS _ _ entourage_filter
+      ((fun xy => (xy.1.1, xy.2.1, (-xy.1.2, -xy.2.2))) @^-1` (U1 `*` U2))).
+    move=> /= [] [] a1 a2 [] b1 b2/= [] ab1 ab2.
+    have /U12 : (a1, b1, (-a2, -b2)) \in U1 `*` U2 by rewrite !inE.
+    by rewrite /map_pair inE/= => [] [] [] [] c1 c2 [] d1 d2/= cd [] <- <- <- <-.
+  exists (U1, ((fun xy : M * M => (- xy.1, - xy.2)) @^-1` U2)); first by split.
+  by move=> /= [] [] a1 a2 [] b1 b2/= [] aU bU; exists (a1, b1, (a2, b2)).
+move=> /= U /sub_unif_continuous/unif; rewrite /nbhs/=.
+rewrite -comp_preimage/=/comp/=.
+congr entourage; rewrite eqEsubset.
+by split=> x /=; rewrite /map_pair !opprK.
+Qed.
+
+Lemma add_continuous : continuous (fun x : M * M => x.1 + x.2).
+Proof. by apply: unif_continuous_continuous; exact: add_unif_continuous. Qed.
+
+HB.instance Definition _ :=
+  PreTopologicalNmodule_isTopologicalNmodule.Build M add_continuous.
+
+HB.instance Definition _ :=
+  PreUniformNmodule_isUniformNmodule.Build M add_unif_continuous.
+
+Lemma opp_continuous : continuous (-%R : M -> M).
+Proof.
+apply: unif_continuous_continuous.
+exact: opp_unif_continuous.
+Qed.
+
+HB.instance Definition _ :=
+  TopologicalNmodule_isTopologicalZmodule.Build M opp_continuous.
+
+HB.instance Definition _ :=
+  UniformNmodule_isUniformZmodule.Build M opp_unif_continuous.
+
+HB.end.
+
+Section UniformZmoduleTheory.
+Context {M : UniformZmodule.type}.
+
+Lemma sub_unif_continuous : unif_continuous (fun x : M * M => x.1 - x.2).
+Proof.
+suff unif: unif_continuous (fun x => (x.1, - x.2) : M * M).
+  by move=> /= U /add_unif_continuous/unif; rewrite /nbhs/= -comp_preimage.
+move=> /= U [[]]/= U1 U2 [] U1e /opp_unif_continuous.
+rewrite /nbhs/= => U2e /subsetP U12.
+apply: (@filterS _ _ entourage_filter
+    ((fun xy => (xy.1.1, xy.2.1, (- xy.1.2, - xy.2.2))) @^-1` (U1 `*` U2))).
+  move=> /= [] [] a1 a2 [] b1 b2/= [] ab1 ab2.
+  have /U12 : (a1, b1, (-a2, -b2)) \in U1 `*` U2 by rewrite !inE.
+  by rewrite /map_pair inE/= => [] [] [] [] c1 c2 [] d1 d2/= cd [] <- <- <- <-.
+exists (U1, ((fun xy : M * M => (- xy.1, - xy.2)) @^-1` U2)); first by split.
+by move=> /= [] [] a1 a2 [] b1 b2/= [] aU bU; exists (a1, b1, (a2, b2)).
+Qed.
+
+End UniformZmoduleTheory.
+
+HB.mixin Record NormedZmod_PseudoMetric_eq (R : numDomainType) T
+    & Num.NormedZmodule R T & PseudoPointedMetric R T := {
+  pseudo_metric_ball_norm : ball = ball_ (fun x : T => `| x |)
+}.
+
+(* TODO: introduce #[short(type="pseudoMetricNormedZmodType")] after MCA 1.20.0 *)
+HB.structure Definition PseudoMetricNormedZmodule (R : numDomainType) :=
+  {T of Num.NormedZmodule R T & PseudoPointedMetric R T
+   & NormedZmod_PseudoMetric_eq R T }.
+
+#[deprecated(since="mathcomp-analysis 1.19.0", use=PseudoMetricNormedZmodule)]
+Notation PseudoMetricNormedZmod0 x1 x2 := (PseudoMetricNormedZmodule x1 x2) (only parsing).
+
+Module PseudoMetricNormedZmod0.
+#[deprecated(since="mathcomp-analysis 1.19.0",
+             use=PseudoMetricNormedZmodule.type)]
+Notation type x1 := (PseudoMetricNormedZmodule.type x1) (only parsing).
+End PseudoMetricNormedZmod0.
+
+Section PseudoMetricNormedZmodule_numDomainType.
+Context {K : numDomainType} {V : PseudoMetricNormedZmodule.type K}.
+
+(**md Balls defined by the norm: *)
+Local Notation ball_norm := (ball_ (@Num.norm K V)).
+
+Lemma ball_normE : ball_norm = ball.
+Proof. by rewrite pseudo_metric_ball_norm. Qed.
+
+End PseudoMetricNormedZmodule_numDomainType.
+
+Section PseudoMetricNormedZmodule_numDomainType.
+Context {K : numDomainType} {V : PseudoMetricNormedZmodule.type K}.
+
+Lemma ball_open (x : V) (r : K) : open (ball x r).
+Proof.
+rewrite openE/= -ball_normE/= /interior => y /= bxy; rewrite -nbhs_ballE.
+exists (r - `|x - y|) => /=; first by rewrite subr_gt0.
+move=> z; rewrite -ball_normE/= ltrBrDr.
+by apply: le_lt_trans; rewrite [in leRHS]addrC ler_distD.
+Qed.
+
+Lemma ball_open_nbhs (x : V) (r : K) : 0 < r -> open_nbhs x (ball x r).
+Proof. by move=> e0; split; [exact: ball_open|exact: ballxx]. Qed.
+
+(**md Neighborhoods defined by the norm: *)
+Local Notation ball_norm := (ball_ (@Num.norm K V)).
+Local Notation nbhs_norm := (nbhs_ball_ ball_norm).
+
+(* if we do not give the V argument to nbhs, the universally quantified set that
+appears inside the notation for cvg_to has type
+set (let '{| PseudoMetricNormedZmodule.sort := T |} := V in T) instead of set V,
+which causes an inference problem in derive.v *)
+Lemma nbhs_nbhs_norm : nbhs_norm = nbhs.
+Proof. by rewrite ball_normE funeqE => x; rewrite -filter_from_ballE. Qed.
+
+Lemma nbhs_normP x (P : V -> Prop) : (\near x, P x) <-> nbhs_norm x P.
+Proof. by rewrite nbhs_nbhs_norm. Qed.
+
+Lemma nbhs_le_nbhs_norm (x : V) : @nbhs V _ x `=>` nbhs_norm x.
+Proof. by move=> P [e e0 subP]; apply/nbhs_normP; exists e. Qed.
+
+Lemma nbhs_norm_le_nbhs x : nbhs_norm x `=>` nbhs x.
+Proof. by move=> P /nbhs_normP [e e0 Pxe]; exists e. Qed.
+
+Lemma filter_from_norm_nbhs x :
+  @filter_from K _ [set x : K | 0 < x] (ball_norm x) = nbhs x.
+Proof. by rewrite -nbhs_nbhs_norm ball_normE. Qed.
+
+Lemma nbhs_normE (x : V) (P : V -> Prop) :
+  nbhs_norm x P = \near x, P x.
+Proof. by rewrite nbhs_nbhs_norm near_simpl. Qed.
+
+Lemma filter_from_normE (x : V) (P : V -> Prop) :
+  @filter_from K _ [set x : K | 0 < x] (ball_norm x) P = \near x, P x.
+Proof. by rewrite filter_from_norm_nbhs. Qed.
+
+Lemma near_nbhs_norm (x : V) (P : V -> Prop) :
+  (\forall x \near nbhs_norm x, P x) = \near x, P x.
+Proof. exact: nbhs_normE. Qed.
+
+Lemma nbhs_norm_ball_norm x (e : {posnum K}) :
+  nbhs_norm x (ball_norm x e%:num).
+Proof. by rewrite ball_normE; exists e%:num => /=. Qed.
+
+Lemma nbhs_ball_norm (x : V) (eps : {posnum K}) : nbhs x (ball_norm x eps%:num).
+Proof. rewrite -nbhs_nbhs_norm; apply: nbhs_norm_ball_norm. Qed.
+
+Lemma ball_norm_dec x y (e : K) : {ball_norm x e y} + {~ ball_norm x e y}.
+Proof. exact: pselect. Qed.
+
+Lemma ball_norm_sym x y (e : K) : ball_norm x e y -> ball_norm y e x.
+Proof. by rewrite /ball_norm/= -opprB normrN. Qed.
+
+Lemma ball_norm_le x (e1 e2 : K) :
+  e1 <= e2 -> ball_norm x e1 `<=` ball_norm x e2.
+Proof. by move=> e1e2 y /lt_le_trans; apply. Qed.
+
+Let nbhs_simpl := (nbhs_simpl,@nbhs_nbhs_norm,@filter_from_norm_nbhs).
+
+Lemma fcvgrPdist_lt {F : set_system V} {FF : Filter F} (y : V) :
+  F --> y <-> forall eps, 0 < eps -> \forall y' \near F, `|y - y'| < eps.
+Proof. by rewrite -filter_fromP /= !nbhs_simpl. Qed.
+
+Lemma cvgrPdist_lt {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
+  f @ F --> y <-> forall eps, 0 < eps -> \forall t \near F, `|y - f t| < eps.
+Proof. exact: fcvgrPdist_lt. Qed.
+
+Lemma cvgrPdistC_lt {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
+  f @ F --> y <-> forall eps, 0 < eps -> \forall t \near F, `|f t - y| < eps.
+Proof.
+by rewrite cvgrPdist_lt; under eq_forall do under eq_near do rewrite distrC.
+Qed.
+
+Lemma cvgr_dist_lt {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
+  f @ F --> y -> forall eps, eps > 0 -> \forall t \near F, `|y - f t| < eps.
+Proof. by move=> /cvgrPdist_lt. Qed.
+
+Lemma cvgr_distC_lt {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
+  f @ F --> y -> forall eps, eps > 0 -> \forall t \near F, `|f t - y| < eps.
+Proof. by move=> /cvgrPdistC_lt. Qed.
+
+Lemma cvgr_dist_le {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
+  f @ F --> y -> forall eps, eps > 0 -> \forall t \near F, `|y - f t| <= eps.
+Proof.
+by move=> ? ? ?; near do rewrite ltW//; apply: cvgr_dist_lt.
+Unshelve. all: by end_near. Qed.
+
+Lemma cvgr_distC_le {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
+  f @ F --> y -> forall eps, eps > 0 -> \forall t \near F, `|f t - y| <= eps.
+Proof.
+by move=> ? ? ?; near do rewrite ltW//; apply: cvgr_distC_lt.
+Unshelve. all: by end_near. Qed.
+
+Lemma nbhs_norm0P {P : V -> Prop} :
+  (\forall x \near 0, P x) <->
+  filter_from [set e | 0 < e] (fun e => [set y | `|y| < e]) P.
+Proof.
+rewrite nbhs_normP; split=> -[/= e e0 Pe];
+by exists e => // y /=; have /= := Pe y; rewrite distrC subr0.
+Qed.
+
+Lemma cvgr0Pnorm_lt {T} {F : set_system T} {FF : Filter F} (f : T -> V) :
+  f @ F --> 0 <-> forall eps, 0 < eps -> \forall t \near F, `|f t| < eps.
+Proof.
+by rewrite cvgrPdistC_lt; under eq_forall do under eq_near do rewrite subr0.
+Qed.
+
+Lemma cvgr0_norm_lt {T} {F : set_system T} {FF : Filter F} (f : T -> V) :
+  f @ F --> 0 -> forall eps, eps > 0 -> \forall t \near F, `|f t| < eps.
+Proof. by move=> /cvgr0Pnorm_lt. Qed.
+
+Lemma cvgr0_norm_le {T} {F : set_system T} {FF : Filter F} (f : T -> V) :
+  f @ F --> 0 -> forall eps, eps > 0 -> \forall t \near F, `|f t| <= eps.
+Proof.
+by move=> ? ? ?; near do rewrite ltW//; apply: cvgr0_norm_lt.
+Unshelve. all: by end_near. Qed.
+
+Lemma nbhs0_lt e : 0 < e -> \forall x \near (0 : V), `|x| < e.
+Proof. exact: cvgr0_norm_lt. Qed.
+
+Lemma dnbhs0_lt e : 0 < e -> \forall x \near (0 : V)^', `|x| < e.
+Proof. by move=> e_gt0; apply: cvg_within; apply: nbhs0_lt. Qed.
+
+Lemma nbhs0_le e : 0 < e -> \forall x \near (0 : V), `|x| <= e.
+Proof. exact: cvgr0_norm_le. Qed.
+
+Lemma dnbhs0_le e : 0 < e -> \forall x \near (0 : V)^', `|x| <= e.
+Proof. by move=> e_gt0; apply: cvg_within; apply: nbhs0_le. Qed.
+
+Lemma nbhs_norm_ball x (eps : {posnum K}) : nbhs_norm x (ball x eps%:num).
+Proof. by rewrite nbhs_nbhs_norm; exact: nbhsx_ballx. Qed.
+
+Lemma nbhsDl (P : set V) (x y : V) :
+  (\forall z \near (x + y), P z) <-> (\near x, P (x + y)).
+Proof.
+split=> /nbhs_normP[_/posnumP[e]/= Px]; apply/nbhs_normP; exists e%:num => //=.
+  by move=> z /= xze; apply: Px; rewrite /= [z + y]addrC addrKA.
+by move=> z /= xyz; rewrite -[z](addrNK y); apply: Px; rewrite /= opprB addrA.
+Qed.
+
+Lemma nbhsDr (P : set V) x y :
+  (\forall z \near (x + y), P z) <-> (\near y, P (x + y)).
+Proof. by rewrite addrC nbhsDl -propeqE; apply: eq_near => ?; rewrite addrC. Qed.
+
+Lemma nbhs0P (P : set V) x : (\near x, P x) <-> (\forall e \near 0, P (x + e)).
+Proof. by rewrite -nbhsDr addr0. Qed.
+
+Lemma near_shift (y x : V) (P : set V) :
+  (\near x, P x) = (\forall z \near y, (P \o shift (x - y)) z).
+Proof.
+rewrite propeqE nbhs0P [X in _ <-> X]nbhs0P/= -propeqE.
+by apply: eq_near => e; rewrite [_ + _ + _]addrC subrKA.
+Qed.
+
+Lemma cvg_comp_shift {T : Type} (x y : V) (f : V -> T) :
+  (f \o shift x) @ y = f @ (y + x).
+Proof.
+rewrite funeqE => A; rewrite /= !near_simpl (near_shift (y + x)).
+by rewrite (_ : _ \o _ = A \o f) // funeqE=> z; rewrite /= opprD addNKr addrNK.
+Qed.
+
+End PseudoMetricNormedZmodule_numDomainType.
+#[global] Hint Resolve normr_ge0 : core.
+Arguments cvgr_dist_lt {_ _ _ F FF}.
+Arguments cvgr_distC_lt {_ _ _ F FF}.
+Arguments cvgr_dist_le {_ _ _ F FF}.
+Arguments cvgr_distC_le {_ _ _ F FF}.
+Arguments cvgr0_norm_lt {_ _ _ F FF}.
+Arguments cvgr0_norm_le {_ _ _ F FF}.
+
+#[global] Hint Extern 0 (is_true (`|_ - ?x| < _)) => match goal with
+  H : x \is_near _ |- _ => solve[near: x; now apply: cvgr_dist_lt] end : core.
+#[global] Hint Extern 0 (is_true (`|?x - _| < _)) => match goal with
+  H : x \is_near _ |- _ => solve[near: x; now apply: cvgr_distC_lt] end : core.
+#[global] Hint Extern 0 (is_true (`|?x| < _)) => match goal with
+  H : x \is_near _ |- _ => solve[near: x; now apply: cvgr0_norm_lt] end : core.
+#[global] Hint Extern 0 (is_true (`|_ - ?x| <= _)) => match goal with
+  H : x \is_near _ |- _ => solve[near: x; now apply: cvgr_dist_le] end : core.
+#[global] Hint Extern 0 (is_true (`|?x - _| <= _)) => match goal with
+  H : x \is_near _ |- _ => solve[near: x; now apply: cvgr_distC_le] end : core.
+#[global] Hint Extern 0 (is_true (`|?x| <= _)) => match goal with
+  H : x \is_near _ |- _ => solve[near: x; now apply: cvgr0_norm_le] end : core.
+
+Section PseudoMetricNormedZmodule_realDomainType.
+Context {R : realDomainType} {V : PseudoMetricNormedZmodule.type R}.
+
+Lemma le0_ball0 (a : V) (r : R) : r <= 0 -> ball a r = set0.
+Proof.
+move=> r0; rewrite -subset0 => y.
+rewrite -ball_normE /ball_/= ltNge => /negP; apply.
+by rewrite (le_trans r0).
+Qed.
+
+Lemma closed_ball0 (v : V) (r : R) : r <= 0 -> closed_ball v r = set0.
+Proof.
+by move=> r0; rewrite -subset0 => w; rewrite /closed_ball le0_ball0// closure0.
+Qed.
+
+End PseudoMetricNormedZmodule_realDomainType.
+
+Section PseudoMetricNormedZmodule_numFieldType.
+Context {R : numFieldType} {V : PseudoMetricNormedZmodule.type R}.
+
+Lemma norm_hausdorff : hausdorff_space V.
+Proof.
+rewrite ball_hausdorff => a b ab.
+have ab2 : 0 < `|a - b| / 2 by apply divr_gt0 => //; rewrite normr_gt0 subr_eq0.
+set r := PosNum ab2; exists (r, r) => /=.
+apply/eqP/nonemptyPn => -[c] []; rewrite -ball_normE /ball_ => acr bcr.
+have r22 : r%:num * 2 = r%:num + r%:num.
+  by rewrite (_ : 2 = 1 + 1) // mulrDr mulr1.
+move: (ltrD acr bcr); rewrite -r22 (distrC b c).
+by move/(le_lt_trans (ler_distD c a b)); rewrite -mulrA mulVf// mulr1 ltxx.
+Qed.
+Local Hint Extern 0 (hausdorff_space _) => solve[apply: norm_hausdorff] : core.
+
+(* TODO: check if the following lemma are indeed useless *)
+(*       i.e. where the generic lemma is applied, *)
+(*            check that norm_hausdorff is not used in a hard way *)
+
+Lemma norm_closeE (x y : V) : close x y = (x = y). Proof. exact: closeE. Qed.
+Lemma norm_close_eq (x y : V) : close x y -> x = y. Proof. exact: close_eq. Qed.
+
+Lemma norm_cvg_unique {F} {FF : ProperFilter F} :
+  is_subset1 [set x : V | F --> x].
+Proof. exact: cvg_unique. Qed.
+
+Lemma norm_cvg_eq (x y : V) : x --> y -> x = y. Proof. exact: (@cvg_eq V). Qed.
+Lemma norm_lim_id (x : V) : lim (nbhs x) = x. Proof. exact: lim_id. Qed.
+
+Lemma norm_cvg_lim {F} {FF : ProperFilter F} (l : V) : F --> l -> lim F = l.
+Proof. exact: (@cvg_lim V). Qed.
+
+Lemma norm_lim_near_cst U {F} {FF : ProperFilter F} (l : V) (f : U -> V) :
+   (\forall x \near F, f x = l) -> lim (f @ F) = l.
+Proof. exact: lim_near_cst. Qed.
+
+Lemma norm_lim_cst U {F} {FF : ProperFilter F} (k : V) :
+   lim ((fun _ : U => k) @ F) = k.
+Proof. exact: lim_cst. Qed.
+
+Lemma norm_cvgi_unique {U : Type} {F} {FF : ProperFilter F} (f : U -> set V) :
+  {near F, is_fun f} -> is_subset1 [set x : V | f `@ F --> x].
+Proof. exact: cvgi_unique. Qed.
+
+Lemma norm_cvgi_lim {U} {F} {FF : ProperFilter F} (f : U -> V -> Prop) (l : V) :
+  F (fun x : U => is_subset1 (f x)) ->
+  f `@ F --> l -> lim (f `@ F) = l.
+Proof. exact: cvgi_lim. Qed.
+
+Lemma distm_lt_split (z x y : V) (e : R) :
+  `|x - z| < e / 2 -> `|z - y| < e / 2 -> `|x - y| < e.
+Proof. by have := @ball_split _ _ z x y e; rewrite -ball_normE. Qed.
+
+Lemma distm_lt_splitr (z x y : V) (e : R) :
+  `|z - x| < e / 2 -> `|z - y| < e / 2 -> `|x - y| < e.
+Proof. by have := @ball_splitr _ _ z x y e; rewrite -ball_normE. Qed.
+
+Lemma distm_lt_splitl (z x y : V) (e : R) :
+  `|x - z| < e / 2 -> `|y - z| < e / 2 -> `|x - y| < e.
+Proof. by have := @ball_splitl _ _ z x y e; rewrite -ball_normE. Qed.
+
+Lemma normm_leW (x : V) (e : R) : e > 0 -> `|x| <= e / 2 -> `|x| < e.
+Proof.
+by move=> /posnumP[{}e] /le_lt_trans ->//; rewrite [ltRHS]splitr ltr_pwDl.
+Qed.
+
+Lemma normm_lt_split (x y : V) (e : R) :
+  `|x| < e / 2 -> `|y| < e / 2 -> `|x + y| < e.
+Proof.
+by move=> xlt ylt; rewrite -[y]opprK (@distm_lt_split 0) ?subr0 ?opprK ?add0r.
+Qed.
+
+Lemma PseudoMetricNormedZmodule_add_unif_continuous :
+  unif_continuous (fun x : V * V => x.1 + x.2).
+Proof.
+apply/unif_continuousP => /= e e0.
+exists (e / 2); first by rewrite divr_gt0.
+move=> [/= [a1 a2] [b1 b2]]/=.
+rewrite -ball_normE/=.
+rewrite /ball/= /prod_ball/= => -[].
+rewrite -ball_normE/= => ab1 ab2.
+by rewrite opprD addrACA (splitr e)// (le_lt_trans (ler_normD _ _))//= ltrD.
+Qed.
+
+Lemma PseudoMetricNormedZmodule_opp_unif_continuous :
+  unif_continuous (-%R : V -> V).
+Proof.
+apply/unif_continuousP => /= e e0.
+exists e => // -[a1 a2]/=.
+by rewrite -ball_normE/= -opprD Num.normrN.
+Qed.
+
+End PseudoMetricNormedZmodule_numFieldType.
+#[global]
+Hint Extern 0 (hausdorff_space _) => solve[apply: norm_hausdorff] : core.
+
+#[short(type="metricNormedZmodType")]
+HB.structure Definition MetricNormedZmodule (R : numDomainType) :=
+  {T of PseudoMetricNormedZmodule R T & Metric R T & UniformZmodule T}.
+
+#[deprecated(since="mathcomp-analysis 1.19.0", use=MetricNormedZmodule)]
+Notation PseudoMetricNormedZmod R := (MetricNormedZmodule R) (only parsing).
+
+#[deprecated(since="mathcomp-analysis 1.19.0", use=metricNormedZmodType)]
+Notation pseudoMetricNormedZmodType := metricNormedZmodType (only parsing).
+
+HB.factory Record isPseudoMetricNormedZmodule
+  (K : numFieldType) T & PseudoMetricNormedZmodule K T := { }.
+
+HB.builders Context K T & isPseudoMetricNormedZmodule K T.
+
+Let mdist (x y : T) : K := `|x - y|.
+
+Let mdist_ge0 x y : 0 <= mdist x y. Proof. by rewrite /mdist. Qed.
+
+Let mdist_positivity x y : mdist x y = 0 -> x = y.
+Proof. by move=> /normr0_eq0/subr0_eq. Qed.
+
+Let ballEmdist x d : ball x d = [set y | mdist x y < d].
+Proof. by rewrite -ball_normE. Qed.
+
+HB.instance Definition _ :=
+  @PseudoMetric_isMetric.Build K T mdist mdist_ge0 mdist_positivity ballEmdist.
+
+Let add_continuous : continuous (fun x : T * T => x.1 + x.2).
+Proof.
+move=> [/= x y].
+apply/cvgrPdist_lt=> _/posnumP[e]; near=> a b => /=.
+by rewrite opprD addrACA normm_lt_split.
+Unshelve. all: by end_near. Qed.
+
+HB.instance Definition _ :=
+  PreTopologicalNmodule_isTopologicalNmodule.Build T add_continuous.
+
+Let opp_continuous : continuous (-%R : T -> T).
+Proof.
+move=> x.
+apply/cvgrPdist_lt=> _/posnumP[e]; near=> a => /=.
+by rewrite opprK addrC.
+Unshelve. all: by end_near. Qed.
+
+HB.instance Definition _ :=
+  TopologicalNmodule_isTopologicalZmodule.Build T opp_continuous.
+
+HB.end.
+
+(* alternative definition of a MetricNormedZmod *)
+HB.factory Record NormedZmoduleMetric (R : numDomainType) T
+    & Num.NormedZmodule R T & Metric R T & isPointed T := {
+  mdist_norm : forall x y : T, mdist x y = `|y - x|
+}.
+
+HB.builders Context (R : numDomainType) T & NormedZmoduleMetric R T.
+
+Let pseudo_metric_ball_norm : ball = ball_ (fun x : T => `| x |).
+Proof.
+apply/funext => /= t; apply/funext => d; rewrite ballEmdist.
+by apply/seteqP; split => [y|y]/=; rewrite mdist_norm distrC.
+Qed.
+
+HB.instance Definition _ :=
+  NormedZmod_PseudoMetric_eq.Build R T pseudo_metric_ball_norm.
+
+HB.end.
+
+Section prod_pseudoMetricNormedZmod.
+Context {K : numDomainType} {U V : metricNormedZmodType K}.
+
+Lemma ball_prod_normE : ball = ball_ (fun x => `| x : U * V |).
+Proof.
+rewrite funeq2E => - [xu xv] e; rewrite predeqE => - [yu yv].
+rewrite /ball /= /prod_ball -!ball_normE /ball_ /=.
+by rewrite comparable_gt_max// ?real_comparable//; split=> /andP.
+Qed.
+
+Let prod_norm_ball : @ball _ (U * V)%type = ball_ (fun x => `|x|).
+Proof. by rewrite /= - ball_prod_normE. Qed.
+
+HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build K (U * V)%type
+  prod_norm_ball.
+
+End prod_pseudoMetricNormedZmod.
+
+Section prod_NormedModule_lemmas.
+Context {T : Type} {K : numDomainType} {U V : metricNormedZmodType K}.
+
+Lemma fcvgr2dist_ltP {F : set_system U} {G : set_system V}
+  {FF : Filter F} {FG : Filter G} (y : U) (z : V) :
+  (F, G) --> (y, z) <->
+  forall eps, 0 < eps ->
+   \forall y' \near F & z' \near G, `| (y, z) - (y', z') | < eps.
+Proof. exact: fcvgrPdist_lt. Qed.
+
+Lemma cvgr2dist_ltP {I J} {F : set_system I} {G : set_system J}
+  {FF : Filter F} {FG : Filter G} (f : I -> U) (g : J -> V) (y : U) (z : V) :
+  (f @ F, g @ G) --> (y, z) <->
+  forall eps, 0 < eps ->
+   \forall i \near F & j \near G, `| (y, z) - (f i, g j) | < eps.
+Proof.
+rewrite fcvgr2dist_ltP; split=> + e e0 => /(_ e e0);
+  by rewrite !near_simpl// => ?; rewrite !near_simpl.
+Qed.
+
+Lemma cvgr2dist_lt {I J} {F : set_system I} {G : set_system J}
+  {FF : Filter F} {FG : Filter G} (f : I -> U) (g : J -> V) (y : U) (z : V) :
+  (f @ F, g @ G) --> (y, z) ->
+  forall eps, 0 < eps ->
+   \forall i \near F & j \near G, `| (y, z) - (f i, g j) | < eps.
+Proof. by rewrite cvgr2dist_ltP. Qed.
+
+End prod_NormedModule_lemmas.
+Arguments cvgr2dist_ltP {_ _ _ _ _ F G FF FG}.
+Arguments cvgr2dist_lt {_ _ _ _ _ F G FF FG}.
+
+Section standard_topology_pseudoMetricNormedZmod.
+Context {R : numFieldType}.
+
+HB.instance Definition _ := Num.NormedZmodule.on R^o.
+
+HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build R R^o erefl.
+
+Let standard_add_continuous : continuous (fun x : R^o * R^o => x.1 + x.2).
+Proof.
+apply: unif_continuous_continuous.
+exact: PseudoMetricNormedZmodule_add_unif_continuous.
+Qed.
+
+HB.instance Definition _ := PreTopologicalNmodule_isTopologicalNmodule.Build
+  R^o standard_add_continuous.
+
+HB.instance Definition _ := PreUniformNmodule_isUniformNmodule.Build
+  R^o (@PseudoMetricNormedZmodule_add_unif_continuous R^o R^o).
+
+Let standard_opp_continuous : continuous (-%R : R^o -> R^o).
+Proof.
+apply: unif_continuous_continuous.
+exact: PseudoMetricNormedZmodule_opp_unif_continuous.
+Qed.
+
+HB.instance Definition _ := TopologicalNmodule_isTopologicalZmodule.Build
+  R^o standard_opp_continuous.
+
+HB.instance Definition _ := UniformNmodule_isUniformZmodule.Build
+  R^o (@PseudoMetricNormedZmodule_opp_unif_continuous R^o R^o).
+
+End standard_topology_pseudoMetricNormedZmod.
+
+Lemma ball_itv {R : realFieldType} (x r : R) :
+  ball x r = `]x - r, x + r[%classic.
+Proof.
+rewrite -(@ball_normE _ R^o) /ball_ set_itvE.
+by apply/seteqP; split => t/=; rewrite ltr_distlC.
+Qed.
+
+(** Normed vector spaces have some continuous functions that are in fact continuous on metricNormedZmodType *)
+Section continuity_metricNormedZmodType.
+Context {K : numFieldType} {V : metricNormedZmodType K}.
+
+Lemma oppr_continuous : continuous (@GRing.opp V).
+Proof.
+move=> x; apply/cvgrPdist_lt=> e e0; near do rewrite -opprD normrN.
+exact: cvgr_dist_lt.
+Unshelve. all: by end_near. Qed.
+
+Lemma natmul_continuous n : continuous (fun x : V => x *+ n).
+Proof.
+case: n => [|n] x; first exact: cst_continuous.
+apply/cvgrPdist_lt=> _/posnumP[e]; near=> a.
+by rewrite -mulrnBl normrMn -mulr_natr -ltr_pdivlMr.
+Unshelve. all: by end_near. Qed.
+
+Lemma norm_continuous : continuous (Num.norm : V -> K).
+Proof.
+move=> x; apply/(@cvgrPdist_lt K K^o) => e e0; apply/nbhs_normP.
+by exists e => //= y; exact/le_lt_trans/ler_dist_dist.
+Qed.
+
+End continuity_metricNormedZmodType.
+(*#[deprecated(since="mathcomp-analysis 1.11.0", note="renamed to `oppr_continuous`")]
+Notation opp_continuous := oppr_continuous (only parsing).*)
+
+Section at_left_right.
+Context {R : numFieldType}.
+
+Lemma nbhs_right0P x (P : set R) :
+  (\forall y \near x^'+, P y) <-> \forall e \near 0^'+, P (x + e).
+Proof.
+rewrite !near_withinE !near_simpl.
+rewrite (@nbhs0P R R^o)// -propeqE.
+by apply: (@eq_near _ (nbhs (0 : R))) => y; rewrite ltrDl.
+Qed.
+
+Lemma nbhs_left0P x (P : set R) :
+  (\forall y \near x^'-, P y) <-> \forall e \near 0^'+, P (x - e).
+Proof.
+rewrite !near_withinE !near_simpl (@nbhs0P R R^o); split=> Px.
+  rewrite -oppr0 nearN; near=> e; rewrite ltrN2 opprK => e_lt0.
+  by apply: (near Px) => //; rewrite gtrDl.
+by rewrite -oppr0 nearN; near=> e; rewrite gtrDl oppr_lt0; apply: (near Px).
+Unshelve. all: by end_near. Qed.
+
+Lemma nbhs_right_leftP (p : R) (P : pred R) :
+  (\forall x \near (- p)^'+, (P \o -%R) x) <-> (\forall x \near p^'-, P x).
+Proof.
+by rewrite nbhs_right0P nbhs_left0P; split;
+  apply: filterS=> r/=; rewrite opprD opprK.
+Qed.
+
+Lemma nbhs_left_gt (x z : R) : z < x -> \forall y \near x^'-, z < y.
+Proof.
+move=> xz; rewrite nbhs_left0P; near do rewrite -ltrN2 opprB ltrBlDl.
+by apply: nbhs_right_lt; rewrite subr_gt0.
+Unshelve. all: by end_near. Qed.
+
+Lemma nbhs_left_ge (x z : R) : z < x -> \forall y \near x^'-, z <= y.
+Proof.
+by move=> xz; near do apply/ltW; apply: nbhs_left_gt.
+Unshelve. all: by end_near. Qed.
+
+Lemma nbhs_left_ltBl (x : R) e : 0 < e -> \forall y \near x^'-, x - y < e.
+Proof.
+move=> e0; near=> y; rewrite -ltrBrDl ltrNl opprB; near: y.
+by apply: nbhs_left_gt; rewrite ltrBlDr ltrDl.
+Unshelve. all: by end_near. Qed.
+
+Lemma not_near_at_leftP (p : R) (P : pred R) :
+  ~ (\forall x \near p^'-, P x) <->
+  forall e : {posnum R}, exists2 x : R, p - e%:num < x < p & ~ P x.
+Proof.
+rewrite -nbhs_right_leftP not_near_at_rightP; split => + e => /(_ e)[r pre Pr].
+- by exists (- r) => //; rewrite ltrNr andbC ltrNl opprB addrC.
+- by exists (- r) => /=; rewrite ?opprK// ltrN2 ltrNl opprD opprK andbC.
+Qed.
+
+Let fun_predC (T : choiceType) (f : T -> T) (p : pred T) : involutive f ->
+  [set f x | x in p] = [set x | x in p \o f].
+Proof.
+by move=> fi; apply/seteqP; split => _/= [y hy <-];
+  exists (f y) => //; rewrite fi.
+Qed.
+
+Lemma at_rightN (a : R) : (- a)^'+ = -%R @ a^'-.
+Proof.
+rewrite /at_right withinN [X in within X _](_ : _ = [set u | u < a])//.
+rewrite (@fun_predC _ -%R)/=; first exact: opprK.
+by rewrite image_id; under eq_fun do rewrite ltrNl opprK.
+Qed.
+
+Lemma at_leftN (a : R) : (- a)^'- = -%R @ a^'+.
+Proof.
+rewrite /at_left withinN [X in within X _](_ : _ = [set u | a < u])//.
+rewrite (@fun_predC _ -%R)/=; first exact: opprK.
+by rewrite image_id; under eq_fun do rewrite ltrNl opprK.
+Qed.
+
+End at_left_right.
+
+Lemma cvg_at_leftNP {T : topologicalType} {R : numFieldType}
+    (f : R -> T) a (l : T) :
+  f @ a^'- --> l <-> f \o -%R @ (- a)^'+ --> l.
+Proof.
+by rewrite at_rightN -?fmap_comp; under [_ \o _]eq_fun => ? do rewrite /= opprK.
+Qed.
+
+Lemma cvg_at_rightNP {T : topologicalType} {R : numFieldType}
+    (f : R -> T) a (l : T) :
+  f @ a^'+ --> l <-> f \o -%R @ (- a)^'- --> l.
+Proof.
+by rewrite at_leftN -?fmap_comp; under [_ \o _]eq_fun => ? do rewrite /= opprK.
+Qed.
+
+Lemma fmap_at_left0P {T : Type} {R : numFieldType} x (f : R -> T) :
+  (f (x - e) @[e --> 0^'+]) = (f @ x^'-).
+Proof.
+rewrite -(subrr (- x)) at_right_shift at_rightN -fmap_comp.
+by apply: near_eq_cvg_eq; apply/nearW => y/=; rewrite opprB addNKr opprK.
+Qed.
+
+Lemma fmap_at_right0E {T : Type} {R : numFieldType} (x : R) (f : R -> T) :
+  (f (x + e) @[e --> 0^'+]) = (f @ x^'+).
+Proof.
+rewrite -(subrr x) at_right_shift.
+apply: near_eq_cvg_eq.
+by apply/nearW => /= y; rewrite addrC subrK.
+Qed.
+
+Section at_left_right_pseudoMetricNormedZmod.
+Context {R : numFieldType} {V : PseudoMetricNormedZmodule.type R}.
+
+Lemma nbhsr0P (P : set V) x :
+  (\forall y \near x, P y) <->
+  (\forall e \near 0^'+, forall y, `|x - y| <= e -> P y).
+Proof.
+rewrite nbhs0P/= near_withinE/= !near_simpl.
+split.
+  move => /nbhs_norm0P[/= _/posnumP[e] /(_ _) Px].
+  apply/(@nbhs_norm0P R R^o).
+  exists e%:num => //= r /= re yr y xyr; rewrite -[y](addrNK x) addrC.
+  by apply: Px; rewrite /= distrC (le_lt_trans _ re)// gtr0_norm.
+move => /(@nbhs_norm0P R R^o)[/= _/posnumP[e] /(_ _) Px].
+apply/(@nbhs_norm0P R V).
+exists (e%:num / 2) => //= r /= re; apply: (Px (e%:num / 2)) => //=.
+  by rewrite gtr0_norm// ltr_pdivrMr// ltr_pMr// ltr1n.
+by rewrite opprD addNKr normrN ltW.
+Qed.
+
+Let cvgrP {F : set_system V} {FF : Filter F} (y : V) : [<->
+  F --> y;
+  forall eps, 0 < eps -> \forall t \near F, `|y - t| <= eps;
+  \forall eps \near 0^'+, \forall t \near F, `|y - t| <= eps;
+  \forall eps \near 0^'+, \forall t \near F, `|y - t| < eps].
+Proof.
+tfae; first by move=> *; apply: cvgr_dist_le.
+- by move=> Fy; near do apply: Fy; apply: nbhs_right_gt.
+- move=> Fy; near=> e; near (0:R)^'+ => d; near=> x.
+  rewrite (@le_lt_trans _ _ d)//; first by near: x; near: d.
+  by near: d; apply: nbhs_right_lt; near: e; apply: nbhs_right_gt.
+- move=> Fy; apply/cvgrPdist_lt => e e_gt0; near (0:R)^'+ => d.
+  near=> x; rewrite (@lt_le_trans _ _ d)//; first by near: x; near: d.
+  by near: d; apply: nbhs_right_le.
+Unshelve. all: by end_near. Qed.
+
+Lemma cvgrPdist_le {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
+  f @ F --> y <-> forall eps, 0 < eps -> \forall t \near F, `|y - f t| <= eps.
+Proof. exact: (cvgrP _ 0 1)%N. Qed.
+
+Lemma cvgrPdist_ltp {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
+  f @ F --> y <-> \forall eps \near 0^'+, \forall t \near F, `|y - f t| < eps.
+Proof. exact: (cvgrP _ 0 3)%N. Qed.
+
+Lemma cvgrPdist_lep {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
+  f @ F --> y <-> \forall eps \near 0^'+, \forall t \near F, `|y - f t| <= eps.
+Proof. exact: (cvgrP _ 0 2)%N. Qed.
+
+Lemma cvgrPdistC_le {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
+  f @ F --> y <-> forall eps, 0 < eps -> \forall t \near F, `|f t - y| <= eps.
+Proof.
+rewrite cvgrPdist_le.
+by under [X in X <-> _]eq_forall do under eq_near do rewrite distrC.
+Qed.
+
+Lemma cvgrPdistC_ltp {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
+  f @ F --> y <-> \forall eps \near 0^'+, \forall t \near F, `|f t - y| < eps.
+Proof.
+by rewrite cvgrPdist_ltp; under eq_near do under eq_near do rewrite distrC.
+Qed.
+
+Lemma cvgrPdistC_lep {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
+  f @ F --> y <-> \forall eps \near 0^'+, \forall t \near F, `|f t - y| <= eps.
+Proof.
+by rewrite cvgrPdist_lep; under eq_near do under eq_near do rewrite distrC.
+Qed.
+
+Lemma cvgr0Pnorm_le {T} {F : set_system T} {FF : Filter F} (f : T -> V) :
+  f @ F --> 0 <-> forall eps, 0 < eps -> \forall t \near F, `|f t| <= eps.
+Proof.
+rewrite cvgrPdistC_le.
+by under [X in X <-> _]eq_forall do under eq_near do rewrite subr0.
+Qed.
+
+Lemma cvgr0Pnorm_ltp {T} {F : set_system T} {FF : Filter F} (f : T -> V) :
+  f @ F --> 0 <-> \forall eps \near 0^'+, \forall t \near F, `|f t| < eps.
+Proof.
+by rewrite cvgrPdistC_ltp; under eq_near do under eq_near do rewrite subr0.
+Qed.
+
+Lemma cvgr0Pnorm_lep {T} {F : set_system T} {FF : Filter F} (f : T -> V) :
+  f @ F --> 0 <-> \forall eps \near 0^'+, \forall t \near F, `|f t| <= eps.
+Proof.
+by rewrite cvgrPdistC_lep; under eq_near do under eq_near do rewrite subr0.
+Qed.
+
+Lemma cvgr_norm_lt {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
+  f @ F --> y -> forall u, `|y| < u -> \forall t \near F, `|f t| < u.
+Proof.
+move=> Fy z zy; near (0:R)^'+ => k; near=> x; have : `|f x - y| < k.
+  by near: x; apply: cvgr_distC_lt => //; near: k; apply: nbhs_right_gt.
+move=> /(le_lt_trans (ler_dist_dist _ _)) /real_ltr_normlW.
+rewrite realB// ltrBlDl => /(_ _)/lt_le_trans; apply => //.
+by rewrite -lerBrDl; near: k; apply: nbhs_right_le; rewrite subr_gt0.
+Unshelve. all: by end_near. Qed.
+
+Lemma cvgr_norm_le {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
+  f @ F --> y -> forall u, `|y| < u -> \forall t \near F, `|f t| <= u.
+Proof.
+by move=> fy u yu; near do apply/ltW; apply: cvgr_norm_lt yu.
+Unshelve. all: by end_near. Qed.
+
+Lemma cvgr_norm_gt {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
+  f @ F --> y -> forall u, `|y| > u -> \forall t \near F, `|f t| > u.
+Proof.
+move=> Fy z zy; near (0:R)^'+ => k; near=> x; have: `|f x - y| < k.
+  by near: x; apply: cvgr_distC_lt => //; near: k; apply: nbhs_right_gt.
+move=> /(le_lt_trans (ler_dist_dist _ _)); rewrite distrC => /real_ltr_normlW.
+rewrite realB// ltrBlDl  -ltrBlDr => /(_ isT); apply: le_lt_trans.
+rewrite lerBrDl -lerBrDr; near: k; apply: nbhs_right_le.
+by rewrite subr_gt0.
+Unshelve. all: by end_near. Qed.
+
+Lemma cvgr_norm_ge {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
+  f @ F --> y -> forall u, `|y| > u -> \forall t \near F, `|f t| >= u.
+Proof.
+by move=> fy u yu; near do apply/ltW; apply: cvgr_norm_gt yu.
+Unshelve. all: by end_near. Qed.
+
+Lemma cvgr_neq0 {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
+  f @ F --> y -> y != 0 -> \forall t \near F, f t != 0.
+Proof.
+move=> Fy z; near do rewrite -normr_gt0.
+by apply: (@cvgr_norm_gt _ _ _ _ y); rewrite // normr_gt0.
+Unshelve. all: by end_near. Qed.
+
+End at_left_right_pseudoMetricNormedZmod.
+Arguments cvgr_norm_lt {R V T F FF f}.
+Arguments cvgr_norm_le {R V T F FF f}.
+Arguments cvgr_norm_gt {R V T F FF f}.
+Arguments cvgr_norm_ge {R V T F FF f}.
+Arguments cvgr_neq0 {R V T F FF f}.
+
+#[global] Hint Extern 0 (is_true (_ < ?x)) => match goal with
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_right_gt] end : core.
+#[global] Hint Extern 0 (is_true (?x < _)) => match goal with
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_left_lt] end : core.
+#[global] Hint Extern 0 (is_true (?x != _)) => match goal with
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_right_neq] end : core.
+#[global] Hint Extern 0 (is_true (?x != _)) => match goal with
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_left_neq] end : core.
+#[global] Hint Extern 0 (is_true (_ < ?x)) => match goal with
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_left_gt] end : core.
+#[global] Hint Extern 0 (is_true (?x < _)) => match goal with
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_right_lt] end : core.
+#[global] Hint Extern 0 (is_true (_ <= ?x)) => match goal with
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_right_ge] end : core.
+#[global] Hint Extern 0 (is_true (?x <= _)) => match goal with
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_left_le] end : core.
+#[global] Hint Extern 0 (is_true (_ <= ?x)) => match goal with
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_right_ge] end : core.
+#[global] Hint Extern 0 (is_true (?x <= _)) => match goal with
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_left_le] end : core.
+
+#[global] Hint Extern 0 (ProperFilter _^'-) =>
+  (apply: at_left_proper_filter) : typeclass_instances.
+#[global] Hint Extern 0 (ProperFilter _^'+) =>
+  (apply: at_right_proper_filter) : typeclass_instances.
+
+Section closure_left_right_open.
+Context {R : realFieldType}.
+Implicit Types z : R.
+
+Lemma closure_gt z : closure ([set x | z < x] : set R) = [set x | z <= x].
+Proof.
+rewrite eqEsubset; split.
+  by rewrite closureE; apply: smallest_sub => // ? /ltW.
+move=> v; rewrite /mkset le_eqVlt => /predU1P[<-{v}|]; last first.
+  by move=> ?; exact: subset_closure.
+move=> B [e /= e0 zB]; near (0 : R)^'+ => d.
+exists (z + d); split; rewrite /= ?ltrDl//; apply: zB => /=.
+by rewrite opprD addNKr normrN gtr0_norm//.
+Unshelve. all: by end_near. Qed.
+
+Lemma closure_lt z : closure ([set x : R | x < z]) = [set x | x <= z].
+Proof.
+rewrite eqEsubset; split.
+  by rewrite closureE; apply: smallest_sub => // ? /ltW.
+move=> v; rewrite /mkset le_eqVlt => /predU1P[<-{z}|]; last first.
+  by move=> ?; exact: subset_closure.
+move=> B [e /= e0 vB]; near (0 : R)^'+ => d.
+exists (v - d); split; rewrite /= ?gtrDl ?oppr_lt0//; apply: vB => /=.
+by rewrite opprB addrC addrNK gtr0_norm//; near: d.
+Unshelve. all: by end_near. Qed.
+
+End closure_left_right_open.
+
+Section open_itv_subset.
+Context {R : realFieldType} (A : set R) (x : R).
+
+Lemma open_itvoo_subset :
+  open A -> A x -> \forall r \near 0^'+, `]x - r, x + r[ `<=` A.
+Proof.
+move=> /[apply] -[] _/posnumP[r] /subset_ball_prop_in_itv xrA.
+exists r%:num => //= k; rewrite /= distrC subr0 set_itvoo => /ltr_normlW kr k0.
+by apply/(subset_trans _ xrA)/subset_itvW; apply/ltW;
+  [rewrite ler_ltB | rewrite ler_ltD].
+Qed.
+
+Lemma open_itvcc_subset :
+  open A -> A x -> \forall r \near 0^'+, `[x - r, x + r] `<=` A.
+Proof.
+move=> /[apply] -[] _/posnumP[r].
+have -> : r%:num = 2 * (r%:num / 2) by rewrite mulrCA divff// mulr1.
+move/subset_ball_prop_in_itvcc => /= xrA; exists (r%:num / 2) => //= k.
+rewrite /= distrC subr0 set_itvcc => /ltr_normlW kr k0.
+move=> z /andP [xkz zxk]; apply: xrA => //; rewrite in_itv/=; apply/andP; split.
+  by rewrite (le_trans _ xkz)// lerB// ltW.
+by rewrite (le_trans zxk)// lerD// ltW.
+Qed.
+
+End open_itv_subset.
+
+Lemma dense_set1C {R : realFieldType} (r : R) : dense (~` [set r]).
+Proof.
+move=> /= O O0 oO.
+suff [s Os /eqP sr] : exists2 s, O s & s != r by exists s; split.
+case: O0 => o Oo.
+have [->{r}|ro] := eqVneq r o; last by exists o => //; rewrite eq_sym.
+have [e' /= e'0 e'o] := open_itvoo_subset oO Oo.
+near (0:R)^'+ => e.
+exists (o + e/2)%R; last by rewrite gt_eqF// ltrDl// divr_gt0.
+apply: (e'o e) => //=.
+  by rewrite sub0r normrN gtr0_norm.
+rewrite in_itv/= !ltrD2l; apply/andP; split.
+  by rewrite (@lt_le_trans _ _ 0%R) ?divr_ge0// ltrNl oppr0.
+by rewrite gtr_pMr// invf_lt1// ltr1n.
+Unshelve. all: by end_near. Qed.
+
+Section pseudoMetricNormedZmodule_numFieldType.
+Context {R : numFieldType} {V : PseudoMetricNormedZmodule.type R} {I : Type}
+  (F : set_system I) (FF : Filter F) (f : I -> V) (y : V).
+
+Lemma cvgr_norm_lty :
+  f @ F --> y -> \forall M \near +oo, \forall y' \near F, `|f y'| < M.
+Proof. by move=> Fy; near do exact: (cvgr_norm_lt y).
+Unshelve. all: by end_near. Qed.
+
+Lemma cvgr_norm_ley :
+  f @ F --> y -> \forall M \near +oo, \forall y' \near F, `|f y'| <= M.
+Proof.
+by move=> Fy; near do exact: (cvgr_norm_le y).
+Unshelve. all: by end_near. Qed.
+
+Lemma cvgr_norm_gtNy :
+  f @ F --> y -> \forall M \near -oo, \forall y' \near F, `|f y'| > M.
+Proof.
+by move=> Fy; near do exact: (cvgr_norm_gt y).
+Unshelve. all: by end_near. Qed.
+
+Lemma cvgr_norm_geNy :
+  f @ F --> y -> \forall M \near -oo, \forall y' \near F, `|f y'| >= M.
+Proof.
+by move=> Fy; near do exact: (cvgr_norm_ge y).
+Unshelve. all: by end_near. Qed.
+
+End pseudoMetricNormedZmodule_numFieldType.
+Arguments cvgr_norm_lty {R V I F FF}.
+Arguments cvgr_norm_ley {R V I F FF}.
+Arguments cvgr_norm_gtNy {R V I F FF}.
+Arguments cvgr_norm_geNy {R V I F FF}.
+
+Section realFieldType.
+Context {R : realFieldType}.
+
+Lemma at_right_in_segment (x : R) (P : set R) :
+  (\forall e \near 0^'+, {in `[x - e, x + e], forall x, P x}) <-> (\near x, P x).
+Proof.
+rewrite (@nbhsr0P _ R^o) -propeqE; apply: eq_near => y /=.
+by rewrite -propeqE; apply: eq_forall => z; rewrite ler_distlC.
+Qed.
+
+End realFieldType.
+
+Module Export NbhsNorm.
+Definition nbhs_simpl := (nbhs_simpl,@nbhs_nbhs_norm,@filter_from_norm_nbhs).
+End NbhsNorm.
+
+Module Export NearNorm.
+Definition near_simpl := (@near_simpl, @nbhs_normE, @filter_from_normE,
+  @near_nbhs_norm).
+Ltac near_simpl := rewrite ?near_simpl.
+End NearNorm.
+
+Section cvg_composition_metricNormedZmodType.
+Context {K : numFieldType} {V : metricNormedZmodType K} {T : Type}
+  (F : set_system T) {FF : Filter F}.
+Implicit Types (f g : T -> V) (s : T -> K) (k : K) (x : T) (a b : V).
+
+Lemma is_cvgN f : cvg (f @ F) -> cvg (- f @ F).
+Proof. by move=> /cvgN /cvgP. Qed.
+
+Lemma is_cvgNE f : cvg ((- f) @ F) = cvg (f @ F).
+Proof. by rewrite propeqE; split=> /cvgN; rewrite ?opprK => /cvgP. Qed.
+
+Lemma cvgMn f n a : f @ F --> a -> ((@GRing.natmul _)^~n \o f) @ F --> a *+ n.
+Proof. by move=> ?;  apply: continuous_cvg => //; exact: natmul_continuous. Qed.
+
+Lemma is_cvgMn f n : cvg (f @ F) -> cvg (((@GRing.natmul _)^~n \o f) @ F).
+Proof. by move=> /cvgMn /cvgP. Qed.
+
+Lemma is_cvgD f g : cvg (f @ F) -> cvg (g @ F) -> cvg (f + g @ F).
+Proof. by have := cvgP _ (cvgD _ _); apply. Qed.
+
+Lemma is_cvgB f g : cvg (f @ F) -> cvg (g @ F) -> cvg (f - g @ F).
+Proof. by have := cvgP _ (cvgB _ _); apply. Qed.
+
+Lemma is_cvgDlE f g : cvg (g @ F) -> cvg ((f + g) @ F) = cvg (f @ F).
+Proof.
+move=> g_cvg; rewrite propeqE; split; last by move=> /is_cvgD; apply.
+by move=> /is_cvgB /(_ g_cvg); rewrite addrK.
+Qed.
+
+Lemma is_cvgDrE f g : cvg (f @ F) -> cvg ((f + g) @ F) = cvg (g @ F).
+Proof. by rewrite addrC; apply: is_cvgDlE. Qed.
+
+Lemma cvg_norm f a : f @ F --> a -> `|f x| @[x --> F] --> (`|a| : K).
+Proof. by apply: continuous_cvg; exact: norm_continuous. Qed.
+
+Lemma is_cvg_norm f : cvg (f @ F) -> cvg ((Num.norm \o f : T -> K) @ F).
+Proof. by have := cvgP _ (cvg_norm _); exact. Qed.
+
+Lemma norm_cvg0P f : `|f x| @[x --> F] --> (0:K^o) <-> f @ F --> 0.
+Proof.
+split; last by move=> /cvg_norm; rewrite normr0.
+move=> f0; apply/cvgr0Pnorm_lt => e e_gt0.
+by near do rewrite -normr_id; apply: (@cvgr0_norm_lt _ K^o).
+Unshelve. all: by end_near. Qed.
+
+Lemma norm_cvg0 f : `|f x| @[x --> F] --> (0:K^o) -> f @ F --> 0.
+Proof. by rewrite norm_cvg0P. Qed.
+
+End cvg_composition_metricNormedZmodType.
+
+Section limit_composition_metricNormedZmodType.
+Context {K : numFieldType} {V : metricNormedZmodType K} {T : Type}
+  (F : set_system T) {FF : ProperFilter F}.
+Implicit Types (f g : T -> V) (s : T -> K) (k : K) (x : T) (a : V).
+
+Lemma limN f : cvg (f @ F) -> lim (- f @ F) = - lim (f @ F).
+Proof. by move=> ?; apply: cvg_lim => //; apply: cvgN. Qed.
+
+Lemma limD f g : cvg (f @ F) -> cvg (g @ F) ->
+   lim (f + g @ F) = lim (f @ F) + lim (g @ F).
+Proof. by move=> ? ?; apply: cvg_lim => //; apply: cvgD. Qed.
+
+Lemma limB f g : cvg (f @ F) -> cvg (g @ F) ->
+   lim (f - g @ F) = lim (f @ F) - lim (g @ F).
+Proof. by move=> ? ?; apply: cvg_lim => //; apply: cvgB. Qed.
+
+Lemma lim_norm f : cvg (f @ F) -> lim ((fun x => `|f x| : K) @ F) = `|lim (f @ F)|.
+Proof.
+move=> ?; apply: cvg_lim.
+  exact: (@norm_hausdorff K K^o).
+exact: cvg_norm.
+Qed.
+
+End limit_composition_metricNormedZmodType.
+
+Section domination.
+Context {T : Type} {K : numDomainType} {V W : PseudoMetricNormedZmodule.type K}.
+
+Definition dominated_by (h : T -> V) (k : K) (f : T -> W) (F : set_system T) :=
+  F [set x | `|f x| <= k * `|h x|].
+
+Definition strictly_dominated_by (h : T -> V) (k : K) (f : T -> W)
+    (F : set_system T) :=
+  F [set x | `|f x| < k * `|h x|].
+
+Lemma sub_dominatedl (h : T -> V) (k : K) (F G : set_system T) : F `=>` G ->
+  (dominated_by h k)^~ G `<=` (dominated_by h k)^~ F.
+Proof. by move=> FG f; exact: FG. Qed.
+
+End domination.
+
+Lemma sub_dominatedr (T : Type) (K : numDomainType) (V : metricNormedZmodType K)
+    (h : T -> V) (k : K) (f g : T -> V) (F : set_system T) (FF : Filter F) :
+   (\forall x \near F, `|f x| <= `|g x|) ->
+   dominated_by h k g F -> dominated_by h k f F.
+Proof. by move=> le_fg; apply: filterS2 le_fg => x; apply: le_trans. Qed.
+
+Section ex_dom_bound.
+Context {T : Type} {K : numFieldType} {V W : PseudoMetricNormedZmodule.type K}.
+
+Lemma ex_dom_bound (h : T -> V) (f : T -> W) (F : set_system T)
+    {PF : ProperFilter F} :
+  (\forall M \near +oo, dominated_by h M f F) <->
+  exists M, dominated_by h M f F.
+Proof.
+rewrite /dominated_by; split => [/pinfty_ex_gt0[M M_gt0]|[M]] FM.
+  by exists M.
+have [] := pselect (exists x, (h x != 0) && (`|f x| <= M * `|h x|)); last first.
+  rewrite -forallNE => Nex; exists 0; split => //.
+  move=> k k_gt0; apply: filterS FM => x /= f_le_Mh.
+  have /negP := Nex x; rewrite negb_and negbK f_le_Mh orbF => /eqP h_eq0.
+  by rewrite h_eq0 normr0 !mulr0 in f_le_Mh *.
+case => x0 /andP[hx0_neq0] /(le_trans (normr_ge0 _)) /ger0_real.
+rewrite realrM // ?normr_eq0// => M_real.
+exists M; split => // k Mk; apply: filterS FM => x /le_trans/= ->//.
+by rewrite ler_wpM2r// ltW.
+Qed.
+
+Lemma ex_strict_dom_bound (h : T -> V) (f : T -> W) (F : set_system T)
+    {PF : ProperFilter F} :
+  (\forall x \near F, h x != 0) ->
+  (\forall M \near +oo, dominated_by h M f F) <->
+   exists M, strictly_dominated_by h M f F.
+Proof.
+move=> hN0; rewrite ex_dom_bound /dominated_by /strictly_dominated_by.
+split => -[] M FM; last by exists M; apply: filterS FM => x /ltW.
+exists (M + 1); apply: filterS2 hN0 FM => x hN0 /le_lt_trans/= ->//.
+by rewrite ltr_pM2r ?normr_gt0// ltrDl.
+Qed.
+
+End ex_dom_bound.
+
+Definition bounded_near {T : Type} {K : numFieldType}
+    {V : PseudoMetricNormedZmodule.type K}
+  (f : T -> V) (F : set_system T) :=
+  \forall M \near +oo, F [set x | `|f x| <= M].
+
+Notation "[ 'bounded' E | x 'in' A ]" :=
+  (bounded_near (fun x => E) (globally A)).
+Notation bounded_set := [set A | [bounded x | x in A]].
+Notation bounded_fun := [set f | [bounded f x | x in setT]].
+
+Definition fun1 {T : Type} {K : numFieldType} : T -> K^o := fun=> 1.
+Arguments fun1 {T K} x /.
+
+Section bounded_near.
+Context {T : Type} {K : numFieldType} {V : metricNormedZmodType K}.
+
+Lemma sub_boundedr (F G : set_system T) : F `=>` G ->
+  (@bounded_near T K V)^~ G `<=` bounded_near^~ F.
+Proof. by move=> FG f; rewrite /bounded_near; apply: filterS=> M; apply: FG. Qed.
+
+Lemma sub_boundedl (f g : T -> V) (F : set_system T) (FF : Filter F) :
+ (\forall x \near F, `|f x| <= `|g x|) ->  bounded_near g F -> bounded_near f F.
+Proof.
+move=> le_fg; rewrite /bounded_near; apply: filterS => M.
+by apply: filterS2 le_fg => x; apply: le_trans.
+Qed.
+
+Lemma ex_strict_bound_gt0 (f : T -> V) (F : set_system T) {PF : Filter F} :
+  bounded_near f F -> exists2 M, M > 0 & F [set x | `|f x| < M].
+Proof.
+move=> /pinfty_ex_gt0[M M_gt0 FM]; exists (M + 1); rewrite ?addr_gt0//.
+by apply: filterS FM => x /le_lt_trans/= ->//; rewrite ltrDl.
+Qed.
+
+Lemma dominated_by1 :
+  @dominated_by T K K^o V fun1 = fun k f F => F [set x | `|f x| <= k].
+Proof.
+rewrite funeq3E => k f F.
+by congr F; rewrite funeqE => x/=; rewrite normr1 mulr1.
+Qed.
+
+Lemma boundedE :
+  @bounded_near T K V = fun f F => \forall M \near +oo, dominated_by fun1 M f F.
+Proof. by rewrite dominated_by1. Qed.
+
+Lemma strictly_dominated_by1 :
+  @strictly_dominated_by T K K^o V fun1 = fun k f F => F [set x | `|f x| < k].
+Proof.
+rewrite funeq3E => k f F.
+by congr F; rewrite funeqE => x/=; rewrite normr1 mulr1.
+Qed.
+
+Lemma ex_bound (f : T -> V) (F : set_system T) {PF : ProperFilter F} :
+  bounded_near f F <-> exists M, F [set x | `|f x| <= M].
+Proof. by rewrite boundedE ex_dom_bound dominated_by1. Qed.
+
+Lemma ex_strict_bound (f : T -> V) (F : set_system T) {PF : ProperFilter F} :
+  bounded_near f F <-> exists M, F [set x | `|f x| < M].
+Proof.
+rewrite boundedE ex_strict_dom_bound ?strictly_dominated_by1//.
+by near=> x; rewrite oner_eq0.
+Unshelve. all: by end_near. Qed.
+
+End bounded_near.
+
+Section cvg_bounded.
+Context {R : numFieldType} {V : PseudoMetricNormedZmodule.type R}.
+
+Lemma cvg_bounded {I} {F : set_system I} {FF : Filter F} (f : I -> V) (y : V) :
+  f @ F --> y -> bounded_near f F.
+Proof. exact: cvgr_norm_ley. Qed.
+
+End cvg_bounded.
+Arguments cvg_bounded {R V I F FF}.
+
+Lemma standard_scale_continuous {R : numFieldType} :
+  continuous (fun z : R^o * R^o => z.1 *: z.2).
+Proof.
+move=> [/= k x]; apply/cvgrPdist_lt => _/posnumP[e]; near +oo_R => M.
+near=> l z => /=; have M0 : 0 < M by [].
+rewrite (@distm_lt_split _ _ (k *: z)) // -?(scalerBr, scalerBl) normrM.
+  rewrite (@le_lt_trans _ _ (M * `|x - z|)) ?ler_wpM2r -?ltr_pdivlMl//.
+  by near: z; apply: cvgr_dist_lt; rewrite // mulr_gt0 ?invr_gt0.
+rewrite (@le_lt_trans _ _ (`|k - l| * M)) ?ler_wpM2l -?ltr_pdivlMr//.
+  near: z; near: M.
+  exact: (@cvg_bounded _ R^o _ _ _ _ _ (@cvg_refl _ _)).
+by near: l; apply: cvgr_dist_lt; rewrite // divr_gt0.
+Unshelve. all: by end_near. Qed.
+
+Lemma bounded_cst (K : numFieldType) {V : PseudoMetricNormedZmodule.type K}
+  (k : V) T (A : set T) : [bounded k | _ in A].
+Proof.
+rewrite /bounded_near; near=> M => t At /=.
+by near: M; exact: nbhs_pinfty_ge.
+Unshelve. all: end_near. Qed.
+
+Lemma bounded_fun_has_ubound (T : Type) (R : realFieldType) (a : T -> R^o) :
+  bounded_fun a -> has_ubound (range a).
+Proof.
+move=> [M [Mreal]]/(_ (`|M| + 1)).
+rewrite (le_lt_trans (ler_norm _)) ?ltrDl// => /(_ erefl) aM.
+by exists (`|M| + 1) => _ [n _ <-]; rewrite (le_trans (ler_norm _))// aM.
+Qed.
+
+Lemma bounded_funN (T : Type) (R : numFieldType) (a : T -> R^o) :
+  bounded_fun a -> bounded_fun (- a).
+Proof.
+move=> [M [Mreal aM]]; rewrite /bounded_fun /bounded_near; near=> x => y /= _.
+by rewrite normrN; apply: aM.
+Unshelve. all: by end_near. Qed.
+
+Lemma bounded_fun_has_lbound (T : Type) (R : realFieldType) (a : T -> R^o) :
+  bounded_fun a -> has_lbound (range a).
+Proof.
+move=> /bounded_funN/bounded_fun_has_ubound ba; apply/has_lb_ubN.
+by apply: subset_has_ubound ba => _ [_ [n _] <- <-]; exists n.
+Qed.
+
+Lemma bounded_funD (T : Type) (R : numFieldType) (a b : T -> R^o) :
+  bounded_fun a -> bounded_fun b -> bounded_fun (a \+ b).
+Proof.
+move=> [M [Mreal Ma]] [N [Nreal Nb]].
+rewrite /bounded_fun/bounded_near; near=> x => y /= _.
+rewrite (le_trans (ler_normD _ _))// [x]splitr.
+by rewrite lerD// (Ma, Nb)// ltr_pdivlMr//;
+   near: x; apply: nbhs_pinfty_gt; rewrite ?rpredM ?rpred_nat.
+Unshelve. all: by end_near. Qed.

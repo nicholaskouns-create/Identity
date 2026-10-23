@@ -1,0 +1,6 @@
+formal/toolchain/
+formal/upstream/clebsch-gordan/
+tools/__pycache__/
+tools/tests/__pycache__/
+__pycache__/
+*.pyc

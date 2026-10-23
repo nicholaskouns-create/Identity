@@ -1,0 +1,47 @@
+# Pinned upstream commits and checksums. Snapshots are unmodified.
+# The E47 certificate is not a theorem in any of these trees.
+
+mathlib4
+  url: https://github.com/leanprover-community/mathlib4
+  commit: 4dc43842a11f257ffba2a611c943a133a65cb4b2
+  license: Apache-2.0
+  path: formal/upstream/mathlib4
+
+math-comp
+  url: https://github.com/math-comp/math-comp
+  commit: cc79906a9478f4efd11062ac49679176dd5132e8
+  license: CeCILL-B
+  path: formal/upstream/math-comp
+
+mathcomp-analysis
+  url: https://github.com/math-comp/analysis
+  commit: 478d735e8fc16da3ac5f65d199b6ea940253917c
+  license: CeCILL-C
+  path: formal/upstream/mathcomp-analysis
+
+aesop
+  url: https://github.com/leanprover-community/aesop
+  commit: 29c64c56cc38211d39b306db2df11701e3d3de11
+  license: Apache-2.0
+  path: formal/upstream/aesop
+
+rocq 9.3.0 source
+  url: https://github.com/rocq-prover/rocq/releases/download/V9.3.0/rocq-9.3.0.tar.gz
+  sha256: 3f0fc283e8644394aa9c7a6e3995b6d9ebbe1e6dda712bf431f9c372dcef95ad
+  license: LGPL-2.1
+  path: formal/apps/rocq-9.3.0.tar.gz
+
+lean 4.35.0 linux binary
+  url: https://github.com/leanprover/lean4/releases/download/v4.35.0/lean-4.35.0-linux.tar.zst
+  sha256: 7289597a44543246c9227b8cae501767e095ce17f6d448b95fc4a8dc97268f6d
+  license: Apache-2.0
+  commit: eb6cafb7290e8bd5f2937522d8d804f58f02bafc
+  path: formal/toolchain/lean-4.35.0-linux.tar.zst
+  note: not committed; GitHub rejects files over 100 MB. lean --version reports 4.35.0.
+
+clebsch-gordan
+  url: https://github.com/rmathar/Clebsch-Gordan
+  commit: a989781bd6da20e8f0f78bffd649fcae96a06a0d
+  license: none stated
+  path: formal/upstream/clebsch-gordan
+  note: downloaded locally only and not committed.

@@ -1,0 +1,122 @@
+# -*- Makefile -*-
+
+######################################################################
+# USAGE:                                                             #
+# The rules this-config::, this-build::, this-distclean::,           #
+# pre-makefile::, this-clean:: and __always__:: may be extended      #
+# Additionally, the following variables may be customized:           #
+SUBDIRS?=
+ROCQBIN?=$(dir $(shell command -v rocq))
+ROCQ?="$(ROCQBIN)rocq"
+ROCQPROJECT?=_CoqProject
+ROCQMAKEOPTIONS?=
+ROCQMAKEFILEOPTIONS?=
+V?=
+VERBOSE?=V
+######################################################################
+
+# local context: -----------------------------------------------------
+.PHONY: all config build clean distclean __always__
+.SUFFIXES:
+
+ROCQMAKE = $(MAKE) -f Makefile.rocq $(ROCQMAKEOPTIONS)
+
+# all: ---------------------------------------------------------------
+all: config build
+
+# Makefile.rocq ------------------------------------------------------
+.PHONY: pre-makefile
+
+Makefile.rocq: pre-makefile $(ROCQPROJECT) Makefile
+	$(ROCQ) makefile $(ROCQMAKEFILEOPTIONS) -f $(ROCQPROJECT) -o Makefile.rocq
+
+# Global config, build, clean and distclean --------------------------
+config: sub-config this-config
+
+build: sub-build this-build
+
+clean: sub-clean this-clean
+
+distclean: sub-distclean this-distclean
+
+# Local config, build, clean and distclean ---------------------------
+.PHONY: this-config this-build this-distclean this-clean
+
+this-config:: __always__
+
+this-build:: this-config Makefile.rocq
+	+$(ROCQMAKE)
+
+this-distclean:: this-clean
+	rm -f Makefile.rocq Makefile.rocq.conf Makefile.rocq
+
+this-clean:: __always__
+	@if [ -f Makefile.rocq ]; then $(ROCQMAKE) cleanall; fi
+
+# Install target -----------------------------------------------------
+.PHONY: install
+
+install: __always__ Makefile.rocq
+	$(ROCQMAKE) install
+# counting lines of Rocqcode -----------------------------------------
+.PHONY: count
+
+ROCQFILES = $(shell grep '.v$$' $(ROCQPROJECT))
+
+count:
+	@rocq wc $(ROCQFILES) | tail -1 | \
+	  awk '{printf ("%d (spec=%d+proof=%d)\n", $$1+$$2, $$1, $$2)}'
+# Additionally cleaning backup (*~) files ----------------------------
+this-distclean::
+	rm -f $(shell find . -name '*~')
+
+# Make in SUBDIRS ----------------------------------------------------
+ifdef SUBDIRS
+sub-%: __always__
+	@set -e; for d in $(SUBDIRS); do +$(MAKE) -C $$d $(@:sub-%=%); done
+else
+sub-%: __always__
+	@true
+endif
+
+# Make of individual .vo ---------------------------------------------
+%.vo: __always__ Makefile.rocq
+	+$(ROCQMAKE) $@
+
+# Html documentation
+
+DOCDIR=html
+
+GIT_HASH := $(shell git describe --tags --exact-match 2>/dev/null || git rev-parse --short HEAD)
+
+TIMESTAMP=$(shell date +%Y.%m.%d-%H:%M)
+
+GITHUB_URL="https://github.com/math-comp/analysis/tree/$(shell git rev-parse HEAD)"
+
+$(DOCDIR)/dependency_graph.pre:
+	mkdir -p $(DOCDIR)
+	$(ROCQ) dep -f $(ROCQPROJECT) | perl etc/builddoc_dependency_dot.pl > $(DOCDIR)/dependency_graph.pre
+
+$(DOCDIR)/dependency_graph.dot: $(DOCDIR)/dependency_graph.pre
+	tred $(DOCDIR)/dependency_graph.pre > $(DOCDIR)/dependency_graph.dot
+
+html: build $(DOCDIR)/dependency_graph.dot
+	etc/rocqnavi_generate-hierarchy-graph.sh $(DOCDIR)/hierarchy_graph.dot
+	find . -name "*.v" -or -name "*.glob" | grep -v "/\." | grep -v "_opam/" | xargs rocqnavi \
+	-title "Mathcomp Analysis $(GIT_HASH) $(TIMESTAMP)" \
+	-d $(DOCDIR) -Q theories mathcomp.analysis \
+	-Q classical mathcomp.classical \
+	-Q reals mathcomp.reals \
+	-Q reals_stdlib mathcomp.reals_stdlib \
+	-Q experimental_reals mathcomp.experimental_reals \
+	-Q analysis_stdlib mathcomp.analysis_stdlib \
+	-coqlib https://rocq-prover.org/doc/V9.1.0/stdlib/ \
+	-file-graph $(DOCDIR)/dependency_graph.dot \
+	-structure-graph $(DOCDIR)/hierarchy_graph.dot \
+	-index-blacklist etc/rocqnavi_index-blacklist \
+	-show-type-information-using-coqtop-process \
+	-doc-source-url $(GITHUB_URL) \
+	-file-references-on-right-pane \
+	-external https://math-comp.github.io/htmldoc_2_6_0/ mathcomp.order \
+	-external https://math-comp.github.io/htmldoc_2_6_0/ mathcomp.boot \
+	-external https://math-comp.github.io/htmldoc_2_6_0/ mathcomp.algebra

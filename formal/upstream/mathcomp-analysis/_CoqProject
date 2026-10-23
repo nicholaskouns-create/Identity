@@ -1,0 +1,166 @@
+-Q classical mathcomp.classical
+-Q reals mathcomp.reals
+-Q reals_stdlib mathcomp.reals_stdlib
+-Q experimental_reals mathcomp.experimental_reals
+-Q theories mathcomp.analysis
+-Q analysis_stdlib mathcomp.analysis_stdlib
+
+-arg -w -arg -parsing
+-arg -w -arg +undeclared-scope
+-arg -w -arg +non-primitive-record
+-arg -w -arg -ambiguous-paths
+-arg -w -arg -redundant-canonical-projection
+-arg -w -arg -projection-no-head-constant
+# introduced in Rocq 9.2
+-arg -w -arg +level-tolerance
+# introduced in Rocq 9.3
+-arg -w -arg -rewrite-rw
+
+classical/all_classical.v
+classical/internal_Eqdep_dec.v
+classical/boolp.v
+classical/contra.v
+classical/wochoice.v
+classical/classical_sets.v
+classical/mathcomp_compat.v
+classical/mathcomp_extra.v
+classical/unstable.v
+classical/functions.v
+classical/cardinality.v
+classical/fsbigop.v
+classical/set_interval.v
+classical/classical_orders.v
+classical/filter.v
+reals/constructive_ereal.v
+reals/reals.v
+reals/real_interval.v
+reals/prodnormedzmodule.v
+reals/all_reals.v
+experimental_reals/xfinmap.v
+experimental_reals/discrete.v
+experimental_reals/realseq.v
+experimental_reals/realsum.v
+experimental_reals/distr.v
+reals_stdlib/Rstruct.v
+reals_stdlib/nsatz_realtype.v
+
+theories/ereal.v
+theories/landau.v
+
+theories/topology_theory/topology.v
+theories/topology_theory/bool_topology.v
+theories/topology_theory/compact.v
+theories/topology_theory/connected.v
+theories/topology_theory/matrix_topology.v
+theories/topology_theory/nat_topology.v
+theories/topology_theory/order_topology.v
+theories/topology_theory/product_topology.v
+theories/topology_theory/pseudometric_structure.v
+theories/topology_theory/subspace_topology.v
+theories/topology_theory/subtype_topology.v
+theories/topology_theory/supremum_topology.v
+theories/topology_theory/topology_structure.v
+theories/topology_theory/uniform_structure.v
+theories/topology_theory/weak_topology.v
+theories/topology_theory/initial_topology.v
+theories/topology_theory/num_topology.v
+theories/topology_theory/quotient_topology.v
+theories/topology_theory/one_point_compactification.v
+theories/topology_theory/sigT_topology.v
+theories/topology_theory/discrete_topology.v
+theories/topology_theory/separation_axioms.v
+theories/topology_theory/metric_structure.v
+theories/topology_theory/function_spaces.v
+theories/topology_theory/edist.v
+
+theories/homotopy_theory/homotopy.v
+theories/homotopy_theory/wedge_sigT.v
+theories/homotopy_theory/continuous_path.v
+
+theories/ess_sup_inf.v
+theories/cantor.v
+
+theories/normedtype_theory/num_normedtype.v
+theories/normedtype_theory/matrix_normedtype.v
+theories/normedtype_theory/ereal_normedtype.v
+theories/normedtype_theory/pseudometric_normed_Zmodule.v
+theories/normedtype_theory/tvs.v
+theories/normedtype_theory/normed_module.v
+theories/normedtype_theory/complete_normed_module.v
+theories/normedtype_theory/urysohn.v
+theories/normedtype_theory/vitali_lemma.v
+theories/normedtype_theory/normedtype.v
+
+theories/functional_analysis/hahn_banach_theorem.v
+
+theories/sequences.v
+theories/realfun.v
+theories/exp.v
+
+theories/elementary_functions/trigonometry_functions.v
+theories/elementary_functions/trigonometry_integral.v
+theories/elementary_functions/trigo.v
+
+theories/esum.v
+theories/derive.v
+theories/numfun.v
+
+theories/measure_theory/measurable_structure.v
+theories/measure_theory/measure_function.v
+theories/measure_theory/counting_measure.v
+theories/measure_theory/dirac_measure.v
+theories/measure_theory/probability_measure.v
+theories/measure_theory/measure_negligible.v
+theories/measure_theory/measure_extension.v
+theories/measure_theory/measurable_function.v
+theories/measure_theory/signed_measure.v
+theories/measure_theory/measure.v
+
+theories/measurable_realfun.v
+theories/lebesgue_stieltjes_measure.v
+theories/lebesgue_measure.v
+theories/borel_hierarchy.v
+
+theories/lebesgue_integral_theory/simple_functions.v
+theories/lebesgue_integral_theory/lebesgue_integral_definition.v
+theories/lebesgue_integral_theory/measurable_fun_approximation.v
+theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence.v
+theories/lebesgue_integral_theory/lebesgue_integral_nonneg.v
+theories/lebesgue_integral_theory/lebesgue_integrable.v
+theories/lebesgue_integral_theory/lebesgue_integral_dominated_convergence.v
+theories/lebesgue_integral_theory/lebesgue_integral_under.v
+theories/lebesgue_integral_theory/lebesgue_Rintegral.v
+theories/lebesgue_integral_theory/lebesgue_integral_fubini.v
+theories/lebesgue_integral_theory/lebesgue_integral_differentiation.v
+theories/lebesgue_integral_theory/lebesgue_integral.v
+theories/lebesgue_integral_theory/radon_nikodym.v
+theories/lebesgue_integral_theory/giry.v
+theories/lebesgue_integral_theory/counting_lebesgue.v
+
+theories/ftc.v
+theories/hoelder.v
+
+theories/probability_theory/random_variable.v
+theories/probability_theory/bernoulli_distribution.v
+theories/probability_theory/binomial_distribution.v
+theories/probability_theory/uniform_distribution.v
+theories/probability_theory/normal_distribution.v
+theories/probability_theory/exponential_distribution.v
+theories/probability_theory/poisson_distribution.v
+theories/probability_theory/beta_distribution.v
+theories/probability_theory/probability.v
+theories/probability_theory/independence.v
+
+theories/convex.v
+theories/charge.v
+theories/kernel.v
+theories/pi_irrational.v
+theories/gauss_integral.v
+
+theories/all_analysis.v
+
+theories/showcase/summability.v
+theories/showcase/pnt.v
+
+analysis_stdlib/Rstruct_topology.v
+analysis_stdlib/showcase/uniform_bigO.v

@@ -1,0 +1,33 @@
+module  -- shake: keep-all --deprecated_module: ignore
+
+public import Counterexamples.AharoniKorman
+public import Counterexamples.CanonicallyOrderedCommSemiringTwoMul
+public import Counterexamples.CharPZeroNeCharZero
+public import Counterexamples.CliffordAlgebraNotInjective
+public import Counterexamples.Cyclotomic105
+public import Counterexamples.DimensionPolynomial
+public import Counterexamples.DirectSumIsInternal
+public import Counterexamples.DiscreteTopologyNonDiscreteUniformity
+public import Counterexamples.EulerSumOfPowers
+public import Counterexamples.Girard
+public import Counterexamples.GrothendieckPower
+public import Counterexamples.HeawoodUnitDistance
+public import Counterexamples.HomogeneousPrimeNotPrime
+public import Counterexamples.InvertibleModuleNotIdeal
+public import Counterexamples.IrrationalPowerOfIrrational
+public import Counterexamples.MapFloor
+public import Counterexamples.MonicNonRegular
+public import Counterexamples.Motzkin
+public import Counterexamples.NowhereDifferentiable
+public import Counterexamples.Omega1Space
+public import Counterexamples.OrderedCancelAddCommMonoidWithBounds
+public import Counterexamples.PeanoCurve
+public import Counterexamples.Phillips
+public import Counterexamples.PolynomialIsDomain
+public import Counterexamples.Pseudoelement
+public import Counterexamples.QuadraticForm
+public import Counterexamples.SeminormLatticeNotDistrib
+public import Counterexamples.SeparableNotSecondCountable
+public import Counterexamples.SorgenfreyLine
+public import Counterexamples.TopologistsSineCurve
+public import Counterexamples.ZeroDivisorsInAddMonoidAlgebras
