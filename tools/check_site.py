@@ -3,7 +3,7 @@ from pathlib import Path
 import re
 ROOT=Path(__file__).resolve().parents[1]
 SITE=ROOT/"site"
-ALLOWED={"index.html","mnemosyne.js","README.md"}
+ALLOWED={"index.html","mnemosyne.js","README.md","MIGRATION.md"}
 actual={p.name for p in SITE.iterdir() if p.is_file()}
 assert actual<=ALLOWED, f"Unexpected publish files: {actual-ALLOWED}"
 html=(SITE/"index.html").read_text(encoding="utf-8")
