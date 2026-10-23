@@ -1,9 +1,23 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Mnemosyne is a local-first research archive with SHA-256 receipts and the E47 Forge. Records stay in this browser.">
+<meta property="og:title" content="Mnemosyne">
+<meta property="og:description" content="Local-first research archive. SHA-256 receipts. E47 Forge. No account.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nicholaskouns-create.github.io/Identity/site/">
+<meta property="og:image" content="https://nicholaskouns-create.github.io/Identity/site/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Mnemosyne">
+<meta name="twitter:description" content="Local-first research archive. SHA-256 receipts. E47 Forge. No account.">
+<meta name="twitter:image" content="https://nicholaskouns-create.github.io/Identity/site/og.png">
+<link rel="canonical" href="https://nicholaskouns-create.github.io/Identity/site/">
 <title>Mnemosyne | GitHub-native Research Archive</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,sans-serif;background:#10151d;color:#e7edf4}body{max-width:850px;margin:2rem auto;padding:0 1rem}h1{letter-spacing:.07em}p{line-height:1.5;color:#c0cbd7}input,textarea,select,button{font:inherit;border-radius:6px;padding:.7rem;background:#192532;color:#f2f5f8;border:1px solid #536477}textarea{width:100%;box-sizing:border-box;min-height:120px}input{max-width:100%;box-sizing:border-box}button{cursor:pointer;margin:.3rem .3rem .3rem 0}section{border:1px solid #364658;padding:1rem;margin:1rem 0;border-radius:8px}article{border-top:1px solid #364658;padding:.7rem 0;overflow-wrap:anywhere}.muted{color:#aebdcc}.warn{color:#ffcb8c}code{overflow-wrap:anywhere}</style></head>
-<body><header><h1>MNEMOSYNE</h1><p>Independent research archive. No Supabase, API keys, or account required. Local-first, exportable, and auditable.</p></header>
+<body><section id="live"><h2>Live in this browser</h2><p class="muted">A save here appears in other tabs on this device. The bar is the proved contraction (15/17)^n since this page opened. Nothing is sent to a server.</p><p><span id="live-clock">--:--:--Z</span> · step <span id="live-step">0</span> · ||Γⁿ−P||₂ <span id="live-residual">1.00e+0</span> · records <span id="live-count">0</span></p><div style="height:8px;background:#192532;border-radius:4px;overflow:hidden"><div id="live-fill" style="height:100%;width:100%;background:#72a7be"></div></div></section>
+<header><h1>MNEMOSYNE</h1><p>Independent research archive. No Supabase, API keys, or account required. Local-first, exportable, and auditable.</p></header>
 <section><h2>Record an artifact</h2><form id="record"><p><input name="title" aria-label="Title" placeholder="Title" required> <select name="kind" aria-label="Evidence class"><option>proven</option><option>numerically_tested</option><option>hypothesis</option><option>refuted</option><option>unverified</option><option>historical</option></select></p><p><textarea name="content" placeholder="Statement, proof, code, experiment, or historical record" required></textarea></p><button type="submit">Save locally with SHA-256 receipt</button></form><p id="status" role="status"></p></section>
 <section><h2>Archive</h2><input id="search" aria-label="Search records" placeholder="Search titles and content"><p><button id="export">Export JSON archive</button><label for="import">Import archive:</label> <input type="file" id="import" accept=".json,application/json"></p><p class="warn">Records remain in this browser until exported. Clearing browser data can erase them. Import merges by record ID; export regularly. This is not encrypted cloud storage.</p><div id="records"></div></section>
 <script type="module" src="./mnemosyne.js"></script><section id="mnemosyne-forge"><h2>Mnemosyne Forge · Mathematical City</h2><p>Independent reference checks, quantum matrix visualization, contradiction atlas, memory constellation.</p><div class="forge-grid"></div></section><style>.forge-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.forge-panel{padding:15px;border:1px solid #536a7a;border-radius:8px;min-width:0}.forge-output{white-space:pre-wrap;overflow-wrap:anywhere;max-height:260px;overflow:auto}.matrix-bars{height:170px;display:flex;gap:5px;align-items:end}.matrix-bar-col{display:flex;flex-direction:column;align-items:center;flex:1}.matrix-bar{background:#72a7be;width:80%}.forge-stars{display:flex;flex-wrap:wrap;gap:5px}@media(max-width:700px){.forge-grid{grid-template-columns:1fr}}</style><script type="module" src="./forge-ui.js"></script></body></html>
