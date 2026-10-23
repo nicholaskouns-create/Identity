@@ -42,11 +42,19 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true
-      - uses: actions/upload-pages-artifact@v3
+      - id: pages
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api "repos/${GITHUB_REPOSITORY}/pages" --jq .html_url
+      - if: steps.pages.outcome == 'success'
+        uses: actions/configure-pages@v5
+      - if: steps.pages.outcome == 'success'
+        uses: actions/upload-pages-artifact@v3
         with:
           path: site
-      - id: deployment
+      - if: steps.pages.outcome == 'success'
+        id: deployment
         uses: actions/deploy-pages@v4
+      - if: steps.pages.outcome != 'success'
+        run: echo "::notice::Verification passed. GitHub Pages is not enabled, so nothing was published. In repository settings set Pages source to GitHub Actions, then re-run this workflow."
