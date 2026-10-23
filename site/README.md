@@ -1,30 +1,24 @@
 # Mnemosyne: GitHub-native, local-first core
 
-This is an **operational, dependency-free browser archive** designed for GitHub Pages. It requires no Supabase and no runtime server. Open `site/index.html` on a secure origin (GitHub Pages or localhost) to use IndexedDB and WebCrypto.
+This is an operational browser archive designed for GitHub Pages. Records are stored in IndexedDB first. Optional email sign-in copies verified records to the signed-in account. Open `site/index.html` on a secure origin (GitHub Pages or localhost) to use IndexedDB and WebCrypto.
 
-## What works in this initial implementation
+## What works
 - Create categorized research records in browser IndexedDB.
 - SHA-256 content receipts and verification on rendering/import.
 - Search, JSON export, verified JSON import.
-- Entire interface works offline after loading the assets, provided they are cached by the browser (no service worker yet).
+- Same-browser live updates across tabs.
+- Optional email-code sign-in and owner-scoped cross-device sync.
 
 ## Explicit limitations
-- Browser data is device-local, not shared or automatically synced across devices.
+- Without sign-in, browser data is device-local.
 - SHA-256 checks integrity against accidental modification; it does **not** establish authorship, external timestamp, or tamper-proof provenance (an attacker can recompute a digest).
-- No user accounts, multiuser permissions, remote database, server-side workflows, scheduled jobs, or encrypted backups.
-- GitHub Pages cannot itself run an API, database, or Edge Function. GitHub Actions and Git objects can supply versioned, automated publication, but are not an equivalent always-on transactional backend.
-- **Do not publish private research records on public Pages**. Keep archives private or publish only explicitly selected public records.
-- No claims of measured performance superiority over Supabase are made.
+- Sync is not end-to-end encryption. Signed-in rows are readable by that user and by this project's database owner.
+- The published page does not include a service key, and unsigned visitors cannot read the account table.
+- **Do not publish private research records on public Pages**. The archive UI is public; the records are not, unless you export them or sync them to the account.
+- No claims of measured performance superiority are made.
 
 ## Deployment
-Host the `site/` directory via a GitHub Pages publishing workflow or copy its contents into an existing Pages site's publish directory. This branch is intentionally a reviewable PR, not a production cutover.
+The live site is the `site/` directory on the GitHub Pages branch. Verification runs from `.github/workflows/mnemosyne-site.yml`.
 
 ## Migration boundary
-Existing Supabase records are **not yet migrated**. Migration requires exporting and checking the source datasets, preserving identifiers and provenance, verifying record counts and checksums, then testing restoration. Do not delete the existing Supabase project until those checks pass.
-
-## Next stages
-1. Read-only, redacted export adapters for existing source tables and certificates.
-2. GitHub Actions CI and versioned public snapshot publishing.
-3. IndexedDB search indexing and content-addressed attachments.
-4. GitHub-authenticated private write workflow, with explicit authorization and least privilege.
-5. Cross-device sync with conflict resolution, measured performance tests, and independent backup verification.
+Private research tables are not copied into the browser archive by this page. Do not delete existing private data until an explicit export, count check, and restore have passed.

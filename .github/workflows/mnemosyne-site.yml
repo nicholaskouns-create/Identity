@@ -33,6 +33,9 @@ jobs:
         env:
           NODE_PATH: /tmp/identity-test-deps/node_modules
       - run: node --check site/mnemosyne.js
+      - run: node --check site/sync.js
+      - run: node --check site/sync-merge.js
+      - run: node tools/test-sync.mjs
       - run: node --check site/forge-engine.js
       - run: node --check site/forge-ui.js
       - run: node tools/test-forge.mjs
@@ -55,7 +58,10 @@ jobs:
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh api "repos/${GITHUB_REPOSITORY}/pages" --jq .html_url
+        run: |
+          build=$(gh api "repos/${GITHUB_REPOSITORY}/pages" --jq .build_type)
+          echo "Pages build_type=$build"
+          test "$build" = "workflow"
       - if: steps.pages.outcome == 'success'
         uses: actions/configure-pages@v5
       - if: steps.pages.outcome == 'success'
@@ -66,4 +72,4 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
       - if: steps.pages.outcome != 'success'
-        run: echo "::notice::Verification passed. GitHub Pages is not enabled, so nothing was published. In repository settings set Pages source to GitHub Actions, then re-run this workflow."
+        run: echo "::notice::Verification passed. Pages is not using a GitHub Actions source, so this workflow did not publish. The live site follows the branch set in Pages settings."

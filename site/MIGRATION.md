@@ -1,6 +1,6 @@
-# Data migration and secure synchronization
+# Data migration and synchronization
 
-The site is deliberately **local-first**. No Supabase dependency is present in the browser application.
+The site is local-first. Optional sync is a separate browser module and does not replace an export.
 
 ## Migration
 1. Export source rows with approved access into a private JSON file containing `{"tables":{"schema.table":[...]}}`. Never commit the export.
@@ -8,10 +8,12 @@ The site is deliberately **local-first**. No Supabase dependency is present in t
 3. Confirm table counts in the manifest, SHA-256 receipts, and restore in a browser via Import.
 4. Preserve source backups until independent restore and completeness checks pass.
 
-**Status:** converter implemented and unit-tested; live production data has NOT been exported or migrated.
+**Status:** converter implemented and unit-tested; live private tables have NOT been exported into the public archive table.
 
 ## Synchronization
-Local import/export is available. Authenticated cross-device synchronization is **not yet implemented**. GitHub Pages is static and cannot safely hold GitHub personal access tokens or private records. A secure sync implementation requires OAuth authorization and a trusted server-side component (e.g., a tightly scoped GitHub App with Actions or an explicitly authorized user-mediated flow). Do not place tokens in localStorage, query strings, Pages JS, or public repositories.
+Signed-in browsers upsert verified records to `public.mnemosyne_records` and pull rows whose receipts still match. The canonical receipt is `JSON.stringify([id,title,kind,content,created_at])`. `updated_at` is outside the receipt and is used only for last-write-wins. A record with no local `updated_at` is treated as a new local edit and wins over an older remote copy. Rows that fail the receipt check are not imported.
+
+The browser stores only that user's session in localStorage. Do not place a service-role key, personal access token, or private-schema credential in Pages JS or the repository.
 
 ## Publishing
-Workflow `.github/workflows/mnemosyne-site.yml` checks code and deploys **only** the `site/` directory after verification. GitHub Pages must be enabled with **GitHub Actions** as the source; account and private-repository Pages eligibility may affect deployment. A public Pages URL is not a private archive. No private export is bundled.
+Workflow `.github/workflows/mnemosyne-site.yml` checks the site. While Pages uses a branch source, that workflow verifies and does not replace the live branch. A public Pages URL is not a private archive.
