@@ -1,0 +1,307 @@
+{
+  "valid_derivations": 3,
+  "rejected_invalid_derivations": 1,
+  "proofs": [
+    {
+      "rule": "implies_left",
+      "formula": [
+        "implies",
+        "SU2 spin2 tensor carrier",
+        "Casimir decomposition"
+      ],
+      "left": [
+        [
+          "implies",
+          "E47 rank47 invariant",
+          "spectral contraction"
+        ],
+        "SU2 spin2 tensor carrier",
+        [
+          "implies",
+          "SU2 spin2 tensor carrier",
+          "Casimir decomposition"
+        ],
+        [
+          "implies",
+          "Casimir decomposition",
+          "E47 rank47 invariant"
+        ]
+      ],
+      "right": "spectral contraction",
+      "premises": [
+        {
+          "rule": "identity",
+          "left": [
+            "SU2 spin2 tensor carrier"
+          ],
+          "right": "SU2 spin2 tensor carrier"
+        },
+        {
+          "rule": "implies_left",
+          "formula": [
+            "implies",
+            "Casimir decomposition",
+            "E47 rank47 invariant"
+          ],
+          "left": [
+            "Casimir decomposition",
+            [
+              "implies",
+              "Casimir decomposition",
+              "E47 rank47 invariant"
+            ],
+            [
+              "implies",
+              "E47 rank47 invariant",
+              "spectral contraction"
+            ]
+          ],
+          "right": "spectral contraction",
+          "premises": [
+            {
+              "rule": "identity",
+              "left": [
+                "Casimir decomposition"
+              ],
+              "right": "Casimir decomposition"
+            },
+            {
+              "rule": "implies_left",
+              "formula": [
+                "implies",
+                "E47 rank47 invariant",
+                "spectral contraction"
+              ],
+              "left": [
+                "E47 rank47 invariant",
+                [
+                  "implies",
+                  "E47 rank47 invariant",
+                  "spectral contraction"
+                ]
+              ],
+              "right": "spectral contraction",
+              "premises": [
+                {
+                  "rule": "identity",
+                  "left": [
+                    "E47 rank47 invariant"
+                  ],
+                  "right": "E47 rank47 invariant"
+                },
+                {
+                  "rule": "identity",
+                  "left": [
+                    "spectral contraction"
+                  ],
+                  "right": "spectral contraction"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rule": "implies_left",
+      "formula": [
+        "implies",
+        "orthogonal code and syndrome isometries",
+        "swap error KL conditions"
+      ],
+      "left": [
+        [
+          "implies",
+          "CPTP exact recovery",
+          "logical channel identity"
+        ],
+        "orthogonal code and syndrome isometries",
+        [
+          "implies",
+          "orthogonal code and syndrome isometries",
+          "swap error KL conditions"
+        ],
+        [
+          "implies",
+          "swap error KL conditions",
+          "CPTP exact recovery"
+        ]
+      ],
+      "right": "logical channel identity",
+      "premises": [
+        {
+          "rule": "identity",
+          "left": [
+            "orthogonal code and syndrome isometries"
+          ],
+          "right": "orthogonal code and syndrome isometries"
+        },
+        {
+          "rule": "implies_left",
+          "formula": [
+            "implies",
+            "swap error KL conditions",
+            "CPTP exact recovery"
+          ],
+          "left": [
+            [
+              "implies",
+              "swap error KL conditions",
+              "CPTP exact recovery"
+            ],
+            [
+              "implies",
+              "CPTP exact recovery",
+              "logical channel identity"
+            ],
+            "swap error KL conditions"
+          ],
+          "right": "logical channel identity",
+          "premises": [
+            {
+              "rule": "identity",
+              "left": [
+                "swap error KL conditions"
+              ],
+              "right": "swap error KL conditions"
+            },
+            {
+              "rule": "implies_left",
+              "formula": [
+                "implies",
+                "CPTP exact recovery",
+                "logical channel identity"
+              ],
+              "left": [
+                [
+                  "implies",
+                  "CPTP exact recovery",
+                  "logical channel identity"
+                ],
+                "CPTP exact recovery"
+              ],
+              "right": "logical channel identity",
+              "premises": [
+                {
+                  "rule": "identity",
+                  "left": [
+                    "CPTP exact recovery"
+                  ],
+                  "right": "CPTP exact recovery"
+                },
+                {
+                  "rule": "identity",
+                  "left": [
+                    "logical channel identity"
+                  ],
+                  "right": "logical channel identity"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rule": "implies_left",
+      "formula": [
+        "implies",
+        "encoded classical adapter and identity-or-swap faults",
+        "correct syndrome branch"
+      ],
+      "left": [
+        [
+          "implies",
+          "decoded latent preserved",
+          "adapter output and gradient preserved"
+        ],
+        "encoded classical adapter and identity-or-swap faults",
+        [
+          "implies",
+          "encoded classical adapter and identity-or-swap faults",
+          "correct syndrome branch"
+        ],
+        [
+          "implies",
+          "correct syndrome branch",
+          "decoded latent preserved"
+        ]
+      ],
+      "right": "adapter output and gradient preserved",
+      "premises": [
+        {
+          "rule": "identity",
+          "left": [
+            "encoded classical adapter and identity-or-swap faults"
+          ],
+          "right": "encoded classical adapter and identity-or-swap faults"
+        },
+        {
+          "rule": "implies_left",
+          "formula": [
+            "implies",
+            "correct syndrome branch",
+            "decoded latent preserved"
+          ],
+          "left": [
+            [
+              "implies",
+              "decoded latent preserved",
+              "adapter output and gradient preserved"
+            ],
+            [
+              "implies",
+              "correct syndrome branch",
+              "decoded latent preserved"
+            ],
+            "correct syndrome branch"
+          ],
+          "right": "adapter output and gradient preserved",
+          "premises": [
+            {
+              "rule": "identity",
+              "left": [
+                "correct syndrome branch"
+              ],
+              "right": "correct syndrome branch"
+            },
+            {
+              "rule": "implies_left",
+              "formula": [
+                "implies",
+                "decoded latent preserved",
+                "adapter output and gradient preserved"
+              ],
+              "left": [
+                [
+                  "implies",
+                  "decoded latent preserved",
+                  "adapter output and gradient preserved"
+                ],
+                "decoded latent preserved"
+              ],
+              "right": "adapter output and gradient preserved",
+              "premises": [
+                {
+                  "rule": "identity",
+                  "left": [
+                    "decoded latent preserved"
+                  ],
+                  "right": "decoded latent preserved"
+                },
+                {
+                  "rule": "identity",
+                  "left": [
+                    "adapter output and gradient preserved"
+                  ],
+                  "right": "adapter output and gradient preserved"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scope": "Logical consequence checker relative to explicit mathematical implication premises; algebra discharged in symbolic_check.py and report."
+}

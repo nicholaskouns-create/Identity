@@ -1,0 +1,14 @@
+{
+  "architecture": "single-head causal self-attention + E47 adapter + vocabulary head",
+  "weights": "random untrained",
+  "vocabulary": 32,
+  "hidden_width": 64,
+  "tokens": 24,
+  "encoded_blocks": 48,
+  "swapped_blocks": 21,
+  "corrected_max_logit_error": 5.551115123125783e-16,
+  "uncorrected_max_logit_error": 0.19205886222709798,
+  "corrected_argmax_agreement": 1.0,
+  "seed": 4701,
+  "pass": true
+}

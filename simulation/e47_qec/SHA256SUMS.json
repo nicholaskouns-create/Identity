@@ -1,0 +1,14 @@
+{
+  "REPORT.md": "5d190e7ad4f75294e43d5a4880d992077e7336d904671426d14e10f9a5623381",
+  "e47_basis.npz": "e5ac4a599c02a39ac7875bed02a97cbf0542d9918b2ec227b9274ce2371b0e8a",
+  "e47_qec.py": "585d460a3fd666c84ef4a80fae649aaa0eeabfe94fa0a33d9aebdcd470c7553a",
+  "llm_demo.py": "3e2aab749be31ed4bbbdc19c9154c8c91f2e258d5322279003efa2629b16c819",
+  "llm_results.json": "d61e02ec98d9db5f2ef8c6084a10c9185c87a5e43928f931d557d1951c7771d5",
+  "requirements.txt": "ccc9b694ed0a8dda8e9f6a19bab4661ede8cade93af7da8faf83fbdbb89450e5",
+  "results.json": "fad777e891aee19fbba8e8d614f024525750d591020bdddcae7983832e37dffb",
+  "sequent_check.py": "71ad13cf077cfb08fec206ae6ab20ba4d96a0f2abd98b5521cc5320f38a64abc",
+  "sequent_results.json": "e536717ce025991423df2c4517143b4e34042472ae8ed78e2999ff6977711d03",
+  "symbolic_check.py": "d229f2a8db556fea3b400a7d08ee4a567435788a7ef663f459cdb16f47334a43",
+  "symbolic_results.json": "fdc84f176e24cf0e830b2ae80f4cb3b7caea80ce8e8959a6633b60b012515b0e",
+  "validate.py": "aacfacff0d903f2f4bd510026c3bb471600a713c827614f87e97ea910c3aa6b9"
+}

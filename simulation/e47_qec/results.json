@@ -1,0 +1,236 @@
+{
+  "checks": [
+    {
+      "name": "Lie commutator xy",
+      "pass_": true,
+      "value": 7.62023476469421e-15,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "Lie commutator yz",
+      "pass_": true,
+      "value": 1.538370149106851e-15,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "Lie commutator zx",
+      "pass_": true,
+      "value": 1.538370149106851e-15,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "Casimir central 0",
+      "pass_": true,
+      "value": 6.473352399285872e-14,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "Casimir central 1",
+      "pass_": true,
+      "value": 6.473352399285872e-14,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "Casimir central 2",
+      "pass_": true,
+      "value": 0.0,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "E47 invariant 0",
+      "pass_": true,
+      "value": 7.350644605449669e-14,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "E47 invariant 1",
+      "pass_": true,
+      "value": 7.656266655683398e-14,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "E47 invariant 2",
+      "pass_": true,
+      "value": 5.580522275757174e-14,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "rank47",
+      "pass_": true,
+      "value": true,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "projector",
+      "pass_": true,
+      "value": 2.3722984945692305e-14,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "kernel",
+      "pass_": true,
+      "value": 2.539853651767705e-12,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "exact spin multiplicities",
+      "pass_": true,
+      "value": true,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "exact optimal epsilon",
+      "pass_": true,
+      "value": true,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "exact rho",
+      "pass_": true,
+      "value": true,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "contraction norm n=1",
+      "pass_": true,
+      "value": 5.551115123125783e-16,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "contraction norm n=10",
+      "pass_": true,
+      "value": 2.220446049250313e-16,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "contraction norm n=50",
+      "pass_": true,
+      "value": 2.0448052973076614e-16,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "contraction norm n=100",
+      "pass_": true,
+      "value": 1.8897516811480254e-16,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "syndrome orthogonality",
+      "pass_": true,
+      "value": 3.2413143477254093e-15,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "swap unitary",
+      "pass_": true,
+      "value": 4.7581147457521925e-14,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "KL 00",
+      "pass_": true,
+      "value": 2.3686365957854818e-14,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "KL 01",
+      "pass_": true,
+      "value": 4.8890286176896614e-15,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "KL 10",
+      "pass_": true,
+      "value": 4.8890286176896614e-15,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "KL 11",
+      "pass_": true,
+      "value": 5.1926771315806176e-14,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "recovery trace preserving",
+      "pass_": true,
+      "value": 5.780088308515545e-14,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "48 quantum state/channel recoveries",
+      "pass_": true,
+      "value": 6.992077932441714e-15,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "recovered trace",
+      "pass_": true,
+      "value": 3.55282140187376e-15,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "recovered positivity",
+      "pass_": true,
+      "value": true,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "entanglement fidelity p=0.1",
+      "pass_": true,
+      "value": 6.661338147750939e-16,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "entanglement fidelity p=0.5",
+      "pass_": true,
+      "value": 6.661338147750939e-16,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "entanglement fidelity p=1.0",
+      "pass_": true,
+      "value": 0.0,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "coherent error recovery",
+      "pass_": true,
+      "value": 3.683997983535467e-15,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "7-qubit embedded swap decode",
+      "pass_": true,
+      "value": 5.46027320795034e-15,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "LLM adapter 24 tokens 48 protected blocks",
+      "pass_": true,
+      "value": 1.5598452344426234e-14,
+      "tolerance": 1e-09
+    },
+    {
+      "name": "FP32 relative adapter error",
+      "pass_": true,
+      "value": 3.8838486658142386e-08,
+      "tolerance": 2e-06
+    },
+    {
+      "name": "LLM input gradient finite difference",
+      "pass_": true,
+      "value": 1.3096368434162287e-10,
+      "tolerance": 1e-07
+    }
+  ],
+  "passed": 37,
+  "total": 37,
+  "max_quantum_recovery_frobenius_error": 6.992077932441714e-15,
+  "min_recovered_fidelity": 0.9999999999999989,
+  "min_uncorrected_fidelity": -4.892239832277048e-18,
+  "adapter_uncorrected_error": 2.5792245672512304,
+  "adapter_corrected_error": 1.5598452344426234e-14,
+  "adapter_fp32_relative_error": 3.8838486658142386e-08,
+  "seed": 47,
+  "scope": "synthetic hidden states; no pretrained LLM or physical quantum hardware"
+}

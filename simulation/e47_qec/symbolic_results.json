@@ -1,0 +1,58 @@
+[
+  {
+    "name": "exact sl2 raising/lowering",
+    "pass": true
+  },
+  {
+    "name": "exact sl2 z+",
+    "pass": true
+  },
+  {
+    "name": "exact sl2 z-",
+    "pass": true
+  },
+  {
+    "name": "exact spin2 Casimir",
+    "pass": true
+  },
+  {
+    "name": "exact Casimir central plus",
+    "pass": true
+  },
+  {
+    "name": "exact Casimir central minus",
+    "pass": true
+  },
+  {
+    "name": "exact Casimir central z",
+    "pass": true
+  },
+  {
+    "name": "exact P idempotence",
+    "pass": true
+  },
+  {
+    "name": "exact K P zero",
+    "pass": true
+  },
+  {
+    "name": "exact rank via idempotent trace",
+    "pass": true
+  },
+  {
+    "name": "exact metric self adjoint",
+    "pass": true
+  },
+  {
+    "name": "symbolic KL off diagonal",
+    "pass": true
+  },
+  {
+    "name": "symbolic recovery completeness",
+    "pass": true
+  },
+  {
+    "name": "symbolic coherent syndrome recovery",
+    "pass": true
+  }
+]
