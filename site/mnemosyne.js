@@ -1,4 +1,4 @@
-// Mnemosyne: local-first archive. Live updates stay in this browser. No remote calls.
+// Mnemosyne: local-first archive. This file makes no remote calls. Optional sync lives in sync.js.
 const DB='mnemosyne-archive', STORE='records';
 const el=id=>document.getElementById(id);
 const status=msg=>{el('status').textContent=msg};
@@ -25,7 +25,7 @@ async function verify(r){return r.sha256===await digest(canonical(r))}
 async function render(){const query=el('search').value.toLowerCase();const list=(await all()).filter(r=>(r.title+' '+r.content).toLowerCase().includes(query)).sort((a,b)=>b.created_at.localeCompare(a.created_at));const root=el('records');root.replaceChildren();for(const r of list){const node=document.createElement('article');const title=document.createElement('strong');title.textContent=r.title+' · '+r.kind;const body=document.createElement('p');body.textContent=r.content.slice(0,500);const receipt=document.createElement('code');receipt.textContent=(await verify(r)?'SHA-256 verified: ':'CHECKSUM MISMATCH: ')+r.sha256;node.append(title,body,receipt);root.append(node)}if(!list.length)root.textContent='No matching records.'}
 const started=Date.now();
 const bus=typeof BroadcastChannel==='function'?new BroadcastChannel('mnemosyne-archive'):null;
-function announce(){if(bus)bus.postMessage({type:'changed',at:Date.now()})}
+function announce(){if(bus)bus.postMessage({type:'changed',at:Date.now()});if(typeof document.dispatchEvent==='function'&&typeof CustomEvent==='function')document.dispatchEvent(new CustomEvent('mnemosyne-local-change'))}
 async function paintLive(){
   const clock=document.getElementById('live-clock');
   if(!clock||clock.style==null)return;
@@ -44,6 +44,8 @@ async function paintLive(){
 }
 if(bus)bus.onmessage=()=>{render().then(paintLive).catch(err=>status(err.message))};
 if(typeof document.addEventListener==='function')document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')render().then(paintLive).catch(()=>{})});
+if(typeof document.addEventListener==='function')document.addEventListener('mnemosyne-refresh',()=>{render().then(paintLive).catch(()=>{})});
+try{globalThis.MnemosyneArchive={all,putMany,verify,canonical,digest,announce,refresh:()=>render().then(paintLive)}}catch(err){}
 if(typeof setInterval==='function')setInterval(()=>{paintLive().catch(()=>{})},1000);
 el('record').addEventListener('submit',async e=>{e.preventDefault();try{const f=new FormData(e.target),r={id:crypto.randomUUID(),title:String(f.get('title')).trim(),kind:String(f.get('kind')),content:String(f.get('content')),created_at:new Date().toISOString()};r.sha256=await digest(canonical(r));await put(r);e.target.reset();announce();status('Saved with verifiable receipt.');await render();await paintLive()}catch(err){status('Save failed: '+err.message)}});
 el('search').addEventListener('input',()=>render().catch(err=>status(err.message)));
