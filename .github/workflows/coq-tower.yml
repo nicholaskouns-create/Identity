@@ -1,0 +1,16 @@
+name: Coq tower certificate
+on:
+  push:
+    paths:
+      - 'formal/e47/TowerIdentity.v'
+      - '.github/workflows/coq-tower.yml'
+  workflow_dispatch:
+jobs:
+  kernel-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq
+        run: sudo apt-get update -qq && sudo apt-get install -y coq
+      - name: Compile tower theorem with Coq kernel
+        run: coqc -q formal/e47/TowerIdentity.v
