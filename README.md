@@ -7,4 +7,4 @@ A first-principles research laboratory exploring identity, consciousness, and co
 
 Includes exact Lie-algebra and projector checks, a quantum recovery channel for specified code/syndrome errors, sequent derivations, and an executed classical causal-language-model adapter. Recorded validation: 37 numerical/rational checks and 14 exact SymPy checks passed. See the package report for the error model, execution results, and reproducibility commands.
 
-Lean and Rocq sources for the E47 linear-algebra certificate are pinned in [formal/](formal/README.md). Those snapshots do not already contain the E47 proof.
+Lean and Rocq sources for the E47 linear-algebra certificate are pinned in [formal/](formal/README.md). Those snapshots do not already contain the E47 proof. A separate, self-contained scalar certificate is in [formal/e47/](formal/e47/E47Spectral.lean), and the independent temporal-graph reconstruction that checks it in Python is in [simulation/e47_tqgnn/](simulation/e47_tqgnn/README.md). The one recorded synthetic run did not improve AUC.

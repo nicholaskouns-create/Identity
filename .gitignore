@@ -4,3 +4,8 @@ tools/__pycache__/
 tools/tests/__pycache__/
 __pycache__/
 *.pyc
+*.vo
+*.vos
+*.vok
+*.glob
+*.aux

@@ -1,6 +1,8 @@
 # Lean and Rocq sources for the E47 certificate
 
-These are unmodified upstream snapshots. They do not contain a proof of the E47 statement, and they do not say anything about consciousness or personal identity. The checked statement remains the NumPy certificate in `simulation/validate_e47.py`: `H = V₂⊗³` has dimension 125, `rank ker K = 47`, and `||Γⁿ − P||₂ = (15/17)ⁿ`.
+These are unmodified upstream snapshots. They do not contain a proof of the E47 statement, and they do not say anything about consciousness or personal identity. The checked statement remains a linear-map fact: `H = V₂⊗³` has dimension 125, `rank ker K = 47`, and `||Γⁿ − P||₂ = (15/17)ⁿ`.
+
+The scalar integers in that statement are proved without these snapshots in [`formal/e47/`](e47/E47Spectral.lean) (Lean) and [`formal/e47/E47Spectral.v`](e47/E47Spectral.v) (Coq). Those files do not formalize the 125-by-125 matrices. The NumPy reconstruction that checks the matrices, and checks the same integers, is [`simulation/e47_tqgnn/`](../simulation/e47_tqgnn/README.md). The earlier orthonormal carrier check is still [`simulation/validate_e47.py`](../simulation/validate_e47.py).
 
 The slices do not build by themselves. Mathlib files import the rest of Mathlib, and the MathComp files import the rest of MathComp and Rocq. They are here as the reference database for a later formalization.
 

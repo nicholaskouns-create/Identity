@@ -1,0 +1,91 @@
+{
+  "statement": "Scalar certificate: three spin-2 angular momenta give multiplicities [1,3,5,4,3,2,1], carrier dimension 125, and rank of ker (C-6I)(C-30I) equal to 47. The 125-by-125 matrices are checked numerically in Python, not inside Lean or Coq. One synthetic link-prediction run is recorded; it is not a claim that the clock improves AUC.",
+  "exact": {
+    "multiplicities": [
+      1,
+      3,
+      5,
+      4,
+      3,
+      2,
+      1
+    ],
+    "eigenspace_dimensions": [
+      1,
+      9,
+      25,
+      28,
+      27,
+      22,
+      13
+    ],
+    "dimension": 125,
+    "casimir_nodes": [
+      0,
+      2,
+      6,
+      12,
+      20,
+      30,
+      42
+    ],
+    "kernel_rank": 47,
+    "gamma_12": "15/17",
+    "gamma_42": "-15/17",
+    "rational_sl2": true
+  },
+  "numerical": {
+    "eigenspace_counts": [
+      1,
+      9,
+      25,
+      28,
+      27,
+      22,
+      13
+    ],
+    "residuals": {
+      "projector": 6.654705070535469e-15,
+      "kernel": 1.821462616389021e-12,
+      "fixed": 4.0873545123581865e-15
+    },
+    "contraction": {
+      "1": {
+        "got": 0.882352941176471,
+        "expect": 0.8823529411764706
+      },
+      "2": {
+        "got": 0.7785467128027684,
+        "expect": 0.7785467128027681
+      },
+      "10": {
+        "got": 0.28603776553915616,
+        "expect": 0.2860377655391561
+      }
+    },
+    "code_shape": [
+      125,
+      47
+    ]
+  },
+  "gru_gradient": true,
+  "auc": {
+    "nodes": 16,
+    "steps": 8,
+    "epochs": 8,
+    "seed": 47,
+    "baseline": 0.5520833333333334,
+    "e47_clock": 0.5338541666666666,
+    "delta": -0.01822916666666674
+  },
+  "proofs": {
+    "lean": {
+      "status": "pass",
+      "compiler": "lean"
+    },
+    "coq": {
+      "status": "pass",
+      "compiler": "coqc"
+    }
+  }
+}
