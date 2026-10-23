@@ -24,6 +24,9 @@ jobs:
         with:
           python-version: '3.12'
       - run: node --check site/mnemosyne.js
+      - run: node --check site/forge-engine.js
+      - run: node --check site/forge-ui.js
+      - run: node tools/test-forge.mjs
       - run: python -m unittest discover -s tools/tests -v
       - run: python tools/check_site.py
   deploy:
