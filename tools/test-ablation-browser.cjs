@@ -76,6 +76,46 @@ const server = createServer(async (request, response) => {
     assert.equal(exported.paired_comparison.right, 'random24');
     assert.equal(exported.paired_comparison.differences.length, 8);
     assert.equal(exported.archived_results.seeds, 8);
+    // A corrupt branch-served result must fall back to the raw repository copy.
+    // Route both requests locally so CI does not depend on GitHub availability.
+    const fixture = await readFile(resolve(root, 'experiments/e47_ablation_results.json'), 'utf8');
+    const localResults = new URL('/experiments/e47_ablation_results.json', url).href;
+    const remoteResults = 'https://raw.githubusercontent.com/nicholaskouns-create/Identity/main/experiments/e47_ablation_results.json';
+    const fallbackPage = await context.newPage();
+    await fallbackPage.route(localResults, route => route.fulfill({
+      status: 200, contentType: 'application/json', body: '{"seeds":8,"auc_by_seed":{}}'
+    }));
+    await fallbackPage.route(remoteResults, route => route.fulfill({
+      status: 200, contentType: 'application/json',
+      headers: {'access-control-allow-origin': '*'}, body: fixture
+    }));
+    await fallbackPage.goto(url);
+    await fallbackPage.waitForFunction(() =>
+      document.querySelector('#load-status')?.textContent.startsWith('Loaded 8 archived synthetic seeds.')
+    );
+    assert.match(await fallbackPage.locator('#load-status').textContent(), /raw\\.githubusercontent\\.com/);
+    assert.equal(await fallbackPage.locator('#data-panel').evaluate(el => el.hidden), false);
+    assert.equal(await fallbackPage.locator('#results-body tr').count(), 4);
+    await fallbackPage.close();
+    console.log('ABLATION_BROWSER_FALLBACK_PASS');
+
+    // When neither source is usable, expose an error instead of stale charts.
+    const failurePage = await context.newPage();
+    for (const source of [localResults, remoteResults]) {
+      await failurePage.route(source, route => route.fulfill({
+        status: 503, contentType: 'text/plain',
+        headers: {'access-control-allow-origin': '*'}, body: 'Unavailable'
+      }));
+    }
+    await failurePage.goto(url);
+    await failurePage.waitForFunction(() =>
+      document.querySelector('#load-status')?.classList.contains('error')
+    );
+    assert.match(await failurePage.locator('#load-status').textContent(), /Results could not be loaded/);
+    assert.match(await failurePage.locator('#load-status').textContent(), /HTTP 503/);
+    assert.equal(await failurePage.locator('#data-panel').evaluate(el => el.hidden), true);
+    await failurePage.close();
+    console.log('ABLATION_BROWSER_FAILURE_PASS');
     console.log('ABLATION_BROWSER_INTERACTION_PASS');
   } finally {
     if (browser) await browser.close();
