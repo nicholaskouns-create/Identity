@@ -1,0 +1,45 @@
+name: E47 concrete 125x125 Mathlib certificate
+on:
+  push:
+    paths:
+      - 'formal/e47/E47ConcreteMatrix.lean'
+      - 'formal/e47-concrete/**'
+      - '.github/workflows/e47-concrete-matrix.yml'
+  pull_request:
+    paths:
+      - 'formal/e47/E47ConcreteMatrix.lean'
+      - 'formal/e47-concrete/**'
+      - '.github/workflows/e47-concrete-matrix.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  exact-matrix-lemmas:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Lean using elan
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --no-modify-path --default-toolchain leanprover/lean4:v4.35.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Resolve pinned Mathlib and write manifest
+        working-directory: formal/e47-concrete
+        run: |
+          set -euo pipefail
+          lake update
+          test -f lake-manifest.json
+      - name: Retrieve Mathlib compilation cache
+        working-directory: formal/e47-concrete
+        run: lake exe cache get
+      - name: Compile actual 125x125 operator theorems
+        working-directory: formal/e47-concrete
+        run: lake env lean ../e47/E47ConcreteMatrix.lean
+      - name: Verify proof source contains no admissions
+        run: |
+          if grep -nE '(^|[[:space:]])(sorry|admit)([[:space:]]|$)' formal/e47/E47ConcreteMatrix.lean; then
+            echo "Unfinished proof detected"; exit 1
+          fi
