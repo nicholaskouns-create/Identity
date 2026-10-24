@@ -63,3 +63,9 @@ Proof.
   destruct j as [|[|[|[|[|j]]]]]; try lia;
   vm_compute; reflexivity.
 Qed.
+
+(* Audit the four theorem dependencies in CI output. *)
+Print Assumptions commutator_z_up.
+Print Assumptions commutator_z_down.
+Print Assumptions commutator_up_down.
+Print Assumptions spin2_casimir_scalar.
