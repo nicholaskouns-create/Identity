@@ -3,11 +3,12 @@ from pathlib import Path
 import re
 ROOT=Path(__file__).resolve().parents[1]
 SITE=ROOT/"site"
-ALLOWED={"index.html","mnemosyne.js","sync.js","sync-merge.js","forge-engine.js","forge-ui.js","ablation.html","ablation.js","ablation-math.mjs","ablation.test.mjs","og.png","README.md","MIGRATION.md"}
+ALLOWED={"index.html","mnemosyne.js","sync.js","sync-merge.js","forge-engine.js","forge-ui.js","ablation.html","ablation.js","ablation-math.mjs","ablation.test.mjs","og.png","README.md","MIGRATION.md","e47-spectral-advantages.html"}
 TEXT_SUFFIXES={".html",".js",".md",".mjs"}
 actual={p.name for p in SITE.iterdir() if p.is_file()}
 assert actual<=ALLOWED, f"Unexpected publish files: {actual-ALLOWED}"
 html=(SITE/"index.html").read_text(encoding="utf-8")
+assert 'href="./e47-spectral-advantages.html"' in html, "Homepage must link to the published E47 certificate"
 published="\n".join((SITE/name).read_text(encoding="utf-8") for name in sorted(actual) if Path(name).suffix in TEXT_SUFFIXES)
 assert '<script type="module" src="./mnemosyne.js"></script>' in html
 assert '<script type="module" src="./sync.js"></script>' in html
