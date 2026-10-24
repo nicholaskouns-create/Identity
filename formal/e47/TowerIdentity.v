@@ -29,10 +29,12 @@ Proof.
   - simpl. lia.
   - rewrite Nat.even_succ.
     destruct (Nat.even n) eqn:E;
-      simpl in IH |- *;
       destruct IH as [H0 [H1 H2]];
-      replace (fib (S (S n))) with (fib (S n) + fib n) by reflexivity;
-      replace (luc (S (S n))) with (luc (S n) + luc n) by reflexivity;
+      cbn [negb];
+      replace (fib (S (S n))) with (fib (S n) + fib n)
+        by reflexivity;
+      replace (luc (S (S n))) with (luc (S n) + luc n)
+        by reflexivity;
       repeat split; nia.
 Qed.
 
