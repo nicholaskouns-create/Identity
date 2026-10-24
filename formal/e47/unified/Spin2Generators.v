@@ -17,8 +17,9 @@ Definition down : mat5 := fun i j =>
   if Nat.eqb i (S j) then 1 else 0.
 
 Definition mul (a b : mat5) : mat5 := fun i j =>
-  a i 0 * b 0 j + a i 1 * b 1 j + a i 2 * b 2 j +
-  a i 3 * b 3 j + a i 4 * b 4 j.
+  a i 0%nat * b 0%nat j + a i 1%nat * b 1%nat j +
+  a i 2%nat * b 2%nat j + a i 3%nat * b 3%nat j +
+  a i 4%nat * b 4%nat j.
 
 Definition casimir : mat5 := fun i j =>
   mul z z i j + z i j + mul down up i j.
