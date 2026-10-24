@@ -153,20 +153,6 @@
     },
     {
       "roots": [
-        2,
-        6
-      ],
-      "sector_spins": [
-        1,
-        2
-      ],
-      "rank": 34,
-      "codimension": 91,
-      "polynomial_degree": 2,
-      "status": "PASS"
-    },
-    {
-      "roots": [
         0,
         12
       ],
@@ -176,34 +162,6 @@
       ],
       "rank": 29,
       "codimension": 96,
-      "polynomial_degree": 2,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        2,
-        12
-      ],
-      "sector_spins": [
-        1,
-        3
-      ],
-      "rank": 37,
-      "codimension": 88,
-      "polynomial_degree": 2,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        6,
-        12
-      ],
-      "sector_spins": [
-        2,
-        3
-      ],
-      "rank": 53,
-      "codimension": 72,
       "polynomial_degree": 2,
       "status": "PASS"
     },
@@ -223,48 +181,6 @@
     },
     {
       "roots": [
-        2,
-        20
-      ],
-      "sector_spins": [
-        1,
-        4
-      ],
-      "rank": 36,
-      "codimension": 89,
-      "polynomial_degree": 2,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        6,
-        20
-      ],
-      "sector_spins": [
-        2,
-        4
-      ],
-      "rank": 52,
-      "codimension": 73,
-      "polynomial_degree": 2,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        12,
-        20
-      ],
-      "sector_spins": [
-        3,
-        4
-      ],
-      "rank": 55,
-      "codimension": 70,
-      "polynomial_degree": 2,
-      "status": "PASS"
-    },
-    {
-      "roots": [
         0,
         30
       ],
@@ -274,62 +190,6 @@
       ],
       "rank": 23,
       "codimension": 102,
-      "polynomial_degree": 2,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        2,
-        30
-      ],
-      "sector_spins": [
-        1,
-        5
-      ],
-      "rank": 31,
-      "codimension": 94,
-      "polynomial_degree": 2,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        6,
-        30
-      ],
-      "sector_spins": [
-        2,
-        5
-      ],
-      "rank": 47,
-      "codimension": 78,
-      "polynomial_degree": 2,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        12,
-        30
-      ],
-      "sector_spins": [
-        3,
-        5
-      ],
-      "rank": 50,
-      "codimension": 75,
-      "polynomial_degree": 2,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        20,
-        30
-      ],
-      "sector_spins": [
-        4,
-        5
-      ],
-      "rank": 49,
-      "codimension": 76,
       "polynomial_degree": 2,
       "status": "PASS"
     },
@@ -350,6 +210,62 @@
     {
       "roots": [
         2,
+        6
+      ],
+      "sector_spins": [
+        1,
+        2
+      ],
+      "rank": 34,
+      "codimension": 91,
+      "polynomial_degree": 2,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        2,
+        12
+      ],
+      "sector_spins": [
+        1,
+        3
+      ],
+      "rank": 37,
+      "codimension": 88,
+      "polynomial_degree": 2,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        2,
+        20
+      ],
+      "sector_spins": [
+        1,
+        4
+      ],
+      "rank": 36,
+      "codimension": 89,
+      "polynomial_degree": 2,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        2,
+        30
+      ],
+      "sector_spins": [
+        1,
+        5
+      ],
+      "rank": 31,
+      "codimension": 94,
+      "polynomial_degree": 2,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        2,
         42
       ],
       "sector_spins": [
@@ -358,6 +274,48 @@
       ],
       "rank": 22,
       "codimension": 103,
+      "polynomial_degree": 2,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        6,
+        12
+      ],
+      "sector_spins": [
+        2,
+        3
+      ],
+      "rank": 53,
+      "codimension": 72,
+      "polynomial_degree": 2,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        6,
+        20
+      ],
+      "sector_spins": [
+        2,
+        4
+      ],
+      "rank": 52,
+      "codimension": 73,
+      "polynomial_degree": 2,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        6,
+        30
+      ],
+      "sector_spins": [
+        2,
+        5
+      ],
+      "rank": 47,
+      "codimension": 78,
       "polynomial_degree": 2,
       "status": "PASS"
     },
@@ -378,6 +336,34 @@
     {
       "roots": [
         12,
+        20
+      ],
+      "sector_spins": [
+        3,
+        4
+      ],
+      "rank": 55,
+      "codimension": 70,
+      "polynomial_degree": 2,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        12,
+        30
+      ],
+      "sector_spins": [
+        3,
+        5
+      ],
+      "rank": 50,
+      "codimension": 75,
+      "polynomial_degree": 2,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        12,
         42
       ],
       "sector_spins": [
@@ -386,6 +372,20 @@
       ],
       "rank": 41,
       "codimension": 84,
+      "polynomial_degree": 2,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        20,
+        30
+      ],
+      "sector_spins": [
+        4,
+        5
+      ],
+      "rank": 49,
+      "codimension": 76,
       "polynomial_degree": 2,
       "status": "PASS"
     },
@@ -452,38 +452,6 @@
     {
       "roots": [
         0,
-        6,
-        12
-      ],
-      "sector_spins": [
-        0,
-        2,
-        3
-      ],
-      "rank": 54,
-      "codimension": 71,
-      "polynomial_degree": 3,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        2,
-        6,
-        12
-      ],
-      "sector_spins": [
-        1,
-        2,
-        3
-      ],
-      "rank": 62,
-      "codimension": 63,
-      "polynomial_degree": 3,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
         2,
         20
       ],
@@ -494,86 +462,6 @@
       ],
       "rank": 37,
       "codimension": 88,
-      "polynomial_degree": 3,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        6,
-        20
-      ],
-      "sector_spins": [
-        0,
-        2,
-        4
-      ],
-      "rank": 53,
-      "codimension": 72,
-      "polynomial_degree": 3,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        2,
-        6,
-        20
-      ],
-      "sector_spins": [
-        1,
-        2,
-        4
-      ],
-      "rank": 61,
-      "codimension": 64,
-      "polynomial_degree": 3,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        12,
-        20
-      ],
-      "sector_spins": [
-        0,
-        3,
-        4
-      ],
-      "rank": 56,
-      "codimension": 69,
-      "polynomial_degree": 3,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        2,
-        12,
-        20
-      ],
-      "sector_spins": [
-        1,
-        3,
-        4
-      ],
-      "rank": 64,
-      "codimension": 61,
-      "polynomial_degree": 3,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        6,
-        12,
-        20
-      ],
-      "sector_spins": [
-        2,
-        3,
-        4
-      ],
-      "rank": 80,
-      "codimension": 45,
       "polynomial_degree": 3,
       "status": "PASS"
     },
@@ -596,6 +484,54 @@
     {
       "roots": [
         0,
+        2,
+        42
+      ],
+      "sector_spins": [
+        0,
+        1,
+        6
+      ],
+      "rank": 23,
+      "codimension": 102,
+      "polynomial_degree": 3,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
+        6,
+        12
+      ],
+      "sector_spins": [
+        0,
+        2,
+        3
+      ],
+      "rank": 54,
+      "codimension": 71,
+      "polynomial_degree": 3,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
+        6,
+        20
+      ],
+      "sector_spins": [
+        0,
+        2,
+        4
+      ],
+      "rank": 53,
+      "codimension": 72,
+      "polynomial_degree": 3,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
         6,
         30
       ],
@@ -611,14 +547,30 @@
     },
     {
       "roots": [
-        2,
+        0,
         6,
-        30
+        42
       ],
       "sector_spins": [
-        1,
+        0,
         2,
-        5
+        6
+      ],
+      "rank": 39,
+      "codimension": 86,
+      "polynomial_degree": 3,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
+        12,
+        20
+      ],
+      "sector_spins": [
+        0,
+        3,
+        4
       ],
       "rank": 56,
       "codimension": 69,
@@ -643,6 +595,150 @@
     },
     {
       "roots": [
+        0,
+        12,
+        42
+      ],
+      "sector_spins": [
+        0,
+        3,
+        6
+      ],
+      "rank": 42,
+      "codimension": 83,
+      "polynomial_degree": 3,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
+        20,
+        30
+      ],
+      "sector_spins": [
+        0,
+        4,
+        5
+      ],
+      "rank": 50,
+      "codimension": 75,
+      "polynomial_degree": 3,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
+        20,
+        42
+      ],
+      "sector_spins": [
+        0,
+        4,
+        6
+      ],
+      "rank": 41,
+      "codimension": 84,
+      "polynomial_degree": 3,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
+        30,
+        42
+      ],
+      "sector_spins": [
+        0,
+        5,
+        6
+      ],
+      "rank": 36,
+      "codimension": 89,
+      "polynomial_degree": 3,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        2,
+        6,
+        12
+      ],
+      "sector_spins": [
+        1,
+        2,
+        3
+      ],
+      "rank": 62,
+      "codimension": 63,
+      "polynomial_degree": 3,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        2,
+        6,
+        20
+      ],
+      "sector_spins": [
+        1,
+        2,
+        4
+      ],
+      "rank": 61,
+      "codimension": 64,
+      "polynomial_degree": 3,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        2,
+        6,
+        30
+      ],
+      "sector_spins": [
+        1,
+        2,
+        5
+      ],
+      "rank": 56,
+      "codimension": 69,
+      "polynomial_degree": 3,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        2,
+        6,
+        42
+      ],
+      "sector_spins": [
+        1,
+        2,
+        6
+      ],
+      "rank": 47,
+      "codimension": 78,
+      "polynomial_degree": 3,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        2,
+        12,
+        20
+      ],
+      "sector_spins": [
+        1,
+        3,
+        4
+      ],
+      "rank": 64,
+      "codimension": 61,
+      "polynomial_degree": 3,
+      "status": "PASS"
+    },
+    {
+      "roots": [
         2,
         12,
         30
@@ -659,30 +755,14 @@
     },
     {
       "roots": [
-        6,
-        12,
-        30
-      ],
-      "sector_spins": [
         2,
-        3,
-        5
-      ],
-      "rank": 75,
-      "codimension": 50,
-      "polynomial_degree": 3,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        20,
-        30
+        12,
+        42
       ],
       "sector_spins": [
-        0,
-        4,
-        5
+        1,
+        3,
+        6
       ],
       "rank": 50,
       "codimension": 75,
@@ -707,150 +787,6 @@
     },
     {
       "roots": [
-        6,
-        20,
-        30
-      ],
-      "sector_spins": [
-        2,
-        4,
-        5
-      ],
-      "rank": 74,
-      "codimension": 51,
-      "polynomial_degree": 3,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        12,
-        20,
-        30
-      ],
-      "sector_spins": [
-        3,
-        4,
-        5
-      ],
-      "rank": 77,
-      "codimension": 48,
-      "polynomial_degree": 3,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        2,
-        42
-      ],
-      "sector_spins": [
-        0,
-        1,
-        6
-      ],
-      "rank": 23,
-      "codimension": 102,
-      "polynomial_degree": 3,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        6,
-        42
-      ],
-      "sector_spins": [
-        0,
-        2,
-        6
-      ],
-      "rank": 39,
-      "codimension": 86,
-      "polynomial_degree": 3,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        2,
-        6,
-        42
-      ],
-      "sector_spins": [
-        1,
-        2,
-        6
-      ],
-      "rank": 47,
-      "codimension": 78,
-      "polynomial_degree": 3,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        12,
-        42
-      ],
-      "sector_spins": [
-        0,
-        3,
-        6
-      ],
-      "rank": 42,
-      "codimension": 83,
-      "polynomial_degree": 3,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        2,
-        12,
-        42
-      ],
-      "sector_spins": [
-        1,
-        3,
-        6
-      ],
-      "rank": 50,
-      "codimension": 75,
-      "polynomial_degree": 3,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        6,
-        12,
-        42
-      ],
-      "sector_spins": [
-        2,
-        3,
-        6
-      ],
-      "rank": 66,
-      "codimension": 59,
-      "polynomial_degree": 3,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        20,
-        42
-      ],
-      "sector_spins": [
-        0,
-        4,
-        6
-      ],
-      "rank": 41,
-      "codimension": 84,
-      "polynomial_degree": 3,
-      "status": "PASS"
-    },
-    {
-      "roots": [
         2,
         20,
         42
@@ -862,54 +798,6 @@
       ],
       "rank": 49,
       "codimension": 76,
-      "polynomial_degree": 3,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        6,
-        20,
-        42
-      ],
-      "sector_spins": [
-        2,
-        4,
-        6
-      ],
-      "rank": 65,
-      "codimension": 60,
-      "polynomial_degree": 3,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        12,
-        20,
-        42
-      ],
-      "sector_spins": [
-        3,
-        4,
-        6
-      ],
-      "rank": 68,
-      "codimension": 57,
-      "polynomial_degree": 3,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        30,
-        42
-      ],
-      "sector_spins": [
-        0,
-        5,
-        6
-      ],
-      "rank": 36,
-      "codimension": 89,
       "polynomial_degree": 3,
       "status": "PASS"
     },
@@ -932,6 +820,86 @@
     {
       "roots": [
         6,
+        12,
+        20
+      ],
+      "sector_spins": [
+        2,
+        3,
+        4
+      ],
+      "rank": 80,
+      "codimension": 45,
+      "polynomial_degree": 3,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        6,
+        12,
+        30
+      ],
+      "sector_spins": [
+        2,
+        3,
+        5
+      ],
+      "rank": 75,
+      "codimension": 50,
+      "polynomial_degree": 3,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        6,
+        12,
+        42
+      ],
+      "sector_spins": [
+        2,
+        3,
+        6
+      ],
+      "rank": 66,
+      "codimension": 59,
+      "polynomial_degree": 3,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        6,
+        20,
+        30
+      ],
+      "sector_spins": [
+        2,
+        4,
+        5
+      ],
+      "rank": 74,
+      "codimension": 51,
+      "polynomial_degree": 3,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        6,
+        20,
+        42
+      ],
+      "sector_spins": [
+        2,
+        4,
+        6
+      ],
+      "rank": 65,
+      "codimension": 60,
+      "polynomial_degree": 3,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        6,
         30,
         42
       ],
@@ -942,6 +910,38 @@
       ],
       "rank": 60,
       "codimension": 65,
+      "polynomial_degree": 3,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        12,
+        20,
+        30
+      ],
+      "sector_spins": [
+        3,
+        4,
+        5
+      ],
+      "rank": 77,
+      "codimension": 48,
+      "polynomial_degree": 3,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        12,
+        20,
+        42
+      ],
+      "sector_spins": [
+        3,
+        4,
+        6
+      ],
+      "rank": 68,
+      "codimension": 57,
       "polynomial_degree": 3,
       "status": "PASS"
     },
@@ -1010,60 +1010,6 @@
       ],
       "rank": 62,
       "codimension": 63,
-      "polynomial_degree": 4,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        2,
-        12,
-        20
-      ],
-      "sector_spins": [
-        0,
-        1,
-        3,
-        4
-      ],
-      "rank": 65,
-      "codimension": 60,
-      "polynomial_degree": 4,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        6,
-        12,
-        20
-      ],
-      "sector_spins": [
-        0,
-        2,
-        3,
-        4
-      ],
-      "rank": 81,
-      "codimension": 44,
-      "polynomial_degree": 4,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        2,
-        6,
-        12,
-        20
-      ],
-      "sector_spins": [
-        1,
-        2,
-        3,
-        4
-      ],
-      "rank": 89,
-      "codimension": 36,
       "polynomial_degree": 4,
       "status": "PASS"
     },
@@ -1089,6 +1035,42 @@
       "roots": [
         0,
         2,
+        6,
+        42
+      ],
+      "sector_spins": [
+        0,
+        1,
+        2,
+        6
+      ],
+      "rank": 48,
+      "codimension": 77,
+      "polynomial_degree": 4,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
+        2,
+        12,
+        20
+      ],
+      "sector_spins": [
+        0,
+        1,
+        3,
+        4
+      ],
+      "rank": 65,
+      "codimension": 60,
+      "polynomial_degree": 4,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
+        2,
         12,
         30
       ],
@@ -1106,36 +1088,18 @@
     {
       "roots": [
         0,
-        6,
+        2,
         12,
-        30
+        42
       ],
       "sector_spins": [
         0,
-        2,
-        3,
-        5
-      ],
-      "rank": 76,
-      "codimension": 49,
-      "polynomial_degree": 4,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        2,
-        6,
-        12,
-        30
-      ],
-      "sector_spins": [
         1,
-        2,
         3,
-        5
+        6
       ],
-      "rank": 84,
-      "codimension": 41,
+      "rank": 51,
+      "codimension": 74,
       "polynomial_degree": 4,
       "status": "PASS"
     },
@@ -1160,6 +1124,96 @@
     {
       "roots": [
         0,
+        2,
+        20,
+        42
+      ],
+      "sector_spins": [
+        0,
+        1,
+        4,
+        6
+      ],
+      "rank": 50,
+      "codimension": 75,
+      "polynomial_degree": 4,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
+        2,
+        30,
+        42
+      ],
+      "sector_spins": [
+        0,
+        1,
+        5,
+        6
+      ],
+      "rank": 45,
+      "codimension": 80,
+      "polynomial_degree": 4,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
+        6,
+        12,
+        20
+      ],
+      "sector_spins": [
+        0,
+        2,
+        3,
+        4
+      ],
+      "rank": 81,
+      "codimension": 44,
+      "polynomial_degree": 4,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
+        6,
+        12,
+        30
+      ],
+      "sector_spins": [
+        0,
+        2,
+        3,
+        5
+      ],
+      "rank": 76,
+      "codimension": 49,
+      "polynomial_degree": 4,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
+        6,
+        12,
+        42
+      ],
+      "sector_spins": [
+        0,
+        2,
+        3,
+        6
+      ],
+      "rank": 67,
+      "codimension": 58,
+      "polynomial_degree": 4,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
         6,
         20,
         30
@@ -1169,6 +1223,168 @@
         2,
         4,
         5
+      ],
+      "rank": 75,
+      "codimension": 50,
+      "polynomial_degree": 4,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
+        6,
+        20,
+        42
+      ],
+      "sector_spins": [
+        0,
+        2,
+        4,
+        6
+      ],
+      "rank": 66,
+      "codimension": 59,
+      "polynomial_degree": 4,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
+        6,
+        30,
+        42
+      ],
+      "sector_spins": [
+        0,
+        2,
+        5,
+        6
+      ],
+      "rank": 61,
+      "codimension": 64,
+      "polynomial_degree": 4,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
+        12,
+        20,
+        30
+      ],
+      "sector_spins": [
+        0,
+        3,
+        4,
+        5
+      ],
+      "rank": 78,
+      "codimension": 47,
+      "polynomial_degree": 4,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
+        12,
+        20,
+        42
+      ],
+      "sector_spins": [
+        0,
+        3,
+        4,
+        6
+      ],
+      "rank": 69,
+      "codimension": 56,
+      "polynomial_degree": 4,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
+        12,
+        30,
+        42
+      ],
+      "sector_spins": [
+        0,
+        3,
+        5,
+        6
+      ],
+      "rank": 64,
+      "codimension": 61,
+      "polynomial_degree": 4,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
+        20,
+        30,
+        42
+      ],
+      "sector_spins": [
+        0,
+        4,
+        5,
+        6
+      ],
+      "rank": 63,
+      "codimension": 62,
+      "polynomial_degree": 4,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        2,
+        6,
+        12,
+        20
+      ],
+      "sector_spins": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "rank": 89,
+      "codimension": 36,
+      "polynomial_degree": 4,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        2,
+        6,
+        12,
+        30
+      ],
+      "sector_spins": [
+        1,
+        2,
+        3,
+        5
+      ],
+      "rank": 84,
+      "codimension": 41,
+      "polynomial_degree": 4,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        2,
+        6,
+        12,
+        42
+      ],
+      "sector_spins": [
+        1,
+        2,
+        3,
+        6
       ],
       "rank": 75,
       "codimension": 50,
@@ -1195,19 +1411,37 @@
     },
     {
       "roots": [
-        0,
-        12,
+        2,
+        6,
         20,
-        30
+        42
       ],
       "sector_spins": [
-        0,
-        3,
+        1,
+        2,
         4,
-        5
+        6
       ],
-      "rank": 78,
-      "codimension": 47,
+      "rank": 74,
+      "codimension": 51,
+      "polynomial_degree": 4,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        2,
+        6,
+        30,
+        42
+      ],
+      "sector_spins": [
+        1,
+        2,
+        5,
+        6
+      ],
+      "rank": 69,
+      "codimension": 56,
       "polynomial_degree": 4,
       "status": "PASS"
     },
@@ -1231,168 +1465,6 @@
     },
     {
       "roots": [
-        6,
-        12,
-        20,
-        30
-      ],
-      "sector_spins": [
-        2,
-        3,
-        4,
-        5
-      ],
-      "rank": 102,
-      "codimension": 23,
-      "polynomial_degree": 4,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        2,
-        6,
-        42
-      ],
-      "sector_spins": [
-        0,
-        1,
-        2,
-        6
-      ],
-      "rank": 48,
-      "codimension": 77,
-      "polynomial_degree": 4,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        2,
-        12,
-        42
-      ],
-      "sector_spins": [
-        0,
-        1,
-        3,
-        6
-      ],
-      "rank": 51,
-      "codimension": 74,
-      "polynomial_degree": 4,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        6,
-        12,
-        42
-      ],
-      "sector_spins": [
-        0,
-        2,
-        3,
-        6
-      ],
-      "rank": 67,
-      "codimension": 58,
-      "polynomial_degree": 4,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        2,
-        6,
-        12,
-        42
-      ],
-      "sector_spins": [
-        1,
-        2,
-        3,
-        6
-      ],
-      "rank": 75,
-      "codimension": 50,
-      "polynomial_degree": 4,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        2,
-        20,
-        42
-      ],
-      "sector_spins": [
-        0,
-        1,
-        4,
-        6
-      ],
-      "rank": 50,
-      "codimension": 75,
-      "polynomial_degree": 4,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        6,
-        20,
-        42
-      ],
-      "sector_spins": [
-        0,
-        2,
-        4,
-        6
-      ],
-      "rank": 66,
-      "codimension": 59,
-      "polynomial_degree": 4,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        2,
-        6,
-        20,
-        42
-      ],
-      "sector_spins": [
-        1,
-        2,
-        4,
-        6
-      ],
-      "rank": 74,
-      "codimension": 51,
-      "polynomial_degree": 4,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        12,
-        20,
-        42
-      ],
-      "sector_spins": [
-        0,
-        3,
-        4,
-        6
-      ],
-      "rank": 69,
-      "codimension": 56,
-      "polynomial_degree": 4,
-      "status": "PASS"
-    },
-    {
-      "roots": [
         2,
         12,
         20,
@@ -1406,96 +1478,6 @@
       ],
       "rank": 77,
       "codimension": 48,
-      "polynomial_degree": 4,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        6,
-        12,
-        20,
-        42
-      ],
-      "sector_spins": [
-        2,
-        3,
-        4,
-        6
-      ],
-      "rank": 93,
-      "codimension": 32,
-      "polynomial_degree": 4,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        2,
-        30,
-        42
-      ],
-      "sector_spins": [
-        0,
-        1,
-        5,
-        6
-      ],
-      "rank": 45,
-      "codimension": 80,
-      "polynomial_degree": 4,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        6,
-        30,
-        42
-      ],
-      "sector_spins": [
-        0,
-        2,
-        5,
-        6
-      ],
-      "rank": 61,
-      "codimension": 64,
-      "polynomial_degree": 4,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        2,
-        6,
-        30,
-        42
-      ],
-      "sector_spins": [
-        1,
-        2,
-        5,
-        6
-      ],
-      "rank": 69,
-      "codimension": 56,
-      "polynomial_degree": 4,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        12,
-        30,
-        42
-      ],
-      "sector_spins": [
-        0,
-        3,
-        5,
-        6
-      ],
-      "rank": 64,
-      "codimension": 61,
       "polynomial_degree": 4,
       "status": "PASS"
     },
@@ -1519,42 +1501,6 @@
     },
     {
       "roots": [
-        6,
-        12,
-        30,
-        42
-      ],
-      "sector_spins": [
-        2,
-        3,
-        5,
-        6
-      ],
-      "rank": 88,
-      "codimension": 37,
-      "polynomial_degree": 4,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        20,
-        30,
-        42
-      ],
-      "sector_spins": [
-        0,
-        4,
-        5,
-        6
-      ],
-      "rank": 63,
-      "codimension": 62,
-      "polynomial_degree": 4,
-      "status": "PASS"
-    },
-    {
-      "roots": [
         2,
         20,
         30,
@@ -1568,6 +1514,60 @@
       ],
       "rank": 71,
       "codimension": 54,
+      "polynomial_degree": 4,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        6,
+        12,
+        20,
+        30
+      ],
+      "sector_spins": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "rank": 102,
+      "codimension": 23,
+      "polynomial_degree": 4,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        6,
+        12,
+        20,
+        42
+      ],
+      "sector_spins": [
+        2,
+        3,
+        4,
+        6
+      ],
+      "rank": 93,
+      "codimension": 32,
+      "polynomial_degree": 4,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        6,
+        12,
+        30,
+        42
+      ],
+      "sector_spins": [
+        2,
+        3,
+        5,
+        6
+      ],
+      "rank": 88,
+      "codimension": 37,
       "polynomial_degree": 4,
       "status": "PASS"
     },
@@ -1652,86 +1652,6 @@
         0,
         2,
         6,
-        20,
-        30
-      ],
-      "sector_spins": [
-        0,
-        1,
-        2,
-        4,
-        5
-      ],
-      "rank": 84,
-      "codimension": 41,
-      "polynomial_degree": 5,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        2,
-        12,
-        20,
-        30
-      ],
-      "sector_spins": [
-        0,
-        1,
-        3,
-        4,
-        5
-      ],
-      "rank": 87,
-      "codimension": 38,
-      "polynomial_degree": 5,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        6,
-        12,
-        20,
-        30
-      ],
-      "sector_spins": [
-        0,
-        2,
-        3,
-        4,
-        5
-      ],
-      "rank": 103,
-      "codimension": 22,
-      "polynomial_degree": 5,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        2,
-        6,
-        12,
-        20,
-        30
-      ],
-      "sector_spins": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
-      "rank": 111,
-      "codimension": 14,
-      "polynomial_degree": 5,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        2,
-        6,
         12,
         42
       ],
@@ -1753,6 +1673,26 @@
         2,
         6,
         20,
+        30
+      ],
+      "sector_spins": [
+        0,
+        1,
+        2,
+        4,
+        5
+      ],
+      "rank": 84,
+      "codimension": 41,
+      "polynomial_degree": 5,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
+        2,
+        6,
+        20,
         42
       ],
       "sector_spins": [
@@ -1764,66 +1704,6 @@
       ],
       "rank": 75,
       "codimension": 50,
-      "polynomial_degree": 5,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        2,
-        12,
-        20,
-        42
-      ],
-      "sector_spins": [
-        0,
-        1,
-        3,
-        4,
-        6
-      ],
-      "rank": 78,
-      "codimension": 47,
-      "polynomial_degree": 5,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        6,
-        12,
-        20,
-        42
-      ],
-      "sector_spins": [
-        0,
-        2,
-        3,
-        4,
-        6
-      ],
-      "rank": 94,
-      "codimension": 31,
-      "polynomial_degree": 5,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        2,
-        6,
-        12,
-        20,
-        42
-      ],
-      "sector_spins": [
-        1,
-        2,
-        3,
-        4,
-        6
-      ],
-      "rank": 102,
-      "codimension": 23,
       "polynomial_degree": 5,
       "status": "PASS"
     },
@@ -1852,6 +1732,46 @@
         0,
         2,
         12,
+        20,
+        30
+      ],
+      "sector_spins": [
+        0,
+        1,
+        3,
+        4,
+        5
+      ],
+      "rank": 87,
+      "codimension": 38,
+      "polynomial_degree": 5,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
+        2,
+        12,
+        20,
+        42
+      ],
+      "sector_spins": [
+        0,
+        1,
+        3,
+        4,
+        6
+      ],
+      "rank": 78,
+      "codimension": 47,
+      "polynomial_degree": 5,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
+        2,
+        12,
         30,
         42
       ],
@@ -1864,46 +1784,6 @@
       ],
       "rank": 73,
       "codimension": 52,
-      "polynomial_degree": 5,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        0,
-        6,
-        12,
-        30,
-        42
-      ],
-      "sector_spins": [
-        0,
-        2,
-        3,
-        5,
-        6
-      ],
-      "rank": 89,
-      "codimension": 36,
-      "polynomial_degree": 5,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        2,
-        6,
-        12,
-        30,
-        42
-      ],
-      "sector_spins": [
-        1,
-        2,
-        3,
-        5,
-        6
-      ],
-      "rank": 97,
-      "codimension": 28,
       "polynomial_degree": 5,
       "status": "PASS"
     },
@@ -1931,6 +1811,66 @@
       "roots": [
         0,
         6,
+        12,
+        20,
+        30
+      ],
+      "sector_spins": [
+        0,
+        2,
+        3,
+        4,
+        5
+      ],
+      "rank": 103,
+      "codimension": 22,
+      "polynomial_degree": 5,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
+        6,
+        12,
+        20,
+        42
+      ],
+      "sector_spins": [
+        0,
+        2,
+        3,
+        4,
+        6
+      ],
+      "rank": 94,
+      "codimension": 31,
+      "polynomial_degree": 5,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
+        6,
+        12,
+        30,
+        42
+      ],
+      "sector_spins": [
+        0,
+        2,
+        3,
+        5,
+        6
+      ],
+      "rank": 89,
+      "codimension": 36,
+      "polynomial_degree": 5,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        0,
+        6,
         20,
         30,
         42
@@ -1944,26 +1884,6 @@
       ],
       "rank": 88,
       "codimension": 37,
-      "polynomial_degree": 5,
-      "status": "PASS"
-    },
-    {
-      "roots": [
-        2,
-        6,
-        20,
-        30,
-        42
-      ],
-      "sector_spins": [
-        1,
-        2,
-        4,
-        5,
-        6
-      ],
-      "rank": 96,
-      "codimension": 29,
       "polynomial_degree": 5,
       "status": "PASS"
     },
@@ -1984,6 +1904,86 @@
       ],
       "rank": 91,
       "codimension": 34,
+      "polynomial_degree": 5,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        2,
+        6,
+        12,
+        20,
+        30
+      ],
+      "sector_spins": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "rank": 111,
+      "codimension": 14,
+      "polynomial_degree": 5,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        2,
+        6,
+        12,
+        20,
+        42
+      ],
+      "sector_spins": [
+        1,
+        2,
+        3,
+        4,
+        6
+      ],
+      "rank": 102,
+      "codimension": 23,
+      "polynomial_degree": 5,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        2,
+        6,
+        12,
+        30,
+        42
+      ],
+      "sector_spins": [
+        1,
+        2,
+        3,
+        5,
+        6
+      ],
+      "rank": 97,
+      "codimension": 28,
+      "polynomial_degree": 5,
+      "status": "PASS"
+    },
+    {
+      "roots": [
+        2,
+        6,
+        20,
+        30,
+        42
+      ],
+      "sector_spins": [
+        1,
+        2,
+        4,
+        5,
+        6
+      ],
+      "rank": 96,
+      "codimension": 29,
       "polynomial_degree": 5,
       "status": "PASS"
     },
