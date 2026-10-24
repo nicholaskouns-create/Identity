@@ -20,12 +20,21 @@ function download(obj, name) {
 async function load() {
   const errors = [];
   for (const url of sourceUrls) {
+    // Bound each attempt, including a stalled response body, so fallback and
+    // the manual retry control remain reachable during network interruptions.
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
     try {
-      const response = await fetch(url, {cache: 'no-store'});
+      const response = await fetch(url, {cache: 'no-store', signal: controller.signal});
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const raw = await response.json();
       return {raw, summary: summarize(raw), source: new URL(url, location.href).href};
-    } catch (error) { errors.push(`${url}: ${error.message}`); }
+    } catch (error) {
+      const reason = error.name === 'AbortError' ? 'timed out after 8 seconds' : error.message;
+      errors.push(`${url}: ${reason}`);
+    } finally {
+      clearTimeout(timeout);
+    }
   }
   throw new Error('Results could not be loaded from GitHub Pages or the raw repository. ' + errors.join('; '));
 }
