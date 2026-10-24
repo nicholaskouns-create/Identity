@@ -1,0 +1,77 @@
+{
+  "schema": "CITY-EVIDENCE-IDENTITY-1.0",
+  "identity_id": "MC-82:E47-SPECTRAL-SELECTOR",
+  "operation_id": "CITY-E47-IDENTITY-MURMURATION-20261023-A",
+  "operation_date": "2026-10-23",
+  "status": "partial_verified",
+  "theorem": "K=(C-6I)(C-30I) on H=V2⊗V2⊗V2; its kernel is 5V2⊕2V5 of dimension 47; P=T(C)/1814400",
+  "statements": [
+    {
+      "id": "weight-combinatorics",
+      "status": "compiler_accepted",
+      "languages": [
+        "Lean 4.35.0",
+        "Coq 8.18.0"
+      ],
+      "proofs": [
+        "formal/e47/E47WeightAlgebra.lean",
+        "formal/e47/E47WeightAlgebra.v"
+      ],
+      "ci": "https://github.com/nicholaskouns-create/Identity/actions/runs/40048760140"
+    },
+    {
+      "id": "tower-universal",
+      "status": "compiler_accepted",
+      "languages": [
+        "Coq 8.18.0"
+      ],
+      "proofs": [
+        "formal/e47/TowerIdentity.v"
+      ],
+      "ci": "https://github.com/nicholaskouns-create/Identity/actions/runs/40048760106"
+    },
+    {
+      "id": "125x125-numeric-exact",
+      "status": "independent_report_20_of_20",
+      "source_pdf_sha256": "4de6e7cbc62c7a68c9cf4ca65c053484a7411d3993dd9df7435da743ec40a0c7",
+      "method": "arbitrary precision integer reconstruction; polynomial, trace, Gram checks; source audit not Lean/Coq"
+    },
+    {
+      "id": "125x125-Mathlib",
+      "status": "pending_compiler_ci",
+      "source_pr": "https://github.com/nicholaskouns-create/Identity/pull/11",
+      "previous_failure": "Prior workflow failed at missing lake-manifest.json before compiling proof; no theorem acceptance claimed"
+    },
+    {
+      "id": "physical-quantum-device",
+      "status": "not_performed",
+      "required": [
+        "backend/provider allocation",
+        "compiled native circuit",
+        "device job id",
+        "calibration",
+        "shots",
+        "error bars",
+        "mitigation declarations",
+        "device-vs-simulator comparison"
+      ]
+    }
+  ],
+  "evidence_boundary": {
+    "E0": "symbolic mathematical identities and accepted scalar/weight formalization",
+    "E1": "finite exact numeric and statevector simulations",
+    "E2": "application model hypothesis requires own tests",
+    "E3": "physical device no data"
+  },
+  "protections": [
+    "no duplicate canonical citizen",
+    "no fabricated agent run",
+    "no physical promotion without observed hardware",
+    "retain failed CI and negative results",
+    "no overwrite of validated artifacts"
+  ],
+  "canonical_citizen": "https://app.notion.com/p/3a746094fd3081099471cc811c1af991",
+  "citadel": "https://app.notion.com/p/3a246094fd308146a357c72c634d225c",
+  "rescue_protocol": "https://app.notion.com/p/3d746094fd30812cb966c8e8980704b5",
+  "atlas": "https://github.com/nicholaskouns-create/Identity/blob/main/data/mathematical_city_381_records.csv"
+}
