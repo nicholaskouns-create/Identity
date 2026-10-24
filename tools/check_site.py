@@ -72,4 +72,15 @@ assert ".skip-link:focus" in ablation_html, "Ablation skip link must appear on f
 assert '<div id="data-panel" hidden>' in ablation_html, "Ablation results must stay hidden until loaded"
 assert '<div id="bars" role="group" aria-labelledby="overview"></div>' in ablation_html, "Chart group must expose its captions and values"
 
+# Check the dynamic chart and paired-table semantics at the source level.
+# This does not replace a screen-reader or browser interaction audit.
+ablation_js = (SITE/"ablation.js").read_text(encoding="utf-8")
+assert 'id="left-auc-header"' in ablation_html and 'id="right-auc-header"' in ablation_html, "Paired column headers need stable IDs"
+assert "track.setAttribute('role', 'img')" in ablation_js, "Chart bars must expose an accessible graphic role"
+assert "track.setAttribute('aria-label'," in ablation_js, "Chart bars must have numeric accessible names"
+assert "$('left-auc-header').textContent" in ablation_js, "Left column heading must follow selection"
+assert "$('right-auc-header').textContent" in ablation_js, "Right column heading must follow selection"
+assert ablation_js.count("el(index === 0 ? 'th' : 'td', value)") == 2, "Aggregate and paired tables need row header cells"
+assert ablation_js.count("cell.scope = 'row'") == 2, "Row header cells must declare their scope"
+
 print("SITE_STATIC_CHECK_PASS")
