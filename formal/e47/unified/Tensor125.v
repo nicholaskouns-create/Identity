@@ -1,5 +1,6 @@
 (* Concrete 125-state triple tensor generator entries, weight basis. *)
-From Coq Require Import ZArith Arith Bool.
+From Coq Require Import ZArith Arith Bool List.
+Import ListNotations.
 Open Scope Z_scope.
 Definition a (n : nat) := (n / 25)%nat.
 Definition b (n : nat) := ((n / 5) mod 5)%nat.
@@ -25,3 +26,62 @@ Theorem highest_raising_zero : totalUp 0%nat 0%nat = 0.
 Proof. vm_compute. reflexivity. Qed.
 Theorem lowest_lowering_zero : totalDown 124%nat 124%nat = 0.
 Proof. vm_compute. reflexivity. Qed.
+
+(* Finite certificates over the entire concrete 125-state diagonal.
+   These establish weight counts and combinatorial block dimensions.
+   They do not prove the full Casimir eigenspace decomposition. *)
+
+Definition weightCount (m : Z) : nat :=
+  List.length (List.filter (fun i => Z.eqb (totalZ i i) m) (List.seq 0 125)).
+
+Definition multiplicity (j : nat) : nat :=
+  Nat.sub (weightCount (Z.of_nat j)) (weightCount (Z.of_nat (S j))).
+
+Theorem diagonal_weight_counts :
+  List.map (fun n => weightCount (Z.of_nat n - 6)) (List.seq 0 13) =
+  [1%nat; 3%nat; 6%nat; 10%nat; 15%nat; 18%nat; 19%nat;
+   18%nat; 15%nat; 10%nat; 6%nat; 3%nat; 1%nat].
+Proof. vm_compute. reflexivity. Qed.
+
+Theorem spin_multiplicities_from_diagonal :
+  List.map multiplicity (List.seq 0 7) =
+  [1%nat; 3%nat; 5%nat; 4%nat; 3%nat; 2%nat; 1%nat].
+Proof. vm_compute. reflexivity. Qed.
+
+Theorem dimension_from_diagonal :
+  List.fold_right Nat.add 0%nat
+    (List.map (fun j => (multiplicity j * (2 * j + 1))%nat)
+      (List.seq 0 7)) = 125%nat.
+Proof. vm_compute. reflexivity. Qed.
+
+Theorem selected_block_dimension_from_diagonal :
+  (multiplicity 2%nat * 5 + multiplicity 5%nat * 11)%nat = 47%nat.
+Proof. vm_compute. reflexivity. Qed.
+
+Theorem totalZ_trace :
+  List.fold_right Z.add 0
+    (List.map (fun n => totalZ n n) (List.seq 0 125)) = 0.
+Proof. vm_compute. reflexivity. Qed.
+
+Theorem totalZ_diagonal_square_trace :
+  List.fold_right Z.add 0
+    (List.map (fun n => totalZ n n * totalZ n n) (List.seq 0 125)) = 750.
+Proof. vm_compute. reflexivity. Qed.
+
+(* Bounded all-index versions of the raising/lowering boundary checks. *)
+Theorem highest_raising_zero_all :
+  List.forallb (fun i => Z.eqb (totalUp i 0%nat) 0) (List.seq 0 125) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Theorem lowest_lowering_zero_all :
+  List.forallb (fun i => Z.eqb (totalDown i 124%nat) 0) (List.seq 0 125) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions diagonal_weight_counts.
+Print Assumptions spin_multiplicities_from_diagonal.
+Print Assumptions dimension_from_diagonal.
+Print Assumptions selected_block_dimension_from_diagonal.
+Print Assumptions totalZ_trace.
+Print Assumptions totalZ_diagonal_square_trace.
+Print Assumptions highest_raising_zero_all.
+Print Assumptions lowest_lowering_zero_all.
