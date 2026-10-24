@@ -83,7 +83,19 @@ function paint({raw, summary, source}) {
   updateComparison();
   $('data-panel').hidden = false;
 }
-load().then(paint).catch(error => {
-  $('load-status').textContent = error.message;
-  $('load-status').classList.add('error');
-});
+const retryButton = $('retry-load');
+async function refresh() {
+  retryButton.hidden = true;
+  $('data-panel').hidden = true;
+  $('load-status').classList.remove('error');
+  $('load-status').textContent = 'Loading archived results…';
+  try {
+    paint(await load());
+  } catch (error) {
+    $('load-status').textContent = error.message;
+    $('load-status').classList.add('error');
+    retryButton.hidden = false;
+  }
+}
+retryButton.addEventListener('click', refresh);
+refresh();
