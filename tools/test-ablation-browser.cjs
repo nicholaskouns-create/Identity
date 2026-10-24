@@ -93,7 +93,7 @@ const server = createServer(async (request, response) => {
     await fallbackPage.waitForFunction(() =>
       document.querySelector('#load-status')?.textContent.startsWith('Loaded 8 archived synthetic seeds.')
     );
-    assert.match(await fallbackPage.locator('#load-status').textContent(), /raw\\.githubusercontent\\.com/);
+    assert.ok((await fallbackPage.locator('#load-status').textContent()).includes('raw.githubusercontent.com'));
     assert.equal(await fallbackPage.locator('#data-panel').evaluate(el => el.hidden), false);
     assert.equal(await fallbackPage.locator('#results-body tr').count(), 4);
     await fallbackPage.close();
