@@ -13,3 +13,7 @@ Lean and Rocq sources for the E47 linear-algebra certificate are pinned in [form
 ## E47 spectral and noiseless-subsystem certificate (2026-10-24)
 
 [Read the cross-repository evidence note](E47_SPECTRAL_ADVANTAGES_2026-10-24.md). Documents the exact 125→47 Casimir construction, the (15/17)^n spectral convergence certificate, and collective-SU(2) noiseless multiplicity encoding, separately from channel-dependent QEC and unmeasured hardware advantages.
+
+## Socorro reflection and stochastic leakage (2026-10-24)
+
+[Proof, exact second-moment recurrence, Monte Carlo code and independent validation instruments](research/socorro/README.md) · [Identity public result page](https://nicholaskouns-create.github.io/Identity/site/socorro-stochastic.html). This is a mathematical construction from the idealized glyph; Lean/Coq compilation and hardware simulation are not asserted.
