@@ -10,6 +10,8 @@ assert actual<=ALLOWED, f"Unexpected publish files: {actual-ALLOWED}"
 html=(SITE/"index.html").read_text(encoding="utf-8")
 assert 'href="./e47-spectral-advantages.html"' in html, "Homepage must link to the published E47 certificate"
 assert 'href="socorro-stochastic.html"' in html, "Homepage must link to the published Socorro stochastic research page"
+research_section = html.split('<section id="research-links"', 1)[1].split("</section>", 1)[0]
+assert 'href="socorro-stochastic.html"' in research_section, "Socorro link must remain inside the main research navigation"
 published="\n".join((SITE/name).read_text(encoding="utf-8") for name in sorted(actual) if Path(name).suffix in TEXT_SUFFIXES)
 assert '<script type="module" src="./mnemosyne.js"></script>' in html
 assert '<script type="module" src="./sync.js"></script>' in html
