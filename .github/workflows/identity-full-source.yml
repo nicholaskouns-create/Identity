@@ -1,0 +1,102 @@
+name: Identity full source verification
+on:
+  push:
+    paths:
+      - '.github/workflows/identity-full-source.yml'
+      - 'simulation/**'
+      - 'formal/e47/**'
+      - 'tools/**'
+      - 'site/**'
+      - 'infra/ingestion/**'
+  pull_request:
+    paths:
+      - '.github/workflows/identity-full-source.yml'
+      - 'simulation/**'
+      - 'formal/e47/**'
+      - 'tools/**'
+      - 'site/**'
+      - 'infra/ingestion/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  proof-compiler:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq and NumPy
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y coq python3-numpy curl ca-certificates
+      - name: Install Lean
+        run: |
+          set -euo pipefail
+          curl -fsSL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --no-modify-path --default-toolchain leanprover/lean4:v4.35.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile exact algebra and tower certificates
+        run: bash scripts/validate-formal-local.sh
+      - name: Compile separate weight algebra in Lean and Coq
+        run: |
+          set -euo pipefail
+          temp="$(mktemp -d)"
+          trap 'rm -rf "$temp"' EXIT
+          cp formal/e47/E47WeightAlgebra.lean formal/e47/E47WeightAlgebra.v "$temp/"
+          (cd "$temp" && lean E47WeightAlgebra.lean && coqc -q E47WeightAlgebra.v)
+  quantum-recovery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Pin and install numeric libraries
+        run: python -m pip install numpy==2.2.6 scipy==1.15.3 sympy==1.13.3
+      - name: E47 exact and recovery cases
+        run: |
+          python simulation/e47_qec/validate.py
+          python simulation/e47_qec/symbolic_check.py
+          python simulation/e47_qec/sequent_check.py
+          python simulation/e47_qec/llm_demo.py
+  temporal-network:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.2.6
+      - name: Synthetic temporal graph reproducibility
+        run: python simulation/e47_tqgnn/run.py
+  archive-website-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.2.6
+      - run: npm install --prefix /tmp/identity-test-deps fake-indexeddb@6.2.4
+      - name: Execute archive, synchronization, site and ingestion tests
+        env:
+          NODE_PATH: /tmp/identity-test-deps/node_modules
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s infra/ingestion -v
+          node tools/test-archive.cjs
+          node --check site/mnemosyne.js
+          node --check site/sync.js
+          node --check site/sync-merge.js
+          node tools/test-sync.mjs
+          node --check site/forge-engine.js
+          node --check site/forge-ui.js
+          node tools/test-forge.mjs
+          python -m unittest discover -s tools/tests -v
+          python tools/check_site.py
