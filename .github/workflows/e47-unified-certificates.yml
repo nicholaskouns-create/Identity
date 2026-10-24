@@ -34,6 +34,6 @@ jobs:
         run: |
           set -euxo pipefail
           coqc --version
-          for f in formal/e47/unified/{Core47,RGFixed,Retention,Clock,EncodedOracle,Spin2Generators}.v; do
+          for f in formal/e47/unified/{Core47,RGFixed,Retention,Clock,EncodedOracle,Spin2Generators,Tensor125}.v; do
             coqc "$f"
           done
