@@ -22,4 +22,38 @@ assert "sb_publishable_" in (SITE/"sync.js").read_text(encoding="utf-8")
 assert "Optional email sync" in html
 assert "mnemosyne_private" not in published
 assert not re.search(r"sb_secret_|service_role|BEGIN PRIVATE KEY", published)
+# Guard the keyboard-navigation landmarks added to the archive homepage.
+# This is a source-level regression check, not a browser accessibility audit.
+from html.parser import HTMLParser
+
+class AccessibilityLandmarks(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.ids = set()
+        self.headings = []
+        self.main_ids = []
+        self.skip_targets = []
+        self.main_tabindexes = []
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if attrs.get("id"):
+            self.ids.add(attrs["id"])
+        if tag in ("h1", "h2"):
+            self.headings.append(tag)
+        if tag == "main":
+            self.main_ids.append(attrs.get("id"))
+            self.main_tabindexes.append(attrs.get("tabindex"))
+        if tag == "a" and "skip-link" in attrs.get("class", "").split():
+            self.skip_targets.append(attrs.get("href"))
+
+landmarks = AccessibilityLandmarks()
+landmarks.feed(html)
+assert len(landmarks.main_ids) == 1, "Homepage needs exactly one main landmark"
+assert landmarks.headings.count("h1") == 1, "Homepage needs exactly one h1"
+assert "h2" in landmarks.headings and landmarks.headings.index("h1") < landmarks.headings.index("h2"), "Heading order regressed"
+assert landmarks.skip_targets == ["#" + landmarks.main_ids[0]], "Skip link must target the main landmark"
+assert landmarks.main_ids[0] in landmarks.ids, "Skip target must exist"
+assert landmarks.main_tabindexes == ["-1"], "Main target must support programmatic focus"
+assert ".skip-link:focus" in html, "Skip link must become visible on keyboard focus"
 print("SITE_STATIC_CHECK_PASS")
