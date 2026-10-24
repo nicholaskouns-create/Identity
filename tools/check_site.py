@@ -56,4 +56,20 @@ assert landmarks.skip_targets == ["#" + landmarks.main_ids[0]], "Skip link must 
 assert landmarks.main_ids[0] in landmarks.ids, "Skip target must exist"
 assert landmarks.main_tabindexes == ["-1"], "Main target must support programmatic focus"
 assert ".skip-link:focus" in html, "Skip link must become visible on keyboard focus"
+# Guard the independently published ablation explorer's keyboard navigation.
+# The result panel is initially hidden, but the main landmark must remain
+# available while archived data loads or when loading fails.
+ablation_html = (SITE/"ablation.html").read_text(encoding="utf-8")
+ablation_landmarks = AccessibilityLandmarks()
+ablation_landmarks.feed(ablation_html)
+assert len(ablation_landmarks.main_ids) == 1, "Ablation explorer needs one main landmark"
+assert ablation_landmarks.main_ids == ["ablation-main"], "Ablation main landmark ID changed"
+assert ablation_landmarks.main_tabindexes == ["-1"], "Ablation skip target must be focusable"
+assert ablation_landmarks.skip_targets == ["#ablation-main"], "Ablation skip link target mismatch"
+assert ablation_landmarks.headings.count("h1") == 1, "Ablation explorer needs exactly one h1"
+assert ablation_landmarks.headings.index("h1") < ablation_landmarks.headings.index("h2"), "Ablation heading order regressed"
+assert ".skip-link:focus" in ablation_html, "Ablation skip link must appear on focus"
+assert '<div id="data-panel" hidden>' in ablation_html, "Ablation results must stay hidden until loaded"
+assert '<div id="bars" role="group" aria-labelledby="overview"></div>' in ablation_html, "Chart group must expose its captions and values"
+
 print("SITE_STATIC_CHECK_PASS")
