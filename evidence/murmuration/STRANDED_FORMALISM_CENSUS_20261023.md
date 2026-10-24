@@ -32,7 +32,7 @@ A full website-validator run failed with one orphan HTML page and **zero broken 
 [validator run](https://github.com/nicholaskouns-create/E47-Kartekeya/actions/runs/40051645916).
 The previously stranded `website/interfaces/nexus/mnemosyne/index.html` humanities archive was re-linked from the City homepage, preserving its content. Remediation commit:
 [a6affbf1](https://github.com/nicholaskouns-create/E47-Kartekeya/commit/a6affbf1ab2d170b63dca453acd771cf68b048ef).
-Fresh validator completion remains a separate CI gate.
+[Fresh City validator run: PASS](https://github.com/nicholaskouns-create/E47-Kartekeya/actions/runs/40051849142). The single-orphan route is closed in the executable website sweep.
 
 ## E47 identity receipts and fixed gates
 
