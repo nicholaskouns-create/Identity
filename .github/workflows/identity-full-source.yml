@@ -98,5 +98,6 @@ jobs:
           node --check site/forge-engine.js
           node --check site/forge-ui.js
           node tools/test-forge.mjs
+          node --test site/ablation.test.mjs
           python -m unittest discover -s tools/tests -v
           python tools/check_site.py
