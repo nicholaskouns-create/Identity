@@ -27,16 +27,12 @@ Lemma invariants : forall n : nat,
 Proof.
   induction n as [|n IH].
   - simpl. lia.
-  - rewrite Nat.even_succ.
-    destruct (Nat.even n) eqn:E;
-      simpl in IH;
+  - rewrite Nat.even_succ. unfold Nat.odd.
+    assert (Ef : fib (S (S n)) = fib (S n) + fib n) by reflexivity.
+    assert (El : luc (S (S n)) = luc (S n) + luc n) by reflexivity.
+    destruct (Nat.even n) eqn:E; simpl negb; cbv iota in IH;
       destruct IH as [H0 [H1 H2]];
-      cbn [negb];
-      replace (fib (S (S n))) with (fib (S n) + fib n)
-        by reflexivity;
-      replace (luc (S (S n))) with (luc (S n) + luc n)
-        by reflexivity;
-      repeat split; nia.
+      rewrite Ef, El; repeat split; nia.
 Qed.
 
 Theorem lucas_fibonacci_odd : forall n : nat,
