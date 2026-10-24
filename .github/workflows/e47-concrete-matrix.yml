@@ -1,0 +1,28 @@
+name: E47 concrete matrix theorem (Mathlib)
+on:
+  push:
+    paths:
+      - "formal/e47/E47ConcreteMatrix.lean"
+      - "formal/e47-concrete/**"
+      - ".github/workflows/e47-concrete-matrix.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  matrix-proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: formal/e47-concrete
+          build: false
+          test: false
+          lint: false
+      - name: Fetch Mathlib compiled cache
+        working-directory: formal/e47-concrete
+        run: lake exe cache get
+      - name: Compile actual 125x125 integer Casimir certificates
+        working-directory: formal/e47-concrete
+        run: lake env lean ../e47/E47ConcreteMatrix.lean
