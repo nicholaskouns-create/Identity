@@ -31,20 +31,24 @@ async function load() {
 }
 function paint({raw, summary, source}) {
   $('load-status').textContent = `Loaded ${summary.seeds} archived synthetic seeds. Source: ${source}`;
+  const armLabels = Object.fromEntries(ARMS);
   const root = $('results-body'); root.replaceChildren();
   const bars = $('bars'); bars.replaceChildren();
   for (const [id, label] of ARMS) {
     const arm = summary.arms[id];
     const row = el('tr');
-    for (const value of [label, fmt(arm.mean), fmt(arm.sd), sign(arm.deltaBaseline)]) {
-      row.append(el('td', value));
-    }
+    [label, fmt(arm.mean), fmt(arm.sd), sign(arm.deltaBaseline)].forEach((value, index) => {
+      const cell = el(index === 0 ? 'th' : 'td', value);
+      if (index === 0) cell.scope = 'row';
+      row.append(cell);
+    });
     root.append(row);
     const wrap = el('div'); wrap.className = 'bar-row';
     const caption = el('span', label); caption.className = 'bar-caption';
     const track = el('div'); track.className = 'bar-track';
+    track.setAttribute('role', 'img');
+    track.setAttribute('aria-label', `${label}: ${fmt(arm.mean)} mean ROC-AUC`);
     const fill = el('div'); fill.className = 'bar-fill'; fill.style.width = `${arm.mean * 100}%`;
-    fill.setAttribute('aria-label', `${label}: ${fmt(arm.mean)} mean ROC-AUC`);
     track.append(fill);
     const value = el('span', fmt(arm.mean)); value.className = 'bar-value';
     wrap.append(caption, track, value); bars.append(wrap);
@@ -59,11 +63,17 @@ function paint({raw, summary, source}) {
   left.value = 'E47derived24'; right.value = 'random24';
   function updateComparison() {
     const result = compare(summary, left.value, right.value);
+    $('left-auc-header').textContent = `${armLabels[left.value]} AUC`;
+    $('right-auc-header').textContent = `${armLabels[right.value]} AUC`;
     $('comparison').textContent = `Mean paired Δ AUC: ${sign(result.meanDifference)} · Wins / ties / losses: ${result.wins} / ${result.ties} / ${result.losses} (n=${summary.seeds})`;
     const body = $('seed-body'); body.replaceChildren();
     for (let i = 0; i < summary.seeds; i++) {
       const tr = el('tr');
-      for (const value of [i + 1, fmt(summary.arms[left.value].values[i]), fmt(summary.arms[right.value].values[i]), sign(result.differences[i])]) tr.append(el('td', value));
+      [i + 1, fmt(summary.arms[left.value].values[i]), fmt(summary.arms[right.value].values[i]), sign(result.differences[i])].forEach((value, index) => {
+        const cell = el(index === 0 ? 'th' : 'td', value);
+        if (index === 0) cell.scope = 'row';
+        tr.append(cell);
+      });
       body.append(tr);
     }
     $('export').onclick = () => download({source, exported_at: new Date().toISOString(), evidence_class: 'synthetic', archived_results: raw, summary, paired_comparison: result}, 'e47-ablation-view.json');
