@@ -12,6 +12,10 @@ exponential recomputation of deeply nested matrix products.
 
 namespace E47Concrete
 
+-- Large exact integer certificate literals require unbounded elaboration heartbeats.
+set_option maxHeartbeats 0
+set_option maxRecDepth 50000
+
 abbrev M := Matrix (Fin 125) (Fin 125) ℤ
 
 private def d₀ (i : Fin 125) : Nat := i.val / 25
@@ -1471,7 +1475,7 @@ private theorem annihilator_expanded :
     (4648 : ℤ) • casimir ^ 5 - (89280 : ℤ) • casimir ^ 4 +
     (808848 : ℤ) • casimir ^ 3 - (3110400 : ℤ) • casimir ^ 2 +
     (3628800 : ℤ) • casimir := by
-  simp only [scalar]
+  simp only [scalar, zero_smul, add_zero]
   noncomm_ring
 
 set_option maxRecDepth 50000 in
