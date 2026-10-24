@@ -7,6 +7,7 @@ on:
       - 'formal/e47/**'
       - 'tools/**'
       - 'site/**'
+      - 'experiments/e47_ablation_results.json'
       - 'infra/ingestion/**'
   pull_request:
     paths:
