@@ -29,6 +29,7 @@ Proof.
   - simpl. lia.
   - rewrite Nat.even_succ.
     destruct (Nat.even n) eqn:E;
+      rewrite E in IH;
       destruct IH as [H0 [H1 H2]];
       cbn [negb];
       replace (fib (S (S n))) with (fib (S n) + fib n)
