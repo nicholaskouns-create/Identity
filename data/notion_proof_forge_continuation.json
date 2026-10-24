@@ -193,7 +193,7 @@
     {
       "logical_id": "notion:3a746094fd3081c0ac2cef5ca064e12f",
       "title": "City Proofs Projector Calculus and Kernel Preservation",
-      "record_date": "2026-09-13",
+      "record_date": "",
       "source": "notion",
       "artifact_type": "formalism_evidence_record",
       "formalism_family": "Projector algebra",
@@ -210,7 +210,7 @@
     {
       "logical_id": "notion:3a746094fd308105bfdbeed28e21c015",
       "title": "City Proofs E47 Spectral Kernel and Contraction",
-      "record_date": "2026-09-13",
+      "record_date": "",
       "source": "notion",
       "artifact_type": "formalism_evidence_record",
       "formalism_family": "E47 spectral kernel",
@@ -227,7 +227,7 @@
     {
       "logical_id": "notion:3a746094fd3081c3bb56d5a2dfc7614c",
       "title": "City Proofs Order-47 Recurrence and Consensus",
-      "record_date": "2026-09-13",
+      "record_date": "",
       "source": "notion",
       "artifact_type": "formalism_evidence_record",
       "formalism_family": "Finite cyclic dynamics",
@@ -244,7 +244,7 @@
     {
       "logical_id": "notion:3a746094fd308112a0cae4ba09b5fc66",
       "title": "City Proofs FCC x E47 Composite Kernel",
-      "record_date": "2026-09-13",
+      "record_date": "",
       "source": "notion",
       "artifact_type": "formalism_evidence_record",
       "formalism_family": "Finite graph Laplacian",
@@ -261,7 +261,7 @@
     {
       "logical_id": "notion:3a746094fd30814a8e00c7a5175fa077",
       "title": "City Proofs Harmonic Transport and TDA",
-      "record_date": "2026-09-13",
+      "record_date": "",
       "source": "notion",
       "artifact_type": "formalism_evidence_record",
       "formalism_family": "Combinatorial Hodge",
@@ -278,7 +278,7 @@
     {
       "logical_id": "notion:3a746094fd3081ccbfd1f1279b8405f0",
       "title": "City Proofs Recursive Flow and Variational Dynamics",
-      "record_date": "2026-09-13",
+      "record_date": "",
       "source": "notion",
       "artifact_type": "formalism_evidence_record",
       "formalism_family": "Variational dynamics",
@@ -295,7 +295,7 @@
     {
       "logical_id": "notion:3a746094fd3081c68988fbc754d9560a",
       "title": "City Proofs Projected Fluid Evolution",
-      "record_date": "2026-09-13",
+      "record_date": "",
       "source": "notion",
       "artifact_type": "formalism_evidence_record",
       "formalism_family": "Numerical PDE",
@@ -312,7 +312,7 @@
     {
       "logical_id": "notion:3a746094fd308144b066fda4aa91a433",
       "title": "City Proofs Fourteen-Qubit Filter and Born Weight",
-      "record_date": "2026-09-13",
+      "record_date": "",
       "source": "notion",
       "artifact_type": "formalism_evidence_record",
       "formalism_family": "Quantum channel simulation",
@@ -329,7 +329,7 @@
     {
       "logical_id": "notion:3a746094fd3081a68effc138f7220852",
       "title": "City Proofs Isotypic Selection and Recursive Convergence",
-      "record_date": "2026-09-13",
+      "record_date": "",
       "source": "notion",
       "artifact_type": "formalism_evidence_record",
       "formalism_family": "Isotypic selection",
@@ -346,7 +346,7 @@
     {
       "logical_id": "notion:3a746094fd308111aad1e1a97a1c5b3f",
       "title": "City Proof 86 E47 Resolvent Limit",
-      "record_date": "2026-09-13",
+      "record_date": "",
       "source": "notion",
       "artifact_type": "formalism_evidence_record",
       "formalism_family": "Spectral resolvent",
@@ -363,7 +363,7 @@
     {
       "logical_id": "notion:3a746094fd3081748f38c98e684680e1",
       "title": "City Proof 92 E47 Trace Compression",
-      "record_date": "2026-09-13",
+      "record_date": "",
       "source": "notion",
       "artifact_type": "formalism_evidence_record",
       "formalism_family": "Trace algebra",
@@ -380,7 +380,7 @@
     {
       "logical_id": "notion:3a746094fd3081e9a430f69b22f7b992",
       "title": "City Proofs Reproducibility and Certificate Generation",
-      "record_date": "2026-09-13",
+      "record_date": "",
       "source": "notion",
       "artifact_type": "formalism_evidence_record",
       "formalism_family": "Evidence infrastructure",
@@ -397,7 +397,7 @@
     {
       "logical_id": "notion:3d846094fd3081a8b790d12fb40d0cbb",
       "title": "E47 Quantum Operator Theory and QPE Validation",
-      "record_date": "2026-09-13",
+      "record_date": "2026-09-11",
       "source": "notion",
       "artifact_type": "formalism_evidence_record",
       "formalism_family": "Quantum simulation",
@@ -414,7 +414,7 @@
     {
       "logical_id": "notion:3f346094fd308138bf36d60b2e7d5cdd",
       "title": "E47 Grassmann-Casimir Compatibility",
-      "record_date": "2026-09-13",
+      "record_date": "2026-10-08",
       "source": "notion",
       "artifact_type": "formalism_evidence_record",
       "formalism_family": "Grassmann and Casimir algebra",
@@ -431,7 +431,7 @@
     {
       "logical_id": "notion:3ec46094fd3081008bb1ef48dfb78a92",
       "title": "E47 First-Principles Spectral Explication",
-      "record_date": "2026-09-13",
+      "record_date": "2026-10-01",
       "source": "notion",
       "artifact_type": "formalism_evidence_record",
       "formalism_family": "E47 spectral kernel",
@@ -448,7 +448,7 @@
     {
       "logical_id": "notion:3a546094fd3081a7a481c8c3fb4a68e3",
       "title": "Informational Induction Symbolic Validation",
-      "record_date": "2026-09-13",
+      "record_date": "2026-07-21",
       "source": "notion",
       "artifact_type": "formalism_evidence_record",
       "formalism_family": "Informational induction",
@@ -465,7 +465,7 @@
     {
       "logical_id": "notion:3dd46094fd308072b5c2ef223460c15b",
       "title": "THE MATRIX Quantum Simulator",
-      "record_date": "2026-09-13",
+      "record_date": "2026-09-21",
       "source": "notion",
       "artifact_type": "formalism_evidence_record",
       "formalism_family": "Quantum statevector / MPS",
