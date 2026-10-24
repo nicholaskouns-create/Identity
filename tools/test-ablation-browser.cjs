@@ -99,6 +99,24 @@ const server = createServer(async (request, response) => {
     await fallbackPage.close();
     console.log('ABLATION_BROWSER_FALLBACK_PASS');
 
+    // Invalid JSON syntax must also fall back, not just a valid-but-invalid schema.
+    const malformedPage = await context.newPage();
+    await malformedPage.route(localResults, route => route.fulfill({
+      status: 200, contentType: 'application/json', body: '{"seeds":'
+    }));
+    await malformedPage.route(remoteResults, route => route.fulfill({
+      status: 200, contentType: 'application/json',
+      headers: {'access-control-allow-origin': '*'}, body: fixture
+    }));
+    await malformedPage.goto(url);
+    await malformedPage.waitForFunction(() =>
+      document.querySelector('#load-status')?.textContent.startsWith('Loaded 8 archived synthetic seeds.')
+    );
+    assert.ok((await malformedPage.locator('#load-status').textContent()).includes('raw.githubusercontent.com'));
+    assert.equal(await malformedPage.locator('#data-panel').evaluate(el => el.hidden), false);
+    await malformedPage.close();
+    console.log('ABLATION_BROWSER_INVALID_JSON_PASS');
+
     // When neither source is usable, expose an error instead of stale charts.
     const failurePage = await context.newPage();
     for (const source of [localResults, remoteResults]) {
@@ -114,8 +132,21 @@ const server = createServer(async (request, response) => {
     assert.match(await failurePage.locator('#load-status').textContent(), /Results could not be loaded/);
     assert.match(await failurePage.locator('#load-status').textContent(), /HTTP 503/);
     assert.equal(await failurePage.locator('#data-panel').evaluate(el => el.hidden), true);
-    await failurePage.close();
+    assert.equal(await failurePage.locator('#retry-load').isVisible(), true);
     console.log('ABLATION_BROWSER_FAILURE_PASS');
+
+    // Recovery must work without a full-page reload after the sources return.
+    await failurePage.unroute(localResults);
+    await failurePage.unroute(remoteResults);
+    await failurePage.locator('#retry-load').click();
+    await failurePage.waitForFunction(() =>
+      document.querySelector('#load-status')?.textContent.startsWith('Loaded 8 archived synthetic seeds.')
+    );
+    assert.equal(await failurePage.locator('#data-panel').evaluate(el => el.hidden), false);
+    assert.equal(await failurePage.locator('#retry-load').isVisible(), false);
+    assert.equal(await failurePage.locator('#results-body tr').count(), 4);
+    await failurePage.close();
+    console.log('ABLATION_BROWSER_RETRY_PASS');
     console.log('ABLATION_BROWSER_INTERACTION_PASS');
   } finally {
     if (browser) await browser.close();
