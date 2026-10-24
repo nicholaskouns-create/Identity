@@ -42,7 +42,7 @@
         "temporal-network",
         "archive-website-tests"
       ],
-      "scope": "4 jobs passed. This is source-specific verification; distinct Mathlib full matrix proof remains unverified."
+      "scope": "All 4 source-suite lanes passed; 125x125 concrete Mathlib matrix proof additionally passed on an isolated pinned Mathlib workflow. Neither suite is a physical QPU test."
     },
     {
       "id": "125x125-numeric-exact",
@@ -52,9 +52,20 @@
     },
     {
       "id": "125x125-Mathlib",
-      "status": "pending_compiler_ci",
+      "status": "compiler_accepted_native_decide",
       "source_pr": "https://github.com/nicholaskouns-create/Identity/pull/11",
-      "previous_failure": "Prior workflow failed at missing lake-manifest.json before compiling proof; no theorem acceptance claimed"
+      "previous_failure": "Initial deeply nested native_decide was canceled after 43 minutes; staged matrix-power equality certificates passed.",
+      "source": "formal/e47/E47ConcreteMatrix.lean",
+      "merge_sha": "2fbbe964c8b85310867442809355b257160a8e4e",
+      "ci": "https://github.com/nicholaskouns-create/Identity/actions/runs/40100130439",
+      "theorems": [
+        "casimir_annihilator",
+        "scaled_projector_is_idempotent",
+        "selected_subspace_is_kernel",
+        "scaled_projector_trace",
+        "kernel_bezout"
+      ],
+      "scope": "Exact 125x125 matrix equalities, established in a Lean/Mathlib-compiled source from integer spin-2 tensor raising/lowering/weights; computations use generated native_decide axioms trusting Lean's compiler. There is not yet an independent kernel-only matrix proof, or a separately formalized finrank=47 statement."
     },
     {
       "id": "physical-quantum-device",
@@ -72,7 +83,7 @@
     }
   ],
   "evidence_boundary": {
-    "E0": "symbolic mathematical identities and accepted scalar/weight formalization",
+    "E0": "Exact finite representation identities; scalar/weight theorems compiler-accepted in Lean and Coq. Concrete 125x125 matrix identities compiled with Mathlib via native_decide, which generates auditable native computation axioms.",
     "E1": "finite exact numeric and statevector simulations",
     "E2": "application model hypothesis requires own tests",
     "E3": "physical device no data"
