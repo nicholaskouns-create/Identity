@@ -28,9 +28,12 @@ Proof.
   induction n as [|n IH].
   - simpl. lia.
   - rewrite Nat.even_succ.
-    destruct (Nat.even n) eqn:E; simpl in *;
+    destruct (Nat.even n) eqn:E;
+      simpl in IH |- *;
       destruct IH as [H0 [H1 H2]];
-      repeat split; try (replace (fib (S (S n))) with (fib (S n) + fib n) by reflexivity); try (replace (luc (S (S n))) with (luc (S n) + luc n) by reflexivity); nia.
+      replace (fib (S (S n))) with (fib (S n) + fib n) by reflexivity;
+      replace (luc (S (S n))) with (luc (S n) + luc n) by reflexivity;
+      repeat split; nia.
 Qed.
 
 Theorem lucas_fibonacci_odd : forall n : nat,
