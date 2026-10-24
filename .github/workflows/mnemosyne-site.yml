@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'site/**'
+      - 'experiments/e47_ablation_results.json'
       - 'tools/**'
       - 'simulation/**'
       - 'infra/ingestion/**'
