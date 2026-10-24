@@ -48,3 +48,9 @@ theorem spin2_casimir_scalar :
   decide
 
 end E47Spin2
+
+-- Audit the four theorem dependencies in CI output.
+#print axioms E47Spin2.commutator_z_up
+#print axioms E47Spin2.commutator_z_down
+#print axioms E47Spin2.commutator_up_down
+#print axioms E47Spin2.spin2_casimir_scalar
