@@ -3,6 +3,6 @@
 namespace E47Unified
 def surrogateRate (n : Nat) : Nat := 1 + n*n
 theorem surrogate_rate_positive (n : Nat) : 0 < surrogateRate n := by
-  exact Nat.zero_lt_succ _
+  simp [surrogateRate, Nat.add_comm]
 theorem sample_rate : surrogateRate 3 = 10 := by decide
 end E47Unified
