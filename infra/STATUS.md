@@ -19,3 +19,13 @@ Do not publish privileged credentials. Private buckets are not sufficient withou
 
 ## To complete
 Provision a restricted execution environment and credential delivery; register metadata transactionally with upload; build local embedding/index pipeline; authenticated owner-only query API; CI checks; encrypted off-site backup and restore drill. Verify with authorized and unauthorized requests before describing as operational.
+
+## 2026-10-24 · Least-privilege registration step
+
+- Applied migration `mnemosyne_service_source_registration_least_privilege` to the existing Supabase project.
+- Granted `service_role` schema USAGE and only SELECT/INSERT on `mnemosyne_private.source_documents`. No UPDATE/DELETE on that table and no INSERT on proof records.
+- Rechecked live privilege metadata: `anon` and `authenticated` retain no schema USAGE or document access. The dedicated bucket remains private.
+- Readback counts: 0 source documents, 0 private objects, 1 proof record, 3 provenance links. No data was uploaded.
+- Reproducible SQL and read-only privilege checks: `mnemosyne_service_ingest.sql` and `test_mnemosyne_service_ingest.sql`.
+- **Remaining:** No service credential was accessed; the schema is not exposed to PostgREST. An authorized server-side registration worker, real upload/download authorization tests, ingestion transaction, search, scientific workers, encrypted backups, and restore drill are not yet complete.
+- **Review boundary:** Changes are proposed on an unmerged branch/PR. The already-applied database migration is additive and did not grant client or public access.
