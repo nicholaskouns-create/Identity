@@ -31,6 +31,20 @@
       "ci": "https://github.com/nicholaskouns-create/Identity/actions/runs/40048760106"
     },
     {
+      "id": "Identity-full-source-4-parallel-jobs",
+      "status": "compiler_and_simulation_suite_pass",
+      "source_commit": "70fad8eb9c945068ec4e73fdf8d7e3b47ae3297c",
+      "merged_workflow_commit": "a8a7044303d0aeed586d9c47ac145b652a8ebd73",
+      "ci": "https://github.com/nicholaskouns-create/Identity/actions/runs/40051576962",
+      "jobs": [
+        "proof-compiler",
+        "quantum-recovery",
+        "temporal-network",
+        "archive-website-tests"
+      ],
+      "scope": "4 jobs passed. This is source-specific verification; distinct Mathlib full matrix proof remains unverified."
+    },
+    {
       "id": "125x125-numeric-exact",
       "status": "independent_report_20_of_20",
       "source_pdf_sha256": "4de6e7cbc62c7a68c9cf4ca65c053484a7411d3993dd9df7435da743ec40a0c7",
