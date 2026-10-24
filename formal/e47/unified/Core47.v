@@ -4,5 +4,5 @@ Module E47Core.
 Definition carrier : nat := 125.
 Definition kernel : nat := 47.
 Theorem dimension_identity : kernel + 78 = carrier. Proof. reflexivity. Qed.
-Theorem kernel_below_carrier : kernel < carrier. Proof. lia. Qed.
+Theorem kernel_below_carrier : kernel < carrier. Proof. unfold kernel, carrier. simpl. lia. Qed.
 End E47Core.
