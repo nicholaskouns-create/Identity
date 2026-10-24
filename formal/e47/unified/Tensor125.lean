@@ -1,4 +1,7 @@
 /- Concrete 125-state triple tensor generator entries, in a weight basis. -/
+set_option maxRecDepth 8192
+set_option maxHeartbeats 0
+
 namespace E47Tensor125
 abbrev Mat125 := Fin 125 → Fin 125 → Int
 def a (n : Fin 125) : Nat := n.val / 25
@@ -40,7 +43,7 @@ def multiplicity (j : Nat) : Nat :=
   weightCount (j : Int) - weightCount ((j + 1 : Nat) : Int)
 
 theorem diagonal_weight_counts :
-    (List.range 13).map (fun n => weightCount ((n : Int) - 6)) =
+    (List.range 13).map (fun (n : Nat) => weightCount ((n : Int) - 6)) =
       [1, 3, 6, 10, 15, 18, 19, 18, 15, 10, 6, 3, 1] := by
   decide
 
