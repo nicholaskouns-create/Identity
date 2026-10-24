@@ -1,4 +1,4 @@
-/** Browser-level regression test for the published ablation explorer.
+/** Browser-level regression test for the locally served ablation explorer.
  * Serves repository files locally; uses the archived synthetic JSON, not a mock.
  * Run: NODE_PATH=/tmp/identity-browser-deps/node_modules node tools/test-ablation-browser.cjs
  */
@@ -116,6 +116,30 @@ const server = createServer(async (request, response) => {
     assert.equal(await malformedPage.locator('#data-panel').evaluate(el => el.hidden), false);
     await malformedPage.close();
     console.log('ABLATION_BROWSER_INVALID_JSON_PASS');
+
+    // A stalled branch response must time out and fall back to the raw copy.
+    // The delayed route deliberately outlasts the app's eight-second deadline.
+    const slowPage = await context.newPage();
+    await slowPage.route(localResults, async route => {
+      await new Promise(resolve => setTimeout(resolve, 9000));
+      try {
+        await route.fulfill({status: 200, contentType: 'application/json', body: fixture});
+      } catch {
+        // The request should already have been aborted by the application.
+      }
+    });
+    await slowPage.route(remoteResults, route => route.fulfill({
+      status: 200, contentType: 'application/json',
+      headers: {'access-control-allow-origin': '*'}, body: fixture
+    }));
+    await slowPage.goto(url);
+    await slowPage.waitForFunction(() =>
+      document.querySelector('#load-status')?.textContent.startsWith('Loaded 8 archived synthetic seeds.')
+    );
+    assert.ok((await slowPage.locator('#load-status').textContent()).includes('raw.githubusercontent.com'));
+    assert.equal(await slowPage.locator('#data-panel').evaluate(el => el.hidden), false);
+    await slowPage.close();
+    console.log('ABLATION_BROWSER_TIMEOUT_FALLBACK_PASS');
 
     // When neither source is usable, expose an error instead of stale charts.
     const failurePage = await context.newPage();
