@@ -12,6 +12,9 @@ assert 'href="./e47-spectral-advantages.html"' in html, "Homepage must link to t
 assert 'href="socorro-stochastic.html"' in html, "Homepage must link to the published Socorro stochastic research page"
 research_section = html.split('<section id="research-links"', 1)[1].split("</section>", 1)[0]
 assert 'href="socorro-stochastic.html"' in research_section, "Socorro link must remain inside the main research navigation"
+assert 'id="lie-algebra-reproduction"' in research_section, "Lie algebra research panel must remain in the main research navigation"
+assert 'href="https://github.com/nicholaskouns-create/Identity/blob/main/validation/e47_lie_reproduction.py"' in research_section, "Lie algebra reproducibility link must remain available"
+assert "Floating-point matrix tests are numerical evidence" in research_section, "Keep the numerical versus formal proof boundary visible"
 published="\n".join((SITE/name).read_text(encoding="utf-8") for name in sorted(actual) if Path(name).suffix in TEXT_SUFFIXES)
 assert '<script type="module" src="./mnemosyne.js"></script>' in html
 assert '<script type="module" src="./sync.js"></script>' in html
