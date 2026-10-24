@@ -1,0 +1,39 @@
+name: E47 unified scoped certificates
+on:
+  pull_request:
+    paths:
+      - 'formal/e47/unified/**'
+      - '.github/workflows/e47-unified-certificates.yml'
+  workflow_dispatch:
+jobs:
+  lean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean 4 via elan
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile four Lean modules
+        run: |
+          set -euxo pipefail
+          lean --version
+          for f in formal/e47/unified/{Core47,RGFixed,Retention,Clock}.lean; do
+            lean "$f"
+          done
+  coq:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y coq
+      - name: Compile four Coq modules
+        run: |
+          set -euxo pipefail
+          coqc --version
+          for f in formal/e47/unified/{Core47,RGFixed,Retention,Clock}.v; do
+            coqc "$f"
+          done
