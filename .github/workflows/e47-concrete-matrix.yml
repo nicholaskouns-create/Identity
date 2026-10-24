@@ -5,6 +5,11 @@ on:
       - "formal/e47/E47ConcreteMatrix.lean"
       - "formal/e47-concrete/**"
       - ".github/workflows/e47-concrete-matrix.yml"
+  pull_request:
+    paths:
+      - "formal/e47/E47ConcreteMatrix.lean"
+      - "formal/e47-concrete/**"
+      - ".github/workflows/e47-concrete-matrix.yml"
   workflow_dispatch:
 permissions:
   contents: read
