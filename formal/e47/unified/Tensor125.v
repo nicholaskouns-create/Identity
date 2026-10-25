@@ -132,3 +132,18 @@ Proof. vm_compute. reflexivity. Qed.
 
 Print Assumptions totalUp_down_bracket_diagonal.
 Print Assumptions concrete_casimir_trace.
+
+(* First five complete columns of [Up,Down]=2Z on the genuine
+   125-term matrix products. This includes every off-diagonal row
+   in columns 0..4. The remaining columns are not claimed. *)
+Definition ud_entry_ok (i j : nat) : bool :=
+  Z.eqb (mulEntry totalUp totalDown i j -
+         mulEntry totalDown totalUp i j) (2 * totalZ i j).
+
+Theorem totalUp_down_bracket_first_five_columns :
+  List.forallb
+    (fun j => List.forallb (fun i => ud_entry_ok i j) (List.seq 0 125))
+    (List.seq 0 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions totalUp_down_bracket_first_five_columns.
