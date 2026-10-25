@@ -26,6 +26,7 @@ LEAN_FILES = [
     "formal/e47/unified/EncodedOracle.lean",
     "formal/e47/unified/Spin2Generators.lean",
     "formal/e47/unified/Tensor125.lean",
+    "formal/e47/unified/RankNullity47.lean",
 ]
 COQ_FILES = [
     "formal/e47/E47Spectral.v",
@@ -38,10 +39,12 @@ COQ_FILES = [
     "formal/e47/unified/EncodedOracle.v",
     "formal/e47/unified/Spin2Generators.v",
     "formal/e47/unified/Tensor125.v",
+    "formal/e47/unified/RankNullity47.v",
 ]
 PYTHON_FILES = [
     "simulation/validate_e47.py",
     "validation/e47_tensor_bracket_trace_exact.py",
+    "validation/e47_rank_nullity_exact.py",
 ]
 SKIPPED = [
     (
