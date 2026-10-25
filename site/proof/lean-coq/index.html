@@ -457,6 +457,24 @@ Verification</span></div>
   <img src="proof.png" width="1080" height="1160" alt="The same statement, checked twice. Lean decides kernel + 78 = carrier by decide. Coq proves the same equation by reflexivity. Carrier is 125 and kernel is 47." style="width:100%;max-width:720px;height:auto;display:block;border:1px solid #d9dfe9;background:#f4f1ea">
   <figcaption style="font-size:12px;color:#5d6879;margin-top:8px">E47-CORE-001. The same finite identity, checked in Lean and in Coq.</figcaption>
 </figure>
+<section style="margin:16px 5% 0;padding:14px 16px;border:1px solid #d9dfe9;border-top:4px solid #0b7a53;background:#fff">
+  <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:#0b7a53">Validation results · local run · main b2fe4ab</div>
+  <p style="margin:8px 0 10px;font-size:13px;line-height:1.45">Lean 4.35.0 accepted 9 of 9 self-contained files. Coq 8.12.2 accepted 10 of 10. Both Python checks passed. <code>E47ConcreteMatrix.lean</code> was not compiled: it imports Mathlib, and this run had no Mathlib build. <a href="validation.html">Full table</a>.</p>
+  <table style="font-size:12px">
+    <thead><tr><th>Check</th><th>Result</th><th>Time</th></tr></thead>
+    <tbody>
+      <tr><td>E47Spectral.lean</td><td><span class="badge b-green">exit 0</span></td><td>0s</td></tr>
+      <tr><td>E47WeightAlgebra.lean</td><td><span class="badge b-green">exit 0</span></td><td>4s</td></tr>
+      <tr><td>Core47, RGFixed, Retention, Clock, EncodedOracle, Spin2Generators</td><td><span class="badge b-green">exit 0</span></td><td><1s each</td></tr>
+      <tr><td>Tensor125.lean</td><td><span class="badge b-green">exit 0</span></td><td>71s</td></tr>
+      <tr><td>E47Spectral.v, TowerIdentity.v, seven unified .v files, E47WeightAlgebra.v</td><td><span class="badge b-green">exit 0</span></td><td>0–11s</td></tr>
+      <tr><td>validate_e47.py</td><td><span class="badge b-green">pass</span></td><td>multiplicities, rank, projector, kernel, contraction</td></tr>
+      <tr><td>e47_tensor_bracket_trace_exact.py</td><td><span class="badge b-green">pass</span></td><td>15,625-entry residuals 0; trace(C)=2250</td></tr>
+      <tr><td>E47ConcreteMatrix.lean</td><td><span class="badge b-amber">not run</span></td><td>needs Mathlib</td></tr>
+    </tbody>
+  </table>
+  <p style="margin:8px 0 0;font-size:12px;color:#5d6879"><code>pr_expanded</code> uses propext, Classical.choice, and Quot.sound. Three spin-2 commutator theorems use propext. This is a local compilation, not a GitHub Actions badge.</p>
+</section>
  <!-- ================= TL;DR ================= -->
  <div class="tldr">
    <span class="lbl">The 60-second version</span>
