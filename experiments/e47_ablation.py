@@ -1,4 +1,21 @@
 """Controlled synthetic link-prediction ablation; NOT a TGBL-wiki/Cora run."""
+import argparse
+from pathlib import Path
+
+# Parse before numerical imports: --help and output-safety errors work without
+# installing the experiment's scientific dependencies.
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument(
+    "--output", type=Path, default=Path("e47_ablation_reproduced.json"),
+    help="New JSON output path (default: ./e47_ablation_reproduced.json). Existing files are never overwritten.",
+)
+args = parser.parse_args()
+output_path = args.output.expanduser()
+if not output_path.parent.is_dir():
+    parser.error(f"Output directory does not exist: {output_path.parent}")
+if output_path.exists():
+    parser.error(f"Refusing to overwrite existing results: {output_path}")
+
 import numpy as np
 from scipy.special import expit
 from sklearn.linear_model import LogisticRegression
@@ -56,4 +73,11 @@ for seed in range(8):
 print('\nMEAN ± SAMPLE SD (8 independent synthetic graph seeds)')
 for key,x in results.items():print(f'{key:17s} {np.mean(x):.5f} ± {np.std(x,ddof=1):.5f} delta_baseline={np.mean(x)-np.mean(results["baseline64"]):+.5f}')
 import json
-with open('/mnt/data/e47_ablation_results.json','w') as f:json.dump({'experiment':'synthetic graph link prediction; E47-aligned ground truth','seeds':8,'auc_by_seed':results,'means':{k:float(np.mean(v)) for k,v in results.items()}},f,indent=2)
+# Exclusive creation prevents accidental replacement of archived or prior results.
+# The numerical experiment and its original seed schedule are unchanged.
+with output_path.open("x", encoding="utf-8") as f:
+    json.dump({'experiment':'synthetic graph link prediction; E47-aligned ground truth',
+               'seeds':8,'auc_by_seed':results,
+               'means':{k:float(np.mean(v)) for k,v in results.items()}}, f, indent=2)
+    f.write("\n")
+print("Wrote synthetic results to", output_path)
