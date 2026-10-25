@@ -1,5 +1,5 @@
 // Optional cross-device sync. The publishable key identifies the project; it is not a service key.
-import { planSync, toLocalRow, toRemoteRow } from './sync-merge.js';
+import { planSync, toLocalRow, toRemoteRow, formatSyncStatus } from './sync-merge.js';
 
 const PROJECT = 'https://gpkjvihkyectnenvnbng.supabase.co';
 const PUBLISHABLE = 'sb_publishable_iTAWrGCDmKaJt9ADfJLnsw_rWCizCDo';
@@ -127,7 +127,8 @@ async function pullAndPush(session) {
     pulled: plan.pull.length,
     pushed,
     count: (await archive().all()).length,
-    skipped: (remote || []).length - verifiedRemote.length
+    skipped: (remote || []).length - verifiedRemote.length,
+    skippedLocal: local.length - verifiedLocal.length
   };
 }
 async function syncNow() {
@@ -140,8 +141,7 @@ async function syncNow() {
       paint(session);
       if (!session) return;
       const result = await pullAndPush(session);
-      const skip = result.skipped ? ' ' + result.skipped + ' remote row(s) failed the receipt check and were left untouched.' : '';
-      say('Synced. Pulled ' + result.pulled + ', pushed ' + result.pushed + '. ' + result.count + ' local record(s).' + skip);
+      say(formatSyncStatus(result));
     } while (again);
   } catch (error) {
     say('Sync failed: ' + error.message);
