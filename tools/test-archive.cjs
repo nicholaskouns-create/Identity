@@ -28,6 +28,13 @@ async function importRecords(records){
   await evaluate('all()');
   const original=await makeRecord('existing','original');
   assert.match(await importRecords([original]),/^Imported 1/);
+  const duplicateFirst=await makeRecord('duplicate','first');
+  const duplicateLast=await makeRecord('duplicate','last');
+  assert.match(await importRecords([duplicateFirst,duplicateLast]),/^Import rejected: Duplicate record ID in import/);
+  const unchanged=await evaluate('all()');
+  assert.equal(unchanged.length,1);
+  assert.equal(unchanged[0].content,'original');
+  console.log('PASS duplicate import IDs rejected before any IndexedDB writes');
   const replacement=await makeRecord('existing','replacement');
   const added=await makeRecord('added','new');
   assert.match(await importRecords([replacement,{...added,sha256:'invalid'}]),/^Import rejected:/);
