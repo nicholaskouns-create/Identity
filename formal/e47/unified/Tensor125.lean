@@ -167,6 +167,22 @@ theorem totalUp_down_bracket_columns_ten_through_fourteen :
   decide
 
 
+/-! ## Third-bracket columns 15 through 19
+
+This finite theorem computes each of the 625 entries using the complete
+125-term integer matrix products defined above. It extends the preceding
+0..14 column certificates; columns 20..124 remain pending.
+-/
+def columnsFifteenThroughNineteen (j : Fin 5) : Fin 125 := idx (15 + j.val)
+
+theorem totalUp_down_bracket_columns_fifteen_through_nineteen :
+    ∀ i : Fin 125, ∀ j : Fin 5,
+      mulEntry totalUp totalDown i (columnsFifteenThroughNineteen j) -
+        mulEntry totalDown totalUp i (columnsFifteenThroughNineteen j) =
+          2 * totalZ i (columnsFifteenThroughNineteen j) := by
+  decide
+
+
 end E47Tensor125
 
 #print axioms E47Tensor125.totalZ_up_bracket_entries
@@ -186,3 +202,5 @@ end E47Tensor125
 #print axioms E47Tensor125.totalUp_down_bracket_next_five_columns
 
 #print axioms E47Tensor125.totalUp_down_bracket_columns_ten_through_fourteen
+
+#print axioms E47Tensor125.totalUp_down_bracket_columns_fifteen_through_nineteen
