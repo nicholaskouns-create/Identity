@@ -83,3 +83,14 @@ export function toRemoteRow(row, ownerId, updatedAt) {
     updated_at: updatedAt
   };
 }
+
+
+// Human-readable completion status. Invalid receipts are excluded, never silently counted as synced.
+export function formatSyncStatus({ pulled, pushed, count, skipped = 0, skippedLocal = 0 }) {
+  const exclusions = skipped + skippedLocal;
+  let message = (exclusions ? 'Sync completed with exclusions.' : 'Synced.')
+    + ' Pulled ' + pulled + ', pushed ' + pushed + '. ' + count + ' local record(s).';
+  if (skipped) message += ' ' + skipped + ' remote row(s) failed the receipt check and were left untouched.';
+  if (skippedLocal) message += ' ' + skippedLocal + ' local row(s) failed the receipt check and were not synced; they remain in this browser.';
+  return message;
+}
