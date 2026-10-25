@@ -26,6 +26,11 @@ async function importRecords(records){
 }
 (async()=>{
   await evaluate('all()');
+  const audit=()=>document.getElementById('verify-archive').handlers.click();
+  const auditStatus=()=>document.getElementById('verify-status').textContent;
+  await audit();
+  assert.match(auditStatus(),/Checked 0 local records: 0 verified, 0 invalid receipts/);
+  console.log('PASS empty archive audit is read-only');
   const original=await makeRecord('existing','original');
   assert.match(await importRecords([original]),/^Imported 1/);
   const replacement=await makeRecord('existing','replacement');
@@ -45,6 +50,21 @@ async function importRecords(records){
   assert.equal(await evaluate('all().then(rows=>Promise.all(rows.map(verify))).then(xs=>xs.every(Boolean))'),true);
   for(const r of rows)assert.equal(r.sha256,(r.id==='existing'?replacement:added).sha256);
   console.log('PASS successful import merges records and retains receipts');
+  await audit();
+  assert.match(auditStatus(),/Checked 2 local records: 2 verified, 0 invalid receipts/);
+  assert.equal(document.getElementById('verify-status').className,'muted');
+  const altered={...added,content:'altered after receipt'};
+  await evaluate('put('+JSON.stringify(altered)+')');
+  const beforeAudit=JSON.stringify(await evaluate('all()'));
+  await audit();
+  assert.match(auditStatus(),/Checked 2 local records: 1 verified, 1 invalid receipt/);
+  assert.equal(document.getElementById('verify-status').className,'warn');
+  assert.equal(JSON.stringify(await evaluate('all()')),beforeAudit,'audit must not change local records');
+  await evaluate('put('+JSON.stringify(added)+')');
+  await audit();
+  assert.match(auditStatus(),/Checked 2 local records: 2 verified, 0 invalid receipts/);
+  console.log('PASS archive audit counts valid and altered receipts without writes');
+
   await evaluate("putMany([])");
   assert.equal((await evaluate('all()')).length,2);
   console.log('PASS empty transaction completes without altering archive');
