@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What the 25 October boards add — Lean · Coq · E47</title>
+<meta name="description" content="What the 25 October 2026 Identity boards add: a successful scoped certificate run, a successful matrix-validation job, a failed full-source workflow, and two boards that are not that run.">
+<link rel="canonical" href="https://nicholaskouns-create.github.io/Identity/site/proof/lean-coq/record.html">
+<meta property="og:title" content="What the 25 October boards add">
+<meta property="og:description" content="Scoped Lean and Coq jobs succeeded on commit 58ff2ed. The full-source workflow did not. The 16-panel COMPLETE stamp is not that run.">
+<meta property="og:image" content="https://nicholaskouns-create.github.io/Identity/site/proof/lean-coq/boards/ci-companion.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://nicholaskouns-create.github.io/Identity/site/proof/lean-coq/boards/ci-companion.jpg">
+<style>
+  body{margin:0;background:#e8ecf3;color:#101826;font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:980px;margin:0 auto;padding:28px 18px 64px}
+  a{color:#2258d6}
+  h1{font-size:clamp(28px,5vw,42px);line-height:1.1;margin:8px 0 12px}
+  h2{font-size:18px;margin:28px 0 8px}
+  .kicker{letter-spacing:.16em;text-transform:uppercase;font-size:12px;font-weight:700;color:#5d6879}
+  .note{background:#f4faf7;border-left:4px solid #0b7a53;padding:12px 14px}
+  .warn{background:#fdf5f4;border-left:4px solid #b3261e;padding:12px 14px}
+  figure{margin:14px 0 28px}
+  img{width:100%;height:auto;display:block;background:#fff;border:1px solid #d9dfe9}
+  figcaption{font-size:13px;color:#5d6879;margin-top:8px}
+  code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92em}
+</style>
+</head>
+<body>
+<main>
+<p class="kicker">Identity · 25 October 2026</p>
+<h1>What these boards add, and how</h1>
+<p><a href="./">Back to the Lean · Coq explainer</a></p>
+<p class="note">Checked against GitHub, not against the green stamps printed on the pictures. Commit <a href="https://github.com/nicholaskouns-create/Identity/commit/58ff2edf49cbd053cf56b89577d430b55b478df4"><code>58ff2ed</code></a> on branch <code>proof/e47-third-bracket-columns-60-64-20261025</code>. Two of the five attached pictures are the same file.</p>
+
+<h2>1. The historical CI board is a real split result</h2>
+<p>It adds a record that the formal jobs on that commit succeeded and the full-source workflow did not. The method was to compile the concrete third-bracket in isolated Lean column batches, then compile the seven-module Lean set and the seven-module Coq set, plus one integer-matrix job.</p>
+<ul>
+  <li><a href="https://github.com/nicholaskouns-create/Identity/actions/runs/40212276416">Run 40212276416</a>, “E47 unified scoped certificates”: 13 of 13 jobs succeeded. That includes the isolated Lean 4.19.0 bracket-column compilations, the seven-module Lean job, the seven-module Coq job, and the integer-matrix job.</li>
+  <li><a href="https://github.com/nicholaskouns-create/Identity/actions/runs/40212276433">Run 40212276433</a>, “E47 formal and matrix validation”: job <code>e47-certificates</code> succeeded. It installed Lean 4.35.0 and compiled three proof files while verifying 125×125 matrices.</li>
+  <li><a href="https://github.com/nicholaskouns-create/Identity/actions/runs/40212276407">Run 40212276407</a>, “Identity full source verification”: failed. <code>proof-compiler</code>, <code>quantum-recovery</code>, and <code>temporal-network</code> succeeded. <code>archive-website-tests</code> failed, so the workflow is not green.</li>
+</ul>
+<figure>
+  <img src="boards/ci-companion.jpg" alt="Historical CI log. Scoped certificate run succeeded. Full source workflow failed on archive website tests.">
+  <figcaption>Source-backed companion. It refuses a 16/16 claim and refuses invented artifact hashes.</figcaption>
+</figure>
+
+<h2>2. The sixteen-panel board is a map, not that run</h2>
+<p>It adds a picture of sixteen named statements: spin-2 representation, Casimir, spectrum, kernel, projector, contraction, the SU(2) decomposition, commutant, qubit and gauge, Krein signature, fermion and boson slices, Lagrange projector, temporal symmetry, Fibonacci tower, electroweak angles, and a quantum clock. Every panel is stamped PASS, and the footer says Lean 4.35.0 and Coq 8.19 completed 16/16.</p>
+<p class="warn">That stamp is not what the three runs above established. Those runs did not compile sixteen separately named Lean files and sixteen Coq files under Lean 4.35.0 and Coq 8.19, and they did not publish the checksums drawn on this board. One copy of this picture was attached twice.</p>
+<figure>
+  <img src="boards/sixteen-panels.jpg" alt="Sixteen-panel E47 proof series. Every panel is marked PASS. This stamp is not the 25 October scoped run.">
+  <figcaption>Diagram of the intended series. Not a certificate for the runs linked above.</figcaption>
+</figure>
+
+<h2>3. The verification-log board is not the historical run</h2>
+<p>It shows Lean 4.3.0, Coq 8.19, commit <code>a3f7e2c9</code> dated 18 December 2024, and truncated checksums. None of that is run 40212276416, 40212276433, or 40212276407. It is on the site so the picture is not lost. It is not evidence those hashes were computed.</p>
+<figure>
+  <img src="boards/verification-log.jpg" alt="Illustrated verification log claiming sixteen of sixteen under Lean 4.3.0. Not the 25 October runs.">
+  <figcaption>Illustration. Do not read the checksums or the 16/16 line as the October CI result.</figcaption>
+</figure>
+
+<h2>4. The audit adds an inventory, and stops there</h2>
+<p>It surveys eleven public repositories and records where Lean or Coq files are present. For Identity it names <code>formal/e47/unified/Tensor125.lean</code> and <code>Tensor125.v</code>. The compilers and the end-to-end tests on that sheet are marked not run. The addition is the boundary itself: a file in a repository is not a compiler acceptance.</p>
+<figure>
+  <img src="boards/repo-audit.jpg" alt="Partial audit of eleven repositories. Lean and Coq sources are present in several. Compilers were not run.">
+  <figcaption>Partial audit, 25 October 2026. Source found is not compiler accepted.</figcaption>
+</figure>
+</main>
+</body>
+</html>
