@@ -55,7 +55,11 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get install -y postgresql postgresql-contrib
-          sudo systemctl start postgresql || sudo service postgresql start
+          # Actions runners have no systemd; pg_ctlcluster is the reliable start.
+          sudo pg_ctlcluster "$(pg_lsclusters -h | awk 'NR==1{print $1}')" main start \
+            || sudo service postgresql start
+          until sudo -u postgres psql -tc 'select 1' >/dev/null 2>&1; do sleep 2; done
+          sudo -u postgres psql -q -c 'drop database if exists monorail_test;'
           sudo -u postgres psql -q -c 'create database monorail_test;'
           sudo -u postgres psql -q -d monorail_test -c 'create schema city_formalism;'
           sudo -u postgres psql -v ON_ERROR_STOP=1 -q -d monorail_test \

@@ -5,7 +5,7 @@ Runs against a THROWAWAY local PostgreSQL database, never production.
 Every negative case must be rejected BY THE DATABASE, not by application code.
 """
 from __future__ import annotations
-import json, subprocess, sys
+import json, os, subprocess, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -32,9 +32,12 @@ def sql(q: str) -> tuple[int, str, str]:
     f = Path(f"/tmp/monorail_q{_SEQ[0]}.sql")
     f.write_text(q)
     f.chmod(0o644)
-    p = subprocess.run(["su", "postgres", "-c",
-                        f"psql -v ON_ERROR_STOP=1 -t -A -d {DB} -f {f}"],
-                       capture_output=True, text=True)
+    # Root (local container) has `su`; a CI runner is an unprivileged user and
+    # must go through sudo. Hardcoding either one breaks the other environment.
+    inner = f"psql -v ON_ERROR_STOP=1 -t -A -d {DB} -f {f}"
+    argv = (["su", "postgres", "-c", inner] if os.geteuid() == 0
+            else ["sudo", "-n", "-u", "postgres", "sh", "-c", inner])
+    p = subprocess.run(argv, capture_output=True, text=True)
     out, err = p.stdout.strip(), p.stderr.strip()
     # A syntax error means the harness is broken, not that the DB rejected
     # the data. Never let that masquerade as a passing negative test.
