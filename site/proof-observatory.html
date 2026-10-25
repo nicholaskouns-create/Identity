@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Mnemosyne Proof Observatory: an evidence-first, read-only guide to the ten E47 formalization lanes, compiler runs, and source code.">
+<title>Proof Observatory | Mnemosyne</title>
+<style>
+:root{color-scheme:dark;font:16px/1.55 system-ui,sans-serif;background:#0d141b;color:#edf4f6}
+*{box-sizing:border-box}body{max-width:1060px;margin:auto;padding:24px}a{color:#a9dff4}a:focus-visible,button:focus-visible{outline:3px solid #f6ca87;outline-offset:4px}
+h1{letter-spacing:.09em;font-size:clamp(2rem,6vw,3.5rem);margin:.4rem 0}.eyebrow{letter-spacing:.2em;text-transform:uppercase;color:#9db9c8}
+.lead{max-width:720px;color:#c9d7df}.panel{background:#14202a;border:1px solid #3a5360;border-radius:12px;padding:20px;margin:18px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:14px}.value{font-size:2rem;font-weight:700;display:block}.sub{color:#b2c5d0;font-size:.88rem}
+.lanes{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px}.lane{padding:14px;border:1px solid #3a5360;border-radius:10px;background:#111d26}
+.lane h3{margin:0 0 6px}.lane p{margin:.4rem 0}.tag{display:inline-block;border:1px solid #708793;color:#cedde4;border-radius:30px;padding:2px 9px;font-size:.8rem}
+.ok{border-color:#6da890;color:#a4ddbe}.pending{border-color:#c4a270;color:#ebcfa0}
+code{color:#d0edff;overflow-wrap:anywhere}footer{padding:2rem 0;color:#b1c7d0}.skip{position:absolute;top:-99px}.skip:focus{top:10px}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to research</a>
+<header><p class="eyebrow">MNEMOSYNE / RESEARCH EVIDENCE</p><h1>PROOF OBSERVATORY</h1><p class="lead">A window into the E47 machine-verification program. Compiler-accepted statements, exact Python reproductions, and outstanding theorems remain different evidence classes.</p><p><a href="./">← Mnemosyne archive</a> · <a href="https://github.com/nicholaskouns-create/Identity">Source repository</a> · <a href="https://github.com/nicholaskouns-create/Identity/actions">GitHub Actions</a></p></header>
+<main id="main">
+<section class="panel" aria-labelledby="invariants"><h2 id="invariants">The fixed mathematical object</h2><div class="grid"><div><span class="value">125</span><span class="sub">Carrier dimension, V₂ ⊗ V₂ ⊗ V₂</span></div><div><span class="value">47</span><span class="sub">Selected spectral rank</span></div><div><span class="value">15/17</span><span class="sub">Exact complement contraction factor</span></div></div><p><code>C = J²; K = (C − 6I)(C − 30I); Γ = I − K²/99144</code></p><p class="sub">These algebraic specifications are not a claim that the complete 125×125 spectral theorem has already compiled independently in Lean and Coq.</p></section>
+<section aria-labelledby="lanes"><h2 id="lanes">Ten independent proof lanes</h2><p class="sub">Follow each live GitHub issue for its current acceptance criteria. The labels below describe the evidence established in the linked merged PRs as of the reference audit, not an automatically refreshed certification status.</p><div class="lanes">
+<article class="lane"><h3><a href="https://github.com/nicholaskouns-create/Identity/issues/15">01 · Spin-2 generators</a></h3><span class="tag ok">Scoped compiler evidence</span><p>Concrete five-state weight generators and bracket certificates. <a href="https://github.com/nicholaskouns-create/Identity/pull/26">PR #26</a></p></article>
+<article class="lane"><h3><a href="https://github.com/nicholaskouns-create/Identity/issues/16">02 · Triple tensor</a></h3><span class="tag pending">Partial</span><p>Two entrywise weight brackets; third bracket formally checked on diagonal only. <a href="https://github.com/nicholaskouns-create/Identity/pull/35">PR #35</a></p></article>
+<article class="lane"><h3><a href="https://github.com/nicholaskouns-create/Identity/issues/17">03 · Casimir identity</a></h3><span class="tag pending">Partial</span><p>Concrete trace certified; full formal centrality and annihilator remain obligations.</p></article>
+<article class="lane"><h3><a href="https://github.com/nicholaskouns-create/Identity/issues/18">04 · Weights</a></h3><span class="tag ok">Scoped compiler evidence</span><p>125-state weight counts and highest-weight multiplicities. <a href="https://github.com/nicholaskouns-create/Identity/pull/30">PR #30</a></p></article>
+<article class="lane"><h3><a href="https://github.com/nicholaskouns-create/Identity/issues/19">05 · Eigenspaces</a></h3><span class="tag pending">Open</span><p>Derive the concrete Casimir eigenvalue multiplicities in both assistants.</p></article>
+<article class="lane"><h3><a href="https://github.com/nicholaskouns-create/Identity/issues/20">06 · Projector</a></h3><span class="tag pending">Open</span><p>Construct and certify the exact polynomial projector.</p></article>
+<article class="lane"><h3><a href="https://github.com/nicholaskouns-create/Identity/issues/21">07 · Kernel rank</a></h3><span class="tag pending">Open</span><p>Prove rank and trace 47 from concrete operators.</p></article>
+<article class="lane"><h3><a href="https://github.com/nicholaskouns-create/Identity/issues/22">08 · Contraction</a></h3><span class="tag pending">Open</span><p>Formalize the induced operator-norm identity for all natural n.</p></article>
+<article class="lane"><h3><a href="https://github.com/nicholaskouns-create/Identity/issues/23">09 · Symmetry</a></h3><span class="tag pending">Open</span><p>Prove SU(2) × S₃ invariance on the actual tensor carrier.</p></article>
+<article class="lane"><h3><a href="https://github.com/nicholaskouns-create/Identity/issues/24">10 · Audit</a></h3><span class="tag pending">Ongoing</span><p>Independent scope, assumptions, versions, commits and reproducibility.</p></article>
+</div></section>
+<section class="panel" aria-labelledby="chain"><h2 id="chain">From executable evidence to theorem</h2><div class="grid"><div><h3>01 / Reproduce</h3><p>Run the <a href="https://github.com/nicholaskouns-create/Identity/blob/main/validation/e47_tensor_bracket_trace_exact.py">exact integer matrix validator</a>. Its full entry checks are Python computations, not proof-assistant theorems.</p></div><div><h3>02 / Compile</h3><p>Inspect the <a href="https://github.com/nicholaskouns-create/Identity/tree/main/formal/e47/unified">Lean/Coq source</a> and <a href="https://github.com/nicholaskouns-create/Identity/actions/workflows/e47-unified-certificates.yml">workflow runs</a> for exact theorem scope and compiler evidence.</p></div><div><h3>03 / Audit</h3><p>Compare the completed certificates against <a href="https://github.com/nicholaskouns-create/Identity/issues/24">lane 10</a> before promoting any claim. Failed or pending obligations remain visible.</p></div></div></section>
+<section class="panel"><h2>Historical compiler evidence</h2><p><a href="https://github.com/nicholaskouns-create/Identity/actions/runs/40147205742">Lean + Coq + integer matrix run #12</a> · <a href="https://github.com/nicholaskouns-create/Identity/actions/runs/40147205745">E47 matrix run #61</a> · <a href="https://github.com/nicholaskouns-create/Identity/actions/runs/40147205688">Full source run #93</a></p><p class="sub">These runs completed successfully for PR #35's head commit 9efa02b. They do not certify all ten lanes. See current Actions for newer results.</p></section>
+</main><footer>Mnemosyne preserves the difference between what a program calculated, what a proof assistant accepted, and what remains to prove.</footer>
+</body></html>
