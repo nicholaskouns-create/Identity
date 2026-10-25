@@ -36,7 +36,7 @@ jobs:
       - name: Install Coq and Python
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y coq python3
+          sudo apt-get install -y coq python3 python3-numpy
 
       - name: Install Lean 4.35.0
         shell: bash
@@ -50,6 +50,17 @@ jobs:
 
       - name: Monorail scenario tests
         run: python3 monorail/tests/test_monorail.py
+
+      - name: Migration dry run and integrity tests (throwaway database)
+        run: |
+          set -euo pipefail
+          sudo apt-get install -y postgresql postgresql-contrib
+          sudo systemctl start postgresql || sudo service postgresql start
+          sudo -u postgres psql -q -c 'create database monorail_test;'
+          sudo -u postgres psql -q -d monorail_test -c 'create schema city_formalism;'
+          sudo -u postgres psql -v ON_ERROR_STOP=1 -q -d monorail_test \
+            -f infra/supabase/monorail_receipts.sql
+          python3 monorail/tests/test_migration_pg.py
 
       - name: Certify the route
         id: route
