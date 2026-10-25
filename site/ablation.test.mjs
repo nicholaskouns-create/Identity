@@ -29,3 +29,15 @@ test('rejects missing seeds, invalid AUC, and altered aggregate means', () => {
   const changed = structuredClone(raw); changed.means.E47full125 = 0.2;
   assert.throws(() => summarize(changed), /disagrees/);
 });
+
+test('ablation run indices document the archived generator seed schedule', () => {
+  const html = readFileSync(new URL('./ablation.html', import.meta.url), 'utf8');
+  const generator = readFileSync(new URL('../experiments/e47_ablation.py', import.meta.url), 'utf8');
+  assert.match(html, /Run index \(1-based\)/);
+  assert.match(html, /NumPy graph RNG seeds 100–107/);
+  assert.match(html, /split random_state values 0–7/);
+  assert.match(html, /JSON stores results in run order/);
+  assert.match(generator, /for seed in range\(8\):/);
+  assert.match(generator, /default_rng\(seed\s*\+\s*100\)/);
+  assert.match(generator, /random_state=seed/);
+});
