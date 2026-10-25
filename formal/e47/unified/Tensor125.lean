@@ -112,6 +112,64 @@ theorem concrete_casimir_trace :
     ((List.range 125).map (fun n => casimirDiag (idx n))).sum = 2250 := by
   decide
 
+/-! ## First five complete columns of the third concrete Lie bracket
+
+This is a bounded, compiler-checkable extension of the diagonal theorem.
+Every row i of columns j = 0,1,2,3,4 uses the original 125-term
+matrix multiplication, including off-diagonal entries. No spectral
+assumption or surrogate diagonal operator is used. The remaining
+120 columns remain obligations.
+-/
+
+def firstFiveColumn (j : Fin 5) : Fin 125 := idx j.val
+
+theorem totalUp_down_bracket_first_five_columns :
+    ∀ i : Fin 125, ∀ j : Fin 5,
+      mulEntry totalUp totalDown i (firstFiveColumn j) -
+        mulEntry totalDown totalUp i (firstFiveColumn j) =
+          2 * totalZ i (firstFiveColumn j) := by
+  decide
+
+
+/-! ## Next five concrete third-bracket columns (5 through 9)
+
+This theorem evaluates the genuine 125-term matrix products for all
+125 rows and exactly five additional columns, without assuming the
+full commutator identity. Together with the previous first-five-column
+theorem, the first ten columns have finite certificates. The other
+115 columns remain an open formal proof obligation.
+-/
+
+def nextFiveColumn (j : Fin 5) : Fin 125 := idx (5 + j.val)
+
+theorem totalUp_down_bracket_next_five_columns :
+    ∀ i : Fin 125, ∀ j : Fin 5,
+      mulEntry totalUp totalDown i (nextFiveColumn j) -
+        mulEntry totalDown totalUp i (nextFiveColumn j) =
+          2 * totalZ i (nextFiveColumn j) := by
+  decide
+
+
+
+/-! ## Concrete third-bracket columns 10 through 14
+
+Extends the actual 125-term products by 625 additional entry certificates,
+with no imported Lie-bracket conclusion. Columns 15..124 remain pending.
+-/ 
+
+def columnsTenThroughFourteen (j : Fin 5) : Fin 125 := idx (10 + j.val)
+
+theorem totalUp_down_bracket_columns_ten_through_fourteen :
+    ∀ i : Fin 125, ∀ j : Fin 5,
+      mulEntry totalUp totalDown i (columnsTenThroughFourteen j) -
+        mulEntry totalDown totalUp i (columnsTenThroughFourteen j) =
+          2 * totalZ i (columnsTenThroughFourteen j) := by
+  decide
+
+
+/-! Columns 15..19 are retained in Tensor125Columns15to19.lean,
+    isolated to avoid the CI runner lifetime limit. -/
+
 end E47Tensor125
 
 #print axioms E47Tensor125.totalZ_up_bracket_entries
@@ -125,3 +183,11 @@ end E47Tensor125
 
 #print axioms E47Tensor125.totalUp_down_bracket_diagonal
 #print axioms E47Tensor125.concrete_casimir_trace
+
+#print axioms E47Tensor125.totalUp_down_bracket_first_five_columns
+
+#print axioms E47Tensor125.totalUp_down_bracket_next_five_columns
+
+#print axioms E47Tensor125.totalUp_down_bracket_columns_ten_through_fourteen
+
+
