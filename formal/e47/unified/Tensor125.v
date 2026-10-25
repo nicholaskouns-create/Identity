@@ -226,3 +226,14 @@ Theorem totalUp_down_bracket_columns_thirtyfive_through_thirtynine :
 Proof. vm_compute. reflexivity. Qed.
 
 Print Assumptions totalUp_down_bracket_columns_thirtyfive_through_thirtynine.
+
+(* Concrete third-bracket columns 40..44: all 625 entries from
+   original 125-term integer matrix products, not a diagonal surrogate.
+   Columns 45..124 remain independent formal obligations. *)
+Theorem totalUp_down_bracket_columns_forty_through_fortyfour :
+  List.forallb
+    (fun j => List.forallb (fun i => ud_entry_ok i j) (List.seq 0 125))
+    (List.seq 40 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions totalUp_down_bracket_columns_forty_through_fortyfour.
