@@ -169,3 +169,13 @@ Theorem totalUp_down_bracket_columns_ten_through_fourteen :
 Proof. vm_compute. reflexivity. Qed.
 
 Print Assumptions totalUp_down_bracket_columns_ten_through_fourteen.
+
+(* Genuine 125-term integer matrix products for every row of columns 15..19.
+   The preceding 0..14 column proofs are retained; 20..124 remain open. *)
+Theorem totalUp_down_bracket_columns_fifteen_through_nineteen :
+  List.forallb
+    (fun j => List.forallb (fun i => ud_entry_ok i j) (List.seq 0 125))
+    (List.seq 15 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions totalUp_down_bracket_columns_fifteen_through_nineteen.
