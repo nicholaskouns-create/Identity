@@ -150,6 +150,23 @@ theorem totalUp_down_bracket_next_five_columns :
   decide
 
 
+
+/-! ## Concrete third-bracket columns 10 through 14
+
+Extends the actual 125-term products by 625 additional entry certificates,
+with no imported Lie-bracket conclusion. Columns 15..124 remain pending.
+-/ 
+
+def columnsTenThroughFourteen (j : Fin 5) : Fin 125 := idx (10 + j.val)
+
+theorem totalUp_down_bracket_columns_ten_through_fourteen :
+    ∀ i : Fin 125, ∀ j : Fin 5,
+      mulEntry totalUp totalDown i (columnsTenThroughFourteen j) -
+        mulEntry totalDown totalUp i (columnsTenThroughFourteen j) =
+          2 * totalZ i (columnsTenThroughFourteen j) := by
+  decide
+
+
 end E47Tensor125
 
 #print axioms E47Tensor125.totalZ_up_bracket_entries
@@ -167,3 +184,5 @@ end E47Tensor125
 #print axioms E47Tensor125.totalUp_down_bracket_first_five_columns
 
 #print axioms E47Tensor125.totalUp_down_bracket_next_five_columns
+
+#print axioms E47Tensor125.totalUp_down_bracket_columns_ten_through_fourteen
