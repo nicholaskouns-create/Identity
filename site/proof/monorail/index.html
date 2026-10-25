@@ -1,0 +1,138 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monorail receipt verification · E47</title>
+<meta property="og:title" content="Monorail receipt verification">
+<meta property="og:description" content="Recomputes every SHA-256 receipt digest in your browser. Not a server assertion.">
+<style>
+:root{--ink:#0c1724;--ink2:#132236;--edge:#24364f;--fg:#e8eef6;--dim:#9fb2c9;
+--gold:#d8a94a;--ok:#5fcf9e;--bad:#e86a6a;--warn:#e0975a;color-scheme:dark light}
+@media(prefers-color-scheme:light){:root{--ink:#f3efe6;--ink2:#fbf9f4;--edge:#d6cdb9;
+--fg:#17212e;--dim:#4c5b6d;--gold:#8a6512;--ok:#1d7a53;--bad:#a32b2b;--warn:#9a5a16}}
+*{box-sizing:border-box}
+body{background:var(--ink);color:var(--fg);margin:0;padding:24px 16px 56px;
+font:15px/1.6 ui-monospace,"SF Mono",Menlo,monospace}
+.wrap{max-width:900px;margin:0 auto}
+h1{font-size:22px;margin:0 0 6px;letter-spacing:-.01em}
+p.sub{color:var(--dim);margin:0 0 22px;max-width:66ch}
+button{background:var(--ink2);color:var(--fg);border:1px solid var(--gold);
+border-radius:3px;padding:9px 15px;font:inherit;font-size:14px;cursor:pointer;margin:0 8px 8px 0}
+button:hover{background:var(--gold);color:var(--ink)}
+button:disabled{opacity:.5;cursor:default}
+table{border-collapse:collapse;width:100%;font-size:12.5px;margin-top:18px}
+th,td{border:1px solid var(--edge);padding:6px 8px;text-align:left}
+th{color:var(--gold);font-weight:500}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}.dim{color:var(--dim)}
+#verdict{margin-top:18px;border-left:3px solid var(--edge);padding:10px 14px;background:var(--ink2)}
+.wrapx{overflow-x:auto}
+code{color:var(--gold)}
+footer{margin-top:28px;color:var(--dim);font-size:12.5px;border-top:1px solid var(--edge);padding-top:14px}
+</style></head><body><div class="wrap">
+
+<h1>Monorail receipt verification</h1>
+<p class="sub">This page recomputes each receipt's SHA-256 from its own body, in your browser,
+using the canonical serialization in <code>canonical.js</code>. It does not ask a server whether
+the receipts are valid. A matching digest proves integrity only — never authorship,
+and never mathematical correctness.</p>
+
+<div>
+  <button id="bVerify">Verify receipts</button>
+  <button id="bChain">Verify chain</button>
+  <button id="bTamper">Tamper with one, then re-verify</button>
+  <button id="bReset">Reset</button>
+</div>
+
+<div id="verdict" class="dim">Not yet run.</div>
+
+<div class="wrapx"><table id="tbl">
+<thead><tr><th>Station</th><th>Theorem</th><th>Result</th><th>Fare</th>
+<th>Compiler</th><th>Digest</th><th>Parent</th></tr></thead>
+<tbody id="rows"></tbody></table></div>
+
+<footer>
+Route <code id="rid">—</code> · commit <code id="sha">—</code> ·
+<span id="run"></span><br>
+Evidence classes are the City's E0–E4 fare. Transfer does not upgrade evidence.
+A database-held chain is not immune to a privileged administrator; this page
+verifies an exported copy, which is why the check is worth running here.
+</footer>
+</div>
+
+<script type="module">
+import { verifyReceipt, verifyChain } from "./canonical.js";
+
+const rowsEl = document.getElementById("rows");
+const verdict = document.getElementById("verdict");
+let original = [], working = [];
+
+const short = h => (h ? h.slice(0, 12) + "…" : "—");
+
+function render(results) {
+  rowsEl.innerHTML = working.map((r, i) => {
+    const v = results ? results[i] : null;
+    const cls = { PASS: "ok", FAIL: "bad", BLOCKED: "dim", PENDING: "warn" }[r.verification_status] || "";
+    const d = v ? (v.ok ? '<span class="ok">✓ ' + short(v.actual) + "</span>"
+                        : '<span class="bad">✗ computes ' + short(v.actual) + "</span>")
+                : '<span class="dim">' + short(r.receipt_hash) + "</span>";
+    return `<tr><td>${r.station}</td><td><code>${r.theorem_id}</code></td>
+      <td class="${cls}">${r.verification_status}</td><td>${r.evidence_class}</td>
+      <td>${r.proof_system} ${r.compiler_version || "—"}</td>
+      <td>${d}</td><td class="dim">${short(r.parent_receipt_hash)}</td></tr>`;
+  }).join("");
+}
+
+async function load() {
+  const res = await fetch("./receipts.json");
+  original = await res.json();
+  working = JSON.parse(JSON.stringify(original));
+  const h = working[0] || {};
+  document.getElementById("rid").textContent = h.route_id || "—";
+  document.getElementById("sha").textContent = (h.source_commit || "").slice(0, 12) || "—";
+  document.getElementById("run").innerHTML = h.run_url
+    ? `workflow run <a href="${h.run_url}">${h.run_url.split("/").pop()}</a>`
+    : "executed locally, no CI run URL recorded";
+  render(null);
+}
+
+document.getElementById("bVerify").onclick = async () => {
+  const results = [];
+  for (const r of working) results.push(await verifyReceipt(r));
+  render(results);
+  const bad = results.filter(x => !x.ok).length;
+  verdict.innerHTML = bad === 0
+    ? `<b class="ok">All ${results.length} digests recomputed and match.</b>
+       Each receipt's SHA-256 was derived here from its own body.`
+    : `<b class="bad">${bad} of ${results.length} digests do not match.</b>
+       A receipt whose body no longer hashes to its stored value has been altered.`;
+};
+
+document.getElementById("bChain").onclick = async () => {
+  const { ok, notes } = await verifyChain(working);
+  verdict.innerHTML = `<b class="${ok ? "ok" : "bad"}">Chain ${ok ? "INTACT" : "BROKEN"}</b><ul>`
+    + notes.map(n => `<li>${n}</li>`).join("") + "</ul>";
+};
+
+document.getElementById("bTamper").onclick = async () => {
+  working = JSON.parse(JSON.stringify(original));
+  const i = Math.min(3, working.length - 1);
+  working[i].verification_status = "PASS";
+  working[i].evidence_class = "E0";
+  working[i].theorem_id = working[i].theorem_id + "-FORGED";
+  const results = [];
+  for (const r of working) results.push(await verifyReceipt(r));
+  render(results);
+  const bad = results.filter(x => !x.ok).length;
+  verdict.innerHTML = `<b class="${bad ? "ok" : "bad"}">${bad ? "Detected." : "NOT detected — this is a bug."}</b>
+    Station <code>${working[i].station}</code> was edited in memory and its stored hash left alone.
+    ${bad ? "The recomputed digest no longer matches, so the edit is visible." : ""}
+    Press Reset to restore the originals.`;
+};
+
+document.getElementById("bReset").onclick = async () => {
+  working = JSON.parse(JSON.stringify(original));
+  render(null);
+  verdict.className = "dim";
+  verdict.textContent = "Reset to the published receipts. Not yet run.";
+};
+
+load();
+</script></body></html>

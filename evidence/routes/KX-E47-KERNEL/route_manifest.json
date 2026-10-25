@@ -7,10 +7,10 @@
   "destination": "Frozen Release Depot",
   "object_id": "E47-CASIMIR",
   "scope": "Only the exact statements these files compile. Does not claim the concrete 125x125 tensor Casimir bridge, which remains an open obligation on the Observatory Spur.",
-  "source_commit": "4dcec1dc2f85da2742488d2eab519f352bcdb2e3",
-  "environment_lock_hash": "ddf66a11c8f58ab38c0d2cd2c21810deca22877ac1776a21a1b67eeb222d14fc",
-  "generated_utc": "2026-10-25T19:50:12Z",
-  "status": "OPEN",
+  "source_commit": "ce6a7001a3658ce391693573275691883de4791f",
+  "environment_lock_hash": "34c931aaf21b24dbda35ab11790c1aa3505b29a9a07bd486a7f5d49a2821a88e",
+  "generated_utc": "2026-10-25T20:29:03Z",
+  "status": "LIMITED SERVICE",
   "certified": true,
   "chain_intact": true,
   "chain_notes": [
@@ -22,76 +22,160 @@
       "theorem_id": "E47-SPIN2-GENERATORS",
       "status": "PASS",
       "evidence_class": "E0",
-      "receipt_hash": "8a1804938b4cbd17d8bc9e5cb30bc56b73c1f5bfeeada6397bfdb10e5b9ab7c9"
+      "receipt_hash": "c01bf8816cebc190fd48dcaa9b98044e730347d28f9adea286a0df15069076f2"
     },
     {
       "station": "spin2_generators_coq",
       "theorem_id": "E47-SPIN2-GENERATORS",
       "status": "PASS",
       "evidence_class": "E0",
-      "receipt_hash": "9c51a01cd3c878c554b71014585c01d13e5788dd952a2ab8812996a59624da82"
+      "receipt_hash": "f4abef9805335c5963a2bc87014e1dd774ff1422c205063a30b7d763b37642ea"
     },
     {
       "station": "triple_tensor",
       "theorem_id": "E47-TENSOR-125",
       "status": "PASS",
       "evidence_class": "E0",
-      "receipt_hash": "657b3f161202c1d2e541a9e1775fb0b689ab255051fba74cb51a5fcf656b1140"
+      "receipt_hash": "c18de9ec3fb2651a16ce5a0fb138b1e7684dab8d6273c4e09eeb7ff0258020e2"
     },
     {
       "station": "weight_decomposition",
       "theorem_id": "E47-WEIGHT-ALGEBRA",
       "status": "PASS",
       "evidence_class": "E0",
-      "receipt_hash": "7750bd2683001bbf07c493d748d6d47fb290526095df5c84604952a748fa0b82"
+      "receipt_hash": "c40622896b50fffafed1299c2e957e7428d6907e14d650a6c278c3dccbd8dfc3"
     },
     {
       "station": "spectral_census",
       "theorem_id": "E47-SPECTRAL-CENSUS",
       "status": "PASS",
       "evidence_class": "E0",
-      "receipt_hash": "7a4ddd3a03b28ea4d18d5721f56590457d3cab2f0b9ea6cdb7c617f6210e368a"
+      "receipt_hash": "0708ebca39a46e7bb8f74c6a063ae9ecd812398c86894a7e83aff6282490d479"
     },
     {
       "station": "kernel_dimension",
       "theorem_id": "E47-KERNEL-47",
       "status": "PASS",
       "evidence_class": "E0",
-      "receipt_hash": "b67f0e88002e982d09cef022b67a2400de3488243b3f57d25875e1abd8e2353e"
+      "receipt_hash": "0f4b35cf5a17c1342a54a542129b4d7a18e7b3ce000d1b12bd2532bb44bf59ee"
     },
     {
       "station": "kernel_dimension_coq",
       "theorem_id": "E47-KERNEL-47",
       "status": "PASS",
       "evidence_class": "E0",
-      "receipt_hash": "12ff1ac11c3a3855faba6794a8ecc70c9af599a261003f30e88f8c178f601481"
+      "receipt_hash": "57cd1d8ac7149bb0bcba4bef114557bf0ec4b549b634772dde657b0d6b065d61"
     },
     {
       "station": "exact_matrix_rank",
       "theorem_id": "E47-RANK-78",
       "status": "PASS",
       "evidence_class": "E1",
-      "receipt_hash": "7697872d641384263fda6ac50462b55f8a9fe37fe5bbded7c9ca1106643f9f09"
+      "receipt_hash": "794a7b1a9c77e380c7bf963b6a99494b425ddbf9ff3d59946bc3d732b0b455f8"
     },
     {
       "station": "exact_bracket_trace",
       "theorem_id": "E47-BRACKETS-EXACT",
       "status": "PASS",
       "evidence_class": "E1",
-      "receipt_hash": "3ad1496e9eac40319f89568c4a4ea9bcb67ed30749c09a2c7c464de726cddcaa"
+      "receipt_hash": "e766f45c8dafcb5e3f7016edd351ad6b2b5df315597ea307e726504d727e779f"
     }
   ],
   "open_defects": 0,
-  "replica": {
-    "mode": "MOCK",
-    "replicated": 9,
-    "errors": [],
+  "citizen_reconciliation": {
+    "schema_version": "monorail.reconciliation.v1",
+    "snapshot_source": "public.mathematical_identities @ gpkjvihkyectnenvnbng, 2026-10-25",
+    "consistent": 0,
+    "unregistered": 6,
+    "upgrades_requiring_approval": 1,
+    "promotion_blocked": true,
+    "rows": [
+      {
+        "theorem_id": "E47-BRACKETS-EXACT",
+        "route_class": "E1",
+        "city_class": null,
+        "city_status": null,
+        "verdict": "UNREGISTERED",
+        "detail": "no citizen_code matches; do not auto-create \u2014 a route may not mint a civic identity",
+        "blocks_promotion": true
+      },
+      {
+        "theorem_id": "E47-KERNEL-47",
+        "route_class": "E0",
+        "city_class": "E1",
+        "city_status": "validated",
+        "verdict": "UPGRADE_REQUIRES_APPROVAL",
+        "detail": "route declares E0, citizen holds E1. Transfer does not upgrade evidence; route this through approval_queue as a human_gate canonical promotion.",
+        "blocks_promotion": true
+      },
+      {
+        "theorem_id": "E47-RANK-78",
+        "route_class": "E1",
+        "city_class": null,
+        "city_status": null,
+        "verdict": "UNREGISTERED",
+        "detail": "no citizen_code matches; do not auto-create \u2014 a route may not mint a civic identity",
+        "blocks_promotion": true
+      },
+      {
+        "theorem_id": "E47-SPECTRAL-CENSUS",
+        "route_class": "E0",
+        "city_class": null,
+        "city_status": null,
+        "verdict": "UNREGISTERED",
+        "detail": "no citizen_code matches; do not auto-create \u2014 a route may not mint a civic identity",
+        "blocks_promotion": true
+      },
+      {
+        "theorem_id": "E47-SPIN2-GENERATORS",
+        "route_class": "E0",
+        "city_class": null,
+        "city_status": null,
+        "verdict": "UNREGISTERED",
+        "detail": "no citizen_code matches; do not auto-create \u2014 a route may not mint a civic identity",
+        "blocks_promotion": true
+      },
+      {
+        "theorem_id": "E47-TENSOR-125",
+        "route_class": "E0",
+        "city_class": null,
+        "city_status": null,
+        "verdict": "UNREGISTERED",
+        "detail": "no citizen_code matches; do not auto-create \u2014 a route may not mint a civic identity",
+        "blocks_promotion": true
+      },
+      {
+        "theorem_id": "E47-WEIGHT-ALGEBRA",
+        "route_class": "E0",
+        "city_class": null,
+        "city_status": null,
+        "verdict": "UNREGISTERED",
+        "detail": "no citizen_code matches; do not auto-create \u2014 a route may not mint a civic identity",
+        "blocks_promotion": true
+      }
+    ]
+  },
+  "ledger": {
+    "mode": "LIVE-READ / WRITE-GATED",
+    "write_bundle": "evidence/routes/KX-E47-KERNEL/supabase_write_bundle.sql",
+    "statements_emitted": 18,
+    "executed": false,
+    "reason": "city_formalism.monorail_receipts not deployed; production DDL awaits explicit approval",
     "reconciliation": {
-      "in_both": 9,
-      "replica_only": [],
-      "local_only": [],
-      "conflicting": [],
-      "consistent": true
+      "in_both": 0,
+      "ledger_only": [],
+      "local_only": [
+        "0708ebca39a46e7bb8f74c6a063ae9ecd812398c86894a7e83aff6282490d479",
+        "0f4b35cf5a17c1342a54a542129b4d7a18e7b3ce000d1b12bd2532bb44bf59ee",
+        "57cd1d8ac7149bb0bcba4bef114557bf0ec4b549b634772dde657b0d6b065d61",
+        "794a7b1a9c77e380c7bf963b6a99494b425ddbf9ff3d59946bc3d732b0b455f8",
+        "c01bf8816cebc190fd48dcaa9b98044e730347d28f9adea286a0df15069076f2",
+        "c18de9ec3fb2651a16ce5a0fb138b1e7684dab8d6273c4e09eeb7ff0258020e2",
+        "c40622896b50fffafed1299c2e957e7428d6907e14d650a6c278c3dccbd8dfc3",
+        "e766f45c8dafcb5e3f7016edd351ad6b2b5df315597ea307e726504d727e779f",
+        "f4abef9805335c5963a2bc87014e1dd774ff1422c205063a30b7d763b37642ea"
+      ],
+      "consistent": false
     }
   },
   "adapters": [
@@ -105,15 +189,13 @@
     },
     {
       "adapter": "supabase",
-      "mode": "MOCK",
-      "live_deployment": "PENDING \u2014 no Supabase connector authorized",
-      "target_schema": "mnemosyne_private",
-      "enforces": [
-        "append_only",
-        "sha256_format",
-        "evidence_class_not_null",
-        "receipt_hash_unique"
-      ]
+      "mode": "LIVE-READ / WRITE-GATED",
+      "project_ref": "gpkjvihkyectnenvnbng",
+      "reads": "LIVE (performed via Supabase MCP this session)",
+      "writes": "GATED \u2014 statements emitted for review; none executed",
+      "ledger_table": "city_formalism.monorail_receipts",
+      "ledger_deployed": "NO \u2014 migration awaits explicit approval",
+      "cube_moves": "untouched by design"
     },
     {
       "adapter": "notion",

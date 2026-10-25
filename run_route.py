@@ -38,6 +38,7 @@ import pages_adapter as pages        # noqa: E402
 import supabase_adapter as supa      # noqa: E402
 from passport import (GENESIS_PARENT, make_passport, sha256_file,  # noqa: E402
                       sha256_hex, utc_now, verify_chain)
+import reconcile as rec      # noqa: E402
 from routes import ROUTES            # noqa: E402
 from switchyard import Switchyard    # noqa: E402
 
@@ -148,18 +149,24 @@ def run(route_id: str, repo: Path, outdir: Path | None = None) -> int:
 
     chain_ok, chain_notes = verify_chain(passports)
 
-    replica = supa.Replica(out / "supabase_replica.jsonl")
-    replicated, replica_errors = 0, []
-    for p in passports:
-        try:
-            replica.insert(p)
-            replicated += 1
-        except supa.ReplicaError as e:
-            replica_errors.append(str(e))
-    reconciliation = replica.reconcile(passports)
+    # Reconcile against the City's citizen registry BEFORE declaring anything.
+    # A route may certify its own stations; it may not promote a citizen.
+    recon = rec.reconcile_route(passports)
+    rec.write_report(passports, out / "citizen_reconciliation.json")
 
-    state = ("OPEN" if certified and chain_ok
-             else "SUSPENDED" if yard.suspends(route_id) else "CONSTRUCTION")
+    # The ledger write is GATED: emit the exact statements for review, do not
+    # execute them. This process holds no database credentials by design.
+    bundle = supa.emit_bundle(passports, route_id, out / "supabase_write_bundle.sql")
+    reconciliation = supa.reconcile(passports, [])  # ledger not yet deployed
+
+    # A certified route whose citizens do not reconcile is LIMITED SERVICE:
+    # the stations passed, but the result may not be promoted as it stands.
+    if certified and chain_ok:
+        state = "LIMITED SERVICE" if recon["promotion_blocked"] else "OPEN"
+    elif yard.suspends(route_id):
+        state = "SUSPENDED"
+    else:
+        state = "CONSTRUCTION"
 
     manifest = {
         "schema_version": "monorail.route_manifest.v1",
@@ -175,8 +182,14 @@ def run(route_id: str, repo: Path, outdir: Path | None = None) -> int:
                       "evidence_class": p["evidence_class"],
                       "receipt_hash": p["receipt_hash"]} for p in passports],
         "open_defects": len(yard.open_defects()),
-        "replica": {"mode": supa.MODE, "replicated": replicated,
-                    "errors": replica_errors, "reconciliation": reconciliation},
+        "citizen_reconciliation": recon,
+        "ledger": {"mode": supa.MODE,
+                   "write_bundle": str(bundle.relative_to(repo)),
+                   "statements_emitted": 2 * len(passports),
+                   "executed": False,
+                   "reason": "city_formalism.monorail_receipts not deployed; "
+                             "production DDL awaits explicit approval",
+                   "reconciliation": reconciliation},
         "adapters": [a.status() for a in (gh, supa, notion, pages)],
         "transport_law": "(x,Q) |-> (T(x), M_T(Q)); transfer does not upgrade evidence",
     }
@@ -216,9 +229,11 @@ def run(route_id: str, repo: Path, outdir: Path | None = None) -> int:
 
     print()
     print(f"  chain      {'INTACT' if chain_ok else 'BROKEN'}")
-    print(f"  replica    {replicated}/{len(passports)} rows ({supa.MODE})"
-          + (f" · {len(replica_errors)} rejected" if replica_errors else ""))
+    print(f"  ledger     {2 * len(passports)} statements emitted, 0 executed ({supa.MODE})")
     print(f"  defects    {len(yard.open_defects())} open")
+    print(f"  citizens   {recon['consistent']} consistent, "
+          f"{recon['unregistered']} unregistered, "
+          f"{recon['upgrades_requiring_approval']} upgrade(s) needing approval")
     print(f"  ROUTE      {state}")
     print(f"  written    {out.relative_to(repo)}/")
     return 0 if (certified and chain_ok) else 1

@@ -55,6 +55,44 @@ def sha256_file(path) -> str:
     return h.hexdigest()
 
 
+def assert_canonicalizable(value: Any, path: str = "$") -> None:
+    """Reject values the three implementations cannot serialize identically.
+
+    See monorail/CANONICAL.md. An unsupported value does not fail loudly on its
+    own: it yields a receipt that verifies in Python and fails in SQL or the
+    browser. For a ledger whose purpose is cross-checking, that is the worst
+    available failure, so it is refused at the door.
+    """
+    if value is None or isinstance(value, bool):
+        return
+    if isinstance(value, float):
+        raise PassportError(
+            f"{path}: floating point is outside canonical contract v1 "
+            "(Python and PostgreSQL jsonb normalize differently)")
+    if isinstance(value, int):
+        if not (-(2**63) < value < 2**63):
+            raise PassportError(f"{path}: integer outside the exactly-representable range")
+        return
+    if isinstance(value, str):
+        if "\x00" in value:
+            raise PassportError(f"{path}: U+0000 cannot be stored in PostgreSQL jsonb")
+        return
+    if isinstance(value, list):
+        for i, v in enumerate(value):
+            assert_canonicalizable(v, f"{path}[{i}]")
+        return
+    if isinstance(value, dict):
+        keys = list(value.keys())
+        if any(not isinstance(k, str) for k in keys):
+            raise PassportError(f"{path}: object keys must be strings")
+        if len(set(keys)) != len(keys):
+            raise PassportError(f"{path}: duplicate object keys are undefined")
+        for k, v in value.items():
+            assert_canonicalizable(v, f"{path}.{k}")
+        return
+    raise PassportError(f"{path}: unsupported type {type(value).__name__}")
+
+
 def canonical_bytes(passport: dict[str, Any]) -> bytes:
     """Canonical serialization, defined BEFORE hashing (directive step 3).
 
@@ -66,6 +104,7 @@ def canonical_bytes(passport: dict[str, Any]) -> bytes:
       - reject NaN/Infinity, which have no canonical JSON form
     """
     body = {k: v for k, v in passport.items() if k not in _UNHASHED}
+    assert_canonicalizable(body)
     return json.dumps(
         body, sort_keys=True, separators=(",", ":"),
         ensure_ascii=False, allow_nan=False,

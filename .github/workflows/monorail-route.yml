@@ -51,6 +51,11 @@ jobs:
       - name: Monorail scenario tests
         run: python3 monorail/tests/test_monorail.py
 
+      - name: Install Node for the browser verifier
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Migration dry run and integrity tests (throwaway database)
         run: |
           set -euo pipefail
@@ -65,6 +70,7 @@ jobs:
           sudo -u postgres psql -v ON_ERROR_STOP=1 -q -d monorail_test \
             -f infra/supabase/monorail_receipts.sql
           python3 monorail/tests/test_migration_pg.py
+          python3 monorail/tests/test_canonical_crosslang.py
 
       - name: Certify the route
         id: route
