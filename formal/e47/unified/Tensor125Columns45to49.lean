@@ -33,13 +33,13 @@ def idx (n : Nat) : Fin 125 :=
 def mulEntry (A B : Mat125) (i j : Fin 125) : Int :=
   ((List.range 125).map (fun k => A i (idx k) * B (idx k) j)).sum
 
-def columnsFortyThroughFortyFour (j : Fin 5) : Fin 125 := idx (45 + j.val)
+def columnsFortyFiveThroughFortyNine (j : Fin 5) : Fin 125 := idx (45 + j.val)
 
 theorem totalUp_down_bracket_columns_fortyfive_through_fortynine :
     ∀ i : Fin 125, ∀ j : Fin 5,
-      mulEntry totalUp totalDown i (columnsFortyThroughFortyFour j) -
-        mulEntry totalDown totalUp i (columnsFortyThroughFortyFour j) =
-          2 * totalZ i (columnsFortyThroughFortyFour j) := by
+      mulEntry totalUp totalDown i (columnsFortyFiveThroughFortyNine j) -
+        mulEntry totalDown totalUp i (columnsFortyFiveThroughFortyNine j) =
+          2 * totalZ i (columnsFortyFiveThroughFortyNine j) := by
   decide
 
 end E47Tensor125
