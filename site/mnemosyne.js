@@ -49,6 +49,25 @@ try{globalThis.MnemosyneArchive={all,putMany,verify,canonical,digest,announce,re
 if(typeof setInterval==='function')setInterval(()=>{paintLive().catch(()=>{})},1000);
 el('record').addEventListener('submit',async e=>{e.preventDefault();try{const f=new FormData(e.target),r={id:crypto.randomUUID(),title:String(f.get('title')).trim(),kind:String(f.get('kind')),content:String(f.get('content')),created_at:new Date().toISOString()};r.sha256=await digest(canonical(r));await put(r);e.target.reset();announce();status('Saved with verifiable receipt.');await render();await paintLive()}catch(err){status('Save failed: '+err.message)}});
 el('search').addEventListener('input',()=>render().catch(err=>status(err.message)));
+// Optional read-only integrity audit. It neither edits records nor changes export behavior.
+el('verify-archive').addEventListener('click',async()=>{
+  const out=el('verify-status');
+  out.textContent='Checking local SHA-256 receipts…';
+  try{
+    const rows=await all();
+    let valid=0;
+    for(const r of rows){
+      const shape=r&&['id','title','kind','content','created_at','sha256'].every(k=>typeof r[k]==='string');
+      if(shape&&await verify(r))valid++;
+    }
+    const invalid=rows.length-valid;
+    out.textContent='Checked '+rows.length+' local records: '+valid+' verified, '+invalid+' invalid receipt'+(invalid===1?'':'s')+'. SHA-256 does not establish authorship or a trusted timestamp.';
+    out.className=invalid?'warn':'muted';
+  }catch(err){
+    out.textContent='Verification unavailable: '+err.message;
+    out.className='warn';
+  }
+});
 el('export').addEventListener('click',async()=>{try{const records=await all(),blob=new Blob([JSON.stringify({format:'mnemosyne-archive-v1',records},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='mnemosyne-archive.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);status('Exported '+records.length+' records.')}catch(err){status(err.message)}});
 el('import').addEventListener('change',async e=>{try{const file=e.target.files[0];if(!file)return;if(file.size>20_000_000)throw Error('Import exceeds 20 MB');const data=JSON.parse(await file.text());if(!data||data.format!=='mnemosyne-archive-v1'||!Array.isArray(data.records)||data.records.length>10000)throw Error('Unsupported archive');for(const r of data.records){if(!r||typeof r.id!=='string'||typeof r.title!=='string'||typeof r.kind!=='string'||typeof r.content!=='string'||typeof r.created_at!=='string'||typeof r.sha256!=='string'||!(await verify(r)))throw Error('Invalid or altered record')}await putMany(data.records);announce();status('Imported '+data.records.length+' verified records.');await render();await paintLive()}catch(err){status('Import rejected: '+err.message)}finally{e.target.value=''}});
 render().then(paintLive).catch(err=>status('Archive unavailable: '+err.message));
