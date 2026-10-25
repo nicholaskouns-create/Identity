@@ -7,6 +7,7 @@ on:
       - 'formal/e47/**'
       - 'tools/**'
       - 'site/**'
+      - 'validation/e47_lie_reproduction.py'
       - 'experiments/e47_ablation_results.json'
       - 'infra/ingestion/**'
   pull_request:
@@ -16,6 +17,7 @@ on:
       - 'formal/e47/**'
       - 'tools/**'
       - 'site/**'
+      - 'validation/e47_lie_reproduction.py'
       - 'infra/ingestion/**'
   workflow_dispatch:
 permissions:
@@ -101,4 +103,5 @@ jobs:
           node tools/test-forge.mjs
           node --test site/ablation.test.mjs
           python -m unittest discover -s tools/tests -v
+          python validation/e47_lie_reproduction.py
           python tools/check_site.py
