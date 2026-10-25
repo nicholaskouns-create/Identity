@@ -1,0 +1,4 @@
+$ coq formal/e47/unified/RankNullity47.v
+exit 0
+
+

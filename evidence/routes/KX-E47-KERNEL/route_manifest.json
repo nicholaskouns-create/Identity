@@ -1,0 +1,132 @@
+{
+  "schema_version": "monorail.route_manifest.v1",
+  "route_id": "KX-E47-KERNEL",
+  "title": "K Express \u00b7 carrier to kernel dimension certificate",
+  "service": "K-Express",
+  "origin": "Canonical Manifest Depot",
+  "destination": "Frozen Release Depot",
+  "object_id": "E47-CASIMIR",
+  "scope": "Only the exact statements these files compile. Does not claim the concrete 125x125 tensor Casimir bridge, which remains an open obligation on the Observatory Spur.",
+  "source_commit": "4dcec1dc2f85da2742488d2eab519f352bcdb2e3",
+  "environment_lock_hash": "ddf66a11c8f58ab38c0d2cd2c21810deca22877ac1776a21a1b67eeb222d14fc",
+  "generated_utc": "2026-10-25T19:50:12Z",
+  "status": "OPEN",
+  "certified": true,
+  "chain_intact": true,
+  "chain_notes": [
+    "chain intact across 9 receipt(s)"
+  ],
+  "stations": [
+    {
+      "station": "spin2_generators",
+      "theorem_id": "E47-SPIN2-GENERATORS",
+      "status": "PASS",
+      "evidence_class": "E0",
+      "receipt_hash": "8a1804938b4cbd17d8bc9e5cb30bc56b73c1f5bfeeada6397bfdb10e5b9ab7c9"
+    },
+    {
+      "station": "spin2_generators_coq",
+      "theorem_id": "E47-SPIN2-GENERATORS",
+      "status": "PASS",
+      "evidence_class": "E0",
+      "receipt_hash": "9c51a01cd3c878c554b71014585c01d13e5788dd952a2ab8812996a59624da82"
+    },
+    {
+      "station": "triple_tensor",
+      "theorem_id": "E47-TENSOR-125",
+      "status": "PASS",
+      "evidence_class": "E0",
+      "receipt_hash": "657b3f161202c1d2e541a9e1775fb0b689ab255051fba74cb51a5fcf656b1140"
+    },
+    {
+      "station": "weight_decomposition",
+      "theorem_id": "E47-WEIGHT-ALGEBRA",
+      "status": "PASS",
+      "evidence_class": "E0",
+      "receipt_hash": "7750bd2683001bbf07c493d748d6d47fb290526095df5c84604952a748fa0b82"
+    },
+    {
+      "station": "spectral_census",
+      "theorem_id": "E47-SPECTRAL-CENSUS",
+      "status": "PASS",
+      "evidence_class": "E0",
+      "receipt_hash": "7a4ddd3a03b28ea4d18d5721f56590457d3cab2f0b9ea6cdb7c617f6210e368a"
+    },
+    {
+      "station": "kernel_dimension",
+      "theorem_id": "E47-KERNEL-47",
+      "status": "PASS",
+      "evidence_class": "E0",
+      "receipt_hash": "b67f0e88002e982d09cef022b67a2400de3488243b3f57d25875e1abd8e2353e"
+    },
+    {
+      "station": "kernel_dimension_coq",
+      "theorem_id": "E47-KERNEL-47",
+      "status": "PASS",
+      "evidence_class": "E0",
+      "receipt_hash": "12ff1ac11c3a3855faba6794a8ecc70c9af599a261003f30e88f8c178f601481"
+    },
+    {
+      "station": "exact_matrix_rank",
+      "theorem_id": "E47-RANK-78",
+      "status": "PASS",
+      "evidence_class": "E1",
+      "receipt_hash": "7697872d641384263fda6ac50462b55f8a9fe37fe5bbded7c9ca1106643f9f09"
+    },
+    {
+      "station": "exact_bracket_trace",
+      "theorem_id": "E47-BRACKETS-EXACT",
+      "status": "PASS",
+      "evidence_class": "E1",
+      "receipt_hash": "3ad1496e9eac40319f89568c4a4ea9bcb67ed30749c09a2c7c464de726cddcaa"
+    }
+  ],
+  "open_defects": 0,
+  "replica": {
+    "mode": "MOCK",
+    "replicated": 9,
+    "errors": [],
+    "reconciliation": {
+      "in_both": 9,
+      "replica_only": [],
+      "local_only": [],
+      "conflicting": [],
+      "consistent": true
+    }
+  },
+  "adapters": [
+    {
+      "adapter": "github",
+      "mode": "LIVE",
+      "git": true,
+      "lean": "Lean (version 4.35.0, x86_64-unknown-linux-gnu, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)",
+      "coqc": "The Coq Proof Assistant, version 8.18.0",
+      "python": "Python 3.13.17"
+    },
+    {
+      "adapter": "supabase",
+      "mode": "MOCK",
+      "live_deployment": "PENDING \u2014 no Supabase connector authorized",
+      "target_schema": "mnemosyne_private",
+      "enforces": [
+        "append_only",
+        "sha256_format",
+        "evidence_class_not_null",
+        "receipt_hash_unique"
+      ]
+    },
+    {
+      "adapter": "notion",
+      "mode": "READ-VERIFIED / WRITE-DEFERRED",
+      "charter_page": "3a246094fd3081f0a356e5102d1561b9",
+      "citadel_page": "3a246094fd308146a357c72c634d225c",
+      "writes": "deferred \u2014 canonical promotion requires explicit human approval"
+    },
+    {
+      "adapter": "pages",
+      "mode": "LIVE (generator) / PUBLISH-DEFERRED",
+      "publishes": "no \u2014 writes a file; deployment is a separate authorized step"
+    }
+  ],
+  "transport_law": "(x,Q) |-> (T(x), M_T(Q)); transfer does not upgrade evidence"
+}

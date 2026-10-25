@@ -1,0 +1,94 @@
+name: Monorail route certification
+
+# Runs the Elevated Reproducibility Monorail over a route and publishes the
+# evidence bundle as a CI artifact. Read-only with respect to the repository:
+# it never commits, never promotes, and never writes to a live database.
+
+on:
+  pull_request:
+    paths:
+      - 'formal/e47/**'
+      - 'validation/**'
+      - 'monorail/**'
+      - 'run_route.py'
+      - '.github/workflows/monorail-route.yml'
+  workflow_dispatch:
+    inputs:
+      route_id:
+        description: 'Route to certify'
+        required: false
+        default: 'KX-E47-KERNEL'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: monorail-route-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  certify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Coq and Python
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y coq python3
+
+      - name: Install Lean 4.35.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error \
+            https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+            -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.35.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Monorail scenario tests
+        run: python3 monorail/tests/test_monorail.py
+
+      - name: Certify the route
+        id: route
+        run: |
+          set +e
+          python3 run_route.py "${{ github.event.inputs.route_id || 'KX-E47-KERNEL' }}"
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Evidence bundle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: monorail-evidence
+          path: evidence/routes/
+
+      - name: Route summary
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          for m in evidence/routes/*/route_manifest.json; do
+            python3 - "$m" >> "$GITHUB_STEP_SUMMARY" <<'PY'
+          import json, sys
+          m = json.load(open(sys.argv[1]))
+          print(f"## Route {m['route_id']} — {m['status']}\n")
+          print(f"- commit `{m['source_commit'][:12]}`")
+          print(f"- environment lock `{m['environment_lock_hash'][:12]}`")
+          print(f"- hash chain: {'INTACT' if m['chain_intact'] else 'BROKEN'}")
+          print(f"- open defects: {m['open_defects']}")
+          print(f"- replica mode: {m['replica']['mode']} (live deployment pending)\n")
+          print("| Station | Theorem | Status | Fare |")
+          print("|---|---|---|---|")
+          for s in m['stations']:
+              print(f"| {s['station']} | `{s['theorem_id']}` | {s['status']} | {s['evidence_class']} |")
+          print("\n_Transfer does not upgrade evidence._")
+          PY
+          done
+
+      - name: Fail if the route did not certify
+        if: always()
+        run: test "${{ steps.route.outputs.code }}" = "0"
