@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Verity companion poster: what Lean and Coq mean for E47, what the machine-checked work covers, and why a reproducible path from calculation to formal proof matters.">
+<link rel="canonical" href="https://nicholaskouns-create.github.io/Identity/site/proof/lean-coq/verity-poster.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Identity">
+<meta property="og:title" content="When Mathematics Becomes Machine-Checked Proof">
+<meta property="og:description" content="Lean and Coq examine the E47 argument. A 125-dimensional spin space, a 47-dimensional sector, and a reproducible path from calculation to formal proof.">
+<meta property="og:url" content="https://nicholaskouns-create.github.io/Identity/site/proof/lean-coq/verity-poster.html">
+<meta property="og:image" content="https://nicholaskouns-create.github.io/Identity/site/proof/lean-coq/og.png">
+<meta property="og:image:secure_url" content="https://nicholaskouns-create.github.io/Identity/site/proof/lean-coq/og.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Verity companion poster. When Mathematics Becomes Machine-Checked Proof. Lean, Coq, and E47: 125 dimensions, a 47-dimensional sector.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="When Mathematics Becomes Machine-Checked Proof">
+<meta name="twitter:description" content="Lean and Coq examine the E47 argument. A 125-dimensional spin space, a 47-dimensional sector, and a reproducible path from calculation to formal proof.">
+<meta name="twitter:image" content="https://nicholaskouns-create.github.io/Identity/site/proof/lean-coq/og.png">
+<meta name="twitter:image:alt" content="Verity companion poster. When Mathematics Becomes Machine-Checked Proof.">
+<title>Verity Companion Poster | When Mathematics Becomes Machine-Checked Proof — Lean · Coq / Rocq · E47</title>
+<style>
+ /* ============ PAGE ============ */
+ @page { size: A3 portrait; margin: 10mm; }
+
+ *{
+   box-sizing: border-box;
+   -webkit-print-color-adjust: exact;
+   print-color-adjust: exact;
+ }
+
+ :root{
+   --ink:#101826;
+   --ink-2:#2c3648;
+   --muted:#5d6879;
+   --line:#d9dfe9;
+   --line-2:#eef1f6;
+   --paper:#ffffff;
+   --bg:#e8ecf3;
+
+     --green:#0b7a53; --green-bg:#e2f4ea;
+     --amber:#9a5600; --amber-bg:#fdf1dd;
+     --red:#b3261e; --red-bg:#fbe7e5;
+     --gray:#54606f; --gray-bg:#eef1f6;
+
+     --lean:#2258d6;
+     --coq:#7434c9;
+ }
+
+ html, body{
+   margin:0; padding:0;
+   background:var(--bg);
+   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+            "Helvetica Neue", Arial, sans-serif;
+   color: var(--ink);
+   -webkit-font-smoothing: antialiased;
+ }
+ body{ display:flex; justify-content:center; padding: 18px 0; }
+.poster{
+ width: 277mm;           /* A3 (297mm) − 2 × 10mm margin */
+    min-height: 400mm;        /* A3 (420mm) − 2 × 10mm margin */
+    background: var(--paper);
+    padding: 0 0 6mm 0;
+    box-shadow: 0 6px 34px rgba(16,24,38,.18);
+    overflow: hidden;
+    font-size: 11.5px;
+    line-height: 1.42;
+}
+
+/* ============ HEADER ============ */
+.hd{
+  background: #0d1421;
+  color: #fff;
+  padding: 9mm 9mm 8mm 9mm;
+  position: relative;
+  background-image:
+    linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px);
+  background-size: 14px 14px, 14px 14px;
+}
+.hd-kicker{
+  font-size: 9.5px; letter-spacing: .22em; text-transform: uppercase;
+  color: #8fa2c0; font-weight: 700; margin-bottom: 4mm;
+}
+.hd-kicker span{ color:#fff; }
+.hd-title{
+  font-size: 30px; line-height: 1.08; font-weight: 800;
+  letter-spacing: -.015em; margin: 0; max-width: 88%;
+}
+.hd-title em{ font-style: normal; color: #7fe3b4; }
+.hd-sub{
+  margin-top: 4mm; font-size: 12.5px; color: #b9c6dc; font-weight: 500;
+}
+.hd-rule{
+  position:absolute; left:0; right:0; bottom:0; height:5px;
+  background: linear-gradient(90deg,
+    #7fe3b4 0 25%, #5aa9f0 25% 50%, #a98bf5 50% 75%, #f0a94a 75% 100%);
+}
+
+/* ============ TL;DR ============ */
+.tldr{
+  margin: 6mm 9mm 0 9mm;
+ border-left: 4px solid var(--green);
+ background: #f3faf6;
+ padding: 4mm 5mm;
+ font-size: 11px;
+ line-height: 1.5;
+ color: var(--ink-2);
+}
+.tldr b{ color: var(--ink); }
+.tldr .lbl{
+  display:block; font-size: 8.5px; letter-spacing:.2em; text-transform: uppercase;
+  color: var(--green); font-weight: 800; margin-bottom: 1.6mm;
+}
+
+/* ============ LAYOUT ============ */
+.cols{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 7mm;
+  align-items: start;
+  padding: 6mm 9mm 0 9mm;
+}
+.col{ min-width: 0; }
+.full{ padding: 0 9mm; }
+
+/* ============ SECTION ============ */
+.sec{ margin-bottom: 5.5mm; }
+.sec-head{
+  display:flex; align-items:baseline; gap: 2.5mm;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 1.6mm; margin-bottom: 3mm;
+}
+.num{
+  font-size: 10px; font-weight: 800; letter-spacing: .06em;
+  background: var(--ink); color:#fff;
+  padding: .8mm 2mm; border-radius: 2px; flex: none;
+}
+.sec-title{
+  font-size: 12px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .07em; color: var(--ink); line-height:1.2;
+}
+.sec-title small{
+  display:block; font-size: 9px; letter-spacing:.04em;
+  text-transform:none; font-weight:600; color: var(--muted);
+  margin-top: .8mm;
+}
+
+p{ margin: 0 0 2.5mm 0; }
+.lead{ font-size: 10.8px; color: var(--ink-2); }
+.note{ font-size: 9.6px; color: var(--muted); }
+
+/* ============ CARDS ============ */
+.card{
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 3mm 3.5mm;
+  background: #fff;
+}
+.card + .card{ margin-top: 2.5mm; }
+.card h4{
+  margin: 0 0 1.6mm 0;
+  font-size: 9.6px; text-transform: uppercase; letter-spacing: .1em;
+  font-weight: 800;
+}
+.card p{ margin: 0; font-size: 10px; color: var(--ink-2); }
+.card .std{
+  margin-top: 2.2mm; padding-top: 1.8mm; border-top: 1px dashed var(--line);
+  font-size: 9.2px; color: var(--muted);
+}
+.card .std b{ color: var(--ink); }
+
+.card.human{ border-top: 3px solid var(--ink-2); }
+.card.machine{ border-top: 3px solid var(--green); }
+.card.machine h4{ color: var(--green); }
+.card.human h4{ color: var(--ink-2); }
+
+/* ============ CALLOUT ============ */
+.callout{
+  background: #f7f9fc;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--lean);
+  border-radius: 3px;
+  padding: 3mm 3.5mm;
+  font-size: 10.2px;
+  color: var(--ink-2);
+  margin-bottom: 2.5mm;
+}
+.callout .lbl{
+  display:block; font-size: 8.5px; letter-spacing: .18em; text-transform: uppercase;
+ font-weight: 800; color: var(--lean); margin-bottom: 1.4mm;
+}
+.callout b{ color: var(--ink); }
+
+.callout.warn{
+  border-left-color: var(--red);
+  background: #fdf5f4;
+}
+.callout.warn .lbl{ color: var(--red); }
+
+.callout.ok{
+  border-left-color: var(--green);
+  background: #f4faf7;
+}
+.callout.ok .lbl{ color: var(--green); }
+
+/* ============ TABLES ============ */
+table{
+  width: 100%; border-collapse: collapse;
+  font-size: 9.8px; line-height: 1.35;
+}
+th{
+  text-align: left; font-size: 8.5px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--muted); font-weight: 800;
+  padding: 1.4mm 2mm; border-bottom: 1.5px solid var(--line);
+  vertical-align: bottom;
+}
+td{
+  padding: 1.8mm 2mm; border-bottom: 1px solid var(--line-2);
+  vertical-align: top; color: var(--ink-2);
+}
+tr:last-child td{ border-bottom: none; }
+td:first-child{ font-weight: 700; color: var(--ink); }
+th.lean-h{ color: var(--lean); }
+th.coq-h{ color: var(--coq); }
+
+/* ============ BADGES ============ */
+.badge{
+  display: inline-block;
+  font-size: 8.2px; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: .9mm 1.8mm; border-radius: 2px;
+  white-space: nowrap;
+}
+.b-green{ background: var(--green-bg); color: var(--green); }
+.b-amber{ background: var(--amber-bg); color: var(--amber); }
+.b-red { background: var(--red-bg); color: var(--red); }
+.b-gray { background: var(--gray-bg); color: var(--gray); }
+
+.tag{
+  display:inline-block; font-size: 8.2px; font-weight: 800;
+  letter-spacing:.06em; padding: .5mm 1.4mm; border-radius: 2px;
+  margin-right: 1.2mm; white-space: nowrap;
+}
+.tag.lean{ background:#e6edfd; color: var(--lean); }
+.tag.coq { background:#f0e8fd; color: var(--coq); }
+.tag.py { background:#eaf3e3; color:#3f6d1b;         }
+
+/* ============ DASHBOARD ============ */
+.legend{
+  display:flex; gap: 3mm; flex-wrap: wrap;
+  font-size: 8.8px; color: var(--muted); margin-bottom: 2.5mm;
+}
+.legend span{ display:flex; align-items:center; gap: 1.2mm; }
+
+.dash-row{
+  display: grid;
+  grid-template-columns: 16mm 1fr;
+  gap: 2.6mm;
+  padding: 2.4mm 0;
+  border-bottom: 1px solid var(--line-2);
+}
+.dash-row:last-child{ border-bottom: none; }
+.dash-row .badge{ width: 100%; text-align: center; }
+.dash-title{ font-size: 10.4px; font-weight: 800; color: var(--ink); line-height:1.25; }
+.dash-meta{ font-size: 9px; color: var(--ink-2); margin-top: 1mm; line-height:1.5; }
+.dash-note{ font-size: 9.2px; color: var(--muted); font-style: italic; margin-top: 1mm; }
+.dash-note::before{ content:"→ "; font-style: normal; color: var(--line); }
+
+/* ============ EQUATION BOX ============ */
+.eq-box{
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  background: #fbfcfe;
+  padding: 6mm 4mm;
+  text-align: center;
+  margin-bottom: 3mm;
+}
+.eq{
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 18px; font-weight: 700; letter-spacing: .01em;
+  color: var(--ink); white-space: nowrap;
+}
+.eq .res{
+  color: var(--green);
+  border-bottom: 3px solid var(--green);
+  padding-bottom: .5mm;
+}
+.eq-cap{
+  margin-top: 2.5mm; font-size: 8.6px; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--muted); font-weight: 700;
+}
+
+/* ============ QUALIFICATION DIAGRAM ============ */
+.qual{
+  display: grid;
+  grid-template-columns: 1fr 22mm 1fr;
+  gap: 2mm;
+  align-items: stretch;
+  margin-bottom: 2.5mm;
+}
+.qbox{
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 2.6mm 3mm;
+  font-size: 9.4px;
+  line-height: 1.35;
+  background: #fff;
+}
+.qbox .q-h{
+  font-size: 8.4px; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 1.2mm;
+}
+.qbox b{ color: var(--ink); }
+.qbox.left{ border-top: 3px solid var(--amber); }
+.qbox.right{ border-top: 3px solid var(--red); }
+.qmid{
+  display:flex; flex-direction: column; align-items:center; justify-content:center;
+  gap: 1mm; text-align:center;
+}
+.qmid .x{
+  font-size: 13px; font-weight: 800; color: var(--red);
+ border: 2px solid var(--red); border-radius: 50%;
+ width: 9mm; height: 9mm; line-height: 8mm; text-align:center;
+ background: var(--red-bg);
+}
+.qmid .qlabel{
+  font-size: 7.6px; font-weight: 800; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--red); line-height:1.2;
+}
+
+/* ============ PIPELINE ============ */
+.pipe{
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  align-items: stretch;
+  margin-bottom: 2.5mm;
+}
+.step{
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: #fff;
+  padding: 3mm 2.5mm 2.6mm 2.5mm;
+  text-align: center;
+  margin-right: 5mm;
+}
+.step:last-child{ margin-right: 0; }
+.step::after{
+  content: "";
+  position: absolute; right: -5mm; top: 50%;
+  width: 5mm; height: 0;
+  border-top: 2px solid var(--line);
+}
+.step:last-child::after{ display: none; }
+.step .s-num{
+  font-size: 8px; font-weight: 800; letter-spacing: .14em;
+  color: var(--muted); margin-bottom: 1.2mm;
+}
+.step .s-name{
+  font-size: 9.6px; font-weight: 800; line-height: 1.2; color: var(--ink);
+  text-transform: uppercase; letter-spacing: .03em;
+}
+.step .s-mark{ font-size: 13px; margin-top: 1.6mm; line-height:1; }
+.step.done{ border-top: 3px solid var(--green); background: #f5fbf8; }
+.step.done .s-mark{ color: var(--green); }
+.step.gap{
+  border: 2px dashed var(--amber);
+  border-top: 3px solid var(--amber);
+  background: #fffaf1;
+}
+.step.gap .s-name{ color: var(--amber); }
+.step.gap .s-mark{ color: var(--amber); }
+
+.pipe-caption{
+  text-align:center; font-size: 8.6px; font-weight: 800;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--amber);
+}
+
+/* ============ JUXTAPOSITION ============ */
+.juxt{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3mm;
+  margin-bottom: 3mm;
+}
+.jx{
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 3mm 3.5mm;
+  background: #fff;
+}
+.jx .jx-h{
+  font-size: 8.4px; font-weight: 800; letter-spacing: .11em;
+  text-transform: uppercase; margin-bottom: 1.6mm;
+}
+.jx .jx-b{ font-size: 9.8px; line-height: 1.4; color: var(--ink-2); }
+.jx.sounds{ border-left: 4px solid var(--gray); }
+.jx.sounds .jx-h{ color: var(--gray); }
+.jx.actually{ border-left: 4px solid var(--lean); }
+.jx.actually .jx-h{ color: var(--lean); }
+.jx.achieved{ border-left: 4px solid var(--green); }
+.jx.achieved .jx-h{ color: var(--green); }
+.jx.remains{ border-left: 4px solid var(--amber); background:#fffdf7; }
+.jx.remains .jx-h{ color: var(--amber); }
+
+/* ============ BOTTOM LINE ============ */
+.bottom{
+  background: #0d1421;
+  color: #fff;
+  padding: 6mm 9mm;
+  margin-top: 3mm;
+ }
+ .bottom .bl-lbl{
+   font-size: 8.6px; letter-spacing: .22em; text-transform: uppercase;
+   color: #7fe3b4; font-weight: 800; margin-bottom: 2.5mm;
+ }
+ .bottom .bl-chain{
+   font-size: 15px; font-weight: 800; line-height: 1.45;
+   letter-spacing: -.005em;
+ }
+ .bottom .bl-chain .arrow{ color: #7fe3b4; padding: 0 .6mm; }
+ .bottom .bl-sub{
+   margin-top: 3mm; font-size: 10px; color: #a9b7cc; max-width: 92%;
+   line-height: 1.45;
+ }
+
+ .foot{
+   padding: 3mm 9mm 0 9mm;
+   font-size: 8.2px; line-height: 1.45; color: #8b95a6;
+ }
+ .foot b{ color: var(--muted); }
+
+ /* ============ RESPONSIVE SCREEN FALLBACK ============ */
+ @media screen and (max-width:1100px){body{padding:0}.poster{width:100%;min-height:100vh;box-shadow:none}.cols{gap:20px}.hd-title{max-width:100%}}@media screen and (max-width:760px){.cols,.juxt,.qual{grid-template-columns:1fr}.poster{width:100%;font-size:14px}.hd{padding:24px}.hd-title{font-size:clamp(26px,8vw,40px)}.full,.cols{padding-left:20px;padding-right:20px}.tldr{margin-left:20px;margin-right:20px}.cols{display:block}.eq{font-size:clamp(11px,3.2vw,17px);white-space:normal}.pipe{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.step{margin:0}.step:after{display:none}.dash-row{grid-template-columns:72px 1fr}table{font-size:10px;display:block;overflow-x:auto}.bottom{padding:22px}.foot{padding:16px}}
+/* Verity companion: fixed-width academic sheet, independent of the original responsive edition. */
+@page{size:1240px 1880px;margin:0}
+@media screen and (min-width:900px){body{display:block;padding:26px 0}.poster{width:min(1240px,100%);margin:auto;min-height:0;font-size:14px;box-shadow:0 10px 48px rgba(15,22,32,.2)}.hd{padding:32px 40px 28px}.hd-title{font-size:38px}.sec-title{font-size:14px}}
+@media print{html,body{background:white!important;margin:0!important;padding:0!important}.poster{width:1240px!important;min-height:0!important;box-shadow:none!important;margin:0!important}.sec,.card,.eqbox,table{break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<main class="poster" aria-label="Verity companion edition">
+
+ <!-- ================= HEADER ================= -->
+ <header class="hd">
+  <div class="hd-kicker">Infographic Explainer &nbsp;·&nbsp; <span>Formal
+Verification</span></div>
+  <h1 class="hd-title">When Mathematics Becomes <em>Machine-Checked Proof</em></h1>
+  <div class="hd-sub">What Lean and Coq mean &nbsp;·&nbsp; what E47 has achieved
+&nbsp;·&nbsp; why it matters</div>
+  <div class="hd-rule"></div>
+ </header><div style="padding:12px 5%;font-size:12px;background:#f2f5fb;border-bottom:1px solid #dce2eb"><b>VERITY · COMPANION POSTER EDITION</b> · Independent print-oriented layout. <a href="../">View the original responsive edition</a>. This edition preserves the same mathematical evidence boundaries.</div>
+<div style="margin:16px 5%;padding:16px 18px;border-left:5px solid #0a7c54;background:#f5fbf8;font-size:13px;line-height:1.55"><b>Verified compiler milestone · 24 October 2026:</b> Identity's paired CI run accepted four Lean 4.19.0 modules and four Coq 8.18.0 modules at the same commit. The accepted statements concern finite arithmetic (47 + 78 = 125), prescribed RG expressions, integer retention-polynomial evaluations, and a positive discrete clock-rate surrogate. <b>They do not yet certify the full concrete 125×125 Casimir operator.</b> <a href="https://github.com/nicholaskouns-create/Identity/actions/runs/40127833042">Review the paired run</a> · <a href="https://github.com/nicholaskouns-create/Identity/blob/main/README.md">Exact theorem scope</a>.</div>
+ <!-- ================= TL;DR ================= -->
+ <div class="tldr">
+   <span class="lbl">The 60-second version</span>
+   Three quantum spins generate a space with <b>125 dimensions</b>. A symmetry operator
+divides that space into sectors.
+   A polynomial selects sectors totalling exactly <b>47 dimensions</b>.
+   Ordinary mathematics explains <i>why</i> this works; Python checks it with exact arithmetic.
+   <b>Lean and Coq let the reasoning itself be translated into a form a computer can rigorously
+examine.</b>
+   Parts of that formal verification have been developed and reportedly accepted — the
+complete concrete-matrix proof
+   still needs a <b>confirmed compiler-accepted certificate</b>. The achievement is not finding
+the number 47. It is building a
+   <b>reproducible path from calculation to formal proof</b>.
+ </div>
+
+ <!-- ================= TWO COLUMNS ================= -->
+ <div class="cols">
+
+  <!-- ---------- LEFT COLUMN ---------- -->
+  <div class="col">
+
+    <!-- 01 -->
+    <section class="sec">
+     <div class="sec-head">
+       <span class="num">01</span>
+       <span class="sec-title">The Two Examiners<small>Who — or what — decides a proof is
+correct?</small></span>
+     </div>
+
+     <p class="lead">Imagine a mathematician writes a proof on a blackboard. Other
+mathematicians read it, check each step, and decide whether the conclusion follows.</p>
+     <p class="lead">Now imagine a <b>second kind of examiner</b> — one that cannot be
+persuaded by reputation, eloquence, impressive equations, or beautiful diagrams. It accepts a
+proof only when every required logical step is justified under explicitly stated rules.</p>
+
+
+           👤
+     <div class="card human">
+      <h4>     Conventional Proof</h4>
+      <p>A human mathematician writes an argument. Other humans examine its
+correctness.</p>
+      <div class="std"><b>Standard:</b> mathematical reasoning and expert scrutiny.</div>
+     </div>
+           🤖
+     <div class="card machine">
+       <h4>     Machine-Checked Proof</h4>
+       <p>A formal statement and proof are submitted to Lean or Coq. The computer checks
+whether the proof follows from the encoded definitions, axioms, and previously accepted
+results.</p>
+       <div class="std"><b>Standard:</b> proof accepted by a formal kernel.</div>
+     </div>
+
+    <div class="callout ok" style="margin-top:2.5mm;">
+     <span class="lbl">Both are legitimate</span>
+     Machine checking adds a <b>reproducible layer of scrutiny</b>. It does <b>not</b>
+automatically make a theorem important, physically true, or correctly applicable to the world.
+    </div>
+   </section>
+
+    <!-- 02 -->
+    <section class="sec">
+     <div class="sec-head">
+       <span class="num">02</span>
+       <span class="sec-title">What Lean and Coq Actually Are<small>Not app-building
+languages — verification engines</small></span>
+     </div>
+
+
+                         🔧
+     <div class="callout">
+      <span class="lbl">    Proof assistants</span>
+      Programming environments in which mathematical statements can be expressed
+<b>precisely</b> and their proofs checked by a <b>small logical verification engine</b>.
+      They are <b>not</b> ordinary programming languages used primarily to build websites or
+applications.
+     </div>
+
+     <table>
+      <thead>
+       <tr>
+         <th style="width:22%"></th>
+         <th class="lean-h" style="width:39%">Lean</th>
+         <th class="coq-h" style="width:39%">Coq / Rocq</th>
+       </tr>
+      </thead>
+      <tbody>
+       <tr>
+         <td>Used by</td>
+         <td>Mathematicians, formal-methods researchers, computer scientists</td>
+          <td>Mathematical logic, programming-language research, hardware &amp; software
+verification</td>
+         </tr>
+         <tr>
+          <td>Known for</td>
+          <td>Large mathematical formalizations and verified software</td>
+          <td>Foundational logic, verified compilers, industrial verification</td>
+         </tr>
+         <tr>
+          <td>Note</td>
+          <td>Lean 4 is the current generation</td>
+          <td>Newer releases are known as <b>Rocq</b></td>
+         </tr>
+       </tbody>
+      </table>
+
+     <p class="note" style="margin-top:2.5mm;">
+       <b>Where:</b> universities · research laboratories · industrial verification work.
+       <b>Purpose:</b> not to produce convincing-looking mathematics — but to make the
+logical justification <b>inspectable and checkable</b>.
+     </p>
+    </section>
+
+   <!-- 03 -->
+   <section class="sec" style="margin-bottom:0;">
+    <div class="sec-head">
+      <span class="num">03</span>
+     <span class="sec-title">The E47 Status Dashboard<small>Formalized statements ≠
+compiler-accepted proofs ≠ verified computations</small></span>
+   </div>
+
+    <div class="legend">
+     <span><span class="badge b-green">     ✅ Reported</span> formalized /
+accepted</span>
+     <span><span class="badge b-amber">◐ Partial</span> candidate or
+
+                                                         ⬜
+unconfirmed</span>
+            <span><span class="badge b-gray">           Python</span> computed
+only</span>
+    </div>
+
+    <!-- Row 1 -->
+    <div class="dash-row">
+     <span class="badge b-green">    ✅ Reported</span>
+      <div>
+       <div class="dash-title">Spin-sector multiplicities &amp; carrier dimension</div>
+       <div class="dash-meta"><span class="tag lean">Lean 4</span>Formalization reported
+<span style="color:#c3cad6">·</span> <span class="tag coq">Coq/Rocq</span>Integer
+lemmas reported</div>
+       <div class="dash-note">The mathematical accounting underlying the 125-dimensional
+construction.</div>
+      </div>
+    </div>
+
+     <!-- Row 2 -->
+     <div class="dash-row">
+       <span class="badge b-green">✅      Reported</span>
+       <div>
+         <div class="dash-title">Polynomial &amp; Lagrange identities</div>
+         <div class="dash-meta"><span class="tag lean">Lean 4</span>Proof code reported
+<span style="color:#c3cad6">·</span> <span class="tag
+coq">Coq/Rocq</span><b>Lagrange.vo</b> compiled (previously reported)</div>
+         <div class="dash-note">Exact algebraic relationships, within the formalized
+definitions.</div>
+       </div>
+     </div>
+
+    <!-- Row 3 -->
+    <div class="dash-row">
+      <span class="badge b-amber">◐ Partial</span>
+      <div>
+       <div class="dash-title">E47 kernel rank &amp; projector</div>
+       <div class="dash-meta"><span class="tag lean">Lean 4</span>Formalization and proof
+candidates <span style="color:#c3cad6">·</span> <span class="tag
+coq">Coq/Rocq</span>Operator lemmas developed</div>
+       <div class="dash-note">A formal route to establishing why the selected space has
+dimension 47.</div>
+      </div>
+    </div>
+
+    <!-- Row 4 -->
+    <div class="dash-row">
+      <span class="badge b-amber">◐ Partial</span>
+      <div>
+        <div class="dash-title">Contraction &amp; convergence</div>
+        <div class="dash-meta"><span class="tag lean">Lean 4</span>Limit theorem
+formalization reported <span style="color:#c3cad6">·</span> <span class="tag
+coq">Coq/Rocq</span>Limit lemmas developed</div>
+        <div class="dash-note">A formal route to proving convergence toward the
+projector.</div>
+      </div>
+     </div>
+
+     <!-- Row 5 -->
+     <div class="dash-row">
+      <span class="badge b-amber">◐ Crux</span>
+      <div>
+        <div class="dash-title">Concrete 125 × 125 operator theorem</div>
+        <div class="dash-meta"><span class="tag lean">Lean 4</span>Candidate requiring
+compilation <span style="color:#c3cad6">·</span> <span class="tag
+coq">Coq/Rocq</span>Full acceptance unconfirmed</div>
+        <div class="dash-note">The crucial bridge from abstract identities to the constructed
+spin-2 matrix.</div>
+      </div>
+     </div>
+
+     <!-- Row 6 -->
+
+                                                  ⬜
+     <div class="dash-row">
+              <span class="badge b-gray">               Python</span>
+      <div>
+        <div class="dash-title">All 128 spectral kernels</div>
+        <div class="dash-meta"><span class="tag py">Python</span>Exact validation
+completed <span style="color:#c3cad6">·</span> <span class="tag lean">Lean</span><span
+class="tag coq">Coq</span>Not yet compiler-certified</div>
+        <div class="dash-note">Exhaustive computational verification, not yet a Lean/Coq
+theorem.</div>
+      </div>
+     </div>
+
+
+                         ⚠
+       <div class="callout warn" style="margin-top:3mm;">
+        <span class="lbl">    On the compilation record</span>
+        The previous Coq development reportedly produced accepted intermediate <b>.vo</b>
+files, including <b>Lagrange.vo</b>, while a larger <b>OperatorLimit</b> compilation was
+<b>interrupted by resource exhaustion</b>. Intermediate progress is meaningful — but on that
+evidence the complete conjunction <b>cannot</b> be called compiler-certified.
+       </div>
+     </section>
+
+  </div><!-- /LEFT -->
+
+  <!-- ---------- RIGHT COLUMN ---------- -->
+  <div class="col">
+   <!-- 04 -->
+   <section class="sec">
+    <div class="sec-head">
+      <span class="num">04</span>
+      <span class="sec-title">The Headline Theorem<small>What a successful formal proof
+would actually prove</small></span>
+    </div>
+
+     <div class="eq-box">
+      <div class="eq">dim ker (C − 6I)(C − 30I) <span class="res">= 47</span></div>
+      <div class="eq-cap">E47 · the selected sector</div>
+     </div>
+
+     <p class="lead">A <b>conventional proof</b> explains why this follows from the
+representation’s spin decomposition.</p>
+     <p class="lead">A <b>complete Lean or Coq proof</b> of the concrete matrix theorem
+would establish that the conclusion follows from the formal definitions of the 125-dimensional
+operator and the proof assistant’s accepted logical foundations.</p>
+
+
+                         🔑
+     <div class="callout ok">
+      <span class="lbl">     Stronger than PASS</span>
+      That is stronger than asking a computer to calculate 47 and print <b>PASS</b>. It means
+the proof checker has accepted a <b>chain of reasoning</b> that justifies the result.
+     </div>
+    </section>
+
+    <!-- 05 -->
+    <section class="sec">
+       <div class="sec-head">
+        <span class="num">05</span>
+        <span class="sec-title">The Critical Qualification<small>The bridge must itself be
+justified</small></span>
+       </div>
+
+     <div class="qual">
+      <div class="qbox left">
+       <div class="q-h">Abstract diagonal model</div>
+       <b>Proof here</b> does <b>not</b> automatically transfer.
+      </div>
+      <div class="qmid">
+       <div class="x">✕</div>
+       <div class="qlabel">not<br>automatic</div>
+      </div>
+      <div class="qbox right">
+       <div class="q-h">Concrete tensor-product Casimir</div>
+       <b>Proof here</b> requires the bridge itself to be justified.
+      </div>
+     </div>
+
+     <p class="note">The formal definitions must correctly represent the intended object — and
+the bridge between those representations must itself be justified.</p>
+    </section>
+
+    <!-- 06 -->
+    <section class="sec">
+     <div class="sec-head">
+       <span class="num">06</span>
+       <span class="sec-title">Three Layers — Do Not Conflate<small>Mathematics ·
+formalization · physics</small></span>
+     </div>
+
+     <table>
+       <thead>
+        <tr>
+          <th style="width:27%">Layer</th>
+          <th style="width:18%">Status</th>
+          <th>Meaning</th>
+        </tr>
+       </thead>
+       <tbody>
+
+             🟢
+        <tr>
+          <td>     Exact mathematical construction</td>
+          <td><span class="badge b-green">Established</span></td>
+          <td>The 125-dimensional representation, 47-dimensional selected sector, and
+associated polynomial identities have explicit mathematical derivations and exact computational
+checks.</td>
+        </tr>
+
+             🟡
+        <tr>
+          <td>     Lean / Coq formalization</td>
+          <td><span class="badge b-amber">Substantial, partial</span></td>
+          <td>Formal proof artifacts and reported intermediate compiler successes exist, but the
+latest complete acceptance status remains unconfirmed.</td>
+        </tr>
+
+             🔴
+        <tr>
+          <td>     Physical quantum error protection</td>
+          <td><span class="badge b-red">Separate question</span></td>
+         <td>Formal mathematics does not by itself prove robustness against a physical noise
+process or demonstrate an operational quantum computer.</td>
+       </tr>
+      </tbody>
+    </table>
+   </section>
+
+   <!-- 07 -->
+   <section class="sec">
+    <div class="sec-head">
+      <span class="num">07</span>
+      <span class="sec-title">The Pipeline<small>Where E47 stands today</small></span>
+    </div>
+
+      <div class="pipe">
+        <div class="step done">
+         <div class="s-num">01</div>
+         <div class="s-name">Idea</div>
+                            ✔
+         <div class="s-mark"> </div>
+        </div>
+        <div class="step done">
+         <div class="s-num">02</div>
+         <div class="s-name">Equation</div>
+                            ✔
+         <div class="s-mark"> </div>
+        </div>
+        <div class="step done">
+         <div class="s-num">03</div>
+         <div class="s-name">Constructed Operator</div>
+                            ✔
+         <div class="s-mark"> </div>
+        </div>
+        <div class="step done">
+         <div class="s-num">04</div>
+         <div class="s-name">Reproducible Calculation</div>
+                            ✔
+         <div class="s-mark"> </div>
+        </div>
+        <div class="step gap">
+         <div class="s-num">05</div>
+         <div class="s-name">Machine-Checkable Theorem</div>
+         <div class="s-mark">◐</div>
+        </div>
+      </div>
+      <div class="pipe-caption">▲ &nbsp; The remaining gap: a confirmed compiler-accepted
+certificate &nbsp; ▲</div>
+    </section>
+   <!-- 08 -->
+   <section class="sec" style="margin-bottom:0;">
+     <div class="sec-head">
+      <span class="num">08</span>
+      <span class="sec-title">The Central Juxtaposition<small>Sound vs. method vs.
+achievement vs. remainder</small></span>
+     </div>
+
+    <div class="juxt">
+     <div class="jx sounds">
+       <div class="jx-h">What sounds extraordinary</div>
+       <div class="jx-b">A computer can certify a theorem about a 125-dimensional quantum
+mathematical construction.</div>
+     </div>
+     <div class="jx actually">
+       <div class="jx-h">What is actually extraordinary</div>
+       <div class="jx-b">The computer need not trust the mathematician’s authority — <b>it
+checks the proof against explicit rules</b>.</div>
+     </div>
+    </div>
+
+     <div class="juxt" style="margin-bottom:0;">
+      <div class="jx achieved">
+        <div class="jx-h">What has been achieved here</div>
+        <div class="jx-b">An exact, structured E47 construction with reproducible computation
+and a substantial formal-verification program.</div>
+      </div>
+      <div class="jx remains">
+        <div class="jx-h">What remains</div>
+        <div class="jx-b">A complete, <b>compiler-accepted Lean and Coq certificate</b> for
+the concrete operator and its desired properties.</div>
+      </div>
+     </div>
+    </section>
+
+  </div><!-- /RIGHT -->
+ </div><!-- /cols -->
+
+ <!-- ================= BOTTOM LINE ================= -->
+ <section class="bottom">
+  <div class="bl-lbl">09 &nbsp;·&nbsp; Bottom line</div>
+  <div class="bl-chain">
+   Idea <span class="arrow">→</span> Equation <span class="arrow">→</span>
+Constructed Operator <span class="arrow">→</span> Reproducible Calculation <span
+class="arrow">→</span> Machine-Checkable Theorem
+   </div>
+   <div class="bl-sub">
+    That is the clearest way to communicate <b>both the achievement and the standard of
+evidence</b> — without exaggerating either.
+   </div>
+ </section>
+
+ <!-- ================= FOOTNOTES ================= -->
+ <div class="foot">
+  <b>Notes.</b> The 128-kernel work is documented in the canonical first-principles proof and
+the exact Python validator.
+  Lean 4 and Coq/Rocq statuses reflect development records available to the author; individual
+compiler acceptances are not independently certified here.
+  Lean is used by mathematicians, formal-methods researchers, and computer scientists; Coq
+— known in newer releases as Rocq — is used in mathematical logic, programming-language
+research, and software and hardware verification.
+ </div>
+
+<div style="padding:15px 8%;font:12px/1.5 system-ui"><a href="https://github.com/nicholaskouns-create/Identity">Identity repository</a> · <a href="https://github.com/nicholaskouns-create/Identity/blob/main/foundry/128-kernel-census.md">128-kernel certificate</a> · <a href="https://github.com/nicholaskouns-create/Identity/actions/workflows/e47-unified-certificates.yml">Formal CI</a></div></main>
+
+</body>
+</html>
