@@ -23,11 +23,20 @@ Supabase migration `mnemosyne_private_research_foundation` returned success. Rea
 
 ## Next integration stages
 
-1. Assign explicit owner and operator roles and test isolation.
-2. Select/create a dedicated private storage bucket, with policies and tests.
-3. Implement a restricted ingestion worker to hash, index, and catalog source documents.
-4. Add a protected research API and authenticated console.
-5. Connect E47/Time/Mnemosyne validation workers; record immutable input/output hashes.
-6. Add encrypted backups and verify a full restore.
+1. Define explicit owner/operator authorization and test allow/deny for distinct principals.
+2. Test authorized and unauthorized upload/download against the existing `mnemosyne-private` bucket; retain its private setting.
+3. Implement a restricted ingestion worker that hashes actual bytes, uploads privately, and registers provenance only after successful upload.
+4. Add protected search, research API, and authenticated console.
+5. Connect E47/Time/Mnemosyne workers and record independently verifiable input/output digests.
+6. Add encrypted off-site backups and perform an independently verified restore.
 
 All imports require explicit provenance and access review. No historical files or secrets were ingested by this migration.
+
+## 2026-10-25 · Storage-backed source integrity (live)
+
+- Applied additive migration `mnemosyne_ingest_integrity_20261025` to the existing project. Source SQL: [mnemosyne_ingest_integrity.sql](supabase/mnemosyne_ingest_integrity.sql).
+- Storage-backed source rows now require a lowercase 64-character SHA-256 digest (existing digest format constraint), a safe relative storage path (new check), and a unique non-null storage path (new partial unique index). Metadata must be a JSON object. Reference-only rows with no storage path remain possible.
+- Verified against the live database: six schema/access/storage assertions true; 14 rollback-only insert probes passed (one valid, missing digest, non-object metadata, duplicate storage path, ten unsafe paths); no probe rows persisted.
+- Ordinary clients still have no access to the private schema. The bucket remains private. No credentials or documents were uploaded.
+- **Evidence boundary:** these are metadata consistency and database authorization checks, not a cryptographic verification of stored object bytes. A future authorized ingestion worker must compute SHA-256 from actual bytes, register only after successful private upload, and verify download integrity. No public endpoint or worker was deployed by this change.
+- **Remaining:** explicit owner authorization, authenticated ingestion/upload/download tests, search, research API, E47/quantum workers, encrypted off-site backup, and a real restore drill.
