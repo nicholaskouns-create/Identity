@@ -1,4 +1,5 @@
 import { ARMS, summarize, compare } from './ablation-math.mjs';
+import { sha256Hex } from './ablation-provenance.mjs';
 const $ = id => document.getElementById(id);
 const fmt = x => x.toFixed(5);
 const sign = x => `${x >= 0 ? '+' : ''}${fmt(x)}`;
@@ -27,8 +28,13 @@ async function load() {
     try {
       const response = await fetch(url, {cache: 'no-store', signal: controller.signal});
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const raw = await response.json();
-      return {raw, summary: summarize(raw), source: new URL(url, location.href).href};
+      const jsonText = await response.text();
+      const raw = JSON.parse(jsonText);
+      const summary = summarize(raw);
+      // Fingerprint the exact fetched UTF-8 bytes, not a reserialized JSON object.
+      // Missing WebCrypto must not make the archived statistics unavailable.
+      const sha256 = globalThis.crypto?.subtle ? await sha256Hex(jsonText) : null;
+      return {raw, summary, source: new URL(url, location.href).href, sha256};
     } catch (error) {
       const reason = error.name === 'AbortError' ? 'timed out after 8 seconds' : error.message;
       errors.push(`${url}: ${reason}`);
@@ -38,8 +44,11 @@ async function load() {
   }
   throw new Error('Results could not be loaded from GitHub Pages or the raw repository. ' + errors.join('; '));
 }
-function paint({raw, summary, source}) {
+function paint({raw, summary, source, sha256}) {
   $('load-status').textContent = `Loaded ${summary.seeds} archived synthetic seeds. Source: ${source}`;
+  $('source-digest').textContent = sha256
+    ? `Fetched JSON SHA-256: ${sha256}. This is a content fingerprint, not a signature or independent authenticity check.`
+    : 'SHA-256 fingerprint unavailable in this browser; statistics remain viewable.';
   const armLabels = Object.fromEntries(ARMS);
   const root = $('results-body'); root.replaceChildren();
   const bars = $('bars'); bars.replaceChildren();
@@ -85,7 +94,7 @@ function paint({raw, summary, source}) {
       });
       body.append(tr);
     }
-    $('export').onclick = () => download({source, exported_at: new Date().toISOString(), evidence_class: 'synthetic', archived_results: raw, summary, paired_comparison: result}, 'e47-ablation-view.json');
+    $('export').onclick = () => download({source, source_sha256: sha256, source_sha256_scope: 'Exact fetched JSON bytes; content fingerprint, not an authenticity signature', exported_at: new Date().toISOString(), evidence_class: 'synthetic', archived_results: raw, summary, paired_comparison: result}, 'e47-ablation-view.json');
   }
   left.addEventListener('change', updateComparison);
   right.addEventListener('change', updateComparison);
@@ -98,6 +107,7 @@ async function refresh() {
   $('data-panel').hidden = true;
   $('load-status').classList.remove('error');
   $('load-status').textContent = 'Loading archived results…';
+  $('source-digest').textContent = '';
   try {
     paint(await load());
   } catch (error) {
