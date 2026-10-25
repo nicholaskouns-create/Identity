@@ -23,4 +23,12 @@ cp formal/e47/E47WeightAlgebra.lean formal/e47/E47WeightAlgebra.v "$workdir/"
   coqc -q E47WeightAlgebra.v
 )
 python3 simulation/validate_e47.py
-echo "PASS: Lean spectral, Coq spectral, Coq tower, Lean weight algebra, Coq weight algebra, Python 125x125 validation"
+# Matrix projector: Coq (about 1 minute) and the exact-integer Python cross-check.
+# The Lean companion needs about 4-5 minutes and 7 GB, so it has its own workflow
+# (.github/workflows/e47-matrix-projector.yml); to run it here: lean formal/e47/E47MatrixProjector.lean
+mpdir="$(mktemp -d)"
+cp formal/e47/E47MatrixProjector.v "$mpdir/"
+( cd "$mpdir" && coqc -q E47MatrixProjector.v )
+rm -rf "$mpdir"
+python3 simulation/e47_tqgnn/matrix_projector_check.py
+echo "PASS: Lean spectral, Coq spectral, Coq tower, Lean weight algebra, Coq weight algebra, Python 125x125 validation, Coq matrix projector, Python matrix projector check"

@@ -1,0 +1,44 @@
+name: E47 matrix projector
+on:
+  push:
+    paths:
+      - 'formal/e47/E47MatrixProjector.v'
+      - 'formal/e47/E47MatrixProjector.lean'
+      - 'simulation/e47_tqgnn/matrix_projector_check.py'
+      - '.github/workflows/e47-matrix-projector.yml'
+  pull_request:
+    paths:
+      - 'formal/e47/E47MatrixProjector.v'
+      - 'formal/e47/E47MatrixProjector.lean'
+      - 'simulation/e47_tqgnn/matrix_projector_check.py'
+      - '.github/workflows/e47-matrix-projector.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  matrix-projector:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq and Python/NumPy
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y coq python3 python3-numpy curl ca-certificates
+      - name: Install pinned Lean 4.35.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.35.0 --no-modify-path
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Python exact-integer cross-check
+        run: python3 simulation/e47_tqgnn/matrix_projector_check.py
+      - name: Coq matrix projector (primary, about 1 minute)
+        run: |
+          mkdir -p /tmp/mp && cp formal/e47/E47MatrixProjector.v /tmp/mp/
+          cd /tmp/mp && coqc -q E47MatrixProjector.v
+      - name: Lean matrix projector subset (about 5 minutes, about 7 GB)
+        run: lean formal/e47/E47MatrixProjector.lean
