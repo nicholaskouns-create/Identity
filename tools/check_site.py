@@ -3,7 +3,7 @@ from pathlib import Path
 import re
 ROOT=Path(__file__).resolve().parents[1]
 SITE=ROOT/"site"
-ALLOWED={"index.html","mnemosyne.js","sync.js","sync-merge.js","forge-engine.js","forge-ui.js","ablation.html","ablation.js","ablation-math.mjs","ablation.test.mjs","og.png","README.md","MIGRATION.md","e47-spectral-advantages.html","socorro-stochastic.html"}
+ALLOWED={"index.html","mnemosyne.js","sync.js","sync-merge.js","forge-engine.js","forge-ui.js","forge-receipt.js","ablation.html","ablation.js","ablation-math.mjs","ablation-provenance.mjs","ablation.test.mjs","og.png","README.md","MIGRATION.md","e47-spectral-advantages.html","socorro-stochastic.html"}
 TEXT_SUFFIXES={".html",".js",".md",".mjs"}
 actual={p.name for p in SITE.iterdir() if p.is_file()}
 assert actual<=ALLOWED, f"Unexpected publish files: {actual-ALLOWED}"
@@ -21,6 +21,8 @@ assert '<script type="module" src="./sync.js"></script>' in html
 assert '<script type="module" src="./forge-ui.js"></script>' in html
 assert "https://nicholaskouns-create.github.io/Identity/site/og.png" in html
 assert "from './forge-engine.js'" in (SITE/"forge-ui.js").read_text(encoding="utf-8")
+assert "from './forge-receipt.js'" in (SITE/"forge-ui.js").read_text(encoding="utf-8"), "Forge receipt verifier must be used by the UI"
+assert "from './ablation-provenance.mjs'" in (SITE/"ablation.js").read_text(encoding="utf-8"), "Ablation fingerprint helper must be used by the UI"
 assert "from './sync-merge.js'" in (SITE/"sync.js").read_text(encoding="utf-8")
 assert "indexedDB.open" in published and "crypto.subtle.digest('SHA-256'" in published
 assert "BroadcastChannel" in (SITE/"mnemosyne.js").read_text(encoding="utf-8")
