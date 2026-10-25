@@ -3,20 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Local validation of the E47 Lean and Coq proofs</title>
-<meta name="description" content="Local collation of every self-contained E47 Lean and Coq proof on main b2fe4ab. Lean 4.35.0 and Coq 8.12.2 accepted each file. The Mathlib matrix file was not compiled.">
+<title>Full E47 validation results</title>
+<meta name="description" content="Full compiler output for the self-contained E47 Lean and Coq proofs, plus the two Python checks.">
 <link rel="canonical" href="https://nicholaskouns-create.github.io/Identity/site/proof/lean-coq/validation.html">
-<meta property="og:title" content="E47 Lean and Coq validation, run locally">
-<meta property="og:description" content="Nine Lean files and ten Coq files compiled. Two Python checks passed. The Mathlib 125×125 file was not part of this run.">
+<meta property="og:title" content="Full E47 validation results">
+<meta property="og:description" content="Every compiled file exited 0. Source 01eb7c77f2a7a7f05e943a2aa0b73a448cd9804c.">
 <meta property="og:url" content="https://nicholaskouns-create.github.io/Identity/site/proof/lean-coq/validation.html">
 <style>
   body{margin:0;background:#e8ecf3;color:#101826;font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-  main{max-width:880px;margin:0 auto;padding:28px 18px 72px}
+  main{max-width:1100px;margin:0 auto;padding:28px 18px 72px}
   h1{font-size:clamp(28px,5vw,40px);line-height:1.1;margin:8px 0 12px}
   a{color:#2258d6}
   table{width:100%;border-collapse:collapse;background:#fff;font-size:14px}
   th,td{text-align:left;padding:8px 10px;border-bottom:1px solid #eef1f6;vertical-align:top}
   th{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#5d6879}
+  pre{white-space:pre-wrap;word-break:break-word;margin:0;font:12px/1.4 ui-monospace,Menlo,Consolas,monospace}
   .ok{color:#0b7a53;font-weight:700}
   .no{color:#9a5600;font-weight:700}
   .kicker{letter-spacing:.16em;text-transform:uppercase;font-size:12px;font-weight:700;color:#5d6879}
@@ -26,52 +27,100 @@
 </head>
 <body>
 <main>
-<p class="kicker">Local run · not a GitHub Actions badge</p>
-<h1>Every self-contained Lean and Coq proof on main</h1>
+<p class="kicker">Open-source Lean and Coq · rewritten by the site validation workflow</p>
+<h1>Full validation results</h1>
 <p><a href="./">Lean · Coq explainer</a> · <a href="record.html">25 October boards</a></p>
-<p class="note">Source is <a href="https://github.com/nicholaskouns-create/Identity/commit/b2fe4ab7789f9b1cbccb74e3769b2c9a1eebf78f"><code>b2fe4ab</code></a>. Lean 4.35.0 compiled nine files. Coq 8.12.2 compiled ten files. Both Python checks passed. This machine did not run the Mathlib development.</p>
-
-<h2>Lean 4.35.0</h2>
+<p class="note">Every compiled file exited 0. Source <a href="https://github.com/nicholaskouns-create/Identity/commit/01eb7c77f2a7a7f05e943a2aa0b73a448cd9804c"><code>01eb7c77f2a7a7f05e943a2aa0b73a448cd9804c</code></a>. Lean (version 4.35.0, x86_64-unknown-linux-gnu, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release). The Coq Proof Assistant, version 8.12.2 (December 2020). Python 3.10.22. GitHub Pages cannot run these compilers. The workflow installs them and replaces this page.</p>
 <table>
-<thead><tr><th>File</th><th>Exit</th><th>Seconds</th><th>Note from the compiler</th></tr></thead>
+<thead><tr><th>File</th><th>Result</th><th>Time</th><th>Compiler output</th></tr></thead>
 <tbody>
-<tr><td><code>E47Spectral.lean</code></td><td class="ok">0</td><td>0</td><td>Scalar certificate. No matrix.</td></tr>
-<tr><td><code>E47WeightAlgebra.lean</code></td><td class="ok">0</td><td>4</td><td><code>pr_normalizer</code> and <code>pr_degree_six_monic</code> use no axioms. <code>pr_expanded</code> uses <code>propext</code>, <code>Classical.choice</code>, <code>Quot.sound</code>.</td></tr>
-<tr><td><code>unified/Core47.lean</code></td><td class="ok">0</td><td>0</td><td><code>kernel + 78 = 125</code>.</td></tr>
-<tr><td><code>unified/RGFixed.lean</code></td><td class="ok">0</td><td>0</td><td>Prescribed numerator identities.</td></tr>
-<tr><td><code>unified/Retention.lean</code></td><td class="ok">0</td><td>0</td><td>Integer polynomial checks.</td></tr>
-<tr><td><code>unified/Clock.lean</code></td><td class="ok">0</td><td>0</td><td>Discrete surrogate rate.</td></tr>
-<tr><td><code>unified/EncodedOracle.lean</code></td><td class="ok">0</td><td>0</td><td>Gate lemmas.</td></tr>
-<tr><td><code>unified/Spin2Generators.lean</code></td><td class="ok">0</td><td>0</td><td>Three commutator theorems and the Casimir scalar use <code>propext</code>.</td></tr>
-<tr><td><code>unified/Tensor125.lean</code></td><td class="ok">0</td><td>71</td><td>The trace and diagonal-bracket theorems reported at the end of the log use no axioms.</td></tr>
-<tr><td><code>E47ConcreteMatrix.lean</code></td><td class="no">not run</td><td>—</td><td>Imports Mathlib. It is not in <code>scripts/validate-formal-local.sh</code>, and this run had no Mathlib build.</td></tr>
+<tr><td><code>formal/e47/E47Spectral.lean</code></td><td class="ok">exit 0</td><td>0s</td><td><pre>(no compiler output)</pre></td></tr>
+<tr><td><code>formal/e47/E47WeightAlgebra.lean</code></td><td class="ok">exit 0</td><td>3s</td><td><pre>&#x27;WeightAlgebra.basis_size&#x27; does not depend on any axioms
+&#x27;WeightAlgebra.weight_counts&#x27; does not depend on any axioms
+&#x27;WeightAlgebra.weight_symmetric&#x27; does not depend on any axioms
+&#x27;WeightAlgebra.weight_total&#x27; does not depend on any axioms
+&#x27;WeightAlgebra.weight_window&#x27; does not depend on any axioms
+&#x27;WeightAlgebra.multiplicities&#x27; does not depend on any axioms
+&#x27;WeightAlgebra.dimension_identity&#x27; does not depend on any axioms
+&#x27;WeightAlgebra.multiplicities_reproduce_weights&#x27; does not depend on any axioms
+&#x27;WeightAlgebra.lam_zero_iff&#x27; depends on axioms: [propext]
+&#x27;WeightAlgebra.kernel_rank_from_weights&#x27; does not depend on any axioms
+&#x27;WeightAlgebra.kernel_dim_from_blocks&#x27; does not depend on any axioms
+&#x27;WeightAlgebra.gamma_contracts_off_kernel&#x27; does not depend on any axioms
+&#x27;WeightAlgebra.pr_on_nodes&#x27; does not depend on any axioms
+&#x27;WeightAlgebra.pr_normalizer&#x27; does not depend on any axioms
+&#x27;WeightAlgebra.pr_expanded&#x27; depends on axioms: [propext, Classical.choice, Quot.sound]
+&#x27;WeightAlgebra.pr_degree_six_monic&#x27; does not depend on any axioms</pre></td></tr>
+<tr><td><code>formal/e47/unified/Core47.lean</code></td><td class="ok">exit 0</td><td>0s</td><td><pre>(no compiler output)</pre></td></tr>
+<tr><td><code>formal/e47/unified/RGFixed.lean</code></td><td class="ok">exit 0</td><td>0s</td><td><pre>(no compiler output)</pre></td></tr>
+<tr><td><code>formal/e47/unified/Retention.lean</code></td><td class="ok">exit 0</td><td>0s</td><td><pre>(no compiler output)</pre></td></tr>
+<tr><td><code>formal/e47/unified/Clock.lean</code></td><td class="ok">exit 0</td><td>0s</td><td><pre>(no compiler output)</pre></td></tr>
+<tr><td><code>formal/e47/unified/EncodedOracle.lean</code></td><td class="ok">exit 0</td><td>0s</td><td><pre>(no compiler output)</pre></td></tr>
+<tr><td><code>formal/e47/unified/Spin2Generators.lean</code></td><td class="ok">exit 0</td><td>0s</td><td><pre>&#x27;E47Spin2.commutator_z_up&#x27; depends on axioms: [propext]
+&#x27;E47Spin2.commutator_z_down&#x27; depends on axioms: [propext]
+&#x27;E47Spin2.commutator_up_down&#x27; depends on axioms: [propext]
+&#x27;E47Spin2.spin2_casimir_scalar&#x27; depends on axioms: [propext]</pre></td></tr>
+<tr><td><code>formal/e47/unified/Tensor125.lean</code></td><td class="ok">exit 0</td><td>75s</td><td><pre>&#x27;E47Tensor125.totalZ_up_bracket_entries&#x27; does not depend on any axioms
+&#x27;E47Tensor125.totalZ_down_bracket_entries&#x27; does not depend on any axioms
+&#x27;E47Tensor125.diagonal_weight_counts&#x27; does not depend on any axioms
+&#x27;E47Tensor125.spin_multiplicities_from_diagonal&#x27; does not depend on any axioms
+&#x27;E47Tensor125.dimension_from_diagonal&#x27; does not depend on any axioms
+&#x27;E47Tensor125.selected_block_dimension_from_diagonal&#x27; does not depend on any axioms
+&#x27;E47Tensor125.totalZ_trace&#x27; does not depend on any axioms
+&#x27;E47Tensor125.totalZ_diagonal_square_trace&#x27; does not depend on any axioms
+&#x27;E47Tensor125.totalUp_down_bracket_diagonal&#x27; does not depend on any axioms
+&#x27;E47Tensor125.concrete_casimir_trace&#x27; does not depend on any axioms</pre></td></tr>
+<tr><td><code>formal/e47/E47Spectral.v</code></td><td class="ok">exit 0</td><td>0s</td><td><pre>(no compiler output)</pre></td></tr>
+<tr><td><code>formal/e47/E47WeightAlgebra.v</code></td><td class="ok">exit 0</td><td>2s</td><td><pre>Closed under the global context
+Closed under the global context
+Closed under the global context
+Closed under the global context
+Closed under the global context
+Closed under the global context
+Closed under the global context
+Closed under the global context
+Closed under the global context
+Closed under the global context
+Closed under the global context
+Closed under the global context
+Closed under the global context
+Closed under the global context
+Closed under the global context
+Closed under the global context</pre></td></tr>
+<tr><td><code>formal/e47/TowerIdentity.v</code></td><td class="ok">exit 0</td><td>0s</td><td><pre>(no compiler output)</pre></td></tr>
+<tr><td><code>formal/e47/unified/Core47.v</code></td><td class="ok">exit 0</td><td>0s</td><td><pre>(no compiler output)</pre></td></tr>
+<tr><td><code>formal/e47/unified/RGFixed.v</code></td><td class="ok">exit 0</td><td>0s</td><td><pre>(no compiler output)</pre></td></tr>
+<tr><td><code>formal/e47/unified/Retention.v</code></td><td class="ok">exit 0</td><td>0s</td><td><pre>(no compiler output)</pre></td></tr>
+<tr><td><code>formal/e47/unified/Clock.v</code></td><td class="ok">exit 0</td><td>0s</td><td><pre>(no compiler output)</pre></td></tr>
+<tr><td><code>formal/e47/unified/EncodedOracle.v</code></td><td class="ok">exit 0</td><td>0s</td><td><pre>(no compiler output)</pre></td></tr>
+<tr><td><code>formal/e47/unified/Spin2Generators.v</code></td><td class="ok">exit 0</td><td>4s</td><td><pre>Closed under the global context
+Closed under the global context
+Closed under the global context
+Closed under the global context</pre></td></tr>
+<tr><td><code>formal/e47/unified/Tensor125.v</code></td><td class="ok">exit 0</td><td>11s</td><td><pre>Closed under the global context
+Closed under the global context
+Closed under the global context
+Closed under the global context
+Closed under the global context
+Closed under the global context
+Closed under the global context
+Closed under the global context
+Closed under the global context
+Closed under the global context
+Closed under the global context
+Closed under the global context</pre></td></tr>
+<tr><td><code>simulation/validate_e47.py</code></td><td class="ok">exit 0</td><td>0s</td><td><pre>PASS E47 spectral multiplicities, rank, projector, kernel, contraction</pre></td></tr>
+<tr><td><code>validation/e47_tensor_bracket_trace_exact.py</code></td><td class="ok">exit 0</td><td>0s</td><td><pre>PASS [Z,U]=U, all 15625 entries: exact integer residual = 0
+PASS [Z,D]=-D, all 15625 entries: exact integer residual = 0
+PASS [U,D]=2Z, all 15625 entries: exact integer residual = 0
+PASS [C,Z]=0, all 15625 entries: exact integer residual = 0
+PASS [C,U]=0, all 15625 entries: exact integer residual = 0
+PASS [C,D]=0, all 15625 entries: exact integer residual = 0
+PASS trace(C)=2250; trace(C^2)=58500
+NOTE: this integer weight basis is not orthonormal; C need not be symmetric here</pre></td></tr>
+<tr><td><code>formal/e47/E47ConcreteMatrix.lean</code></td><td class="no">not run</td><td>—</td><td>Imports Mathlib. This run does not build Mathlib, and the file is not in scripts/validate-formal-local.sh.</td></tr>
 </tbody>
 </table>
-
-<h2>Coq 8.12.2</h2>
-<p>The GitHub workflow installs the distribution Coq, which is newer. This run used the Coq already on the machine. Every file still closed.</p>
-<table>
-<thead><tr><th>File</th><th>Exit</th><th>Seconds</th></tr></thead>
-<tbody>
-<tr><td><code>E47Spectral.v</code></td><td class="ok">0</td><td>1</td></tr>
-<tr><td><code>E47WeightAlgebra.v</code></td><td class="ok">0</td><td>3</td></tr>
-<tr><td><code>TowerIdentity.v</code></td><td class="ok">0</td><td>1</td></tr>
-<tr><td><code>unified/Core47.v</code></td><td class="ok">0</td><td>1</td></tr>
-<tr><td><code>unified/RGFixed.v</code></td><td class="ok">0</td><td>1</td></tr>
-<tr><td><code>unified/Retention.v</code></td><td class="ok">0</td><td>0</td></tr>
-<tr><td><code>unified/Clock.v</code></td><td class="ok">0</td><td>0</td></tr>
-<tr><td><code>unified/EncodedOracle.v</code></td><td class="ok">0</td><td>0</td></tr>
-<tr><td><code>unified/Spin2Generators.v</code></td><td class="ok">0</td><td>5</td></tr>
-<tr><td><code>unified/Tensor125.v</code></td><td class="ok">0</td><td>11</td></tr>
-</tbody>
-</table>
-
-<h2>Python, same commit</h2>
-<ul>
-<li><code>simulation/validate_e47.py</code> exited 0. It printed: PASS E47 spectral multiplicities, rank, projector, kernel, contraction.</li>
-<li><code>validation/e47_tensor_bracket_trace_exact.py</code> exited 0. Exact integer residual 0 on all 15,625 entries of <code>[Z,U]=U</code>, <code>[Z,D]=−D</code>, <code>[U,D]=2Z</code>, and <code>[C,Z]=[C,U]=[C,D]=0</code>. <code>trace(C)=2250</code> and <code>trace(C²)=58500</code>. The script itself says this integer weight basis is not orthonormal, so C need not be symmetric there.</li>
-</ul>
-<p>Taken together, the validation script’s Lean, Coq, and Python pieces all passed, and the seven unified modules passed in both languages. The concrete Mathlib matrix certificate remains uncompiled here.</p>
 </main>
 </body>
 </html>
