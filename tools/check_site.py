@@ -3,7 +3,7 @@ from pathlib import Path
 import re
 ROOT=Path(__file__).resolve().parents[1]
 SITE=ROOT/"site"
-ALLOWED={"index.html","mnemosyne.js","sync.js","sync-merge.js","forge-engine.js","forge-ui.js","ablation.html","ablation.js","ablation-math.mjs","ablation.test.mjs","og.png","README.md","MIGRATION.md","e47-spectral-advantages.html","socorro-stochastic.html"}
+ALLOWED={"index.html","mnemosyne.js","sync.js","sync-merge.js","forge-engine.js","forge-ui.js","forge-receipt.js","ablation.html","ablation.js","ablation-math.mjs","ablation.test.mjs","og.png","README.md","MIGRATION.md","e47-spectral-advantages.html","socorro-stochastic.html"}
 TEXT_SUFFIXES={".html",".js",".md",".mjs"}
 actual={p.name for p in SITE.iterdir() if p.is_file()}
 assert actual<=ALLOWED, f"Unexpected publish files: {actual-ALLOWED}"
