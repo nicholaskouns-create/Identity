@@ -31,3 +31,12 @@ Supabase migration `mnemosyne_private_research_foundation` returned success. Rea
 6. Add encrypted backups and verify a full restore.
 
 All imports require explicit provenance and access review. No historical files or secrets were ingested by this migration.
+
+## 2026-10-25 · Storage-backed source integrity (live)
+
+- Applied additive migration `mnemosyne_ingest_integrity_20261025` to the existing project. Source SQL: [mnemosyne_ingest_integrity.sql](supabase/mnemosyne_ingest_integrity.sql).
+- Storage-backed source rows now require a lowercase 64-character SHA-256 digest (existing digest format constraint), a safe relative storage path (new check), and a unique non-null storage path (new partial unique index). Metadata must be a JSON object. Reference-only rows with no storage path remain possible.
+- Verified against the live database: six schema/access/storage assertions true; 14 rollback-only insert probes passed (one valid, missing digest, non-object metadata, duplicate storage path, ten unsafe paths); no probe rows persisted.
+- Ordinary clients still have no access to the private schema. The bucket remains private. No credentials or documents were uploaded.
+- **Evidence boundary:** these are metadata consistency and database authorization checks, not a cryptographic verification of stored object bytes. A future authorized ingestion worker must compute SHA-256 from actual bytes, register only after successful private upload, and verify download integrity. No public endpoint or worker was deployed by this change.
+- **Remaining:** explicit owner authorization, authenticated ingestion/upload/download tests, search, research API, E47/quantum workers, encrypted off-site backup, and a real restore drill.
