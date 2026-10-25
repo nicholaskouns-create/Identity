@@ -1,0 +1,49 @@
+name: E47 Proof Forge (Lean + Coq)
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/e47-proof-forge.yml'
+      - 'proof-forge/**'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/e47-proof-forge.yml'
+      - 'proof-forge/**'
+permissions:
+  contents: read
+jobs:
+  lean:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          auto-config: false
+          lean-version: '4.19.0'
+      - name: Compile E47 scalar certificate
+        run: lean proof-forge/E47Scalar.lean 2>&1 | tee lean.log; test ${PIPESTATUS[0]} -eq 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-lean-log
+          path: lean.log
+  coq:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq
+        run: sudo apt-get update && sudo apt-get install -y coq
+      - name: Record compiler version and compile
+        shell: bash
+        run: |
+          set -o pipefail
+          coqc --version | tee coq.log
+          coqc proof-forge/E47Scalar.v 2>&1 | tee -a coq.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-coq-log
+          path: coq.log
