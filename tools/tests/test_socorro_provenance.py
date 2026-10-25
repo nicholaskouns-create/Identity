@@ -36,7 +36,7 @@ class SocorroProvenanceTests(unittest.TestCase):
         }
         pinned = {
             url for url in self.parsed.hrefs
-            if url.startswith(ROOT) and "/research/socorro/" in url
+            if url.startswith(f"{ROOT}{REVISION}/research/socorro/")
         }
         self.assertEqual(pinned, expected)
 
