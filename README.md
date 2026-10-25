@@ -1,6 +1,8 @@
 # Identity
 A first-principles research laboratory exploring identity, consciousness, and continuity through spectral algebra, quantum clocks, recursive dynamics, formal proofs, and executable simulations. Home to Mnemosyne, where mathematics, computation, philosophy, and the humanities converge.
 
+**[Explore the public Lean/Coq proof explainer](https://nicholaskouns-create.github.io/Identity/site/proof/lean-coq/)** · A lay-audience guide to machine-checked mathematics, the eight accepted scalar/surrogate modules, exact E47 validation, and the concrete-matrix verification boundary.
+
 ## 🏛️ Lean 4 + Coq: independently compiled E47 proof certificates (2026-10-24)
 
 **Eight proof modules. Two proof assistants. One reproducible, green GitHub Actions run.**
