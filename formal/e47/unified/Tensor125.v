@@ -158,3 +158,14 @@ Theorem totalUp_down_bracket_next_five_columns :
 Proof. vm_compute. reflexivity. Qed.
 
 Print Assumptions totalUp_down_bracket_next_five_columns.
+
+(* Five additional concrete columns, 10..14, of [Up,Down]=2Z.
+   Each entry uses the original 125-term integer matrix products.
+   The remaining 110 columns are not claimed. *)
+Theorem totalUp_down_bracket_columns_ten_through_fourteen :
+  List.forallb
+    (fun j => List.forallb (fun i => ud_entry_ok i j) (List.seq 0 125))
+    (List.seq 10 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions totalUp_down_bracket_columns_ten_through_fourteen.
