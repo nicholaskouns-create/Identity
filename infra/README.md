@@ -23,12 +23,12 @@ Supabase migration `mnemosyne_private_research_foundation` returned success. Rea
 
 ## Next integration stages
 
-1. Assign explicit owner and operator roles and test isolation.
-2. Select/create a dedicated private storage bucket, with policies and tests.
-3. Implement a restricted ingestion worker to hash, index, and catalog source documents.
-4. Add a protected research API and authenticated console.
-5. Connect E47/Time/Mnemosyne validation workers; record immutable input/output hashes.
-6. Add encrypted backups and verify a full restore.
+1. Define explicit owner/operator authorization and test allow/deny for distinct principals.
+2. Test authorized and unauthorized upload/download against the existing `mnemosyne-private` bucket; retain its private setting.
+3. Implement a restricted ingestion worker that hashes actual bytes, uploads privately, and registers provenance only after successful upload.
+4. Add protected search, research API, and authenticated console.
+5. Connect E47/Time/Mnemosyne workers and record independently verifiable input/output digests.
+6. Add encrypted off-site backups and perform an independently verified restore.
 
 All imports require explicit provenance and access review. No historical files or secrets were ingested by this migration.
 
