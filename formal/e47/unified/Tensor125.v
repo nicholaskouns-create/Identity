@@ -190,3 +190,15 @@ Theorem totalUp_down_bracket_columns_twenty_through_twentyfour :
 Proof. vm_compute. reflexivity. Qed.
 
 Print Assumptions totalUp_down_bracket_columns_twenty_through_twentyfour.
+
+(* Concrete third-bracket columns 25..29, each of 125 rows using the
+   original 125-term integer matrix products. This theorem is checked
+   by computation; no full-bracket identity is imported as an axiom.
+   Columns 30..124 remain unproved in the formal certificate. *)
+Theorem totalUp_down_bracket_columns_twentyfive_through_twentynine :
+  List.forallb
+    (fun j => List.forallb (fun i => ud_entry_ok i j) (List.seq 0 125))
+    (List.seq 25 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions totalUp_down_bracket_columns_twentyfive_through_twentynine.
