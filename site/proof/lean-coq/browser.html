@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>In-browser compiler · Lean · Coq · E47</title>
+<meta name="description" content="A browser compiler for the E47 integer brackets and the 125-dimensional spectral census, with the live instruments and the eleven-repository map.">
+<link rel="canonical" href="https://nicholaskouns-create.github.io/Identity/site/proof/lean-coq/browser.html">
+<meta property="og:title" content="In-browser E47 compiler">
+<meta property="og:description" content="Exact integer brackets and the spectral census, computed in the page. Not a Lean kernel.">
+<meta property="og:url" content="https://nicholaskouns-create.github.io/Identity/site/proof/lean-coq/browser.html">
+<style>
+  :root { --ink:#101826; --muted:#5d6879; --line:#d9dfe9; --green:#0b7a53; --paper:#f4f1ea; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:#e8ecf3; color:var(--ink); font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+  main { max-width:980px; margin:0 auto; padding:22px 16px 72px; }
+  h1 { font-size:clamp(28px,6vw,40px); line-height:1.05; margin:8px 0 10px; letter-spacing:-.02em; }
+  h2 { font-size:13px; letter-spacing:.16em; text-transform:uppercase; margin:28px 0 8px; }
+  a { color:#2258d6; }
+  .kicker { letter-spacing:.16em; text-transform:uppercase; font-size:12px; font-weight:700; color:var(--muted); }
+  .note { background:#f4faf7; border-left:4px solid var(--green); padding:12px 14px; }
+  button, select { font:inherit; }
+  button { background:var(--ink); color:#fff; border:0; padding:10px 14px; }
+  table { width:100%; border-collapse:collapse; background:#fff; font-size:14px; }
+  th, td { text-align:left; padding:8px 10px; border-bottom:1px solid #eef1f6; vertical-align:top; }
+  th { font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+  .ok { color:var(--green); font-weight:700; }
+  .no { color:#9a5600; font-weight:700; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  @media (max-width:700px) { .grid { grid-template-columns:1fr; } }
+  .card { display:block; background:#fff; border:1px solid var(--line); padding:10px 12px; text-decoration:none; color:inherit; }
+  .card b { display:block; }
+  .card span { color:var(--muted); font-size:13px; }
+  iframe { width:100%; height:70vh; border:1px solid var(--line); background:#fff; }
+  code { font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.92em; }
+</style>
+</head>
+<body>
+<main>
+<p class="kicker">Identity · computed in this page</p>
+<h1>The compiler that fits in the browser.</h1>
+<p class="note">This is not Lean and it is not Coq. Those compilers run in GitHub Actions, because a browser cannot host them. What runs here is the same arithmetic: the finite statements, the exact 125×125 integer brackets, and the spin-2 Casimir census. A failed check stays failed. <a href="./">Explainer</a> · <a href="validation.html">Compiler log from Actions</a></p>
+<p><button id="run" type="button">Run the checks</button> <span id="status" style="color:#5d6879"></span></p>
+<table>
+  <thead><tr><th>Check</th><th>Result</th><th>Detail</th></tr></thead>
+  <tbody id="out"><tr><td colspan="3">Waiting.</td></tr></tbody>
+</table>
+
+<h2>Instruments on this origin</h2>
+<p>These are the live pieces of the same work. Choose one to open it here. GitHub and the journal sit on other origins, so they open as links.</p>
+<label for="desk">Desk</label>
+<select id="desk">
+  <option value="">Select an instrument</option>
+  <option value="https://nicholaskouns-create.github.io/lucas-companion.html">Lucas companion · L₈ = 47</option>
+  <option value="https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/e47-planetarium/">E47 planetarium</option>
+  <option value="https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/skyrmion/">Skyrmion</option>
+  <option value="https://nicholaskouns-create.github.io/Time/">Time · the quantum clock</option>
+  <option value="https://nicholaskouns-create.github.io/matrix-quantum-simulator/">Matrix quantum simulator</option>
+  <option value="https://nicholaskouns-create.github.io/tower/">E47 tower</option>
+  <option value="https://nicholaskouns-create.github.io/work/">Live work index</option>
+  <option value="https://nicholaskouns-create.github.io/noesis/">Noesis</option>
+  <option value="https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/instruments/">Kartekeya instruments</option>
+</select>
+<p><a id="open" href="https://nicholaskouns-create.github.io/work/">Open the work index</a></p>
+<iframe id="frame" title="Selected instrument" hidden></iframe>
+
+<h2>The eleven repositories</h2>
+<p>The 25 October audit found Lean or Coq sources in eight of these eleven. This page does not compile those other repositories. Source found is not a certificate.</p>
+<div class="grid" id="repos"></div>
+
+<h2>Outside this origin</h2>
+<div class="grid">
+  <a class="card" href="https://github.com/nicholaskouns-create/Identity/actions/workflows/e47-site-validation.yml"><b>Actions validation</b><span>Lean 4.35.0, Coq, and NumPy, on each change and once a day.</span></a>
+  <a class="card" href="https://www.aims.healthcare/journal/nicholas-kouns-e47-recursive-intelligence-applications-index"><b>Applications index</b><span>The journal page. It is not computed here.</span></a>
+</div>
+</main>
+<script>
+const N = 125;
+const repos = [
+  ["Identity", "https://github.com/nicholaskouns-create/Identity", "Lean and Coq proofs. This site compiles the self-contained ones."],
+  ["E47-Kartekeya", "https://github.com/nicholaskouns-create/E47-Kartekeya", "Planetarium, skyrmion, instruments."],
+  ["nicholaskouns-create.github.io", "https://github.com/nicholaskouns-create/nicholaskouns-create.github.io", "Work index, Lucas companion, Noesis, FlowShield."],
+  ["Time", "https://github.com/nicholaskouns-create/Time", "Quantum clock."],
+  ["tower", "https://github.com/nicholaskouns-create/tower", "E47 tower."],
+  ["Radar", "https://github.com/nicholaskouns-create/Radar", "No Lean or Coq sources in the audit."],
+  ["auth-kernel", "https://github.com/nicholaskouns-create/auth-kernel", "Formal sources present. Not compiled here."],
+  ["bi-a7-semimetal-proofs", "https://github.com/nicholaskouns-create/bi-a7-semimetal-proofs", "Formal sources on a pull-request branch. Not compiled here."],
+  ["Genesis", "https://github.com/nicholaskouns-create/Genesis", "Formal sources present. Not compiled here."],
+  ["E47-Foundry-Lifetime-Intersection", "https://github.com/nicholaskouns-create/E47-Foundry-Lifetime-Intersection", "Formal sources present. Not compiled here."],
+  ["E47-Electroweak-Identities", "https://github.com/nicholaskouns-create/E47-Electroweak-Identities", "Formal sources present. Not compiled here."]
+];
+document.getElementById("repos").innerHTML = repos.map(([name, href, note]) =>
+  `<a class="card" href="${href}"><b>${name}</b><span>${note}</span></a>`).join("");
+
+const desk = document.getElementById("desk");
+const frame = document.getElementById("frame");
+const open = document.getElementById("open");
+desk.addEventListener("change", () => {
+  const url = desk.value;
+  open.href = url || "https://nicholaskouns-create.github.io/work/";
+  open.textContent = url ? "Open this instrument in a new page" : "Open the work index";
+  if (!url) { frame.hidden = true; frame.removeAttribute("src"); return; }
+  frame.hidden = false;
+  frame.src = url;
+});
+
+function finite() {
+  const out = [];
+  const carrier = 125, kernel = 47;
+  out.push(["47 + 78 = 125", kernel + 78 === carrier, String(kernel + 78)]);
+  out.push(["47 × 125 = 125 × 47", 47 * 125 === 125 * 47, String(47 * 125)]);
+  const beta = g => 125 * g - 47 * g * g;
+  out.push(["beta numerator at 0", beta(0) === 0, String(beta(0))]);
+  out.push(["dimension numerator at 10", 10 - 10 === 0, "0"]);
+  const poly = x => x ** 10 - x - 1;
+  out.push(["p(1) = −1", poly(1) === -1, String(poly(1))]);
+  out.push(["p(2) > 0", poly(2) > 0, String(poly(2))]);
+  out.push(["2^10 = 1024", 2 ** 10 === 1024, String(2 ** 10)]);
+  const rate = n => 1 + n * n;
+  let positive = true;
+  for (let n = 0; n <= 20; n++) if (!(rate(n) > 0)) positive = false;
+  out.push(["surrogate rate is positive", positive, "n = 0…20"]);
+  out.push(["surrogate rate at 3 is 10", rate(3) === 10, String(rate(3))]);
+  return out;
+}
+
+function integerBrackets() {
+  const mat = () => Array.from({ length: N }, () => new Int32Array(N));
+  const mmul = (A, B) => {
+    const C = mat();
+    for (let i = 0; i < N; i++) for (let k = 0; k < N; k++) {
+      const aik = A[i][k];
+      if (!aik) continue;
+      const brow = B[k], crow = C[i];
+      for (let j = 0; j < N; j++) crow[j] += aik * brow[j];
+    }
+    return C;
+  };
+  const Z = mat(), U = mat(), D = mat();
+  for (let i = 0; i < N; i++) {
+    const a = (i / 25) | 0, b = ((i / 5) | 0) % 5, c = i % 5;
+    Z[i][i] = 6 - a - b - c;
+    for (const [k, stride] of [[a, 25], [b, 5], [c, 1]]) {
+      if (k < 4) { D[i + stride][i] = 1; U[i][i + stride] = (k + 1) * (4 - k); }
+    }
+  }
+  const comm = (A, B) => {
+    const AB = mmul(A, B), BA = mmul(B, A), C = mat();
+    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) C[i][j] = AB[i][j] - BA[i][j];
+    return C;
+  };
+  const residual = (A, B, scale) => {
+    let m = 0;
+    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) m = Math.max(m, Math.abs(A[i][j] - scale * B[i][j]));
+    return m;
+  };
+  const lines = [];
+  const push = (name, value) => lines.push([name, value === 0, "residual " + value]);
+  push("[Z,U] = U", residual(comm(Z, U), U, 1));
+  push("[Z,D] = −D", residual(comm(Z, D), D, -1));
+  push("[U,D] = 2Z", residual(comm(U, D), Z, 2));
+  const Z1 = mat();
+  for (let i = 0; i < N; i++) { Z1[i].set(Z[i]); Z1[i][i] += 1; }
+  const C = mmul(D, U), ZZ = mmul(Z, Z1);
+  for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) C[i][j] += ZZ[i][j];
+  const zero = mat();
+  push("[C,Z] = 0", residual(comm(C, Z), zero, 1));
+  push("[C,U] = 0", residual(comm(C, U), zero, 1));
+  push("[C,D] = 0", residual(comm(C, D), zero, 1));
+  let tr = 0;
+  const CC = mmul(C, C);
+  let tr2 = 0;
+  for (let i = 0; i < N; i++) { tr += C[i][i]; tr2 += CC[i][i]; }
+  lines.push(["trace(C) = 2250", tr === 2250, String(tr)]);
+  lines.push(["trace(C²) = 58500", tr2 === 58500, String(tr2)]);
+  return lines;
+}
+
+function spectral() {
+  const eye = n => { const I = new Float64Array(n * n); for (let i = 0; i < n; i++) I[i * n + i] = 1; return I; };
+  const kron = (A, n, B, m) => {
+    const nm = n * m, C = new Float64Array(nm * nm);
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+      const a = A[i * n + j];
+      if (!a) continue;
+      for (let k = 0; k < m; k++) for (let l = 0; l < m; l++) C[(i * m + k) * nm + (j * m + l)] = a * B[k * m + l];
+    }
+    return C;
+  };
+  const mul = (A, B) => {
+    const C = new Float64Array(N * N);
+    for (let i = 0; i < N; i++) for (let k = 0; k < N; k++) {
+      const aik = A[i * N + k];
+      if (!aik) continue;
+      for (let j = 0; j < N; j++) C[i * N + j] += aik * B[k * N + j];
+    }
+    return C;
+  };
+  const add3 = (A, B, C) => { const D = new Float64Array(A.length); for (let i = 0; i < A.length; i++) D[i] = A[i] + B[i] + C[i]; return D; };
+  const e5 = eye(5);
+  const kron3 = a => add3(kron(kron(a, 5, e5, 5), 25, e5, 5), kron(kron(e5, 5, a, 5), 25, e5, 5), kron(e5, 5, kron(e5, 5, a, 5), 25));
+  const mv = [2, 1, 0, -1, -2];
+  const jp = new Float64Array(25);
+  for (let i = 1; i < 5; i++) jp[(i - 1) * 5 + i] = Math.sqrt(6 - mv[i] * (mv[i] + 1));
+  const jm = new Float64Array(25);
+  for (let r = 0; r < 5; r++) for (let c = 0; c < 5; c++) jm[r * 5 + c] = jp[c * 5 + r];
+  const jx = new Float64Array(25), S = new Float64Array(25), jz = new Float64Array(25);
+  for (let i = 0; i < 25; i++) { jx[i] = (jp[i] + jm[i]) / 2; S[i] = -(jp[i] - jm[i]) / 2; }
+  for (let i = 0; i < 5; i++) jz[i * 5 + i] = mv[i];
+  const Cas = mul(kron3(jx), kron3(jx));
+  const SS = mul(kron3(S), kron3(S)), Jz2 = mul(kron3(jz), kron3(jz));
+  for (let i = 0; i < Cas.length; i++) Cas[i] += -SS[i] + Jz2[i];
+  const original = Float64Array.from(Cas);
+  const V = eye(N);
+  const A = Cas;
+  for (let sweep = 0; sweep < 50; sweep++) {
+    for (let p = 0; p < N - 1; p++) for (let q = p + 1; q < N; q++) {
+      const apq = A[p * N + q];
+      if (Math.abs(apq) < 1e-14) continue;
+      const app = A[p * N + p], aqq = A[q * N + q];
+      const tau = (aqq - app) / (2 * apq);
+      const t = tau === 0 ? 1 : Math.sign(tau) / (Math.abs(tau) + Math.sqrt(1 + tau * tau));
+      const c = 1 / Math.sqrt(1 + t * t), s = t * c;
+      A[p * N + p] = app - t * apq;
+      A[q * N + q] = aqq + t * apq;
+      A[p * N + q] = A[q * N + p] = 0;
+      for (let k = 0; k < N; k++) {
+        if (k === p || k === q) continue;
+        const aik = A[k * N + p], aiq = A[k * N + q];
+        A[k * N + p] = A[p * N + k] = c * aik - s * aiq;
+        A[k * N + q] = A[q * N + k] = s * aik + c * aiq;
+      }
+      for (let k = 0; k < N; k++) {
+        const vip = V[k * N + p], viq = V[k * N + q];
+        V[k * N + p] = c * vip - s * viq;
+        V[k * N + q] = s * vip + c * viq;
+      }
+    }
+  }
+  const eig = Array.from({ length: N }, (_, i) => A[i * N + i]);
+  const nodes = [0, 2, 6, 12, 20, 30, 42];
+  const expect = [1, 9, 25, 28, 27, 22, 13];
+  const mult = nodes.map(x => eig.filter(v => Math.abs(v - x) < 1e-6).length);
+  const lines = [["multiplicities 1,9,25,28,27,22,13", mult.join(",") === expect.join(","), mult.join(",")]];
+  const sel = [];
+  for (let i = 0; i < N; i++) if (Math.abs(eig[i] - 6) < 1e-6 || Math.abs(eig[i] - 30) < 1e-6) sel.push(i);
+  lines.push(["selected dimension 47", sel.length === 47, String(sel.length)]);
+  const P = new Float64Array(N * N);
+  for (const col of sel) for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) P[i * N + j] += V[i * N + col] * V[j * N + col];
+  const frob = M => { let s = 0; for (const x of M) s += x * x; return Math.sqrt(s); };
+  const PP = mul(P, P);
+  for (let i = 0; i < PP.length; i++) PP[i] -= P[i];
+  const idemp = frob(PP);
+  lines.push(["projector is idempotent", idemp < 1e-8, idemp.toExponential(2)]);
+  const shift = (M, s) => { const B = Float64Array.from(M); for (let i = 0; i < N; i++) B[i * N + i] -= s; return B; };
+  const K = mul(shift(original, 6), shift(original, 30));
+  const ker = frob(mul(K, P));
+  lines.push(["K annihilates the 47-space", ker < 1e-6, ker.toExponential(2)]);
+  const K2 = mul(K, K);
+  const gamma = eye(N);
+  for (let i = 0; i < gamma.length; i++) gamma[i] -= K2[i] / 99144;
+  const gP = mul(gamma, P);
+  for (let i = 0; i < gP.length; i++) gP[i] -= P[i];
+  const fixed = frob(gP);
+  lines.push(["Γ fixes the 47-space", fixed < 1e-6, fixed.toExponential(2)]);
+  let maxFactor = 0;
+  for (const v of eig) {
+    if (Math.abs(v - 6) < 1e-6 || Math.abs(v - 30) < 1e-6) continue;
+    maxFactor = Math.max(maxFactor, Math.abs(1 - ((v - 6) * (v - 30)) ** 2 / 99144));
+  }
+  lines.push(["largest complement factor is 15/17", Math.abs(maxFactor - 15 / 17) < 1e-8, maxFactor.toExponential(6)]);
+  return lines;
+}
+
+function draw(rows) {
+  document.getElementById("out").innerHTML = rows.map(([name, ok, detail]) =>
+    `<tr><td>${name}</td><td class="${ok ? "ok" : "no"}">${ok ? "pass" : "fail"}</td><td><code>${detail}</code></td></tr>`).join("");
+}
+
+function run() {
+  const status = document.getElementById("status");
+  status.textContent = "Running.";
+  document.getElementById("run").disabled = true;
+  setTimeout(() => {
+    const t = performance.now();
+    let rows = [];
+    try {
+      rows = finite().concat(integerBrackets()).concat(spectral());
+    } catch (err) {
+      rows.push(["compiler", false, String(err && err.message || err)]);
+    }
+    draw(rows);
+    const failed = rows.filter(r => !r[1]).length;
+    status.textContent = (failed ? failed + " failed" : rows.length + " passed") + " in " + Math.round(performance.now() - t) + " ms.";
+    document.getElementById("run").disabled = false;
+  }, 30);
+}
+document.getElementById("run").addEventListener("click", run);
+run();
+</script>
+</body>
+</html>
