@@ -9,6 +9,18 @@ This is an operational browser archive designed for GitHub Pages. Records are st
 - Same-browser live updates across tabs.
 - Optional email-code sign-in and owner-scoped cross-device sync.
 
+## Verify an exported archive offline
+
+After using **Export JSON archive** on the [Mnemosyne page](https://nicholaskouns-create.github.io/Identity/site/), you can check every stored SHA-256 receipt without signing in or uploading the archive. From a local checkout of this repository, run:
+
+```sh
+python3 tools/verify_archive.py /path/to/mnemosyne-archive.json
+```
+
+The [read-only verifier](../tools/verify_archive.py) uses the Python standard library, prints a record count on success or a controlled error on failure, and does not print record contents, write files, or make network requests. It rejects mismatched receipts and duplicate record IDs; its 20 MB and 10,000-record limits match the browser import limits. Keep exported JSON private: it contains your research records.
+
+**Evidence boundary:** a matching SHA-256 receipt establishes consistency with the included digest, not authorship, an independent timestamp, mathematical proof, numerical correctness, or experimental validity. A party able to edit a record can also recalculate its receipt.
+
 ## Reproduce the public research pages locally
 
 From a checkout of the repository, serve the **repository root** rather than only `site/`. The ablation explorer reads its archived synthetic dataset from `experiments/` when that directory is available:
