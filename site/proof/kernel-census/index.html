@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Explore all 128 exact Casimir-spectral kernels of the 125-dimensional triple spin-2 carrier, including the E47 selector.">
+<title>128 Casimir Spectral Kernels | Identity</title>
+<style>
+:root{color-scheme:light;font-family:system-ui,-apple-system,sans-serif;color:#223447;background:#f4f8fb}
+*{box-sizing:border-box}body{max-width:1050px;margin:auto;padding:22px 18px 60px;line-height:1.55}
+header,section{background:#fff;border:1px solid #d4e0e8;border-radius:12px;padding:18px;margin:14px 0}
+h1{font-size:clamp(1.7rem,4vw,2.5rem);line-height:1.2}h2{font-size:1.3rem}
+a{color:#155b86}a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #b06b16;outline-offset:3px}
+.skip{position:absolute;left:12px;top:-100px;padding:8px;background:#fff}.skip:focus{top:12px}
+.note{border-left:4px solid #397b92;background:#eef6f9;padding:12px}.muted{color:#536777}
+fieldset{border:1px solid #aabfc9;border-radius:8px;padding:12px}legend{font-weight:700}
+.sectors{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.sectors label{display:block;padding:8px;border:1px solid #d3e1e9;border-radius:7px;cursor:pointer}
+input{accent-color:#126d85}select,button{font:inherit;padding:7px 10px;border-radius:6px;border:1px solid #9aafbd;background:#fff;color:inherit}
+button{cursor:pointer;background:#eaf4f8}button:hover{background:#dceef5}
+output{display:block;font-weight:600;font-size:1.1rem;margin:10px 0}
+meter{width:min(100%,400px);height:20px}table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid #dce6ed;padding:8px;text-align:left}th{background:#edf4f8}
+tr.active{background:#fff1d7}caption{text-align:left;padding:8px 0;color:#526678}
+.scroll{overflow-x:auto}code{overflow-wrap:anywhere}
+footer{color:#506477;font-size:.94rem}
+@media(max-width:550px){header,section{padding:12px}th,td{padding:6px;font-size:.88rem}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+<nav aria-label="Research navigation"><a href="../../">← Mnemosyne home</a> · <a href="../../e47-spectral-advantages.html" id="spectral-link">E47 spectral certificate</a> · <a href="https://github.com/nicholaskouns-create/Identity/blob/main/foundry/128-kernels-proof.md">Derivation and source</a></nav>
+<main id="main" tabindex="-1">
+<header>
+<p class="muted">IDENTITY · E47 · Exact finite spectral algebra</p>
+<h1>128 Casimir spectral kernels</h1>
+<p>Explore every subset of the seven total-Casimir eigenspaces of the triple spin-2 carrier. Every displayed rank is computed from exact integer sector dimensions, not a floating-point matrix diagonalization.</p>
+<p class="note"><strong>Mathematical scope:</strong> These are all 128 kernels defined by products of distinct factors (C − λI) over the seven Casimir nodes. They are not a census of every SU(2)-invariant subspace. The browser calculation is independent of the Lean/Coq compiler certificates and quantum-hardware claims.</p>
+</header>
+<section aria-labelledby="choose-title">
+<h2 id="choose-title">Choose spectral sectors</h2>
+<fieldset><legend>Include eigenspaces in ker K<sub>S</sub></legend><div class="sectors" id="sectors"></div></fieldset>
+<div id="summary" tabindex="-1" aria-live="polite" aria-atomic="true"></div>
+<label for="rank-meter">Selected kernel rank out of 125</label><br>
+<meter id="rank-meter" min="0" max="125" value="47">47 of 125</meter>
+<p class="muted">K<sub>S</sub> = ∏<sub>λ ∈ S</sub>(C − λI); the empty product is I. The complementary rank is 125 − rank(K<sub>S</sub>'s kernel).</p>
+</section>
+<section aria-labelledby="census-title">
+<h2 id="census-title">Complete census</h2>
+<label for="degree">Filter by number of selected sectors:
+<select id="degree"><option value="all">All degrees (128)</option></select></label>
+<p id="row-count" role="status" aria-live="polite"></p>
+<div class="scroll"><table>
+<caption>One row per distinct Casimir-spectral kernel; select Inspect to load that row above.</caption>
+<thead><tr><th scope="col">Roots S</th><th scope="col">Degree</th><th scope="col">Kernel rank</th><th scope="col">Codimension</th><th scope="col">Inspect</th></tr></thead>
+<tbody id="rows"></tbody></table></div>
+</section>
+<section aria-labelledby="checks-title"><h2 id="checks-title">Exact classification checks</h2>
+<p id="checks" role="status">Computing the 128 integer selections…</p>
+<p>Sector eigenvalues: 0, 2, 6, 12, 20, 30, 42. Dimensions: 1, 9, 25, 28, 27, 22, 13. Their sum is 125. E47 is the pair {6, 30}, with rank 25 + 22 = 47. The maximal rank among two-factor selectors is 55, from {12, 20}.</p>
+<p class="muted">This page evaluates the combinatorial classification in JavaScript. The independent <a href="https://github.com/nicholaskouns-create/Identity/blob/main/foundry/validate_128_kernels.py">standard-library Python verifier</a> additionally checks the concrete Casimir annihilator and rational Lagrange projector identities.</p>
+</section>
+</main>
+<footer><p><a href="https://github.com/nicholaskouns-create/Identity/blob/main/site/proof/kernel-census/model.mjs">Exact model source</a> · <a href="https://github.com/nicholaskouns-create/Identity/blob/main/site/proof/kernel-census/model.test.mjs">Exhaustive Node tests</a> · <a href="../../">Mnemosyne</a></p></footer>
+<noscript><p>This explorer requires JavaScript. The <a href="https://github.com/nicholaskouns-create/Identity/blob/main/foundry/128-kernel-census.md">static 128-row census</a> remains available.</p></noscript>
+<script type="module">
+import { EIGENVALUES, SECTOR_DIMENSIONS, E47_MASK, kernelForMask, allKernels, selectorAtNode } from './model.mjs';
+const byId = id => document.getElementById(id);
+const rows = allKernels();
+const filter = byId('degree');
+const parsedMask = new URLSearchParams(location.search).get('mask');
+let mask = parsedMask !== null && /^(?:0|[1-9][0-9]*)$/.test(parsedMask) && Number(parsedMask) < 128
+  ? Number(parsedMask) : E47_MASK;
+
+function showSelection() {
+  const row = kernelForMask(mask);
+  for (const input of byId('sectors').querySelectorAll('input')) {
+    input.checked = (mask & (1 << Number(input.value))) !== 0;
+  }
+  byId('summary').textContent = 'Selected roots: {' + row.roots.join(', ') +
+    '} · degree ' + row.degree + ' · kernel rank ' + row.rank +
+    ' · codimension ' + row.codimension + ' · mask ' + row.mask + '.';
+  byId('rank-meter').value = row.rank;
+  byId('rank-meter').textContent = row.rank + ' of 125';
+  const url = new URL(location.href);
+  url.searchParams.set('mask', String(mask));
+  history.replaceState(null, '', url);
+}
+function renderRows() {
+  const chosen = filter.value;
+  const visible = rows.filter(row => chosen === 'all' || row.degree === Number(chosen));
+  const fragment = document.createDocumentFragment();
+  for (const row of visible) {
+    const tr = document.createElement('tr');
+    if (row.mask === mask) tr.className = 'active';
+    for (const value of ['{' + row.roots.join(', ') + '}', row.degree, row.rank, row.codimension]) {
+      const td = document.createElement('td'); td.textContent = String(value); tr.append(td);
+    }
+    const td = document.createElement('td');
+    const button = document.createElement('button');
+    button.type = 'button'; button.textContent = 'Inspect';
+    button.setAttribute('aria-label', 'Inspect kernel with roots ' + (row.roots.join(', ') || 'none'));
+    button.addEventListener('click', () => {
+      mask = row.mask; showSelection(); renderRows(); byId('summary').focus();
+    });
+    td.append(button); tr.append(td); fragment.append(tr);
+  }
+  byId('rows').replaceChildren(fragment);
+  byId('row-count').textContent = 'Showing ' + visible.length + ' of 128 kernels.';
+}
+EIGENVALUES.forEach((node, i) => {
+  const label = document.createElement('label');
+  const input = document.createElement('input');
+  input.type = 'checkbox'; input.value = String(i);
+  input.addEventListener('change', () => {
+    mask = Array.from(byId('sectors').querySelectorAll('input:checked'))
+      .reduce((value, box) => value | (1 << Number(box.value)), 0);
+    showSelection(); renderRows();
+  });
+  label.append(input, document.createTextNode(' spin ' + i + ' · C=' + node +
+    ' · dim ' + SECTOR_DIMENSIONS[i]));
+  byId('sectors').append(label);
+});
+for (let degree = 0; degree <= 7; degree++) {
+  const option = document.createElement('option');
+  option.value = String(degree);
+  option.textContent = 'Degree ' + degree + ' (' + rows.filter(row => row.degree === degree).length + ')';
+  filter.append(option);
+}
+filter.addEventListener('change', renderRows);
+const counts = Array.from({length: 8}, (_, d) => rows.filter(row => row.degree === d).length);
+const correct = rows.length === 128 &&
+  counts.join(',') === '1,7,21,35,35,21,7,1' &&
+  SECTOR_DIMENSIONS.reduce((a,b) => a+b, 0) === 125 &&
+  kernelForMask(E47_MASK).rank === 47 &&
+  Math.max(...rows.filter(row => row.degree === 2).map(row => row.rank)) === 55 &&
+  rows.every(row => row.rank + kernelForMask(row.mask ^ 127).rank === 125 &&
+    EIGENVALUES.every(node => (selectorAtNode(node, row.roots) === 0) === row.roots.includes(node)));
+byId('checks').textContent = correct
+  ? 'PASS: 128 unique selections, degree counts [1, 7, 21, 35, 35, 21, 7, 1], complementary ranks, selector zeros, E47 rank 47 and maximum two-sector rank 55.'
+  : 'FAIL: a local integer classification invariant did not hold. Do not rely on displayed ranks.';
+showSelection(); renderRows();
+</script>
+</body>
+</html>
