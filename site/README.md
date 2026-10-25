@@ -9,6 +9,33 @@ This is an operational browser archive designed for GitHub Pages. Records are st
 - Same-browser live updates across tabs.
 - Optional email-code sign-in and owner-scoped cross-device sync.
 
+## Reproduce the public research pages locally
+
+From a checkout of the repository, serve the **repository root** rather than only `site/`. The ablation explorer reads its archived synthetic dataset from `experiments/` when that directory is available:
+
+```sh
+git clone https://github.com/nicholaskouns-create/Identity.git
+cd Identity
+git rev-parse HEAD
+python3 -m http.server 8000 --bind 127.0.0.1
+```
+
+Open `http://127.0.0.1:8000/site/` for Mnemosyne and `http://127.0.0.1:8000/site/ablation.html` for the QGNN ablation explorer. Stop the server with Ctrl+C. Use `localhost` or another secure origin rather than opening the HTML through `file://`; browser security rules affect IndexedDB and WebCrypto.
+
+From a second terminal in the repository root, run the dependency-free ablation statistics tests with Node.js 22:
+
+```sh
+node --test site/ablation.test.mjs
+```
+
+To record the **exact source revision and dataset bytes** used in a reproduction, save the output of `git rev-parse HEAD` and this portable SHA-256 calculation:
+
+```sh
+python3 -c "import hashlib,pathlib; p=pathlib.Path('experiments/e47_ablation_results.json'); print(hashlib.sha256(p.read_bytes()).hexdigest())"
+```
+
+The dataset is synthetic. The SHA-256 digest identifies bytes, not authorship or scientific validity. The local statistics tests do not compile Lean/Coq certificates or measure quantum hardware. For those independent evidence tracks, consult the repository's formal sources, numerical validators, and workflow results separately.
+
 ## Explicit limitations
 - Without sign-in, browser data is device-local.
 - SHA-256 checks integrity against accidental modification; it does **not** establish authorship, external timestamp, or tamper-proof provenance (an attacker can recompute a digest).
@@ -18,7 +45,8 @@ This is an operational browser archive designed for GitHub Pages. Records are st
 - No claims of measured performance superiority are made.
 
 ## Deployment
-The live site is the `site/` directory on the GitHub Pages branch. Verification runs from `.github/workflows/mnemosyne-site.yml`.
+
+The published URL is `https://nicholaskouns-create.github.io/Identity/site/`. The workflow `.github/workflows/mnemosyne-site.yml` verifies the site on relevant pushes to `main`. Its deploy job uploads `site/` **only if** GitHub Pages is configured for an Actions build (`build_type=workflow`). If Pages uses a branch source, the workflow verifies without deploying; the configured branch controls publication. A successful verification job alone is not evidence that the live URL was updated.
 
 ## Migration boundary
 Private research tables are not copied into the browser archive by this page. Do not delete existing private data until an explicit export, count check, and restore have passed.
