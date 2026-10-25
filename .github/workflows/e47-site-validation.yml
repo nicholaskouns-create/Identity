@@ -58,6 +58,8 @@ jobs:
         working-directory: pages
         run: |
           set -euo pipefail
+          git fetch origin mnemosyne/forge-atlas-20261023
+          git checkout -B site-publish origin/mnemosyne/forge-atlas-20261023
           install -d site/proof/lean-coq
           cp "$RUNNER_TEMP/validation.html" site/proof/lean-coq/validation.html
           git config user.name "github-actions[bot]"
