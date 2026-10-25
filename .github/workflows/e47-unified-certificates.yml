@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - 'formal/e47/unified/**'
+      - 'validation/e47_tensor_bracket_trace_exact.py'
       - '.github/workflows/e47-unified-certificates.yml'
   workflow_dispatch:
 jobs:
@@ -37,3 +38,15 @@ jobs:
           for f in formal/e47/unified/{Core47,RGFixed,Retention,Clock,EncodedOracle,Spin2Generators,Tensor125}.v; do
             coqc "$f"
           done
+
+  integer-matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install exact-matrix test dependency
+        run: python -m pip install numpy==2.2.6
+      - name: Check concrete integer tensor commutators and Casimir
+        run: python validation/e47_tensor_bracket_trace_exact.py
