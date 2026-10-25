@@ -14,6 +14,7 @@ trap 'rm -rf "$workdir"' EXIT
 # Work outside the repository to avoid leaving .vo and .olean build products in tracked folders.
 cp formal/e47/E47Spectral.lean formal/e47/E47Spectral.v formal/e47/TowerIdentity.v "$workdir/"
 cp formal/e47/E47WeightAlgebra.lean formal/e47/E47WeightAlgebra.v "$workdir/"
+cp formal/e47/E47TowerKernel.lean formal/e47/E47TowerKernel.v "$workdir/"
 (
   cd "$workdir"
   lean E47Spectral.lean
@@ -21,6 +22,8 @@ cp formal/e47/E47WeightAlgebra.lean formal/e47/E47WeightAlgebra.v "$workdir/"
   coqc -q TowerIdentity.v
   lean E47WeightAlgebra.lean
   coqc -q E47WeightAlgebra.v
+  lean E47TowerKernel.lean
+  coqc -q E47TowerKernel.v
 )
 python3 simulation/validate_e47.py
-echo "PASS: Lean spectral, Coq spectral, Coq tower, Lean weight algebra, Coq weight algebra, Python 125x125 validation"
+echo "PASS: Lean spectral, Coq spectral, Coq tower, Lean weight algebra, Coq weight algebra, Lean tower-kernel link, Coq tower-kernel link, Python 125x125 validation"
