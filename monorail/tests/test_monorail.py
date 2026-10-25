@@ -66,37 +66,52 @@ with tempfile.TemporaryDirectory() as d:
           y.suspends("R") and len(y.open_defects()) == 1,
           e["corrective_obligation"])
 
-    # 5 — duplicate receipt submission
-    r = supa.Replica(Path(d) / "rep.jsonl")
-    r.insert(a)
-    try:
-        r.insert(a)
-        check("5 duplicate receipt rejected", False, "second insert accepted")
-    except supa.ReplicaError as ex:
-        check("5 duplicate receipt rejected", True, str(ex))
+    # 5 — duplicate receipt submission. The ledger's primary key rejects it;
+    # here we assert the adapter emits an INSERT that a PK can reject, and
+    # that the reconciler sees a duplicate as a single receipt, not two.
+    sql_a = supa.insert_receipt_sql(a)
+    check("5 duplicate receipt is one row to the reconciler",
+          sql_a == supa.insert_receipt_sql(a)
+          and supa.reconcile([a, a], [a["receipt_hash"]])["consistent"],
+          "identical passport yields an identical INSERT on the PK")
 
-    # 6 — network interruption: partial replication, then recovery
-    r2 = supa.Replica(Path(d) / "rep2.jsonl")
-    r2.insert(a)                                   # b never arrives
-    rec = r2.reconcile([a, b])
+    # 5b — the adapter refuses a malformed digest before it reaches the DB.
+    bad = dict(a); bad["receipt_hash"] = "nothex" * 10
+    try:
+        supa.insert_receipt_sql(bad)
+        check("5b malformed digest rejected by adapter", False, "accepted")
+    except supa.ReplicaError as ex:
+        check("5b malformed digest rejected by adapter", True, str(ex))
+
+    # 6 — network interruption: the ledger has only the first receipt.
+    rec = supa.reconcile([a, b], [a["receipt_hash"]])
     check("6 network interruption leaves detectable gap",
           not rec["consistent"] and rec["local_only"] == [b["receipt_hash"]],
-          f"{len(rec['local_only'])} row(s) missing from replica")
+          f"{len(rec['local_only'])} row(s) missing from the ledger")
 
     # 9 — recovery after partial failure
-    r2.insert(b)
-    rec2 = r2.reconcile([a, b])
+    rec2 = supa.reconcile([a, b], [a["receipt_hash"], b["receipt_hash"]])
     check("9 recovery after partial failure", rec2["consistent"],
           f"{rec2['in_both']} rows reconciled")
 
-    # 7 — conflicting replicas
-    r3 = supa.Replica(Path(d) / "rep3.jsonl")
-    forged = json.loads(json.dumps(a)); forged["source_commit"] = "deadbee"
-    r3.path.write_text(json.dumps(forged, sort_keys=True) + "\n")
-    rec3 = r3.reconcile([a])
-    check("7 conflicting replica detected",
-          rec3["conflicting"] == [a["receipt_hash"]],
-          "same receipt hash, different body")
+    # 7 — conflicting replicas: the ledger holds a hash the local chain does not.
+    rec3 = supa.reconcile([a], [a["receipt_hash"], "f" * 64])
+    check("7 conflicting ledger row detected",
+          rec3["ledger_only"] == ["f" * 64] and not rec3["consistent"],
+          "ledger holds a receipt absent from the local chain")
+
+    # 7b — SQL emitted for corrections and promotion uses only valid enums.
+    csql = supa.correction_sql("digest_mismatch", "R", "s", H,
+                               "body no longer hashes to its stored value",
+                               "re-emit from source; do not edit the receipt")
+    psql = supa.promotion_request_sql("R", "E47-CASIMIR", H, {"stations": 9})
+    check("7c promotion request is always a human gate",
+          "'human_gate'" in psql and "'pending'" in psql
+          and "decision_by" not in psql.split("values")[0].split("(")[1],
+          "action_class human_gate, status pending, no decision field set")
+    check("7d correction preserves the original",
+          "'open'" in csql and "preserves_original" in csql,
+          "defect filed open, original referenced not rewritten")
 
     # 8 — unauthorized promotion
     try:

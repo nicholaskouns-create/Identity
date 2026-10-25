@@ -7,9 +7,9 @@
   "destination": "Frozen Release Depot",
   "object_id": "E47-CASIMIR",
   "scope": "Only the exact statements these files compile. Does not claim the concrete 125x125 tensor Casimir bridge, which remains an open obligation on the Observatory Spur.",
-  "source_commit": "ce6a7001a3658ce391693573275691883de4791f",
-  "environment_lock_hash": "34c931aaf21b24dbda35ab11790c1aa3505b29a9a07bd486a7f5d49a2821a88e",
-  "generated_utc": "2026-10-25T20:29:03Z",
+  "source_commit": "155a4b97fcda11db83dee869890d922ab36f02c8",
+  "environment_lock_hash": "01677ad82398a6d198e8cbf725d4905643de8b17191202e7d44ef0cf9b81ecfd",
+  "generated_utc": "2026-10-25T20:35:33Z",
   "status": "LIMITED SERVICE",
   "certified": true,
   "chain_intact": true,
@@ -22,63 +22,63 @@
       "theorem_id": "E47-SPIN2-GENERATORS",
       "status": "PASS",
       "evidence_class": "E0",
-      "receipt_hash": "c01bf8816cebc190fd48dcaa9b98044e730347d28f9adea286a0df15069076f2"
+      "receipt_hash": "a42bd66016964cb5d7304049664fd5b41308c93335be1dab07a5edf0ad5bbee2"
     },
     {
       "station": "spin2_generators_coq",
       "theorem_id": "E47-SPIN2-GENERATORS",
       "status": "PASS",
       "evidence_class": "E0",
-      "receipt_hash": "f4abef9805335c5963a2bc87014e1dd774ff1422c205063a30b7d763b37642ea"
+      "receipt_hash": "bf25a194a5acc1a1346cb05ecb7db83424b8142593a03185e9923d1012fec6c9"
     },
     {
       "station": "triple_tensor",
       "theorem_id": "E47-TENSOR-125",
       "status": "PASS",
       "evidence_class": "E0",
-      "receipt_hash": "c18de9ec3fb2651a16ce5a0fb138b1e7684dab8d6273c4e09eeb7ff0258020e2"
+      "receipt_hash": "47d6d179365c7370c9aedd54e8453281e806f3c6cd23026fed8c4353558ac806"
     },
     {
       "station": "weight_decomposition",
       "theorem_id": "E47-WEIGHT-ALGEBRA",
       "status": "PASS",
       "evidence_class": "E0",
-      "receipt_hash": "c40622896b50fffafed1299c2e957e7428d6907e14d650a6c278c3dccbd8dfc3"
+      "receipt_hash": "4769c1132a6dd5565911993ee08e935f6c3a4d5a1d87449fb5bc993b818c51df"
     },
     {
       "station": "spectral_census",
       "theorem_id": "E47-SPECTRAL-CENSUS",
       "status": "PASS",
       "evidence_class": "E0",
-      "receipt_hash": "0708ebca39a46e7bb8f74c6a063ae9ecd812398c86894a7e83aff6282490d479"
+      "receipt_hash": "c853d8cbfb25a456cc6c80076c06f7818c6e12b603f99667e8de8c8dc94b4f16"
     },
     {
       "station": "kernel_dimension",
       "theorem_id": "E47-KERNEL-47",
       "status": "PASS",
       "evidence_class": "E0",
-      "receipt_hash": "0f4b35cf5a17c1342a54a542129b4d7a18e7b3ce000d1b12bd2532bb44bf59ee"
+      "receipt_hash": "690761ba23bcf703419848a9dad35ec77cee2e20e357ede67137e52e9e589a2d"
     },
     {
       "station": "kernel_dimension_coq",
       "theorem_id": "E47-KERNEL-47",
       "status": "PASS",
       "evidence_class": "E0",
-      "receipt_hash": "57cd1d8ac7149bb0bcba4bef114557bf0ec4b549b634772dde657b0d6b065d61"
+      "receipt_hash": "09b6d75267b12860f5324af3ebf654a2db4d0dcf233a7b6f1e08049d9bd81cfd"
     },
     {
       "station": "exact_matrix_rank",
       "theorem_id": "E47-RANK-78",
       "status": "PASS",
       "evidence_class": "E1",
-      "receipt_hash": "794a7b1a9c77e380c7bf963b6a99494b425ddbf9ff3d59946bc3d732b0b455f8"
+      "receipt_hash": "cabbf2271700dd0a5f0e0f826ba4d7035044b4c66ece225e96131e46fa998e7a"
     },
     {
       "station": "exact_bracket_trace",
       "theorem_id": "E47-BRACKETS-EXACT",
       "status": "PASS",
       "evidence_class": "E1",
-      "receipt_hash": "e766f45c8dafcb5e3f7016edd351ad6b2b5df315597ea307e726504d727e779f"
+      "receipt_hash": "38824146b6b8bb2fd6485b42085cf0807b4f80d8ee1e8f8d36ef6903f3e5b469"
     }
   ],
   "open_defects": 0,
@@ -165,15 +165,15 @@
       "in_both": 0,
       "ledger_only": [],
       "local_only": [
-        "0708ebca39a46e7bb8f74c6a063ae9ecd812398c86894a7e83aff6282490d479",
-        "0f4b35cf5a17c1342a54a542129b4d7a18e7b3ce000d1b12bd2532bb44bf59ee",
-        "57cd1d8ac7149bb0bcba4bef114557bf0ec4b549b634772dde657b0d6b065d61",
-        "794a7b1a9c77e380c7bf963b6a99494b425ddbf9ff3d59946bc3d732b0b455f8",
-        "c01bf8816cebc190fd48dcaa9b98044e730347d28f9adea286a0df15069076f2",
-        "c18de9ec3fb2651a16ce5a0fb138b1e7684dab8d6273c4e09eeb7ff0258020e2",
-        "c40622896b50fffafed1299c2e957e7428d6907e14d650a6c278c3dccbd8dfc3",
-        "e766f45c8dafcb5e3f7016edd351ad6b2b5df315597ea307e726504d727e779f",
-        "f4abef9805335c5963a2bc87014e1dd774ff1422c205063a30b7d763b37642ea"
+        "09b6d75267b12860f5324af3ebf654a2db4d0dcf233a7b6f1e08049d9bd81cfd",
+        "38824146b6b8bb2fd6485b42085cf0807b4f80d8ee1e8f8d36ef6903f3e5b469",
+        "4769c1132a6dd5565911993ee08e935f6c3a4d5a1d87449fb5bc993b818c51df",
+        "47d6d179365c7370c9aedd54e8453281e806f3c6cd23026fed8c4353558ac806",
+        "690761ba23bcf703419848a9dad35ec77cee2e20e357ede67137e52e9e589a2d",
+        "a42bd66016964cb5d7304049664fd5b41308c93335be1dab07a5edf0ad5bbee2",
+        "bf25a194a5acc1a1346cb05ecb7db83424b8142593a03185e9923d1012fec6c9",
+        "c853d8cbfb25a456cc6c80076c06f7818c6e12b603f99667e8de8c8dc94b4f16",
+        "cabbf2271700dd0a5f0e0f826ba4d7035044b4c66ece225e96131e46fa998e7a"
       ],
       "consistent": false
     }
