@@ -7,14 +7,14 @@
   "destination": "Frozen Release Depot",
   "object_id": "E47-CASIMIR",
   "scope": "Only the exact statements these files compile. The carrier bridge connects the WEIGHT data of the concrete 125-state operator to the block decomposition; it does NOT establish dim ker (C-6I)(C-30I) = 47 for the full Casimir, which still needs centrality and eigenspace identification (lanes #17, #19) and remains open.",
-  "source_commit": "eaf0ee2d6b432ec77ca7d363669daa9611d31367",
-  "environment_lock_hash": "9bdcb9c6e776f1d3de6db272693470ab900e2e700c7c3bd11742d8bfe93e397f",
-  "generated_utc": "2026-10-25T22:44:32Z",
+  "source_commit": "c21abd25e4e97299883b3440ac0f6ba93ab77082",
+  "environment_lock_hash": "41ea5216f362051897c76833b201527059d5117d5b3a1fc62aa3d4c2e53b3b38",
+  "generated_utc": "2026-10-25T23:39:28Z",
   "status": "LIMITED SERVICE",
   "certified": true,
   "chain_intact": true,
   "chain_notes": [
-    "chain intact across 11 receipt(s)"
+    "chain intact across 12 receipt(s)"
   ],
   "stations": [
     {
@@ -22,77 +22,84 @@
       "theorem_id": "E47-SPIN2-GENERATORS",
       "status": "PASS",
       "evidence_class": "E0",
-      "receipt_hash": "8c0f8c4ede5cb1f54ec077ee45c2d84c4647f08526facfa0ae3b07b39143bde8"
+      "receipt_hash": "197e213e21d6ea81d29df46672990d23deec5a8280016c7a6771063b12f49008"
     },
     {
       "station": "spin2_generators_coq",
       "theorem_id": "E47-SPIN2-GENERATORS",
       "status": "PASS",
       "evidence_class": "E0",
-      "receipt_hash": "f3f7fea2912c29007860aba8d5728af49950dd1788000495b36a98ffff21be86"
+      "receipt_hash": "06d0eb3d694664c430b12147715f443ef87ff6b02622d5235140b31cc45faa73"
     },
     {
       "station": "triple_tensor",
       "theorem_id": "E47-TENSOR-125",
       "status": "PASS",
       "evidence_class": "E0",
-      "receipt_hash": "5b3dea47b26fd7b97053c8034da3d026f568de577686c7718c48b74568e081ac"
+      "receipt_hash": "8bec729b5604efafbb3844eef3e887157324a9f55fc1904a616b9a8c9f8a02e2"
     },
     {
       "station": "weight_decomposition",
       "theorem_id": "E47-WEIGHT-ALGEBRA",
       "status": "PASS",
       "evidence_class": "E0",
-      "receipt_hash": "348f21ebed8bd000a3e16b13a316516ad3bb8f1cf6588b109fb0446be40d8f6e"
+      "receipt_hash": "48bb83f123f8bb0094c59dc5d03db15081e808b9097fec7b4399e0554794be53"
     },
     {
       "station": "spectral_census",
       "theorem_id": "E47-SPECTRAL-CENSUS",
       "status": "PASS",
       "evidence_class": "E0",
-      "receipt_hash": "e2bc30d51c2cc126128f602b493b66a66a11463799588f0ec3c8c6be32c1f55d"
+      "receipt_hash": "48019884bb7effe8bec8c5b0dc18f91537adeed4188ea7d0847b3791c625b1ad"
     },
     {
       "station": "kernel_dimension",
       "theorem_id": "E47-KERNEL-47",
       "status": "PASS",
       "evidence_class": "E0",
-      "receipt_hash": "608a8ba6b63d7e9664e7b7e11d9120b03391f97a99e23202c301f664bc051444"
+      "receipt_hash": "21b199a794884e690ac798dcc7ce69d357b61980056a7166f9994f347d67d8a3"
     },
     {
       "station": "kernel_dimension_coq",
       "theorem_id": "E47-KERNEL-47",
       "status": "PASS",
       "evidence_class": "E0",
-      "receipt_hash": "153c9cd799f6a453c6939688a3a02dc0582bd80e12302235dd97a76c68989957"
+      "receipt_hash": "21eed9b4baa9ddeae957c6e19f381f893bc20652990063a4a7b4b3bbbbd905a1"
     },
     {
       "station": "carrier_bridge",
       "theorem_id": "E47-CARRIER-BRIDGE",
       "status": "PASS",
       "evidence_class": "E0",
-      "receipt_hash": "de1514797b6edad2735d4ad47853fb5e2deab608ef2d2f4fd9a15877030636c5"
+      "receipt_hash": "4813e8e630fb34e511128d9b456bade78ace90566ed88be178df933cc4845965"
     },
     {
       "station": "carrier_bridge_coq",
       "theorem_id": "E47-CARRIER-BRIDGE",
       "status": "PASS",
       "evidence_class": "E0",
-      "receipt_hash": "d7bc1f0cccbc79352097f29d6575c5ce9bfd059117e56e4a896e11910eead5f7"
+      "receipt_hash": "0fdefd24a4234cfbed7020d6df8438848770a820ce4089557b936a4fd2480ade"
+    },
+    {
+      "station": "casimir_centrality_z",
+      "theorem_id": "E47-CASIMIR-CENTRAL-Z",
+      "status": "PASS",
+      "evidence_class": "E0",
+      "receipt_hash": "2bfb7e2334d74f7dd12b3898da7a9eb3e0b97a2f4e9dd2c20a29ce21129bbe5e"
     },
     {
       "station": "exact_matrix_rank",
       "theorem_id": "E47-RANK-78",
       "status": "PASS",
       "evidence_class": "E1",
-      "receipt_hash": "59aedc0ee64b539e991a7240261926b46dc1c4feb601df71db8bb4f95bd4d006"
+      "receipt_hash": "8a324eff903b852cd340242ef39f08bfa419b0e1f33d0be63910f059d11fc39f"
     },
     {
       "station": "exact_bracket_trace",
       "theorem_id": "E47-BRACKETS-EXACT",
       "status": "PASS",
       "evidence_class": "E1",
-      "receipt_hash": "b2fd3f3e4f388a6f2472ba014f1bd9cee4c55367928825b4202d1c3db57d8d29"
+      "receipt_hash": "07e133144a8433c467f32af5891edac6f085e121a42b9134b99f919f154d390a"
     }
   ],
   "open_defects": 0,
@@ -100,7 +107,7 @@
     "schema_version": "monorail.reconciliation.v1",
     "snapshot_source": "public.mathematical_identities @ gpkjvihkyectnenvnbng, 2026-10-25",
     "consistent": 0,
-    "unregistered": 7,
+    "unregistered": 8,
     "upgrades_requiring_approval": 1,
     "promotion_blocked": true,
     "rows": [
@@ -115,6 +122,15 @@
       },
       {
         "theorem_id": "E47-CARRIER-BRIDGE",
+        "route_class": "E0",
+        "city_class": null,
+        "city_status": null,
+        "verdict": "UNREGISTERED",
+        "detail": "no citizen_code matches; do not auto-create \u2014 a route may not mint a civic identity",
+        "blocks_promotion": true
+      },
+      {
+        "theorem_id": "E47-CASIMIR-CENTRAL-Z",
         "route_class": "E0",
         "city_class": null,
         "city_status": null,
@@ -181,24 +197,25 @@
   "ledger": {
     "mode": "LIVE-READ / WRITE-GATED",
     "write_bundle": "evidence/routes/KX-E47-KERNEL/supabase_write_bundle.sql",
-    "statements_emitted": 22,
+    "statements_emitted": 24,
     "executed": false,
     "reason": "city_formalism.monorail_receipts not deployed; production DDL awaits explicit approval",
     "reconciliation": {
       "in_both": 0,
       "ledger_only": [],
       "local_only": [
-        "153c9cd799f6a453c6939688a3a02dc0582bd80e12302235dd97a76c68989957",
-        "348f21ebed8bd000a3e16b13a316516ad3bb8f1cf6588b109fb0446be40d8f6e",
-        "59aedc0ee64b539e991a7240261926b46dc1c4feb601df71db8bb4f95bd4d006",
-        "5b3dea47b26fd7b97053c8034da3d026f568de577686c7718c48b74568e081ac",
-        "608a8ba6b63d7e9664e7b7e11d9120b03391f97a99e23202c301f664bc051444",
-        "8c0f8c4ede5cb1f54ec077ee45c2d84c4647f08526facfa0ae3b07b39143bde8",
-        "b2fd3f3e4f388a6f2472ba014f1bd9cee4c55367928825b4202d1c3db57d8d29",
-        "d7bc1f0cccbc79352097f29d6575c5ce9bfd059117e56e4a896e11910eead5f7",
-        "de1514797b6edad2735d4ad47853fb5e2deab608ef2d2f4fd9a15877030636c5",
-        "e2bc30d51c2cc126128f602b493b66a66a11463799588f0ec3c8c6be32c1f55d",
-        "f3f7fea2912c29007860aba8d5728af49950dd1788000495b36a98ffff21be86"
+        "06d0eb3d694664c430b12147715f443ef87ff6b02622d5235140b31cc45faa73",
+        "07e133144a8433c467f32af5891edac6f085e121a42b9134b99f919f154d390a",
+        "0fdefd24a4234cfbed7020d6df8438848770a820ce4089557b936a4fd2480ade",
+        "197e213e21d6ea81d29df46672990d23deec5a8280016c7a6771063b12f49008",
+        "21b199a794884e690ac798dcc7ce69d357b61980056a7166f9994f347d67d8a3",
+        "21eed9b4baa9ddeae957c6e19f381f893bc20652990063a4a7b4b3bbbbd905a1",
+        "2bfb7e2334d74f7dd12b3898da7a9eb3e0b97a2f4e9dd2c20a29ce21129bbe5e",
+        "48019884bb7effe8bec8c5b0dc18f91537adeed4188ea7d0847b3791c625b1ad",
+        "4813e8e630fb34e511128d9b456bade78ace90566ed88be178df933cc4845965",
+        "48bb83f123f8bb0094c59dc5d03db15081e808b9097fec7b4399e0554794be53",
+        "8a324eff903b852cd340242ef39f08bfa419b0e1f33d0be63910f059d11fc39f",
+        "8bec729b5604efafbb3844eef3e887157324a9f55fc1904a616b9a8c9f8a02e2"
       ],
       "consistent": false
     }

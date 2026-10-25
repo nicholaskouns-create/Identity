@@ -28,6 +28,7 @@ LEAN_FILES = [
     "formal/e47/unified/Tensor125.lean",
     "formal/e47/unified/RankNullity47.lean",
     "formal/e47/unified/E47Bridge.lean",
+    "formal/e47/unified/E47Centrality.lean",
 ]
 COQ_FILES = [
     "formal/e47/E47Spectral.v",
@@ -52,7 +53,14 @@ SKIPPED = [
     (
         "formal/e47/E47ConcreteMatrix.lean",
         "Imports Mathlib. This run does not build Mathlib, and the file is not in scripts/validate-formal-local.sh.",
-    )
+    ),
+    (
+        "formal/e47/unified/E47Centrality.v",
+        "Rocq mirror of E47Centrality.lean, written but NOT YET COMPILED. "
+        "coqc had not finished after 15 minutes locally, so the file is "
+        "recorded as not run rather than claimed as accepted. The Lean "
+        "module is compiled and is in LEAN_FILES.",
+    ),
 ]
 
 

@@ -128,5 +128,12 @@ CI runs all four: `.github/workflows/monorail-route.yml`.
    objects. Floats, NaN/Infinity and U+0000 are rejected, not supported.
 6. Six of nine theorem identifiers match **no** City citizen. They are
    reported, never auto-created.
-7. The concrete 125×125 tensor Casimir bridge remains an open obligation.
-   Nothing here closes it.
+7. The carrier bridge (`E47Bridge`, E47-CORE-003) connects the **weight
+   data** of the concrete 125-state operator to the block decomposition
+   that yields 47, with three independent trace cross-checks. It does
+   **not** connect the **eigenspaces**. `E47Centrality` (E47-CORE-004)
+   adds lane #17's Z half: `[C, Z] = 0` on the genuine 125-term product,
+   proved structurally after a brute-force `decide` was OOM-killed at 10
+   minutes. Still open: `[C, U] = 0`, `[C, D] = 0`, and the identification
+   of C's eigenspaces with the spin blocks (lane #19). So
+   `dim ker (C−6I)(C−30I) = 47` for the full Casimir remains open.

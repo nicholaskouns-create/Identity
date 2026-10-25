@@ -2,7 +2,7 @@
   "schema_version": "monorail.reconciliation.v1",
   "snapshot_source": "public.mathematical_identities @ gpkjvihkyectnenvnbng, 2026-10-25",
   "consistent": 0,
-  "unregistered": 7,
+  "unregistered": 8,
   "upgrades_requiring_approval": 1,
   "promotion_blocked": true,
   "rows": [
@@ -17,6 +17,15 @@
     },
     {
       "theorem_id": "E47-CARRIER-BRIDGE",
+      "route_class": "E0",
+      "city_class": null,
+      "city_status": null,
+      "verdict": "UNREGISTERED",
+      "detail": "no citizen_code matches; do not auto-create \u2014 a route may not mint a civic identity",
+      "blocks_promotion": true
+    },
+    {
+      "theorem_id": "E47-CASIMIR-CENTRAL-Z",
       "route_class": "E0",
       "city_class": null,
       "city_status": null,

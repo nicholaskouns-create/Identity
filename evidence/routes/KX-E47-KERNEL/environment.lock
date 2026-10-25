@@ -1,6 +1,6 @@
 {
   "coqc": "The Coq Proof Assistant, version 8.18.0",
-  "git_commit": "eaf0ee2d6b432ec77ca7d363669daa9611d31367",
+  "git_commit": "c21abd25e4e97299883b3440ac0f6ba93ab77082",
   "lean": "Lean (version 4.35.0, x86_64-unknown-linux-gnu, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)",
   "platform": "Linux-6.18.44-fc-v153-x86_64-with-glibc2.39",
   "python": "3.13.17",

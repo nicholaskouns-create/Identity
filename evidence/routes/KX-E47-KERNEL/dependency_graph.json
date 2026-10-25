@@ -48,6 +48,11 @@
     },
     {
       "from": "carrier_bridge_coq",
+      "to": "casimir_centrality_z",
+      "relation": "precedes"
+    },
+    {
+      "from": "casimir_centrality_z",
       "to": "exact_matrix_rank",
       "relation": "precedes"
     },

@@ -22,10 +22,10 @@ Alters or drops: **nothing**.
 |---|---|---|
 | Migration applies clean | pass | local PostgreSQL 16.15 |
 | Python ↔ SQL ↔ JS canonical form | 26/26 | `test_canonical_crosslang.py` |
-| 9 real receipts, digests match | 9/9 | all three implementations |
+| Every route receipt, digests match | all | Python, SQL and JS |
 | Migration integrity scenarios | 15/15 | `test_migration_pg.py` |
-| Write bundle against a production-schema clone | 9 receipts + 9 transit rows | `prodclone` database |
-| Monorail scenarios | 15/15 | `test_monorail.py` |
+| Write bundle against a production-schema clone | receipts + transit rows, chain-verified | `prodclone` database |
+| Monorail scenarios | 18/18 | `test_monorail.py` |
 | Independent CI | success | run [40229699025](https://github.com/nicholaskouns-create/Identity/actions/runs/40229699025) |
 
 ## Expected effect
@@ -34,7 +34,7 @@ Three new objects in an existing private schema. No existing row changes. No
 existing grant or policy changes. `cube_moves`, `machine_certificates`,
 `corrections`, `transit_events` and `approval_queue` are untouched.
 
-Storage: negligible — nine receipts is roughly 12 KB.
+Storage: negligible — the current route's receipts are roughly 15 KB.
 
 ## Risks
 
