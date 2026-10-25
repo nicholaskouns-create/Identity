@@ -112,6 +112,25 @@ theorem concrete_casimir_trace :
     ((List.range 125).map (fun n => casimirDiag (idx n))).sum = 2250 := by
   decide
 
+/-! ## First five complete columns of the third concrete Lie bracket
+
+This is a bounded, compiler-checkable extension of the diagonal theorem.
+Every row i of columns j = 0,1,2,3,4 uses the original 125-term
+matrix multiplication, including off-diagonal entries. No spectral
+assumption or surrogate diagonal operator is used. The remaining
+120 columns remain obligations.
+-/
+
+def firstFiveColumn (j : Fin 5) : Fin 125 := idx j.val
+
+theorem totalUp_down_bracket_first_five_columns :
+    ∀ i : Fin 125, ∀ j : Fin 5,
+      mulEntry totalUp totalDown i (firstFiveColumn j) -
+        mulEntry totalDown totalUp i (firstFiveColumn j) =
+          2 * totalZ i (firstFiveColumn j) := by
+  decide
+
+
 end E47Tensor125
 
 #print axioms E47Tensor125.totalZ_up_bracket_entries
@@ -125,3 +144,5 @@ end E47Tensor125
 
 #print axioms E47Tensor125.totalUp_down_bracket_diagonal
 #print axioms E47Tensor125.concrete_casimir_trace
+
+#print axioms E47Tensor125.totalUp_down_bracket_first_five_columns
