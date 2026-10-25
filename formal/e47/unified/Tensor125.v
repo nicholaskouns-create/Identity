@@ -106,3 +106,29 @@ Proof. vm_compute. reflexivity. Qed.
 
 Print Assumptions totalZ_up_bracket_entries.
 Print Assumptions totalZ_down_bracket_entries.
+
+(* Genuine 125-term integer matrix products. These certificates cover
+   the diagonal of the third Lie bracket, not its off-diagonal entries. *)
+Definition mulEntry (A B : nat -> nat -> Z) (i j : nat) : Z :=
+  List.fold_right Z.add 0
+    (List.map (fun k => A i k * B k j) (List.seq 0 125)).
+
+Definition ud_diagonal_ok (i : nat) : bool :=
+  Z.eqb (mulEntry totalUp totalDown i i -
+         mulEntry totalDown totalUp i i) (2 * totalZ i i).
+
+Theorem totalUp_down_bracket_diagonal :
+  List.forallb ud_diagonal_ok (List.seq 0 125) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Definition casimirDiag (i : nat) : Z :=
+  mulEntry totalDown totalUp i i +
+  totalZ i i * (totalZ i i + 1).
+
+Theorem concrete_casimir_trace :
+  List.fold_right Z.add 0
+    (List.map casimirDiag (List.seq 0 125)) = 2250.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions totalUp_down_bracket_diagonal.
+Print Assumptions concrete_casimir_trace.

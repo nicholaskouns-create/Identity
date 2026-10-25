@@ -86,6 +86,32 @@ theorem totalZ_down_bracket_entries :
       (totalZ i i - totalZ j j) * totalDown i j = -(totalDown i j) := by
   decide
 
+
+/-! ## Concrete matrix products: diagonal third bracket and Casimir trace
+
+This uses the genuine 125-term matrix product, not a surrogate
+weight-only expression. It certifies every diagonal entry of
+[totalUp,totalDown] = 2 totalZ. The off-diagonal entries of this
+third commutator remain an explicit separate obligation.
+-/
+
+def mulEntry (A B : Mat125) (i j : Fin 125) : Int :=
+  ((List.range 125).map (fun k => A i (idx k) * B (idx k) j)).sum
+
+theorem totalUp_down_bracket_diagonal :
+    ∀ i : Fin 125,
+      mulEntry totalUp totalDown i i -
+        mulEntry totalDown totalUp i i = 2 * totalZ i i := by
+  decide
+
+def casimirDiag (i : Fin 125) : Int :=
+  mulEntry totalDown totalUp i i +
+    totalZ i i * (totalZ i i + 1)
+
+theorem concrete_casimir_trace :
+    ((List.range 125).map (fun n => casimirDiag (idx n))).sum = 2250 := by
+  decide
+
 end E47Tensor125
 
 #print axioms E47Tensor125.totalZ_up_bracket_entries
@@ -96,3 +122,6 @@ end E47Tensor125
 #print axioms E47Tensor125.selected_block_dimension_from_diagonal
 #print axioms E47Tensor125.totalZ_trace
 #print axioms E47Tensor125.totalZ_diagonal_square_trace
+
+#print axioms E47Tensor125.totalUp_down_bracket_diagonal
+#print axioms E47Tensor125.concrete_casimir_trace
