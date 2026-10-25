@@ -42,6 +42,7 @@ jobs:
       - run: node --check site/forge-ui.js
       - run: node tools/test-forge.mjs
       - run: node --test site/ablation.test.mjs
+      - run: node --test site/proof/kernel-census/model.test.mjs
       - run: npm install --prefix /tmp/identity-browser-deps playwright@1.56.1
       - run: /tmp/identity-browser-deps/node_modules/.bin/playwright install chromium --with-deps
       - run: node tools/test-ablation-browser.cjs
