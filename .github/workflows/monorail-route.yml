@@ -89,26 +89,7 @@ jobs:
 
       - name: Route summary
         if: always()
-        shell: bash
-        run: |
-          set -euo pipefail
-          for m in evidence/routes/*/route_manifest.json; do
-            python3 - "$m" >> "$GITHUB_STEP_SUMMARY" <<'PY'
-          import json, sys
-          m = json.load(open(sys.argv[1]))
-          print(f"## Route {m['route_id']} — {m['status']}\n")
-          print(f"- commit `{m['source_commit'][:12]}`")
-          print(f"- environment lock `{m['environment_lock_hash'][:12]}`")
-          print(f"- hash chain: {'INTACT' if m['chain_intact'] else 'BROKEN'}")
-          print(f"- open defects: {m['open_defects']}")
-          print(f"- replica mode: {m['replica']['mode']} (live deployment pending)\n")
-          print("| Station | Theorem | Status | Fare |")
-          print("|---|---|---|---|")
-          for s in m['stations']:
-              print(f"| {s['station']} | `{s['theorem_id']}` | {s['status']} | {s['evidence_class']} |")
-          print("\n_Transfer does not upgrade evidence._")
-          PY
-          done
+        run: python3 scripts/monorail_summary.py "$GITHUB_STEP_SUMMARY"
 
       - name: Fail if the route did not certify
         if: always()
