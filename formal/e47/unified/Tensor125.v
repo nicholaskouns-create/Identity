@@ -132,3 +132,155 @@ Proof. vm_compute. reflexivity. Qed.
 
 Print Assumptions totalUp_down_bracket_diagonal.
 Print Assumptions concrete_casimir_trace.
+
+(* First five complete columns of [Up,Down]=2Z on the genuine
+   125-term matrix products. This includes every off-diagonal row
+   in columns 0..4. The remaining columns are not claimed. *)
+Definition ud_entry_ok (i j : nat) : bool :=
+  Z.eqb (mulEntry totalUp totalDown i j -
+         mulEntry totalDown totalUp i j) (2 * totalZ i j).
+
+Theorem totalUp_down_bracket_first_five_columns :
+  List.forallb
+    (fun j => List.forallb (fun i => ud_entry_ok i j) (List.seq 0 125))
+    (List.seq 0 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions totalUp_down_bracket_first_five_columns.
+
+(* Next five complete columns, 5..9, of the genuine 125-term
+   [Up,Down]=2Z matrix products. This does not import the target
+   identity as an assumption and does not certify columns 10..124. *)
+Theorem totalUp_down_bracket_next_five_columns :
+  List.forallb
+    (fun j => List.forallb (fun i => ud_entry_ok i j) (List.seq 0 125))
+    (List.seq 5 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions totalUp_down_bracket_next_five_columns.
+
+(* Five additional concrete columns, 10..14, of [Up,Down]=2Z.
+   Each entry uses the original 125-term integer matrix products.
+   The remaining 110 columns are not claimed. *)
+Theorem totalUp_down_bracket_columns_ten_through_fourteen :
+  List.forallb
+    (fun j => List.forallb (fun i => ud_entry_ok i j) (List.seq 0 125))
+    (List.seq 10 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions totalUp_down_bracket_columns_ten_through_fourteen.
+
+(* Genuine 125-term integer matrix products for every row of columns 15..19.
+   The preceding 0..14 column proofs are retained; 20..124 remain open. *)
+Theorem totalUp_down_bracket_columns_fifteen_through_nineteen :
+  List.forallb
+    (fun j => List.forallb (fun i => ud_entry_ok i j) (List.seq 0 125))
+    (List.seq 15 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions totalUp_down_bracket_columns_fifteen_through_nineteen.
+
+(* Five additional concrete columns 20..24 of [Up,Down]=2Z.
+   All 625 entries use the genuine 125-term integer matrix products.
+   Columns 25..124 remain a separate formal obligation. *)
+Theorem totalUp_down_bracket_columns_twenty_through_twentyfour :
+  List.forallb
+    (fun j => List.forallb (fun i => ud_entry_ok i j) (List.seq 0 125))
+    (List.seq 20 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions totalUp_down_bracket_columns_twenty_through_twentyfour.
+
+(* Concrete third-bracket columns 25..29, each of 125 rows using the
+   original 125-term integer matrix products. This theorem is checked
+   by computation; no full-bracket identity is imported as an axiom.
+   Columns 30..124 remain unproved in the formal certificate. *)
+Theorem totalUp_down_bracket_columns_twentyfive_through_twentynine :
+  List.forallb
+    (fun j => List.forallb (fun i => ud_entry_ok i j) (List.seq 0 125))
+    (List.seq 25 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions totalUp_down_bracket_columns_twentyfive_through_twentynine.
+
+
+(* Concrete third-bracket columns 30..34, all 625 entries computed from
+   the genuine 125-term integer matrix products, not a diagonal surrogate.
+   This does not assert the remaining columns 35..124. *)
+Theorem totalUp_down_bracket_columns_thirty_through_thirtyfour :
+  List.forallb
+    (fun j => List.forallb (fun i => ud_entry_ok i j) (List.seq 0 125))
+    (List.seq 30 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions totalUp_down_bracket_columns_thirty_through_thirtyfour.
+
+
+(* Concrete third-bracket columns 35..39, all 625 entries from the
+   original 125-term integer matrix products; no imported bracket axiom.
+   Columns 40..124 remain unproved in this formal certificate. *)
+Theorem totalUp_down_bracket_columns_thirtyfive_through_thirtynine :
+  List.forallb
+    (fun j => List.forallb (fun i => ud_entry_ok i j) (List.seq 0 125))
+    (List.seq 35 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions totalUp_down_bracket_columns_thirtyfive_through_thirtynine.
+
+(* Concrete third-bracket columns 40..44: all 625 entries from
+   original 125-term integer matrix products, not a diagonal surrogate.
+   Columns 45..124 remain independent formal obligations. *)
+Theorem totalUp_down_bracket_columns_forty_through_fortyfour :
+  List.forallb
+    (fun j => List.forallb (fun i => ud_entry_ok i j) (List.seq 0 125))
+    (List.seq 40 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions totalUp_down_bracket_columns_forty_through_fortyfour.
+
+(* Concrete third-bracket columns 45..49, all 625 entries from the
+   genuine 125-term integer matrix products, without an imported
+   commutator theorem. Columns 50..124 remain separate obligations. *)
+Theorem totalUp_down_bracket_columns_fortyfive_through_fortynine :
+  List.forallb
+    (fun j => List.forallb (fun i => ud_entry_ok i j) (List.seq 0 125))
+    (List.seq 45 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions totalUp_down_bracket_columns_fortyfive_through_fortynine.
+
+(* Concrete third-bracket columns 50..54: all 625 entries of
+   [totalUp,totalDown] = 2 totalZ use the explicit spin-2 triple tensor
+   generators and full 125-term integer matrix products. No imported
+   commutator axiom. Columns 55..124 remain open. *)
+Theorem totalUp_down_bracket_columns_fifty_through_fiftyfour :
+  List.forallb
+    (fun j => List.forallb (fun i => ud_entry_ok i j) (List.seq 0 125))
+    (List.seq 50 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions totalUp_down_bracket_columns_fifty_through_fiftyfour.
+
+(* Concrete third-bracket columns 55..59: all 625 entries computed
+   using the original 125-term integer matrix products of explicit
+   spin-2 triple tensor generators. No imported commutator theorem.
+   Columns 60..124 remain separate proof obligations. *)
+Theorem totalUp_down_bracket_columns_fiftyfive_through_fiftynine :
+  List.forallb
+    (fun j => List.forallb (fun i => ud_entry_ok i j) (List.seq 0 125))
+    (List.seq 55 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions totalUp_down_bracket_columns_fiftyfive_through_fiftynine.
+
+(* Concrete third-bracket columns 60..64: all 625 entries computed
+   from the explicit integer spin-2 triple tensor generators and genuine
+   125-term matrix products. No imported bracket theorem or axiom.
+   Columns 65..124 remain independent proof obligations. *)
+Theorem totalUp_down_bracket_columns_sixty_through_sixtyfour :
+  List.forallb
+    (fun j => List.forallb (fun i => ud_entry_ok i j) (List.seq 0 125))
+    (List.seq 60 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions totalUp_down_bracket_columns_sixty_through_sixtyfour.
