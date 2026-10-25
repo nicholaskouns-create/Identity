@@ -85,3 +85,24 @@ Print Assumptions totalZ_trace.
 Print Assumptions totalZ_diagonal_square_trace.
 Print Assumptions highest_raising_zero_all.
 Print Assumptions lowest_lowering_zero_all.
+
+
+(* Exact finite entry certificates for [Z,Up]=Up and [Z,Down]=-Down.
+   Z is diagonal, so [Z,A]_{ij} = (Z_ii - Z_jj) A_ij.
+   This checks all 125*125 index pairs for each identity. *)
+Definition z_up_entry_ok (i j : nat) : bool :=
+  Z.eqb ((totalZ i i - totalZ j j) * totalUp i j) (totalUp i j).
+Definition z_down_entry_ok (i j : nat) : bool :=
+  Z.eqb ((totalZ i i - totalZ j j) * totalDown i j) (- totalDown i j).
+Definition all_pairs_ok (f : nat -> nat -> bool) : bool :=
+  List.forallb
+    (fun i => List.forallb (fun j => f i j) (List.seq 0 125))
+    (List.seq 0 125).
+
+Theorem totalZ_up_bracket_entries : all_pairs_ok z_up_entry_ok = true.
+Proof. vm_compute. reflexivity. Qed.
+Theorem totalZ_down_bracket_entries : all_pairs_ok z_down_entry_ok = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions totalZ_up_bracket_entries.
+Print Assumptions totalZ_down_bracket_entries.

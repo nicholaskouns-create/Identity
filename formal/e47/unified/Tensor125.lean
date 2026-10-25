@@ -68,8 +68,28 @@ theorem totalZ_diagonal_square_trace :
       totalZ (idx n) (idx n) * totalZ (idx n) (idx n)).sum = 750 := by
   decide
 
+
+/-! ## Tensor weight-generator brackets, exact 125 × 125 entry certificates
+
+For diagonal Z, (ZU - UZ)ᵢⱼ = (Zᵢᵢ - Zⱼⱼ)Uᵢⱼ.
+The following certificates quantify over every pair of concrete basis indices.
+The full U/D commutator and Casimir spectral polynomial remain separate
+obligations. -/
+
+theorem totalZ_up_bracket_entries :
+    ∀ i j : Fin 125,
+      (totalZ i i - totalZ j j) * totalUp i j = totalUp i j := by
+  decide
+
+theorem totalZ_down_bracket_entries :
+    ∀ i j : Fin 125,
+      (totalZ i i - totalZ j j) * totalDown i j = -(totalDown i j) := by
+  decide
+
 end E47Tensor125
 
+#print axioms E47Tensor125.totalZ_up_bracket_entries
+#print axioms E47Tensor125.totalZ_down_bracket_entries
 #print axioms E47Tensor125.diagonal_weight_counts
 #print axioms E47Tensor125.spin_multiplicities_from_diagonal
 #print axioms E47Tensor125.dimension_from_diagonal
