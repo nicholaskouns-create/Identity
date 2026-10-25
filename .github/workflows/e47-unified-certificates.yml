@@ -48,6 +48,31 @@ jobs:
           lean --version
           lean formal/e47/unified/Tensor125Columns15to19.lean
 
+  lean-columns-20-24:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit exact shared spin-2 generator definitions
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          root = Path('formal/e47/unified')
+          original = (root / 'Tensor125.lean').read_text().split('theorem highest_weight', 1)[0]
+          isolated = (root / 'Tensor125Columns20to24.lean').read_text().split('/-! ## Isolated', 1)[0]
+          assert original == isolated, '20..24 tensor generator definitions drifted from the original'
+          print('SPIN2_COLUMNS_20_24_SHARED_DEFINITIONS_MATCH')
+          PY
+      - name: Install Lean 4.19.0 via elan
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile isolated 625-entry bracket and audit axioms
+        run: |
+          set -euxo pipefail
+          lean --version
+          lean formal/e47/unified/Tensor125Columns20to24.lean
+
   coq:
     runs-on: ubuntu-latest
     steps:
