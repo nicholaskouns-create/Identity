@@ -1,4 +1,5 @@
-import assert from 'node:assert/strict';import {cases,execute,findCounterexample,matrixView,sha256,canonical} from '../site/forge-engine.js';
+import assert from 'node:assert/strict';
+import {verifyForgeReceipt} from '../site/forge-receipt.js';import {cases,execute,findCounterexample,matrixView,sha256,canonical} from '../site/forge-engine.js';
 assert.equal(cases.length,5);
 for(const c of cases){const result=await execute(c.id);assert.equal(result.result.pass,true,c.id);const {sha256:receipt,...payload}=result;assert.equal(await sha256(payload),receipt)}
 assert.deepEqual(findCounterexample([1,0,-1]).x,-12);
@@ -7,4 +8,18 @@ assert.throws(()=>findCounterexample([1.5,0,0]));
 assert.equal(matrixView().dimension,125);
 assert.equal(matrixView().traceSquared,750);
 assert.equal(canonical({b:1,a:2}), '{"a":2,"b":1}');
+const original=await execute('e47-rank');
+assert.equal((await verifyForgeReceipt(original)).ok,true);
+const tampered={...original,result:{pass:false}};
+assert.equal((await verifyForgeReceipt(tampered)).ok,false);
+const recomputed={...tampered};
+const {sha256:oldHash,...payload}=recomputed;
+recomputed.sha256=await sha256(payload);
+assert.match((await verifyForgeReceipt(recomputed)).reason,/differs from deterministic replay/);
+const mislabeled={...original,title:'Different theorem'};
+const {sha256:oldLabelHash,...labelPayload}=mislabeled;
+mislabeled.sha256=await sha256(labelPayload);
+assert.match((await verifyForgeReceipt(mislabeled)).reason,/metadata/);
+assert.equal((await verifyForgeReceipt(null)).ok,false);
+console.log('MNEMOSYNE_FORGE_RECEIPT_REPLAY_PASS',cases.length,'replayable reference cases');
 console.log('MNEMOSYNE_FORGE_PASS',cases.length,'reference experiments; counterexample and matrix checks');
