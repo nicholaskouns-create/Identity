@@ -112,6 +112,41 @@ theorem concrete_casimir_trace :
     ((List.range 125).map (fun n => casimirDiag (idx n))).sum = 2250 := by
   decide
 
+
+/-! ## MC-300 / DBSK-C01: degree-two capacity, concrete weight-derived finite census
+
+The seven sector dimensions below are derived from totalZ's 125-state
+diagonal by the weight-counting definitions above. These certificates
+enumerate all distinct sector pairs. They do NOT yet identify those
+sectors with eigenspaces of the full concrete Casimir, nor prove the
+general polynomial root-counting theorem. -/
+
+def sectorDim (j : Fin 7) : Nat :=
+  multiplicity j.val * (2 * j.val + 1)
+
+theorem sector_dimensions_from_diagonal :
+    (List.range 7).map (fun j => multiplicity j * (2 * j + 1)) =
+      [1, 9, 25, 28, 27, 22, 13] := by
+  decide
+
+theorem every_single_sector_at_most_28 :
+    ∀ j : Fin 7, sectorDim j ≤ 28 := by
+  decide
+
+theorem every_distinct_pair_at_most_55 :
+    ∀ i j : Fin 7, i ≠ j → sectorDim i + sectorDim j ≤ 55 := by
+  decide
+
+theorem unique_maximal_quadratic_pair :
+    ∀ i j : Fin 7, i ≠ j →
+      (sectorDim i + sectorDim j = 55 ↔
+        (i.val = 3 ∧ j.val = 4) ∨ (i.val = 4 ∧ j.val = 3)) := by
+  decide
+
+theorem canonical_e47_pair_dimension :
+    sectorDim 2 + sectorDim 5 = 47 := by
+  decide
+
 end E47Tensor125
 
 #print axioms E47Tensor125.totalZ_up_bracket_entries
@@ -125,3 +160,9 @@ end E47Tensor125
 
 #print axioms E47Tensor125.totalUp_down_bracket_diagonal
 #print axioms E47Tensor125.concrete_casimir_trace
+
+#print axioms E47Tensor125.sector_dimensions_from_diagonal
+#print axioms E47Tensor125.every_single_sector_at_most_28
+#print axioms E47Tensor125.every_distinct_pair_at_most_55
+#print axioms E47Tensor125.unique_maximal_quadratic_pair
+#print axioms E47Tensor125.canonical_e47_pair_dimension
