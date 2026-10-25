@@ -63,6 +63,9 @@ assert landmarks.skip_targets == ["#" + landmarks.main_ids[0]], "Skip link must 
 assert landmarks.main_ids[0] in landmarks.ids, "Skip target must exist"
 assert landmarks.main_tabindexes == ["-1"], "Main target must support programmatic focus"
 assert ".skip-link:focus" in html, "Skip link must become visible on keyboard focus"
+assert '<label for="artifact-content">Artifact content</label>' in html, "Archive content textarea needs a visible label"
+assert '<textarea id="artifact-content" name="content"' in html, "Archive content label must target the textarea"
+assert "a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible" in html, "Homepage controls need explicit keyboard focus styles"
 # Guard the independently published ablation explorer's keyboard navigation.
 # The result panel is initially hidden, but the main landmark must remain
 # available while archived data loads or when loading fails.
