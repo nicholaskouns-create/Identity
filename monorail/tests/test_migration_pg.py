@@ -41,6 +41,13 @@ def sql(q: str) -> tuple[int, str, str]:
     out, err = p.stdout.strip(), p.stderr.strip()
     # A syntax error means the harness is broken, not that the DB rejected
     # the data. Never let that masquerade as a passing negative test.
+    # A statement that never reached the server must never read as "the
+    # database rejected it". Syntax errors mean the harness mangled the SQL;
+    # connection errors mean there was no server. Both are harness faults.
+    for fault in ("syntax error", "could not connect", "connection to server",
+                  "does not exist", "Is the server running"):
+        if fault in err and "psql:" in err and "ERROR:" not in err:
+            raise RuntimeError(f"harness fault, SQL never ran: {err[:200]}")
     if "syntax error" in err:
         raise RuntimeError(f"harness bug, SQL never ran: {err[:200]}")
     return p.returncode, out, err
@@ -77,9 +84,12 @@ receipts = [json.loads(l) for l in
 sql("truncate city_formalism.monorail_receipts;")
 
 # --- genesis + ordered append ------------------------------------------------
+# Count from the data, not a literal: the route gains stations over time and
+# a hardcoded 9 turns a healthy route into a red test.
+N = len(receipts)
 ok = all(insert(p)[0] == 0 for p in receipts)
 _, n, _ = sql("select count(*) from city_formalism.monorail_receipts;")
-check("append all 9 receipts in order", ok and n == "9", f"{n} rows")
+check(f"append all {N} receipts in order", ok and n == str(N), f"{n} rows")
 
 # --- digest recomputation IN THE DATABASE ------------------------------------
 _, bad, _ = sql("select count(*) from city_formalism.monorail_chain_status where not digest_ok;")
@@ -105,7 +115,7 @@ code, err = insert(f)
 check("orphan parent rejected", code != 0, err)
 
 # --- fork: two children of one parent ----------------------------------------
-g = json.loads(json.dumps(receipts[8]))
+g = json.loads(json.dumps(receipts[-1]))
 g["parent_receipt_hash"] = receipts[0]["receipt_hash"]   # already consumed
 g["station"] = "forked"
 g.pop("receipt_hash"); g["receipt_hash"] = compute_receipt_hash(g)
@@ -148,11 +158,13 @@ code, _, err = sql("""insert into city_formalism.monorail_receipts
 check("invalid evidence class rejected", code != 0, err.splitlines()[0][:110] if err else "")
 
 # --- concurrency: two sessions race for the same parent ------------------------
+# Race for the CHAIN HEAD, whose parent slot is by definition unconsumed.
+HEAD = receipts[-1]["receipt_hash"]
 c1 = json.loads(json.dumps(receipts[1])); c1["station"] = "race_a"
-c1["parent_receipt_hash"] = receipts[8]["receipt_hash"]
+c1["parent_receipt_hash"] = HEAD
 c1.pop("receipt_hash"); c1["receipt_hash"] = compute_receipt_hash(c1)
 c2 = json.loads(json.dumps(receipts[1])); c2["station"] = "race_b"
-c2["parent_receipt_hash"] = receipts[8]["receipt_hash"]
+c2["parent_receipt_hash"] = HEAD
 c2.pop("receipt_hash"); c2["receipt_hash"] = compute_receipt_hash(c2)
 a_code, _ = insert(c1)
 b_code, b_err = insert(c2)

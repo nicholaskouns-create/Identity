@@ -38,6 +38,16 @@
     },
     {
       "from": "kernel_dimension_coq",
+      "to": "carrier_bridge",
+      "relation": "precedes"
+    },
+    {
+      "from": "carrier_bridge",
+      "to": "carrier_bridge_coq",
+      "relation": "precedes"
+    },
+    {
+      "from": "carrier_bridge_coq",
       "to": "exact_matrix_rank",
       "relation": "precedes"
     },

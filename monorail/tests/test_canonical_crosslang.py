@@ -36,7 +36,10 @@ def sql_canon(v):
             else ["sudo", "-n", "-u", "postgres", "sh", "-c", inner])
     p = subprocess.run(argv, capture_output=True, text=True)
     if p.returncode:
-        raise RuntimeError(p.stderr.strip()[:200])
+        err = p.stderr.strip()
+        if "ERROR:" not in err:
+            raise RuntimeError(f"harness fault, SQL never ran: {err[:200]}")
+        raise RuntimeError(err[:200])
     return p.stdout.strip()
 
 

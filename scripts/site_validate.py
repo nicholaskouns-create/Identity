@@ -27,6 +27,7 @@ LEAN_FILES = [
     "formal/e47/unified/Spin2Generators.lean",
     "formal/e47/unified/Tensor125.lean",
     "formal/e47/unified/RankNullity47.lean",
+    "formal/e47/unified/E47Bridge.lean",
 ]
 COQ_FILES = [
     "formal/e47/E47Spectral.v",
@@ -40,6 +41,7 @@ COQ_FILES = [
     "formal/e47/unified/Spin2Generators.v",
     "formal/e47/unified/Tensor125.v",
     "formal/e47/unified/RankNullity47.v",
+    "formal/e47/unified/E47Bridge.v",
 ]
 PYTHON_FILES = [
     "simulation/validate_e47.py",

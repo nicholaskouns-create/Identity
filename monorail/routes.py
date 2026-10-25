@@ -21,9 +21,12 @@ ROUTES = {
         "destination": "Frozen Release Depot",
         "object_id": "E47-CASIMIR",
         "parents": ["E47-CARRIER-125"],
-        "scope": ("Only the exact statements these files compile. Does not "
-                  "claim the concrete 125x125 tensor Casimir bridge, which "
-                  "remains an open obligation on the Observatory Spur."),
+        "scope": ("Only the exact statements these files compile. The carrier "
+                  "bridge connects the WEIGHT data of the concrete 125-state "
+                  "operator to the block decomposition; it does NOT establish "
+                  "dim ker (C-6I)(C-30I) = 47 for the full Casimir, which "
+                  "still needs centrality and eigenspace identification "
+                  "(lanes #17, #19) and remains open."),
         "stations": [
             {"name": "spin2_generators", "kind": "lean",
              "file": "formal/e47/unified/Spin2Generators.lean",
@@ -53,6 +56,14 @@ ROUTES = {
              "file": "formal/e47/unified/RankNullity47.v",
              "theorem_id": "E47-KERNEL-47", "evidence_class": "E0",
              "issue": 21},
+            {"name": "carrier_bridge", "kind": "lean",
+             "file": "formal/e47/unified/E47Bridge.lean",
+             "theorem_id": "E47-CARRIER-BRIDGE", "evidence_class": "E0",
+             "issue": 19},
+            {"name": "carrier_bridge_coq", "kind": "coq",
+             "file": "formal/e47/unified/E47Bridge.v",
+             "theorem_id": "E47-CARRIER-BRIDGE", "evidence_class": "E0",
+             "issue": 19},
             {"name": "exact_matrix_rank", "kind": "python",
              "file": "validation/e47_rank_nullity_exact.py",
              "theorem_id": "E47-RANK-78", "evidence_class": "E1",
