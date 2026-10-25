@@ -1,0 +1,75 @@
+name: E47 site validation
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'formal/e47/**'
+      - 'simulation/validate_e47.py'
+      - 'validation/**'
+      - 'scripts/site_validate.py'
+      - '.github/workflows/e47-site-validation.yml'
+  schedule:
+    - cron: '17 13 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: e47-site-validation
+  cancel-in-progress: false
+
+jobs:
+  compile-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout the proofs
+        uses: actions/checkout@v4
+        with:
+          path: src
+      - name: Checkout the published site
+        uses: actions/checkout@v4
+        with:
+          ref: mnemosyne/forge-atlas-20261023
+          path: pages
+      - name: Install Coq, Python, and NumPy
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y coq python3 python3-numpy
+      - name: Install open-source Lean 4.35.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.35.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile every self-contained proof
+        id: compile
+        working-directory: src
+        run: |
+          set +e
+          python3 scripts/site_validate.py "$RUNNER_TEMP/validation.html"
+          code=$?
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Publish the full results page
+        if: always()
+        working-directory: pages
+        run: |
+          set -euo pipefail
+          install -d site/proof/lean-coq
+          cp "$RUNNER_TEMP/validation.html" site/proof/lean-coq/validation.html
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/proof/lean-coq/validation.html
+          if git diff --cached --quiet; then
+            echo "Results page unchanged."
+          else
+            git commit -m "Refresh the E47 validation page from the open-source compilers."
+            git push origin HEAD:mnemosyne/forge-atlas-20261023
+          fi
+      - name: Fail the run if a proof failed
+        if: always()
+        run: |
+          test "${{ steps.compile.outputs.code }}" = "0"
