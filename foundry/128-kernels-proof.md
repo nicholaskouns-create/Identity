@@ -15,6 +15,9 @@ For λ∈Λ let L_λ(x)=∏_{μ∈Λ,μ≠λ}(x−μ)/(λ−μ). Set P_S=Σ_{λ�
 A nonzero polynomial of degree at most r has at most r distinct roots, so the largest possible rank of its Casimir-selected kernel is the sum of the r largest sector dimensions. For r=2, this is 28+27=55, selected by {12,20}. The canonical E47 root pair {6,30} has rank 25+22=47. ∎
 
 ## Verification and reproducibility
+
+[Interactive 128-kernel browser explorer](https://nicholaskouns-create.github.io/Identity/site/proof/kernel-census/) computes each exact sector rank locally and links the independent Python verifier. The explorer is a visualization of the finite classification, not a new Lean/Coq or hardware certificate. The public link becomes available only when the site is deployed.
+
 The standard-library [Python verifier](./validate_128_kernels.py) checks the 125 concrete basis annihilator actions, weight multiplicities, rational projector Kronecker delta identities, and 128/128 individual selector/rank/idempotence/annihilation/complement tests. Source [census index](./128-kernel-census.md). The exact 128-row JSON may be regenerated via `python foundry/validate_128_kernels.py > foundry/128_kernel_certificate.json`.
 
 **Evidence boundary:** exact rational and integer calculations plus theorem-based spectral inference; not Lean/Coq compiler acceptance, not a physical quantum implementation, and not 128 individual dense-matrix rank computations.
