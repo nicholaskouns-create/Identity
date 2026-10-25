@@ -147,3 +147,14 @@ Theorem totalUp_down_bracket_first_five_columns :
 Proof. vm_compute. reflexivity. Qed.
 
 Print Assumptions totalUp_down_bracket_first_five_columns.
+
+(* Next five complete columns, 5..9, of the genuine 125-term
+   [Up,Down]=2Z matrix products. This does not import the target
+   identity as an assumption and does not certify columns 10..124. *)
+Theorem totalUp_down_bracket_next_five_columns :
+  List.forallb
+    (fun j => List.forallb (fun i => ud_entry_ok i j) (List.seq 0 125))
+    (List.seq 5 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions totalUp_down_bracket_next_five_columns.
