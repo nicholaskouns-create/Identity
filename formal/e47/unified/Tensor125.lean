@@ -131,6 +131,25 @@ theorem totalUp_down_bracket_first_five_columns :
   decide
 
 
+/-! ## Next five concrete third-bracket columns (5 through 9)
+
+This theorem evaluates the genuine 125-term matrix products for all
+125 rows and exactly five additional columns, without assuming the
+full commutator identity. Together with the previous first-five-column
+theorem, the first ten columns have finite certificates. The other
+115 columns remain an open formal proof obligation.
+-/
+
+def nextFiveColumn (j : Fin 5) : Fin 125 := idx (5 + j.val)
+
+theorem totalUp_down_bracket_next_five_columns :
+    ∀ i : Fin 125, ∀ j : Fin 5,
+      mulEntry totalUp totalDown i (nextFiveColumn j) -
+        mulEntry totalDown totalUp i (nextFiveColumn j) =
+          2 * totalZ i (nextFiveColumn j) := by
+  decide
+
+
 end E47Tensor125
 
 #print axioms E47Tensor125.totalZ_up_bracket_entries
@@ -146,3 +165,5 @@ end E47Tensor125
 #print axioms E47Tensor125.concrete_casimir_trace
 
 #print axioms E47Tensor125.totalUp_down_bracket_first_five_columns
+
+#print axioms E47Tensor125.totalUp_down_bracket_next_five_columns
