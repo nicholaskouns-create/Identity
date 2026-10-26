@@ -27,17 +27,18 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
-      - uses: leanprover/lean-action@v1
-        with:
-          lake-package-directory: formal/eliashberg
-          build: false
-      - name: Compile theorem and audit axioms
+      - name: Install elan and pinned Lean 4.19.0
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0 --no-modify-path
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Resolve pinned Mathlib and compile
         working-directory: formal/eliashberg
         run: |
+          lake update
           lake exe cache get
           lake env lean EliashbergClosure.lean
-          printf '\n#print axioms EliashbergClosure.coupling_closure\n#print axioms EliashbergClosure.logarithmic_moment\n#print axioms EliashbergClosure.second_moment\n' > Audit.lean
-          printf 'import EliashbergClosure\n' | cat - Audit.lean > Audit.tmp && mv Audit.tmp Audit.lean
+          printf 'import EliashbergClosure\n#print axioms EliashbergClosure.coupling_closure\n#print axioms EliashbergClosure.logarithmic_moment\n#print axioms EliashbergClosure.second_moment\n' > Audit.lean
           lake env lean Audit.lean
   coq:
     runs-on: ubuntu-24.04
