@@ -29,3 +29,14 @@ Provision a restricted execution environment and credential delivery; register m
 - Reproducible SQL and read-only privilege checks: `mnemosyne_service_ingest.sql` and `test_mnemosyne_service_ingest.sql`.
 - **Remaining:** No service credential was accessed; the schema is not exposed to PostgREST. An authorized server-side registration worker, real upload/download authorization tests, ingestion transaction, search, scientific workers, encrypted backups, and restore drill are not yet complete.
 - **Review boundary:** Changes are proposed on an unmerged branch/PR. The already-applied database migration is additive and did not grant client or public access.
+
+
+## 2026-10-26 · Verified-byte ingestion worker (draft, code only)
+
+- Inspected existing project, private schema, bucket, migration history, Edge Functions and open Identity PRs before editing. Prior PR #66 was merged, and the 2026-10-25 metadata-integrity migration is present live.
+- Extended existing `infra/ingestion/ingest.py` rather than creating a parallel ingestion system: offline receipt by default; explicit trusted `--execute` uploads without overwrite, performs authorized Storage GET and SHA-256/length readback, then registers metadata transactionally through a separate restricted PostgreSQL connection.
+- Duplicate objects/metadata are accepted only after digest comparison. Tampered readback, unauthorized HTTP and failed DB registration do not create document rows. No automatic deletion of unregistered objects.
+- Local Python 3.13: **15/15** tests passed, including real loopback HTTP roundtrips and negative-path tests; Python bytecode compilation passed. The dedicated no-secret PR workflow has been added; GitHub Actions status must be checked separately.
+- Live Supabase rollback-only SQL probe exercised INSERT, the partial-index ON CONFLICT clause, digest lookup and SET LOCAL ROLE service_role. Post-rollback readback: 0 source documents, 0 private bucket objects, bucket public=false, 0 synthetic rows.
+- **Not yet hosted end-to-end:** No service credential or restricted PostgreSQL DSN was provisioned or used. No real Supabase Storage upload/download, worker deployment, owner identity verification, search, research API, simulation workers, encrypted backups, or restore drill is claimed.
+- This branch is review-only: no migration, Edge Function deployment, public policy, credential, private content, or merge.
