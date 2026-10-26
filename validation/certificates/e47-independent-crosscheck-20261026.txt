@@ -5,9 +5,20 @@ Date           : 2026-10-26
 Repository     : nicholaskouns-create/Identity @ 2bd0934353ed1ace46ee1934e2b32efae50395a9
 Instrument     : validation/e47_independent_crosscheck.py
                  sha256 eebdaf3325e77acebec17d0f9b673b6837e6c9db1e245faaa3fe809da6518267
-Interpreter    : CPython 3.13.17, run with -I (isolated: no site-packages,
-                 no cwd on sys.path, no repository imports)
-Dependencies   : none.  Python standard library only.
+Interpreter    : CPython 3.13.17, run with -I.  Note precisely what -I buys:
+                 it drops PYTHONPATH, the user site directory, and the script
+                 directory from sys.path, so the instrument cannot import any
+                 module of this repository.  It does NOT hide the system
+                 site-packages, so -I alone is not proof that no third-party
+                 package was used.
+Dependencies   : none.  Python standard library only.  This is enforced
+                 mechanically, not asserted: the independent-crosscheck job in
+                 .github/workflows/e47-unified-certificates.yml imports the
+                 instrument and fails the build if any top-level module it
+                 pulls in is absent from sys.stdlib_module_names.  Measured
+                 here: 19 modules loaded, all stdlib.  The guard was itself
+                 negative-tested by injecting an `import numpy` into the
+                 instrument, which it rejected.
 Runtime        : 4.7 s
 Exit status    : 0
 
