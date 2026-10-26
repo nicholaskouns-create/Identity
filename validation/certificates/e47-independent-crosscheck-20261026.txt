@@ -1,0 +1,181 @@
+E47 Independent Exact Cross-Check Certificate
+=============================================
+Certificate id : E47-IND-003
+Date           : 2026-10-26
+Repository     : nicholaskouns-create/Identity @ 2bd0934353ed1ace46ee1934e2b32efae50395a9
+Instrument     : validation/e47_independent_crosscheck.py
+                 sha256 eebdaf3325e77acebec17d0f9b673b6837e6c9db1e245faaa3fe809da6518267
+Interpreter    : CPython 3.13.17, run with -I (isolated: no site-packages,
+                 no cwd on sys.path, no repository imports)
+Dependencies   : none.  Python standard library only.
+Runtime        : 4.7 s
+Exit status    : 0
+
+WHAT MAKES THIS INDEPENDENT
+---------------------------
+Re-executing a repository script is reproduction, not validation: identical
+code on identical input returns the identical answer by construction, and
+confirms only determinism.  This certificate was produced by an instrument that
+shares nothing with the two existing checks:
+
+                       validate_e47.py      tensor_bracket_trace    this file
+  library              NumPy complex128     NumPy int64             stdlib only
+  basis                orthonormal          integer weight          orthonormal
+  Casimir symmetric    yes (float)          no                      yes (exact)
+  number system        float64              Z                       Z[sqrt 6]
+  kernel determined    eigenvalue cluster   not computed            exact rank
+                       at tolerance 1e-7                            (Bareiss)
+  second route         none                 none                    SU(2)
+                                                                    characters,
+                                                                    matrix-free
+
+The orthonormal Casimir built here is a different matrix from the weight-basis
+Casimir: it is symmetric, 3.9% dense, and 240 of its entries are irrational
+(of the form a + b*sqrt 6).  Rank is a similarity invariant, so the two must
+agree -- and they do.
+
+THE GAP THIS CLOSES
+-------------------
+Before this certificate, the number 47 rested on floating-point eigenvalue
+clustering with a 1e-7 tolerance (simulation/validate_e47.py).  The exact int64
+certificate (validation/e47_tensor_bracket_trace_exact.py) verifies the Lie
+brackets and two traces but computes no rank and no kernel, so it does not
+establish 47.  Here dim ker K = 47 is a two-sided exact result from
+fraction-free elimination over Z[sqrt 6] -- no tolerance, no eigensolver, no
+floating point anywhere in the program.
+
+It is then obtained a second time, independently, with no matrix at all, by
+decomposing the SU(2) character chi_2^3 into irreducibles in integer arithmetic.
+Two routes with no common step produce the same 47.
+
+CROSS-CONFIRMATION OF THE EXISTING CERTIFICATE
+----------------------------------------------
+tr(C) = 2250 and tr(C^2) = 58500 -- the two values reported by the existing
+weight-basis certificate -- are reproduced here from a different matrix in a
+different ring, and again from characters with no matrix.  Extended two orders
+further: tr(C^3) = 1827000 and tr(C^4) = 63205200.
+
+NEGATIVE CONTROLS
+-----------------
+A certificate that cannot fail certifies nothing.  This one carries four
+controls, all of which fire: moving an annihilator root from 30 to 29 collapses
+the kernel from 47 to 25; a single corrupted matrix entry is caught by both the
+symmetry test and the commutator test; and the character peeler rejects a
+non-character.
+
+SCOPE
+-----
+Derived: carrier 125, multiplicities 1,3,5,4,3,2,1, spectrum {0,2,6,12,20,30,42},
+rank 78, dim ker 47, eps* = 1/99144, rho = 15/17.
+Chosen: the spin pair {2,5}.  All 21 admissible pairs are enumerated below;
+they give kernel dimensions spanning 10 to 55, and 47 is attained by exactly
+one of them.  The selection is an input to p(x) = (x-6)(x-30), not an output.
+Nothing here speaks to physical realisation.
+
+FULL EXECUTION TRANSCRIPT
+=========================
+E47 INDEPENDENT CROSS-CHECK
+============================================================================
+asserted inputs only: coupling = spin 2 to the 3rd tensor power,
+                      annihilating polynomial roots = (6, 30)
+everything printed below this line is computed, in exact arithmetic
+============================================================================
+
+A. Multiplicities from SU(2) characters (matrix-free, integers only)
+--------------------------------------------------------------------
+   spin j        : [0, 1, 2, 3, 4, 5, 6]
+   multiplicity  : [1, 3, 5, 4, 3, 2, 1]
+   block dim     : [1, 9, 25, 28, 27, 22, 13]
+PASS character multiplicities = 1,3,5,4,3,2,1
+PASS carrier dimension = 125  --  125
+   Casimir j(j+1): [0, 2, 6, 12, 20, 30, 42]
+PASS Casimir eigenvalue set = {0,2,6,12,20,30,42}
+   annihilated spins [2, 5] -> 25 + 22 = 47
+PASS character route predicts dim ker K = 47
+PASS character route predicts rank K = 78
+
+B. Orthonormal Casimir over Z[sqrt 6] (a different matrix, exactly)
+-------------------------------------------------------------------
+   N = 125, nonzeros in C = 605 (3.9% dense)
+PASS C is exactly symmetric in this basis
+PASS C genuinely leaves Z: entries carry sqrt 6  --  240 entries of the form a+b*sqrt(6), b != 0
+PASS [C,Jz] = 0 exactly (every entry)
+PASS [C,J+] = 0 exactly (every entry)
+PASS [C,J-] = 0 exactly (every entry)
+PASS [C,Jx] = 0 exactly (every entry)
+PASS [Jz,J+] = J+ exactly
+PASS [Jz,J-] = -J- exactly
+PASS [J+,J-] = 2Jz exactly
+
+C. Traces: matrix value vs character prediction (two routes, one number)
+------------------------------------------------------------------------
+PASS tr(C^1) = 2250  --  matrix gives 2250, characters give 2250
+PASS tr(C^2) = 58500  --  matrix gives 58500, characters give 58500
+PASS tr(C^3) = 1827000  --  matrix gives 1827000, characters give 1827000
+PASS tr(C^4) = 63205200  --  matrix gives 63205200, characters give 63205200
+   (tr C = 2250 and tr C^2 = 58500 are the two numbers the existing
+    weight-basis certificate reports; both are reproduced here from a
+    different matrix in a different ring, and independently from
+    characters with no matrix at all.)
+
+D. Exact rank of K = (C-6)(C-30): two-sided, no tolerance
+---------------------------------------------------------
+   nonzeros in K = 1139 (7.3% dense)
+PASS 4K has entries in Z[sqrt 6] (Bareiss domain is integral)
+   rank(4K) by fraction-free elimination = 78
+   nullity = 125 - 78 = 47
+PASS exact rank K = 78
+PASS exact dim ker K = 47
+PASS rank + nullity = 125
+PASS exact elimination agrees with the matrix-free character prediction
+
+E. Same rank after unimodular densification (sparsity is not the reason)
+------------------------------------------------------------------------
+   conjugated matrix density = 78.6% nonzero
+   rank of conjugate = 78
+PASS rank invariant under unimodular conjugation
+
+F. Contraction constants derived, not checked against a float
+-------------------------------------------------------------
+   K^2 eigenvalues off the kernel : [11664, 12544, 19600, 32400, 186624]
+   Chebyshev optimum eps* = 2/(min+max) = 1/99144
+   contraction rho = (max-min)/(max+min) = 15/17
+PASS eps* = 1/99144 derived exactly
+PASS rho = 15/17 derived exactly
+PASS max |1 - eps* K^2| over the retained spectrum equals rho
+   (the existing NumPy script compares these to float64 matrix powers;
+    here they are the exact solution of the minimax problem.)
+
+G. Negative controls: the harness can fail
+------------------------------------------
+   (C-6)(C-29): 29 is not an eigenvalue -> nullity 25
+PASS perturbing a root to 29 collapses the kernel to 25, not 47
+PASS a single corrupted entry is detected by the symmetry test
+PASS a single corrupted entry is detected by the commutator test
+PASS character peeler reproduces the textbook 1 (x) 1 = 0 + 1 + 2
+PASS character peeler rejects a non-character
+
+H. Scope: what is derived and what is chosen
+--------------------------------------------
+   all 21 admissible spin pairs give kernel dimensions:
+   [10, 14, 22, 23, 26, 28, 29, 31, 34, 35, 36, 37, 38, 40, 41, 47, 49, 50, 52, 53, 55]
+   47 is attained by: (2,5)
+PASS 21 admissible pairs
+PASS kernel dimensions span 10..55
+PASS 47 is attained by exactly one pair, (2,5)
+
+   DERIVED  : 125, the multiplicities 1,3,5,4,3,2,1, the spectrum,
+              rank 78, dim ker 47, eps* = 1/99144, rho = 15/17.
+   CHOSEN   : the spin pair {2,5}.  It is an input to p(x), not an
+              output of it.  Given the choice, 47 follows exactly;
+              the choice itself is not derived here or elsewhere in
+              this repository.
+
+============================================================================
+RESULT: all checks passed.
+dim ker K = 47 is established twice -- once with no matrix at all
+(characters) and once by exact two-sided elimination over Z[sqrt 6]
+in a basis where the Casimir is symmetric.  Neither route shares a
+line of code, a library, a basis or a number field with the existing
+NumPy and int64 certificates, and the two existing trace values are
+reproduced as a by-product.
