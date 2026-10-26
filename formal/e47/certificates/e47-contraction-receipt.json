@@ -1,0 +1,27 @@
+{
+  "schema": "mnemosyne-forge-v1",
+  "id": "e47-contraction",
+  "title": "E47 contraction factor",
+  "claim": "The maximal non-kernel contraction magnitude is 15/17.",
+  "kind": "exact",
+  "result": {
+    "pass": true,
+    "observed": {
+      "rho": 0.8823529411764706,
+      "nonzeroSpectrum": [
+        11664,
+        12544,
+        19600,
+        32400,
+        186624
+      ]
+    },
+    "expected": {
+      "rho": "15/17"
+    }
+  },
+  "engine": "mnemosyne/forge-engine.js",
+  "runAt": "2026-10-26T23:13:13.428Z",
+  "scope": "deterministic reference checks; not general proof certification",
+  "sha256": "4bedb2f4f89554647474326d8f211b08e8bc50f797395c85ae4eaab87849e31d"
+}
