@@ -1,0 +1,101 @@
+name: E47 axiom ledger
+
+# The other workflows grep for `sorry` and `admit`. That catches an
+# unfinished proof but not one closed by `native_decide`, which compiles the
+# claim to native code, runs it, and mints a fresh axiom asserting the result.
+# A file can be green and still trust the compiler rather than the kernel.
+#
+# This gate reads every `#print axioms` line and classifies it. Two tiers:
+#
+#   hard fail   sorryAx, a user-declared axiom, or a native_decide axiom in
+#               any file not named in --allow-native
+#   tracked     native_decide in an allowed file: reported with a count, so
+#               the gap is carried explicitly instead of passing in silence
+#
+# E47ConcreteMatrix.lean is the one allowed file today: its five headline
+# theorems close with native_decide. Remove it from the allow list once those
+# are kernel-checked and the gate tightens by itself.
+
+on:
+  push:
+    paths:
+      - 'formal/e47/**'
+      - 'scripts/axiom_ledger.py'
+      - '.github/workflows/e47-axiom-ledger.yml'
+  pull_request:
+    paths:
+      - 'formal/e47/**'
+      - 'scripts/axiom_ledger.py'
+      - '.github/workflows/e47-axiom-ledger.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+
+  # Fast gate: everything that does not need Mathlib. No allowance granted —
+  # any native_decide appearing here is a regression and fails the run.
+  core-ledger:
+    name: Mathlib-free files — no native_decide permitted
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Lean 4.35.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --no-modify-path --default-toolchain leanprover/lean4:v4.35.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Audit axioms
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t FILES < <(find formal/e47 -name '*.lean' ! -name 'E47ConcreteMatrix.lean' | sort)
+          python3 scripts/axiom_ledger.py "${FILES[@]}" | tee axiom-ledger-core.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: axiom-ledger-core
+          path: axiom-ledger-core.txt
+
+  # Mathlib file: needs the compilation cache, so it runs separately and
+  # carries its native_decide gap explicitly.
+  concrete-ledger:
+    name: E47ConcreteMatrix — native_decide tracked, not silent
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Lean 4.35.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --no-modify-path --default-toolchain leanprover/lean4:v4.35.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Resolve pinned Mathlib
+        working-directory: formal/e47-concrete
+        run: |
+          set -euo pipefail
+          lake update
+          test -f lake-manifest.json
+      - name: Retrieve Mathlib compilation cache
+        working-directory: formal/e47-concrete
+        run: lake exe cache get
+      - name: Audit axioms
+        shell: bash
+        working-directory: formal/e47-concrete
+        run: |
+          set -euo pipefail
+          python3 ../../scripts/axiom_ledger.py \
+            --lean-cmd "lake env lean" \
+            --allow-native ../e47/E47ConcreteMatrix.lean \
+            ../e47/E47ConcreteMatrix.lean | tee ../../axiom-ledger-concrete.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: axiom-ledger-concrete
+          path: axiom-ledger-concrete.txt

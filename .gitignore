@@ -9,3 +9,15 @@ __pycache__/
 *.vok
 *.glob
 *.aux
+
+# Coq / Lean build artifacts
+*.vo
+*.vok
+*.vos
+*.glob
+*.olean
+*.ilean
+.*.aux
+.lake/
+.nia.cache
+.lia.cache
