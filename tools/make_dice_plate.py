@@ -91,7 +91,7 @@ T(126,7.6,"observables that collective\nnoise cannot corrupt",10.5,MUTE,SANS)
 # ---------------- footer
 ax.plot([8,152],[3.0,3.0],color=SOFT,lw=0.8)
 T(8,1.3,"Checked in Lean 4.35.0 and Coq 8.18.0 — 17 theorems, zero axioms, zero sorry, zero Admitted.    "
-        "The representation theory is textbook and sits in a comment, not a kernel. The 125×125 matrices are still unbuilt.",
+        "The representation theory is textbook and sits in a comment, not a kernel. It builds in CI; its five headline theorems rest on native_decide.",
   9.6, MUTE, SANS)
 
 fig.savefig("/home/claude/plate/E47_DICE_PLATE.png",facecolor=PAPER,bbox_inches="tight",pad_inches=0.3)

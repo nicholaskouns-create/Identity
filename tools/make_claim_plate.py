@@ -40,7 +40,7 @@ blocks=[
   "E47-Kartekeya/certificates/RUB5-C17-REV-B.md"),
  (84, 21.0, MUTE, "the boundary, left intact",
   "“WHAT IS NOT FORMALIZED” — in both file headers",
-  "E47ConcreteMatrix.lean · 1571 lines · unbuilt"),
+  "E47ConcreteMatrix.lean · builds in CI · native_decide"),
 ]
 for x,y,col,head,stmt,src in blocks:
     ax.plot([x-2.2,x-2.2],[y-8.4,y+2.2],color=col,lw=2.2)
