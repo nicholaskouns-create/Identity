@@ -1,0 +1,10 @@
+name = "e47-mathlib"
+version = "0.1.0"
+defaultTargets = ["E47Mathlib"]
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+
+[[lean_lib]]
+name = "E47Mathlib"
