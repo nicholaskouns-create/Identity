@@ -1,0 +1,27 @@
+E47-CORE-002 Independent Exact Rank-Nullity Certificate
+=======================================================
+Date: 2026-10-25
+Method: exact rational Gaussian elimination on dense similar matrix
+
+carrier dimension N            = 125   (= sum of multiplicities)
+K = p(C) conjugated, density   =  70.3% nonzero entries
+rank K   (exact elimination)   = 78
+dim ker K = N - rank K         = 47
+rank + nullity                 = 125  ==  N : True
+
+annihilated spins              = [2, 5]  -> Casimir [6, 30]
+nullity from spectrum          = 25 + 22 = 47
+matches elimination            : True
+
+VERDICT  rank 78 + ker 47 = 125   [47 and 78 derived, not defined]
+
+Inputs asserted only:
+  - coupling 2 (x) 2 (x) 2 producing the spin content
+  - annihilating polynomial p(x) = (x - 6)(x - 30)
+
+Outputs computed:
+  - N = 125
+  - rank K = 78
+  - dim ker K = 47
+
+Unimodular conjugation (det U = 1) forces the elimination to operate on a dense matrix (70.3% nonzero). Rank is a similarity invariant. Exit zero on agreement.
