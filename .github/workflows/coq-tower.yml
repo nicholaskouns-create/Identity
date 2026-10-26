@@ -4,6 +4,7 @@ on:
     paths:
       - 'formal/e47/TowerIdentity.v'
       - 'formal/e47/E47WeightAlgebra.v'
+      - 'formal/e47/E47OddsContraction.v'
       - '.github/workflows/coq-tower.yml'
   workflow_dispatch:
 jobs:
@@ -19,3 +20,7 @@ jobs:
         run: |
           mkdir -p /tmp/wa && cp formal/e47/E47WeightAlgebra.v /tmp/wa/
           cd /tmp/wa && coqc -q E47WeightAlgebra.v
+      - name: Compile odds-contraction lemma with Coq kernel
+        run: |
+          mkdir -p /tmp/oc && cp formal/e47/E47OddsContraction.v /tmp/oc/
+          cd /tmp/oc && coqc -q E47OddsContraction.v
