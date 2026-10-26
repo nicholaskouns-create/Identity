@@ -1,0 +1,22 @@
+name: Mnemosyne private ingestion unit tests
+on:
+  pull_request:
+    paths:
+      - 'infra/ingestion/**'
+      - '.github/workflows/mnemosyne-ingestion-tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline-ingestion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit and localhost HTTP integration tests (no secrets)
+        run: python -m unittest discover -s infra/ingestion -p 'test_*.py' -v
+      - name: Python compile check
+        run: python -m py_compile infra/ingestion/ingest.py infra/ingestion/test_ingest.py
