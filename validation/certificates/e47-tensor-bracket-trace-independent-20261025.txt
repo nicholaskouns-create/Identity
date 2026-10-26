@@ -1,0 +1,17 @@
+E47 Independent Exact Tensor Bracket and Casimir Trace Certificate
+==================================================================
+Date: 2026-10-25
+Method: exact integer arithmetic on the weight-basis generators (Z, U, D)
+
+PASS [Z,U]=U, all 15625 entries: exact integer residual = 0
+PASS [Z,D]=-D, all 15625 entries: exact integer residual = 0
+PASS [U,D]=2Z, all 15625 entries: exact integer residual = 0
+PASS [C,Z]=0, all 15625 entries: exact integer residual = 0
+PASS [C,U]=0, all 15625 entries: exact integer residual = 0
+PASS [C,D]=0, all 15625 entries: exact integer residual = 0
+PASS trace(C)=2250; trace(C^2)=58500
+NOTE: this integer weight basis is not orthonormal; C need not be symmetric here
+
+All residuals are exact zero. The Casimir C commutes with the generators as required by the su(2) algebra. Trace values match the expected spectral sum.
+
+Source: validation/e47_tensor_bracket_trace_exact.py (executed independently).
