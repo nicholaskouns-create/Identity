@@ -6,7 +6,7 @@ Hypothesis lambda_nonzero : lambda <> 0.
 Hypothesis omega_nonzero : omega <> 0.
 Definition weight := lambda * omega / 2.
 Theorem coupling_closure : 2 * weight / omega = lambda.
-Proof. unfold weight; field; split; assumption. Qed.
+Proof. unfold weight; field; assumption. Qed.
 Theorem second_moment : (2 / lambda) * weight * omega = omega ^ 2.
 Proof. unfold weight; field; assumption. Qed.
 End Closure.
