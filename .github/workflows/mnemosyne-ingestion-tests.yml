@@ -19,4 +19,4 @@ jobs:
       - name: Unit and localhost HTTP integration tests (no secrets)
         run: python -m unittest discover -s infra/ingestion -p 'test_*.py' -v
       - name: Python compile check
-        run: python -m py_compile infra/ingestion/ingest.py infra/ingestion/test_ingest.py
+        run: python -m py_compile infra/ingestion/ingest.py infra/ingestion/test_ingest.py infra/ingestion/search.py infra/ingestion/test_search.py
