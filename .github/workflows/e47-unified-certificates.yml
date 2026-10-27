@@ -16,26 +16,26 @@ jobs:
           curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
           sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-      - name: Compile eight Lean modules
+      - name: Compile nine Lean modules
         run: |
           set -euxo pipefail
           lean --version
-          for f in formal/e47/unified/{Core47,RGFixed,Retention,Clock,EncodedOracle,Spin2Generators,Tensor125,SpectralMask128}.lean; do
+          for f in formal/e47/unified/{Core47,RGFixed,Retention,Clock,EncodedOracle,Spin2Generators,Tensor125,SpectralMask128,DiagonalKernelBridge}.lean; do
             lean "$f"
           done
   coq:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    container:
+      image: coqorg/coq:8.20.1
     steps:
       - uses: actions/checkout@v4
-      - name: Install Coq compiler
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y coq
-      - name: Compile eight Coq modules
+      - name: Compile nine Coq modules (container-pinned 8.20.1)
+        shell: bash
         run: |
           set -euxo pipefail
           coqc --version
-          for f in formal/e47/unified/{Core47,RGFixed,Retention,Clock,EncodedOracle,Spin2Generators,Tensor125,SpectralMask128}.v; do
+          coqc --version | grep -F 'version 8.20.1'
+          for f in formal/e47/unified/{Core47,RGFixed,Retention,Clock,EncodedOracle,Spin2Generators,Tensor125,SpectralMask128,DiagonalKernelBridge}.v; do
             coqc "$f"
           done
 
