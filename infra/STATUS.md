@@ -40,3 +40,11 @@ Provision a restricted execution environment and credential delivery; register m
 - Live Supabase rollback-only SQL probe exercised INSERT, the partial-index ON CONFLICT clause, digest lookup and SET LOCAL ROLE service_role. Post-rollback readback: 0 source documents, 0 private bucket objects, bucket public=false, 0 synthetic rows.
 - **Not yet hosted end-to-end:** No service credential or restricted PostgreSQL DSN was provisioned or used. No real Supabase Storage upload/download, worker deployment, owner identity verification, search, research API, simulation workers, encrypted backups, or restore drill is claimed.
 - This branch is review-only: no migration, Edge Function deployment, public policy, credential, private content, or merge.
+
+## 2026-10-27 · Private metadata search (stacked draft)
+
+- Inspected active Supabase project and all open Identity PRs; builds on existing unmerged ingestion PR #80 rather than duplicating it.
+- Added read-only, parameterized metadata search for title, optional description, and exact SHA-256. Query and result bounds, LIKE literal escaping, transaction READ ONLY and 5-second timeout are enforced. No public endpoint, client credentials, Storage content, or schema grants.
+- Local Python 3.11: 10/10 new search tests PASS; Python compilation PASS. Live Supabase EXPLAIN accepted the query on the actual private schema; security/count readback: 0 source documents, 0 private objects, bucket public=false, anon/authenticated schema USAGE=false, service_role SELECT=true and UPDATE=false.
+- GitHub Actions for the new branch must be checked independently. No hosted search was executed because a restricted operator DSN was not provisioned.
+- This branch is stacked on draft PR #80, is review-only and unmerged. Private document search over real uploaded content, authorization tests, research API, simulations, encrypted backups and restore drill remain pending.
