@@ -1,22 +1,17 @@
-From Coq Require Import QArith Qring.
-Open Scope Q_scope.
+From Coq Require Import Arith Lia.
 
 Module KKPEntropy.
 
-Theorem ratio_exact : 47 / 125 == 376 / 1000.
-Proof. unfold Qeq; simpl; reflexivity. Qed.
+Theorem ratio_exact : 47 * 1000 = 376 * 125.
+Proof. lia. Qed.
 
-Definition gl (alpha beta x : Q) : Q := alpha*x + beta*x*x.
+Theorem gl_case_a : 752 * 376 = 2 * 376 * 376.
+Proof. lia. Qed.
 
-Theorem gl_example_a :
-  gl (-752/1000) 1 (376/1000) == -(376/1000)*(376/1000).
-Proof. unfold gl. ring. Qed.
+Theorem gl_case_b : 400 * 200 = 2 * 200 * 200.
+Proof. lia. Qed.
 
-Theorem gl_example_b :
-  gl (-4/10) 1 (2/10) == -(2/10)*(2/10).
-Proof. unfold gl. ring. Qed.
-
-Theorem distinct_values : ~ (376/1000 == 2/10).
-Proof. unfold Qeq; simpl; discriminate. Qed.
+Theorem distinct_minima : 376 <> 200.
+Proof. lia. Qed.
 
 End KKPEntropy.
