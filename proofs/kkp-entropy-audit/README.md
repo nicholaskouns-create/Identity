@@ -1,12 +1,31 @@
-# KKP–MED entropy / Ginzburg–Landau proof audit
+# KKP–MED entropy / Ginzburg–Landau: reproducible proof audit
 
-These are **limited mathematical audit files**, not a proof of the manuscript's universal critical coherence threshold or of gravitoelectromagnetic superconductivity.
+This folder provides a narrow, reproducible mathematical audit of the manuscript, **not** a proof of a universal coherence threshold or gravitoelectromagnetic superconductivity.
 
-- Exact spectral dimension ratio: 47/125 = 0.376.
-- The binary entropy maximum occurs at p=1/2, not p=0.376.
-- Homogeneous Ginzburg–Landau stability permits distinct minima for different coefficients.
-- The manuscript does not provide enough physical parameters or data to reproduce its QuTiP or gravitomagnetic claims.
+## Source and verification
 
-Run: `python validate.py`, `lake env lean KKPEntropy.lean` (Mathlib project), `coqc KKPEntropy.v`.
+| Claim | Result |
+|---|---|
+| Spectral ratio 47/125 = 0.376 | Exact identity |
+| Binary entropy maximum | At p=1/2; does not independently select 0.376 |
+| Homogeneous GL stationary minimum | Depends on alpha and beta |
+| Universal 0.376 from GL | Not derivable from GL stability alone |
+| Gravitomagnetic coupling, Tc, Bg, LK-99 | Not established by the supplied equations or data |
 
-**Verification status:** Python arithmetic has been checked. Lean and Coq source are candidates and must be compiled before claiming compiler-verified proofs. Publication DOI 10.1000/jatp.2025.10.3.123 has not been authenticated.
+The files `KKPEntropy.lean` and `KKPEntropy.v` formalize exact integer equalities and distinct parameter examples. They do **not** formalize the full physical manuscript or a general GL minimization theorem. No `sorry` or `Admitted` is used.
+
+## Reproduce
+
+```sh
+python3 proofs/kkp-entropy-audit/validate.py
+lean proofs/kkp-entropy-audit/KKPEntropy.lean
+coqc proofs/kkp-entropy-audit/KKPEntropy.v
+```
+
+GitHub Actions workflow: [kkp-entropy-audit.yml](../../.github/workflows/kkp-entropy-audit.yml). Review the **three separate jobs** in [Actions](https://github.com/nicholaskouns-create/Identity/actions/workflows/kkp-entropy-audit.yml) for actual compiler evidence. A committed workflow is not proof that its jobs passed.
+
+## Status
+
+Python script independently executed in the assistant's working environment on 2026-10-27 (PASS for exact ratio, parameter-dependent GL examples, binary entropy comparison). Lean and Coq CI run outcomes have **not been independently retrieved or verified** in this review. The manuscript's DOI `10.1000/jatp.2025.10.3.123` has not been authenticated; do not present it as a verified publication identifier.
+
+The author’s E47 spectral dimension ratio is mathematically separate from the proposed physical interpretation.
