@@ -1,0 +1,29 @@
+name: KKP entropy Lean Coq Python audit
+on:
+  push:
+    paths:
+      - 'proofs/kkp-entropy-audit/**'
+      - '.github/workflows/kkp-entropy-audit.yml'
+  workflow_dispatch:
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 proofs/kkp-entropy-audit/validate.py
+  lean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean via elan
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain stable
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - run: lean proofs/kkp-entropy-audit/KKPEntropy.lean
+  coq:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y coq
+      - run: coqc proofs/kkp-entropy-audit/KKPEntropy.v
