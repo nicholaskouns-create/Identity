@@ -17,9 +17,8 @@ result. It is not itself a proof.
 - Head commit: recorded by CI on the merge commit
 - Dependency graph: none. This certificate stands alone; it does not depend on
   the E47 kernel certificates and asserts no bridge to `Omega_c = 47/125`.
-- Evidence level: **Lean-accepted** (kernel-checked, axiom-free) and
-  **Python-checked**. Coq is **candidate** until the first CI run compiles it;
-  see the honest gap below.
+- Evidence level: **Lean-accepted** (kernel-checked, axiom-free), **Coq-accepted**
+  (compiled in CI, assumptions closed) and **Python-checked**.
 
 ## Lean 4 certificate
 
@@ -56,7 +55,10 @@ result. It is not itself a proof.
   rather than the excuse: the file is wired into
   `e47-formal-validation.yml`, whose runner installs Coq from apt, so the first
   CI run on this branch compiles it and the gap closes without further work.
-  Until that run is green, treat the Coq column as *candidate*.
+  **That run is now green.** `https://github.com/nicholaskouns-create/Identity/actions/runs/40627968352`
+  reports `Ten-Register Theorem — Coq kernel: success`, with the
+  *Closed under the global context* grep satisfied, so the Coq column is
+  **Coq-accepted** and this paragraph is history rather than a caveat.
 - `nat` is unary in this file rather than `Z` as in `E47Spectral.v`. That is
   deliberate: every intermediate is at most `3*39 + 39 = 156`, so unary
   evaluation is instant, and `seq`, `forallb` and `filter` over `nat` keep the
@@ -103,3 +105,18 @@ orbit-averaging projector, `||T^80 - Pi||_2 = 0` — follows from this theorem b
 zero, but is not formalised: it needs Mathlib's linear algebra rather than the
 kernel. `Omega_wheel = 1/4` is a property of this wheel and is not
 `Omega_c = 47/125`.
+
+## First CI result
+
+`https://github.com/nicholaskouns-create/Identity/actions/runs/40627968352`
+
+| step | result |
+| --- | --- |
+| Compile all three proof files and verify 125x125 matrices | success (pre-existing, unaffected) |
+| Ten-Register Theorem — Lean kernel | success |
+| Ten-Register Theorem — Coq kernel | success |
+| Ten-Register Theorem — independent validation | success |
+
+The Coq kernel step is the one the authoring environment could not run. It
+compiled on the runner and its `Print Assumptions` output was checked, so the
+only gap this certificate carried is closed.

@@ -1,18 +1,31 @@
 {
   "schema": "mnemosyne-forge-v1",
   "id": "sigillum-ten-register",
-  "title": "Sigillum Dei Aemeth wheel — Ten-Register Theorem",
+  "title": "Sigillum Dei Aemeth wheel \u2014 Ten-Register Theorem",
   "claim": "For every odd offset s, j -> 3j + s mod 40 partitions Z_40 into exactly ten orbits of length four; the ten decomposes as 2 + 8 under Z_40 = Z_8 x Z_5.",
   "kind": "exact",
   "result": {
     "pass": true,
     "observed": {
       "registerCount": 10,
-      "orbitLengths": [4],
+      "orbitLengths": [
+        4
+      ],
       "oddOffsetsChecked": 20,
-      "crtSplit": [2, 8],
+      "crtSplit": [
+        2,
+        8
+      ],
       "omegaWheel": 0.25,
-      "evenOffsetContrast": { "offset": 0, "orbits": 13, "lengths": [1, 2, 4] },
+      "evenOffsetContrast": {
+        "offset": 0,
+        "orbits": 13,
+        "lengths": [
+          1,
+          2,
+          4
+        ]
+      },
       "leanTheoremsAudited": 15,
       "leanAxiomsUsed": 0,
       "pythonClaimsPassed": 21
@@ -24,9 +37,24 @@
     }
   },
   "engines": {
-    "lean": { "version": "4.35.0", "status": "compiled", "tactic": "decide", "axioms": "none" },
-    "coq": { "version": "apt ubuntu-24.04", "status": "not-compiled-in-authoring-environment", "tactic": "vm_compute; reflexivity", "note": "no toolchain reachable from the authoring container; wired into e47-formal-validation.yml so the first CI run compiles it" },
-    "python": { "version": "3.13", "status": "run", "claims": "21/21" }
+    "lean": {
+      "version": "4.35.0",
+      "status": "compiled",
+      "tactic": "decide",
+      "axioms": "none"
+    },
+    "coq": {
+      "version": "apt ubuntu-24.04",
+      "status": "compiled",
+      "tactic": "vm_compute; reflexivity",
+      "note": "not compilable in the authoring container (no reachable toolchain); compiled on CI by e47-formal-validation.yml with Print Assumptions checked",
+      "ciRun": "https://github.com/nicholaskouns-create/Identity/actions/runs/40627968352"
+    },
+    "python": {
+      "version": "3.13",
+      "status": "run",
+      "claims": "21/21"
+    }
   },
   "runAt": "2026-10-28T03:38:47Z",
   "scope": "deterministic arithmetic over Z_40; asserts no bridge to Omega_c = 47/125 and nothing about the 47 Enochian projectors",
@@ -34,5 +62,6 @@
     "SigillumWheel.lean": "ab6eff2c0aa3ea91fdcfc2cabf9ac736201bfd555baabe6a6c8a9646874177fe",
     "SigillumWheel.v": "75bfff1d29d29018e626222f4a8ef020040a4b39574a287c642f7de014423a32",
     "validate_sigillum_wheel.py": "ee1d5aea5370db0249acc3cce6669df7a79083acf022a8af5db578ab54fca860"
-  }
+  },
+  "evidenceLevel": "Lean-accepted, Coq-accepted, Python-checked"
 }
