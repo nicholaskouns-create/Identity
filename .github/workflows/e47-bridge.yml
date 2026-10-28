@@ -1,0 +1,129 @@
+name: E47 bridge — paired Lean / Coq certificate
+
+# E47-BRIDGE-001 ... 011.  Additive: this workflow adds nothing to, and removes
+# nothing from, any existing gate.
+#
+# The Lean file is already audited by e47-axiom-ledger.yml, whose core-ledger job
+# discovers formal/e47/**/*.lean by find. This workflow exists for the Coq half,
+# which e47-unified-certificates.yml compiles from an explicit file list, and to
+# run the independent validator.
+#
+# Both proof files are List-free by design: tables are functions nat -> nat and
+# sums are one structural recursion. List.getD / List.range / List.foldl unfold
+# through lemmas carrying propext in Lean 4.35 but not in 4.19, so the List
+# encoding made the axiom ledger toolchain-dependent. Without it the ledger is
+# identical on both, which is why the matrix below checks both.
+
+on:
+  push:
+    paths:
+      - 'formal/e47/E47Bridge.lean'
+      - 'formal/e47/E47Bridge.v'
+      - 'formal/e47/validate_bridge.py'
+      - '.github/workflows/e47-bridge.yml'
+  pull_request:
+    paths:
+      - 'formal/e47/E47Bridge.lean'
+      - 'formal/e47/E47Bridge.v'
+      - 'formal/e47/validate_bridge.py'
+      - '.github/workflows/e47-bridge.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+
+  lean:
+    name: Lean ${{ matrix.lean }} — compile and audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        lean: ['4.19.0', '4.35.0']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Lean ${{ matrix.lean }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --no-modify-path --default-toolchain "leanprover/lean4:v${{ matrix.lean }}"
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Reject sorry and native_decide at source level
+        run: |
+          set -euo pipefail
+          ! grep -n 'sorry\|native_decide' formal/e47/E47Bridge.lean
+
+      - name: Compile and print the axiom ledger
+        run: lean formal/e47/E47Bridge.lean | tee "lean-${{ matrix.lean }}-ledger.txt"
+
+      - name: Classify with the repo gate
+        run: python3 scripts/axiom_ledger.py formal/e47/E47Bridge.lean | tee "lean-${{ matrix.lean }}-gate.txt"
+
+      - name: The ledger must be 31 clean / 6 standard / 0 native / 0 broken
+        run: |
+          set -euo pipefail
+          grep -q '31 clean *6 standard-axioms *0 native_decide *0 broken' "lean-${{ matrix.lean }}-gate.txt"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-bridge-lean-${{ matrix.lean }}
+          path: |
+            lean-${{ matrix.lean }}-ledger.txt
+            lean-${{ matrix.lean }}-gate.txt
+
+  coq:
+    name: Coq 8.18.0 — compile and print assumptions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Coq 8.18.0
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq coq
+          coqc --version
+
+      - name: Reject Admitted and declared axioms
+        run: |
+          set -euo pipefail
+          ! grep -n 'Admitted\|^\s*Axiom\s\|^\s*Parameter\s\|^\s*Hypothesis\s' formal/e47/E47Bridge.v
+
+      - name: Compile and print the assumption ledger
+        working-directory: formal/e47
+        run: coqc -q E47Bridge.v | tee ../../coq-ledger.txt
+
+      - name: 26 results must be closed under the global context
+        run: |
+          set -euo pipefail
+          n=$(grep -c 'Closed under the global context' coq-ledger.txt)
+          echo "axiom-free: $n"
+          test "$n" -eq 26
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-bridge-coq
+          path: coq-ledger.txt
+
+  independent:
+    name: Independent validation — exact rational arithmetic
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Re-derive every claim without either proof assistant
+        working-directory: formal/e47
+        run: python3 -I validate_bridge.py | tee ../../python-validation.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-bridge-validation
+          path: python-validation.txt
