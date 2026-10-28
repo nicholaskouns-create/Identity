@@ -4,12 +4,14 @@ on:
     paths:
       - 'formal/e47/**'
       - 'simulation/validate_e47.py'
+      - 'simulation/validate_sigillum_wheel.py'
       - 'scripts/validate-formal-local.sh'
       - '.github/workflows/e47-formal-validation.yml'
   pull_request:
     paths:
       - 'formal/e47/**'
       - 'simulation/validate_e47.py'
+      - 'simulation/validate_sigillum_wheel.py'
       - 'scripts/validate-formal-local.sh'
       - '.github/workflows/e47-formal-validation.yml'
   workflow_dispatch:
@@ -36,3 +38,18 @@ jobs:
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
       - name: Compile all three proof files and verify 125x125 matrices
         run: bash scripts/validate-formal-local.sh
+
+      # --- Sigillum Dei Aemeth wheel: the Ten-Register Theorem ---------------
+      # Lean side is also audited by e47-axiom-ledger.yml (its core job globs
+      # formal/e47/*.lean). These steps add the Coq kernel check, which has no
+      # other home, and the independent arithmetic validator.
+      - name: Ten-Register Theorem — Lean kernel
+        run: lean -o /tmp/SigillumWheel.olean formal/e47/SigillumWheel.lean
+      - name: Ten-Register Theorem — Coq kernel
+        run: |
+          mkdir -p /tmp/sigillum && cp formal/e47/SigillumWheel.v /tmp/sigillum/
+          cd /tmp/sigillum && coqc -q SigillumWheel.v | tee assumptions.txt
+          grep -qi "Closed under the global context" assumptions.txt \
+            || { echo "::error::a Sigillum theorem depends on assumptions"; exit 1; }
+      - name: Ten-Register Theorem — independent validation
+        run: python3 -I simulation/validate_sigillum_wheel.py

@@ -35,3 +35,22 @@ The slices do not build by themselves. Mathlib files import the rest of Mathlib,
 ## Refresh
 
 `sh formal/fetch.sh` downloads anything that is missing and leaves an existing snapshot alone. Pins and checksums are in `SOURCES.lock`.
+
+## Sigillum wheel — the Ten-Register Theorem
+
+Separate from the E47 kernel and claiming no bridge to it.
+[`e47/SigillumWheel.lean`](e47/SigillumWheel.lean) and
+[`e47/SigillumWheel.v`](e47/SigillumWheel.v) prove that for every odd offset `s`
+the affine map `F_s(j) = 3j + s mod 40` is a permutation of `Z_40` whose every
+orbit has length exactly four, so the forty-station wheel partitions into exactly
+ten independent four-state registers and `Omega_wheel = 1/4`. The refinement is
+that the ten is `2 + 8` under `Z_40 = Z_8 x Z_5` — two registers over the mod-5
+fixed point, eight over its four-cycle — and not the quotient `40/4`. Fifteen
+Lean theorems, all `by decide`, all reporting *does not depend on any axioms*;
+nine Coq statements under `vm_compute; reflexivity`. The independent validator is
+[`simulation/validate_sigillum_wheel.py`](../simulation/validate_sigillum_wheel.py),
+21/21. Scope, toolchains and the one open gap are recorded in
+[`e47/certificates/sigillum-ten-register-certificate.md`](e47/certificates/sigillum-ten-register-certificate.md).
+
+Nothing here concerns the forty-seven Enochian projectors on the plates: those are
+basis-dependent, and only the `25 + 22` isotypic split is canonical.
