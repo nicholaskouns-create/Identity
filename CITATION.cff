@@ -1,0 +1,37 @@
+cff-version: 1.2.0
+title: "Identity — E47 formal layer and the Kouns–Killion Paradigm (KKP-R)"
+message: "If you use this formal layer or cite the E47 bridge certificate, please cite it as below."
+type: software
+authors:
+  - family-names: Kouns
+    given-names: Nicholas Shane
+    name-suffix: DO
+    affiliation: "AIMS Research Institute, Las Vegas, Nevada"
+repository-code: "https://github.com/nicholaskouns-create/Identity"
+url: "https://nicholaskouns-create.github.io/e47-formal-validation.html"
+abstract: >-
+  Machine-checked formal layer for the E47 spectral kernel and the
+  Kouns–Killion Paradigm (KKP-R), with paired Lean 4 and Coq developments,
+  an axiom-ledger gate, and independent exact-arithmetic validators.
+  Certificate E47-BRIDGE-001…011 establishes that E47, the Sigillum wheel and
+  the Lifshitz dimensional flow are instances of one functional,
+  Omega(A,q) = dim ker q(A) / dim V, and links the renormalisation-group fixed
+  point D* = 10 to the degree of the retention polynomial by a degree lock
+  proved over the reals. The concrete 125x125 tensor-product matrix is not
+  constructed in that certificate; the isotypic model is, and the bridge
+  between them remains open.
+keywords:
+  - formal verification
+  - Lean 4
+  - Coq
+  - axiom ledger
+  - Casimir operator
+  - spectral kernel
+  - representation theory
+  - commutant
+  - anisotropic scaling
+  - spectral dimension
+  - renormalisation group
+  - E47
+  - KKP-R
+license-url: "https://github.com/nicholaskouns-create/Identity/blob/main/LICENSE"

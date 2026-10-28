@@ -1,0 +1,54 @@
+{
+  "title": "Identity — E47 formal layer and the Kouns–Killion Paradigm (KKP-R)",
+  "description": "<p>Machine-checked formal layer for the E47 spectral kernel and the Kouns&ndash;Killion Paradigm (KKP-R), with paired Lean 4 and Coq developments, an axiom-ledger gate, and independent exact-arithmetic validators.</p><p><strong>This release adds certificate E47-BRIDGE-001&hellip;011</strong> (<code>formal/e47/E47Bridge.lean</code>, <code>formal/e47/E47Bridge.v</code>, <code>formal/e47/validate_bridge.py</code>). It establishes that several structures in the corpus are instances of one algebraic object &mdash; a finite-spectrum operator <em>A</em>, a squarefree annihilating factor <em>q</em>, and the normalised rank &Omega;(A,q) = dim ker q(A) / dim V. E47 is (Casimir, (x&minus;6)(x&minus;30)) on (C<sup>5</sup>)<sup>&otimes;3</sup>, giving 47/125; the Sigillum wheel is (click permutation, x&minus;1) on C<sup>40</sup>, giving 10/40. The two are proved distinct (<code>no_bridge</code>): same functional, different arguments, no identification asserted.</p><p>The link to the dimensional-flow literature is one identity, d<sub>s</sub>&middot;d<sub>w</sub> = 2d<sub>H</sub> with d<sub>H</sub> = d+z, d<sub>w</sub> = 2z, d<sub>s</sub> = (d+z)/z, carrying three results: at z = d the spectral dimension is 2 for every spatial d, so a UV result D &rarr; 2 constrains d<sub>H</sub> not at all; d<sub>s</sub> = 2 &hArr; d<sub>w</sub> = d<sub>H</sub> &hArr; z = d, and pinning d<sub>s</sub> = 2 with d<sub>H</sub> = 10 forces z = d = 5 uniquely; and a degree lock showing that for &lambda; &gt; 1 with &lambda;<sup>n</sup> = &lambda;+1, &lambda;<sup>2D</sup> = (&lambda;+1)<sup>2</sup> iff D = n, so the renormalisation-group fixed point D* = 10 is forced to equal deg(x<sup>10</sup>&minus;x&minus;1).</p><p>Section 1 derives the spin multiplicity table (1,3,5,4,3,2,1) from the Clebsch&ndash;Gordan recursion rather than assuming it, and section 11 reads that same table through Schur's &Sigma;m<sup>2</sup> to obtain the commutant dimensions 29 = 5<sup>2</sup>+2<sup>2</sup>, 65, and 28.</p><p><strong>Axiom ledger:</strong> 31 clean, 6 standard-axioms (propext / Classical.choice / Quot.sound), 0 native_decide, 0 broken, 37 audited &mdash; identical under Lean 4.19.0 and Lean 4.35.0. Coq 8.18.0: 46 results, 26 closed under the global context, 20 depending only on the axioms that constitute Coq's R. No Mathlib, no <code>native_decide</code>, no <code>sorry</code>, no <code>Admitted</code>, nothing declared.</p><p><strong>Scope.</strong> The concrete 125&times;125 tensor-product matrix is not constructed in this certificate: sections 1&ndash;3 and 11 are the isotypic (block-diagonal) model, in which the Casimir acts on the J-block as J(J+1). The bridge from that model to the constructed operator remains open and is not crossed silently. Nothing here is a claim about physical quantum error protection, device performance, or experimental interpretation.</p><p>Developed in collaboration with Claude (Anthropic), credited as co-author on the contributing commits.</p>",
+  "upload_type": "software",
+  "license": "other-open",
+  "access_right": "open",
+  "creators": [
+    {
+      "name": "Kouns, Nicholas Shane",
+      "affiliation": "AIMS Research Institute, Las Vegas, Nevada"
+    }
+  ],
+  "keywords": [
+    "formal verification",
+    "Lean 4",
+    "Coq",
+    "proof assistant",
+    "axiom ledger",
+    "Casimir operator",
+    "spectral kernel",
+    "representation theory",
+    "Clebsch-Gordan",
+    "commutant",
+    "Schur",
+    "anisotropic scaling",
+    "Lifshitz",
+    "spectral dimension",
+    "Hausdorff dimension",
+    "walk dimension",
+    "dimensional flow",
+    "renormalisation group",
+    "fixed point",
+    "E47",
+    "Kouns-Killion Paradigm",
+    "KKP-R"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/nicholaskouns-create/Identity",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://nicholaskouns-create.github.io/e47-formal-validation.html",
+      "relation": "isDocumentedBy",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://nicholaskouns-create.github.io/Identity/site/proof/lean-coq/",
+      "relation": "isDocumentedBy",
+      "scheme": "url"
+    }
+  ]
+}
