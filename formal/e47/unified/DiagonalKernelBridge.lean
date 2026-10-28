@@ -113,7 +113,7 @@ theorem distinct_root_projectors_orthogonal
   · have hb : e i ≠ b := by
       intro h
       exact hab (ha.symm.trans h)
-    simp [rootProjector, ha, hb]
+    simp [rootProjector, ha, hb, hab]
   · simp [rootProjector, ha]
 
 theorem distinct_root_projector_sum
@@ -125,9 +125,10 @@ theorem distinct_root_projector_sum
   · have hb : e i ≠ b := by
       intro h
       exact hab (ha.symm.trans h)
-    simp [projector, rootProjector, ha, hb]
+    simp [projector, rootProjector, ha, hb, hab]
   · by_cases hb : e i = b
-    · simp [projector, rootProjector, ha, hb]
+    · have hba : b ≠ a := Ne.symm hab
+      simp [projector, rootProjector, ha, hb, hba]
     · simp [projector, rootProjector, ha, hb]
 
 theorem kernel_distinct_root_split
