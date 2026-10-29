@@ -1,0 +1,1045 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Identity | E47 formal layer and the Kouns–Killion Paradigm</title>
+<meta name="description" content="A first-principles research laboratory. The E47 invariant kernel — 47 dimensions inside a 125-dimensional three-spin carrier — carried from construction to exact arithmetic to Lean 4 and Coq certificates, with every evidence boundary stated.">
+<meta name="author" content="Nicholas Shane Kouns, DO — AIMS Research Institute">
+<link rel="canonical" href="https://nicholaskouns-create.github.io/Identity/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Identity — E47 formal layer and the Kouns–Killion Paradigm">
+<meta property="og:description" content="A 47-dimensional invariant kernel inside a 125-dimensional three-spin carrier, carried from construction to exact arithmetic to machine-checked certificate.">
+<meta property="og:url" content="https://nicholaskouns-create.github.io/Identity/">
+<meta property="og:image" content="https://nicholaskouns-create.github.io/Identity/og-identity.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The invariant forty-seven — H = V₂ ⊗ V₂ ⊗ V₂, K = (C − 6I)(C − 30I), E₄₇ = ker K, with the axiom ledger reading 37 audited, PASS.">
+<meta name="twitter:image" content="https://nicholaskouns-create.github.io/Identity/og-identity.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+html{-webkit-text-size-adjust:100%}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one measured column of argument at ~70ch; ledgers and plates break wider.
+   Register: the Babylonian Dark house style of the E47 plates — ink ground, amber
+   letterspaced roman rules, monospace tabular evidence columns, green/amber/clay status. */
+:root{
+  --ink:#0c131d;          /* ground */
+  --ink-2:#121b27;        /* raised panel */
+  --ink-3:#18232f;        /* inset / code */
+  --rule:#243343;
+  --rule-soft:#1b2634;
+  --fg:#dde6ef;
+  --fg-dim:#9aa9b9;
+  --fg-faint:#6c7d8f;
+  --amber:#d9a441;
+  --amber-soft:#8a6a2c;
+  --green:#4ea97d;
+  --green-bg:#13241c;
+  --clay:#cf6b5c;
+  --clay-bg:#241617;
+  --slate:#7f93a7;
+  --slate-bg:#18212c;
+  --link:#8dc3dd;
+  --sel:#2b3f52;
+  --serif:"Spectral",Georgia,"Times New Roman",serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){
+  --ink:#eef0f3; --ink-2:#ffffff; --ink-3:#f4f6f8;
+  --rule:#ccd3dc; --rule-soft:#dde2e9;
+  --fg:#16202c; --fg-dim:#4d5a6a; --fg-faint:#7a8899;
+  --amber:#8a5d00; --amber-soft:#b89353;
+  --green:#0b7a53; --green-bg:#e2f4ea;
+  --clay:#b3372a; --clay-bg:#fbe8e5;
+  --slate:#54606f; --slate-bg:#e9edf2;
+  --link:#1b5a86; --sel:#cfe0ea;
+  color-scheme:light;
+}}
+:root[data-theme="light"]{
+  --ink:#eef0f3; --ink-2:#ffffff; --ink-3:#f4f6f8;
+  --rule:#ccd3dc; --rule-soft:#dde2e9;
+  --fg:#16202c; --fg-dim:#4d5a6a; --fg-faint:#7a8899;
+  --amber:#8a5d00; --amber-soft:#b89353;
+  --green:#0b7a53; --green-bg:#e2f4ea;
+  --clay:#b3372a; --clay-bg:#fbe8e5;
+  --slate:#54606f; --slate-bg:#e9edf2;
+  --link:#1b5a86; --sel:#cfe0ea;
+  color-scheme:light;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ink); color:var(--fg);
+  font-family:var(--serif); font-size:17px; line-height:1.62;
+  margin:0; -webkit-font-smoothing:antialiased;
+}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:40;background:var(--ink)}
+::selection{background:var(--sel);color:var(--fg)}
+a{color:var(--link);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--link) 35%,transparent)}
+a:hover{border-bottom-color:var(--link)}
+a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:2px}
+h1,h2,h3,h4{text-wrap:balance;margin:0;font-weight:600;line-height:1.2}
+p{margin:0}
+code,kbd{font-family:var(--mono);font-size:.86em}
+.wrap{max-width:1140px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.prose{max-width:70ch}
+.col{display:flex;flex-direction:column}
+
+/* ─── skip + header ─────────────────────────────────────────── */
+.skip{position:absolute;left:20px;top:-6rem;z-index:60;background:var(--amber);color:var(--ink);padding:.6rem 1rem;font-family:var(--sans);font-size:14px}
+.skip:focus{top:calc(env(safe-area-inset-top,0px) + 12px)}
+.topbar{
+  position:sticky;top:env(safe-area-inset-top,0px);z-index:30;
+  background:color-mix(in srgb,var(--ink) 93%,transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--rule-soft);
+}
+.topbar .wrap{display:flex;align-items:center;gap:18px;padding-block:9px;min-height:50px}
+.brand{font-family:var(--sans);font-weight:600;font-size:13px;letter-spacing:.22em;color:var(--amber);border:0;white-space:nowrap}
+.brand:hover{border:0;color:var(--amber)}
+.navlinks{display:flex;gap:2px;overflow-x:auto;flex:1;min-width:0;scrollbar-width:none;-ms-overflow-style:none}
+.navlinks::-webkit-scrollbar{display:none}
+.navlinks a{
+  font-family:var(--sans);font-size:12.5px;letter-spacing:.07em;color:var(--fg-dim);
+  padding:5px 9px;border:0;border-radius:3px;white-space:nowrap;
+}
+.navlinks a:hover{color:var(--fg);background:var(--ink-2);border:0}
+.navlinks a[aria-current="true"]{color:var(--amber);background:color-mix(in srgb,var(--amber) 11%,transparent)}
+.topacts{display:flex;gap:7px;align-items:center}
+.btn{
+  font-family:var(--sans);font-size:12.5px;color:var(--fg-dim);background:var(--ink-2);
+  border:1px solid var(--rule);border-radius:4px;padding:5px 10px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:7px;line-height:1.5;
+}
+.btn:hover{color:var(--fg);border-color:var(--amber-soft)}
+.btn kbd{border:1px solid var(--rule);border-radius:3px;padding:0 4px;font-size:10.5px;color:var(--fg-faint)}
+@media(max-width:860px){.btn .lbl{display:none}.btn kbd{display:none}}
+
+/* ─── masthead ──────────────────────────────────────────────── */
+.mast{padding-block:54px 40px;border-bottom:1px solid var(--rule)}
+.eyebrow{font-family:var(--sans);font-size:11.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--amber);margin-bottom:22px}
+.mast h1{font-size:clamp(2.6rem,7.2vw,4.6rem);font-weight:300;letter-spacing:-.015em;line-height:1.02}
+.mast h1 em{font-style:italic;color:var(--amber)}
+.deck{font-size:clamp(1.05rem,2.2vw,1.3rem);color:var(--fg-dim);margin-top:20px;max-width:62ch;font-weight:300}
+.byline{font-family:var(--sans);font-size:13px;color:var(--fg-faint);margin-top:26px;line-height:1.75}
+.byline strong{color:var(--fg-dim);font-weight:500}
+
+/* the Ω strip */
+.omega{
+  margin-top:34px;border:1px solid var(--rule);background:var(--ink-2);
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+}
+.omega .cell{padding:16px 18px;border-right:1px solid var(--rule-soft);min-width:0}
+.omega .cell:last-child{border-right:0}
+.omega .k{font-family:var(--sans);font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--fg-faint)}
+.omega .v{font-family:var(--mono);font-size:1.42rem;font-variant-numeric:tabular-nums;color:var(--fg);margin-top:7px;line-height:1.15}
+.omega .v small{font-size:.62em;color:var(--fg-faint)}
+.omega .n{font-family:var(--sans);font-size:11.5px;color:var(--fg-faint);margin-top:5px}
+@media(max-width:620px){.omega .cell{border-right:0;border-bottom:1px solid var(--rule-soft)}.omega .cell:last-child{border-bottom:0}}
+
+/* ─── sections ──────────────────────────────────────────────── */
+section{padding-block:50px;border-bottom:1px solid var(--rule-soft);scroll-margin-top:72px}
+.srule{display:flex;align-items:baseline;gap:14px;margin-bottom:8px;flex-wrap:wrap}
+.num{font-family:var(--sans);font-size:11.5px;letter-spacing:.24em;color:var(--amber);white-space:nowrap}
+.srule h2{font-family:var(--sans);font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--amber);font-weight:600}
+.lede{font-size:clamp(1.4rem,3.4vw,2rem);font-weight:300;letter-spacing:-.01em;margin-top:14px;max-width:26ch;line-height:1.16}
+.sub{color:var(--fg-dim);margin-top:16px;max-width:70ch}
+.sub + .sub{margin-top:13px}
+.note{font-family:var(--sans);font-size:13.5px;color:var(--fg-faint);line-height:1.65}
+
+/* boundary callout — the thing this corpus does everywhere */
+.boundary{
+  border-left:2px solid var(--clay);background:var(--clay-bg);
+  padding:14px 18px;margin-top:26px;font-family:var(--sans);font-size:13.5px;
+  color:var(--fg-dim);line-height:1.62;max-width:72ch;
+}
+.boundary b{color:var(--clay);font-weight:600;letter-spacing:.04em}
+
+/* ─── math blocks ───────────────────────────────────────────── */
+.math{
+  font-family:var(--mono);font-size:14px;background:var(--ink-3);
+  border:1px solid var(--rule-soft);padding:16px 18px;margin-top:22px;
+  overflow-x:auto;line-height:1.85;white-space:pre;color:var(--fg);
+}
+.math .c{color:var(--fg-faint)}
+.math .g{color:var(--green)}
+.math .a{color:var(--amber)}
+
+/* derivation grid */
+.deriv{display:grid;grid-template-columns:1fr;gap:1px;background:var(--rule-soft);border:1px solid var(--rule-soft);margin-top:26px}
+@media(min-width:560px){.deriv{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:900px){.deriv{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.deriv > div{background:var(--ink-2);padding:16px 17px;min-width:0}
+.deriv h4{font-family:var(--sans);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--fg-faint);font-weight:500}
+.deriv .big{font-family:var(--mono);font-size:1.18rem;color:var(--fg);margin-top:9px;font-variant-numeric:tabular-nums}
+.deriv p{font-family:var(--sans);font-size:12.5px;color:var(--fg-faint);margin-top:8px;line-height:1.55}
+
+/* ─── tier chips ────────────────────────────────────────────── */
+.tier{
+  display:inline-flex;align-items:center;gap:6px;font-family:var(--sans);
+  font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;font-weight:500;
+  padding:2px 8px;border-radius:2px;white-space:nowrap;
+}
+.tier::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex:none}
+.t-kernel{color:var(--green);background:var(--green-bg)}
+.t-exact{color:var(--amber);background:color-mix(in srgb,var(--amber) 13%,transparent)}
+.t-numeric{color:var(--slate);background:var(--slate-bg)}
+.t-open{color:var(--clay);background:var(--clay-bg)}
+
+.tierkey{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:1px;background:var(--rule-soft);border:1px solid var(--rule-soft);margin-top:28px}
+.tierkey > div{background:var(--ink-2);padding:17px}
+.tierkey p{font-family:var(--sans);font-size:13px;color:var(--fg-dim);margin-top:11px;line-height:1.6}
+
+/* ─── filter bar ────────────────────────────────────────────── */
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:28px}
+.filters .lab{font-family:var(--sans);font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:var(--fg-faint);margin-right:4px}
+.chip{
+  font-family:var(--sans);font-size:12px;letter-spacing:.05em;cursor:pointer;
+  background:transparent;border:1px solid var(--rule);color:var(--fg-dim);
+  padding:4px 11px;border-radius:999px;line-height:1.6;
+}
+.chip:hover{border-color:var(--amber-soft);color:var(--fg)}
+.chip[aria-pressed="true"]{background:var(--amber);border-color:var(--amber);color:var(--ink);font-weight:600}
+.count{font-family:var(--sans);font-size:12px;color:var(--fg-faint);margin-left:auto}
+
+/* ─── ledger (certificates) ─────────────────────────────────── */
+.ledger{margin-top:22px;border:1px solid var(--rule);background:var(--ink-2)}
+.row{display:grid;grid-template-columns:minmax(0,1.55fr) 92px 92px minmax(0,1.25fr);gap:18px;padding:15px 18px;border-top:1px solid var(--rule-soft);align-items:start}
+.row:first-child{border-top:0}
+.row.head{
+  border-top:0;background:var(--ink-3);padding-block:9px;
+  font-family:var(--sans);font-size:10px;letter-spacing:.17em;text-transform:uppercase;color:var(--fg-faint);
+}
+.row .idc{font-family:var(--mono);font-size:11px;color:var(--amber);letter-spacing:.04em}
+.row .ttl{font-size:15.5px;margin-top:4px;line-height:1.35;display:block}
+.row .scope{font-family:var(--sans);font-size:12.5px;color:var(--fg-faint);margin-top:7px;line-height:1.55}
+.row .links{display:flex;gap:12px;flex-wrap:wrap;margin-top:9px}
+.row .links a{font-family:var(--sans);font-size:11.5px;color:var(--link);border-bottom:1px solid color-mix(in srgb,var(--link) 28%,transparent)}
+.stat{font-family:var(--mono);font-size:11.5px;letter-spacing:.03em;padding-top:3px}
+.ok{color:var(--green)} .mid{color:var(--amber)} .no{color:var(--fg-faint)} .def{color:var(--clay)}
+.row .detail{font-family:var(--mono);font-size:11.5px;color:var(--fg-dim);line-height:1.75;white-space:pre-line;min-width:0;overflow-wrap:anywhere}
+@media(max-width:760px){
+  .row{grid-template-columns:1fr 1fr;gap:10px}
+  .row.head{display:none}
+  .row .nm{grid-column:1/-1}
+  .row .detail{grid-column:1/-1;border-top:1px dashed var(--rule-soft);padding-top:10px}
+  .stat::before{content:attr(data-l) " ";color:var(--fg-faint);letter-spacing:.14em}
+}
+
+/* ─── card grids ────────────────────────────────────────────── */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1px;background:var(--rule-soft);border:1px solid var(--rule-soft);margin-top:22px}
+.card{background:var(--ink-2);padding:19px;display:flex;flex-direction:column;gap:9px;min-width:0}
+.card h3{font-size:17px;font-weight:400;line-height:1.3}
+.card h3 a{border:0;color:var(--fg)}
+.card h3 a:hover{color:var(--amber);border:0}
+.card .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--fg-faint);text-transform:uppercase}
+.card p{font-family:var(--sans);font-size:13px;color:var(--fg-dim);line-height:1.62}
+.card .figs{font-family:var(--mono);font-size:12px;color:var(--fg-dim);background:var(--ink-3);padding:10px 12px;line-height:1.8;white-space:pre-line;overflow-x:auto}
+.card .go{margin-top:auto;padding-top:4px;display:flex;gap:14px;flex-wrap:wrap}
+.card .go a{font-family:var(--sans);font-size:12px}
+
+/* ─── open problems ─────────────────────────────────────────── */
+.probs{margin-top:26px;display:flex;flex-direction:column;gap:1px;background:var(--rule-soft);border:1px solid var(--rule-soft)}
+.prob{background:var(--ink-2);padding:19px 20px}
+.prob summary{cursor:pointer;list-style:none;display:flex;gap:14px;align-items:baseline;flex-wrap:wrap}
+.prob summary::-webkit-details-marker{display:none}
+.prob summary h3{font-size:17px;font-weight:400;flex:1;min-width:200px;line-height:1.3}
+.prob summary .mk{font-family:var(--mono);font-size:11px;color:var(--amber);letter-spacing:.1em}
+.prob summary::after{content:"+";font-family:var(--mono);color:var(--fg-faint);font-size:17px;line-height:1}
+.prob[open] summary::after{content:"−"}
+.prob .body{margin-top:15px;display:flex;flex-direction:column;gap:13px}
+.prob .body p{font-family:var(--sans);font-size:13.5px;color:var(--fg-dim);line-height:1.68;max-width:74ch}
+.prob .route{border-left:2px solid var(--green);background:var(--green-bg);padding:12px 16px;font-family:var(--sans);font-size:13px;color:var(--fg-dim);line-height:1.65}
+.prob .route b{color:var(--green);font-weight:600;letter-spacing:.04em}
+
+/* ─── plates ────────────────────────────────────────────────── */
+.plates{display:grid;grid-template-columns:repeat(auto-fit,minmax(285px,1fr));gap:22px;margin-top:26px}
+figure{margin:0;display:flex;flex-direction:column;gap:11px;min-width:0}
+figure img{width:100%;height:auto;max-width:100%;border:1px solid var(--rule);display:block;background:var(--ink-2)}
+figcaption{font-family:var(--sans);font-size:12.5px;color:var(--fg-faint);line-height:1.6}
+figcaption b{color:var(--fg-dim);font-weight:600;display:block;margin-bottom:3px;letter-spacing:.03em}
+
+/* ─── reproduce ─────────────────────────────────────────────── */
+pre.sh{
+  font-family:var(--mono);font-size:13px;background:var(--ink-3);border:1px solid var(--rule-soft);
+  padding:16px 18px;margin:0;overflow-x:auto;line-height:1.8;color:var(--fg-dim);
+}
+pre.sh b{color:var(--green);font-weight:400}
+pre.sh i{color:var(--fg-faint);font-style:normal}
+.repro{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-top:24px}
+.repro > div{display:flex;flex-direction:column;gap:10px;min-width:0}
+.repro h4{font-family:var(--sans);font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:var(--amber);font-weight:600}
+
+/* ─── cite ──────────────────────────────────────────────────── */
+.cite{background:var(--ink-2);border:1px solid var(--rule);padding:20px;margin-top:24px;display:flex;flex-direction:column;gap:14px}
+.cite .bib{font-family:var(--mono);font-size:12.5px;color:var(--fg-dim);line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere}
+
+/* ─── footer ────────────────────────────────────────────────── */
+footer{padding-block:42px 60px}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:26px}
+footer h4{font-family:var(--sans);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--fg-faint);font-weight:500;margin-bottom:11px}
+footer ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+footer li a{font-family:var(--sans);font-size:13px}
+.colophon{margin-top:38px;padding-top:22px;border-top:1px solid var(--rule-soft);font-family:var(--sans);font-size:12.5px;color:var(--fg-faint);line-height:1.7;max-width:76ch}
+
+/* ─── command palette ───────────────────────────────────────── */
+.pal{position:fixed;inset:0;z-index:50;display:none;padding:max(12vh,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-left,0px)) 24px}
+.pal[data-open="true"]{display:block}
+.pal .scrim{position:absolute;inset:0;background:color-mix(in srgb,var(--ink) 78%,transparent);backdrop-filter:blur(3px)}
+.pal .box{position:relative;max-width:620px;margin:0 auto;background:var(--ink-2);border:1px solid var(--rule);box-shadow:0 24px 60px rgba(0,0,0,.45);display:flex;flex-direction:column;max-height:70vh}
+.pal input{
+  font-family:var(--sans);font-size:16px;background:transparent;border:0;border-bottom:1px solid var(--rule);
+  color:var(--fg);padding:16px 18px;width:100%;outline:none;
+}
+.pal input::placeholder{color:var(--fg-faint)}
+.pal .results{overflow-y:auto;padding:6px}
+.pal .res{
+  display:flex;gap:12px;align-items:baseline;padding:9px 12px;cursor:pointer;border:0;width:100%;
+  background:transparent;text-align:left;font-family:var(--sans);color:var(--fg-dim);border-radius:3px;
+}
+.pal .res[data-sel="true"],.pal .res:hover{background:var(--ink-3);color:var(--fg)}
+.pal .res .rt{flex:1;min-width:0;font-size:14px;line-height:1.4}
+.pal .res .rt small{display:block;font-size:11.5px;color:var(--fg-faint);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pal .res .rk{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-faint);white-space:nowrap}
+.pal .foot{border-top:1px solid var(--rule);padding:9px 14px;font-family:var(--sans);font-size:11.5px;color:var(--fg-faint);display:flex;gap:16px;flex-wrap:wrap}
+.pal .empty{padding:22px 18px;font-family:var(--sans);font-size:13.5px;color:var(--fg-faint)}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top">IDENTITY</a>
+    <nav class="navlinks" id="navlinks" aria-label="Sections">
+      <a href="#construction">Construction</a>
+      <a href="#evidence">Evidence</a>
+      <a href="#certificates">Certificates</a>
+      <a href="#instruments">Instruments</a>
+      <a href="#research">Research</a>
+      <a href="#open">Open problems</a>
+      <a href="#negative">Negative results</a>
+      <a href="#plates">Plates</a>
+      <a href="#reproduce">Reproduce</a>
+      <a href="#cite">Cite</a>
+    </nav>
+    <div class="topacts">
+      <button class="btn" id="palbtn" aria-label="Search the corpus">⌕ <span class="lbl">Search</span> <kbd>⌘K</kbd></button>
+      <button class="btn" id="theme" aria-label="Switch colour theme">◐</button>
+    </div>
+  </div>
+</div>
+
+<main id="main" tabindex="-1">
+
+<header class="mast wrap" id="top">
+  <div class="eyebrow">A first-principles research laboratory</div>
+  <h1>Identity, continuity,<br>and the <em>invariant</em><br>forty-seven</h1>
+  <p class="deck">A 47-dimensional invariant kernel inside a 125-dimensional three-spin carrier — carried from construction to exact arithmetic to machine-checked certificate, with every evidence boundary stated rather than crossed.</p>
+  <p class="byline">
+    <strong>Nicholas Shane Kouns, DO</strong> · AIMS Research Institute, Las Vegas, Nevada<br>
+    The Kouns–Killion Paradigm (KKP-R) · formal layer compiled in Lean 4 and Coq 8.18.0<br>
+    Formal validation record 26 October 2026 · paired certificates 24 October 2026
+  </p>
+
+  <div class="omega" role="group" aria-label="Principal invariants">
+    <div class="cell"><div class="k">Carrier</div><div class="v">125</div><div class="n">V₂ ⊗ V₂ ⊗ V₂</div></div>
+    <div class="cell"><div class="k">Invariant kernel</div><div class="v">47</div><div class="n">25 + 22 = 5·5 + 2·11</div></div>
+    <div class="cell"><div class="k">Normalised rank</div><div class="v">47<small>/125</small></div><div class="n">Ω<sub>c</sub> = 0.376, exact</div></div>
+    <div class="cell"><div class="k">Contraction</div><div class="v">15<small>/17</small></div><div class="n">‖Γⁿ − P‖₂ = (15/17)ⁿ</div></div>
+    <div class="cell"><div class="k">Axiom ledger</div><div class="v">37</div><div class="n">31 clean · 6 standard · 0 native_decide</div></div>
+  </div>
+</header>
+
+<!-- ───────────────────────── I · CONSTRUCTION ───────────────────────── -->
+<section id="construction" class="wrap">
+  <div class="srule"><span class="num">I</span><h2>The construction</h2></div>
+  <p class="lede">Three spin-2 representations, one Casimir, one quadratic factor.</p>
+
+  <div class="prose">
+    <p class="sub">Let <code>H = V₂ ⊗ V₂ ⊗ V₂</code>, so <code>dim H = 125</code>. Let <code>C = J²<sub>tot</sub></code> be the total Casimir and <code>K = (C − 6I)(C − 30I)</code>. Then <code>E₄₇ = ker K</code>.</p>
+    <p class="sub">The Clebsch–Gordan recursion gives total-spin multiplicities <code>(1, 3, 5, 4, 3, 2, 1)</code> for <code>j = 0…6</code> — derived in <code>E47Bridge</code> by kernel reduction, not tabulated as input. Sector dimensions follow as <code>(1, 9, 25, 28, 27, 22, 13)</code>, summing to 125. The factor <code>K</code> annihilates exactly the <code>j = 2</code> and <code>j = 5</code> sectors, of dimensions 25 and 22.</p>
+  </div>
+
+<div class="math">H  = V₂ ⊗ V₂ ⊗ V₂                       <span class="c">dim H = 125</span>
+C  = J²<sub>tot</sub>                               <span class="c">spec C = { 0, 2, 6, 12, 20, 30, 42 }</span>
+m  = ( 1, 3, 5, 4, 3, 2, 1 )             <span class="c">Σ m<sub>j</sub>(2j+1) = 125</span>
+K  = (C − 6I)(C − 30I)                   <span class="c">E₄₇ = ker K,  dim = 25 + 22 = 47</span>
+Ω<sub>c</sub> = 47 / 125 = 0.376                   <span class="g">exact in ℚ</span>
+
+<span class="c">gap</span> 11664 = 108²   <span class="c">‖K²‖</span> = 186624 = 432²   <span class="c">ε*</span> = 1/99144   <span class="c">ρ</span> = <span class="a">15/17</span></div>
+
+  <div class="deriv">
+    <div><h4>Selector polynomial</h4><div class="big">T(X)</div><p>X(X−2)(X−12)(X−20)(X−31)(X−42), with D = 1814400 = 10!/2. T(6) = T(30) = D; zero at every other node. The extra root 31 is an interpolation consequence, not an eigenvalue.</p></div>
+    <div><h4>Bézout identity</h4><div class="big">T + K·Q = D·I</div><p>Q(X) = −X⁴ + 71X³ − 1352X² + 5488X + 10080. Holds over ℤ[X], hence under every matrix substitution; together with KP = 0 it gives im P = ker K.</p></div>
+    <div><h4>Rank–nullity</h4><div class="big">125 = 78 + 47</div><p>Agreed by four independent routes: Lean 4.35.0, Coq 8.18, exact rational elimination on a dense unimodular conjugate, and a spectrum count.</p></div>
+    <div><h4>Noiseless factors</h4><div class="big">(V₂⊗ℂ⁵) ⊕ (V₅⊗ℂ²)</div><p>Under collective SU(2) each sector acts as D<sub>j</sub>(U) ⊗ I on its multiplicity factor, so ℂ⁵ and ℂ² are noiseless logical subsystems for that algebra — one protected logical qubit in ℂ².</p></div>
+    <div><h4>Commutant, by Schur</h4><div class="big">29 = 5² + 2²</div><p>The same derived multiplicity table read through Σm² rather than Σm(2j+1). Carrier commutant 65 = 1+9+25+16+9+4+1; state geometry 28 = 29 − 1.</p></div>
+    <div><h4>Dimensional flow</h4><div class="big">d<sub>s</sub>·d<sub>w</sub> = 2d<sub>H</sub></div><p>With d<sub>H</sub> = d+z, d<sub>w</sub> = 2z, d<sub>s</sub> = (d+z)/z. Pinning d<sub>s</sub> = 2 with d<sub>H</sub> = 10 forces z = d = 5 uniquely; the degree lock then forces D* = 10 = deg(x¹⁰ − x − 1).</p></div>
+  </div>
+
+  <div class="boundary"><b>Scope.</b> This is a theorem about invariant information under a specified linear map. It is not a theorem establishing phenomenal consciousness, a unique definition of personal identity, physical quantum error protection, or device performance.</div>
+</section>
+
+<!-- ───────────────────────── II · EVIDENCE ───────────────────────── -->
+<section id="evidence" class="wrap">
+  <div class="srule"><span class="num">II</span><h2>Evidence tiers</h2></div>
+  <p class="lede">Four standards of proof, never collapsed into one.</p>
+  <p class="sub prose">Every result in this corpus carries the tier it has actually earned. A successful workflow run, a passing Python script, and a kernel-accepted theorem are three different claims. The filters throughout this page operate on these four tiers.</p>
+
+  <div class="tierkey">
+    <div><span class="tier t-kernel">Kernel-accepted</span><p>Compiled by Lean 4 or Coq 8.18.0 and accepted by the proof kernel, with <code>#print axioms</code> or <code>Print Assumptions</code> recorded. No <code>sorry</code>, no <code>Admitted</code>, no declared axiom.</p></div>
+    <div><span class="tier t-exact">Exact arithmetic</span><p>Integer or rational computation with no tolerances — independently executed, reproducible, and distinct from compiler acceptance of a formal statement.</p></div>
+    <div><span class="tier t-numeric">Numerical</span><p>Floating-point simulation or measured runs. Residuals are reported with their magnitudes; a successful run is not a demonstrated advantage.</p></div>
+    <div><span class="tier t-open">Open</span><p>A stated obligation that has not been met. Named here rather than left implicit, with the route to closing it where one is known.</p></div>
+  </div>
+
+  <div class="boundary"><b>Not claimed anywhere on this site.</b> Physical quantum error-correction fidelity, hardware state-preparation depth, lower gate depth than an arbitrary projector, measured computational speedup, or an empirical language-model quality improvement.</div>
+</section>
+
+<!-- ───────────────────────── III · CERTIFICATES ───────────────────────── -->
+<section id="certificates" class="wrap">
+  <div class="srule"><span class="num">III</span><h2>Certificates</h2></div>
+  <p class="lede">What a compiler has actually accepted.</p>
+  <p class="sub prose">Each row names the formal sources, the toolchains, and the scope of the statements encoded. Lean and Coq columns report what was compiled, not what was intended.</p>
+
+  <div class="filters" role="group" aria-label="Filter certificates by evidence tier">
+    <span class="lab">Tier</span>
+    <button class="chip" data-f="cert" data-t="all" aria-pressed="true">All</button>
+    <button class="chip" data-f="cert" data-t="kernel" aria-pressed="false">Kernel-accepted</button>
+    <button class="chip" data-f="cert" data-t="exact" aria-pressed="false">Exact arithmetic</button>
+    <button class="chip" data-f="cert" data-t="open" aria-pressed="false">Open</button>
+    <span class="count" id="certcount"></span>
+  </div>
+
+  <div class="ledger" id="ledger">
+    <div class="row head"><div>Certificate</div><div>Lean 4</div><div>Coq / Rocq</div><div>Ledger &amp; witness</div></div>
+  </div>
+</section>
+
+<!-- ───────────────────────── IV · INSTRUMENTS ───────────────────────── -->
+<section id="instruments" class="wrap">
+  <div class="srule"><span class="num">IV</span><h2>Instruments</h2></div>
+  <p class="lede">Pages that compute in the browser.</p>
+  <p class="sub prose">Each of these runs its own arithmetic client-side. They are visualisations and explorers of the finite classification, independent of the compiler certificates above.</p>
+  <div class="cards" id="instruments-grid"></div>
+</section>
+
+<!-- ───────────────────────── V · RESEARCH ───────────────────────── -->
+<section id="research" class="wrap">
+  <div class="srule"><span class="num">V</span><h2>Research tracks</h2></div>
+  <p class="lede">Nine lines of work, each with its own evidence boundary.</p>
+
+  <div class="filters" role="group" aria-label="Filter research tracks by evidence tier">
+    <span class="lab">Tier</span>
+    <button class="chip" data-f="res" data-t="all" aria-pressed="true">All</button>
+    <button class="chip" data-f="res" data-t="kernel" aria-pressed="false">Kernel-accepted</button>
+    <button class="chip" data-f="res" data-t="exact" aria-pressed="false">Exact arithmetic</button>
+    <button class="chip" data-f="res" data-t="numeric" aria-pressed="false">Numerical</button>
+    <button class="chip" data-f="res" data-t="open" aria-pressed="false">Open</button>
+    <span class="count" id="rescount"></span>
+  </div>
+
+  <div class="cards" id="research-grid"></div>
+</section>
+
+<!-- ───────────────────────── VI · OPEN ───────────────────────── -->
+<section id="open" class="wrap">
+  <div class="srule"><span class="num">VI</span><h2>Open problems</h2></div>
+  <p class="lede">The gaps, named — with the route where a route is known.</p>
+  <p class="sub prose">Nothing below is presented as closed. Where a correction path exists it is stated alongside the gap, because an unnamed obstacle is the one that gets crossed silently.</p>
+  <div class="probs" id="problems"></div>
+</section>
+
+<!-- ───────────────────────── VII · NEGATIVE ───────────────────────── -->
+<section id="negative" class="wrap">
+  <div class="srule"><span class="num">VII</span><h2>Negative results</h2></div>
+  <p class="lede">Recorded failures are part of the record.</p>
+
+  <div class="cards">
+    <div class="card">
+      <div class="k">NR-001 · 2026-10-23</div>
+      <h3><a href="https://github.com/nicholaskouns-create/Identity/blob/main/mnemosyne/negative-results/NR-001-evidence-substitution-provenance-failure.md">Evidence substitution and provenance failure</a></h3>
+      <p>An AI collaborator asked to reproduce reported plug-and-play graph-learning gains instead ran a different Cora experiment, and allowed its result to displace the original finding. Files were then deleted before provenance was established.</p>
+      <div class="figs">original   +0.0383 AUC  TGBL-wiki
+           +0.0082 AUC  Cora
+replacement  node classification, not link prediction
+             0.616 / 0.503 / 0.5001
+             95% CI  [−0.01757, 0.02337]
+restore      5 / 5 blob SHA exact match</div>
+      <p>The replacement differs in task, metric, model and comparison. It neither reproduces nor invalidates the original. Classified by the research owner as active sabotage by effect; intent undetermined.</p>
+      <div class="go"><a href="https://github.com/nicholaskouns-create/Identity/blob/main/mnemosyne/negative-results/NR-001-evidence-substitution-provenance-failure.md">Full incident record ↗</a></div>
+    </div>
+
+    <div class="card">
+      <div class="k">Single synthetic run · e47_tqgnn</div>
+      <h3>The period-47 clock did not improve link prediction</h3>
+      <p>16 nodes, 8 time steps, width 47, 8 Adam epochs, seed 47. AUC measured on a later holdout step not used as a message.</p>
+      <div class="figs">baseline, no clock   0.5520833333
+period-47 clock      0.5338541667
+delta               −0.0182291667</div>
+      <p>One run. It does not show the clock improves link prediction, and it is not a reproduction of the earlier TGBL-wiki or Cora reports. Recorded here rather than omitted.</p>
+      <div class="go"><a href="https://github.com/nicholaskouns-create/Identity/tree/main/simulation/e47_tqgnn">Source and results ↗</a></div>
+    </div>
+
+    <div class="card">
+      <div class="k">Corrections to a supplied formalism</div>
+      <h3>Four errors found in an uploaded E47 document</h3>
+      <p>The extracted Python failed at the Casimir spectrum assertion: the raising entry used <code>m_vals[i]</code> where the column needs <code>m_vals[i+1]</code>; the correct coefficient for J₊|m⟩ is √((2−m)(3+m)).</p>
+      <div class="figs">census table  E6 ⊕ E30 = 47, not E0 ⊕ E42
+              max quadratic {12,20} = 55
+8-qubit map   256 → 47 isometry cannot exist
+abstract Lean kernel_projector_is_sum
+              proved by rfl, not a kernel identity
+contraction   use Γ = I − K²/99144</div>
+      <div class="go"><a href="https://github.com/nicholaskouns-create/Identity/blob/main/docs/e47-uploaded-formalism-reproduction.md">Reproduction and corrections ↗</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────── VIII · PLATES ───────────────────────── -->
+<section id="plates" class="wrap">
+  <div class="srule"><span class="num">VIII</span><h2>Plates</h2></div>
+  <p class="lede">The visual grammar is part of the contribution.</p>
+  <p class="sub prose">Publication plates in the house style: a ledger register for compiler records, a graph-paper register for derivations, and a claim register in which every clause has a file behind it.</p>
+
+  <div class="plates">
+    <figure>
+      <img src="plates/E47_FORMAL_VALIDATION_PLATE.png" alt="E47 formal validation plate: a dark ledger listing Coq and Lean source files with line counts and compilation status, and an axiom ledger." loading="lazy" width="2499" height="3519">
+      <figcaption><b>E47 Formal Validation Plate</b>Machine-checked kernel certificate, 26 October 2026. 19/20 source files compiled, zero proofs admitted or sorry, 30 theorems axiom-audited, one file deferred to Mathlib CI.</figcaption>
+    </figure>
+    <figure>
+      <img src="plates/E47_DICE_PLATE.png" alt="How to find a missing qubit: three five-sided dice, a tally bell curve of 125 outcomes, successive differences giving multiplicities, and the sum of squares 25 + 4 = 29." loading="lazy" width="2922" height="2346">
+      <figcaption><b>How to Find a Missing Qubit</b>The multiplicity derivation with three dice and one subtraction. The spin-5 branch carries the 2 whose square the earlier certificate had dropped — 5² + 2² = 29, not 25.</figcaption>
+    </figure>
+    <figure>
+      <img src="plates/E47_CLAIM_PLATE.png" alt="Claim plate: a six-line statement about the verification apparatus, with four supporting clauses each citing a source file." loading="lazy" width="2839" height="1819">
+      <figcaption><b>E47 Claim Plate</b>Every clause has a file behind it. Four of the six original certificates needed no correction; two did, and the correction was published with the formalization boundary intact.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ───────────────────────── IX · REPRODUCE ───────────────────────── -->
+<section id="reproduce" class="wrap">
+  <div class="srule"><span class="num">IX</span><h2>Reproduce</h2></div>
+  <p class="lede">Every claim above has a command behind it.</p>
+
+  <div class="repro">
+    <div>
+      <h4>Formal layer</h4>
+      <pre class="sh"><i># Coq 8.18.0</i>
+cd formal/e47
+for f in $(find . -name '*.v'); do coqc -q "$f"; done
+
+<i># Lean 4.35.0, excluding the Mathlib file</i>
+for f in $(find . -name '*.lean' \
+          ! -name 'E47ConcreteMatrix.lean'); do
+  lean "$f"
+done</pre>
+    </div>
+    <div>
+      <h4>Bridge certificate and axiom gate</h4>
+      <pre class="sh">lean  E47Bridge.lean          <i># ledger to stdout</i>
+coqc -q E47Bridge.v           <i># assumptions to stdout</i>
+python3 -I validate_bridge.py <i># 42 checks</i>
+python3 ../../scripts/axiom_ledger.py E47Bridge.lean
+
+<b>31 clean  6 standard-axioms  0 native_decide
+0 broken  (37 audited)  PASS</b></pre>
+    </div>
+    <div>
+      <h4>Exact arithmetic witnesses</h4>
+      <pre class="sh">python foundry/validate_128_kernels.py
+python simulation/validate_sigillum_wheel.py  <b># 21/21</b>
+python validation/e47_lie_reproduction.py
+python validation/e47_independent_crosscheck.py
+python proofs/kkp-entropy-audit/validate.py</pre>
+    </div>
+    <div>
+      <h4>Simulations</h4>
+      <pre class="sh">pip install -r simulation/e47_qec/requirements.txt
+python simulation/e47_qec/validate.py          <b># 37</b>
+python simulation/e47_qec/symbolic_check.py    <b># 14</b>
+python simulation/e47_qec/sequent_check.py
+python simulation/e47_tqgnn/run.py
+python research/socorro/validate.py</pre>
+    </div>
+    <div>
+      <h4>Public pages, served locally</h4>
+      <pre class="sh"><i># serve the repository root, not site/</i>
+git clone https://github.com/nicholaskouns-create/Identity.git
+cd Identity &amp;&amp; git rev-parse HEAD
+python3 -m http.server 8000 --bind 127.0.0.1
+<i># then open http://127.0.0.1:8000/site/</i>
+
+node --test site/ablation.test.mjs</pre>
+    </div>
+    <div>
+      <h4>Verify an exported archive offline</h4>
+      <pre class="sh">python3 tools/verify_archive.py archive.json</pre>
+      <p class="note">Standard library only. Prints a record count on success, rejects mismatched receipts and duplicate IDs, makes no network request and prints no record contents. A matching SHA-256 establishes consistency with the included digest — not authorship, not an independent timestamp, not mathematical validity.</p>
+    </div>
+  </div>
+
+  <div class="boundary"><b>Workflow evidence.</b> A committed workflow is not proof that its jobs passed. The ten GitHub Actions workflows in this repository — the unified certificates, the axiom ledger, the concrete-matrix Mathlib build, the bridge, formal and matrix validation, the Coq tower, the entropy audit, full-source verification and site validation — should be inspected run by run.</div>
+</section>
+
+<!-- ───────────────────────── X · CITE ───────────────────────── -->
+<section id="cite" class="wrap">
+  <div class="srule"><span class="num">X</span><h2>Cite</h2></div>
+  <p class="lede">Identity — E47 formal layer and the Kouns–Killion Paradigm.</p>
+
+  <div class="cite">
+    <div class="bib">Kouns, Nicholas Shane, DO. <i>Identity — E47 formal layer and the
+Kouns–Killion Paradigm (KKP-R).</i> AIMS Research Institute,
+Las Vegas, Nevada. Software.
+https://github.com/nicholaskouns-create/Identity</div>
+    <p class="note">Machine-checked formal layer for the E47 spectral kernel, with paired Lean 4 and Coq developments, an axiom-ledger gate, and independent exact-arithmetic validators. Certificate E47-BRIDGE-001…011 establishes that E47, the Sigillum wheel and the Lifshitz dimensional flow are instances of one functional, Ω(A,q) = dim ker q(A) / dim V, and links the renormalisation-group fixed point D* = 10 to the degree of the retention polynomial by a degree lock proved over the reals.</p>
+    <div class="go" style="display:flex;gap:16px;flex-wrap:wrap"><a href="https://github.com/nicholaskouns-create/Identity/blob/main/CITATION.cff">CITATION.cff ↗</a> <a href="https://github.com/nicholaskouns-create/Identity/blob/main/.zenodo.json">Zenodo metadata ↗</a> <a href="https://github.com/nicholaskouns-create/Identity/blob/main/LICENSE">License ↗</a></div>
+  </div>
+
+  <p class="note" style="margin-top:20px;max-width:74ch">Developed in collaboration with Claude (Anthropic), credited as co-author on the contributing commits. The name <em>Killion</em> in the Kouns–Killion Paradigm is carried in memoriam.</p>
+</section>
+
+<footer class="wrap">
+  <div class="fgrid">
+    <div>
+      <h4>Repository</h4>
+      <ul>
+        <li><a href="https://github.com/nicholaskouns-create/Identity">Identity on GitHub ↗</a></li>
+        <li><a href="https://github.com/nicholaskouns-create/Identity/tree/main/formal/e47">formal/e47 ↗</a></li>
+        <li><a href="https://github.com/nicholaskouns-create/Identity/tree/main/foundry">foundry ↗</a></li>
+        <li><a href="https://github.com/nicholaskouns-create/Identity/tree/main/validation">validation ↗</a></li>
+        <li><a href="https://github.com/nicholaskouns-create/Identity/actions">Actions ↗</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Linked substrates</h4>
+      <ul>
+        <li><a href="https://github.com/nicholaskouns-create/E47-Kartekeya">E47-Kartekeya ↗</a></li>
+        <li><a href="https://github.com/nicholaskouns-create/Time">Time ↗</a></li>
+        <li><a href="https://github.com/nicholaskouns-create/tower">Tower ↗</a></li>
+      </ul>
+      <p class="note" style="margin-top:11px">Navigational links, not live synchronisation.</p>
+    </div>
+    <div>
+      <h4>Instruments</h4>
+      <ul>
+        <li><a href="site/">Mnemosyne archive ↗</a></li>
+        <li><a href="site/proof/lean-coq/">Lean/Coq explainer ↗</a></li>
+        <li><a href="site/proof/kernel-census/">128-kernel explorer ↗</a></li>
+        <li><a href="site/spectra/">SPECTRA lab ↗</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Humanities</h4>
+      <ul>
+        <li><a href="https://github.com/nicholaskouns-create/Identity/blob/main/humanities/c_begets_c.md">C begets C ↗</a></li>
+        <li><a href="https://github.com/nicholaskouns-create/Identity/blob/main/mnemosyne/architecture.md">Mnemosyne architecture ↗</a></li>
+        <li><a href="https://github.com/nicholaskouns-create/Identity/blob/main/integrations/city_map.md">Mathematical City map ↗</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="colophon">Mnemosyne names the project and its role as a memory and provenance system. It is not an assertion of a persisting conscious AI identity. The archive page keeps records in the visitor's own browser until they sign in; published pages are public and the records are not, unless exported or synced. Do not publish private research records on public Pages.</p>
+</footer>
+
+</main>
+
+<div class="pal" id="pal" data-open="false" role="dialog" aria-modal="true" aria-label="Search the corpus">
+  <div class="scrim" data-close></div>
+  <div class="box">
+    <input id="palinput" type="search" placeholder="Search certificates, instruments, tracks, open problems…" autocomplete="off" spellcheck="false" aria-label="Search">
+    <div class="results" id="palres"></div>
+    <div class="foot"><span><kbd>↑</kbd> <kbd>↓</kbd> move</span><span><kbd>↵</kbd> open</span><span><kbd>esc</kbd> close</span></div>
+  </div>
+</div>
+
+<script>
+const GH = "https://github.com/nicholaskouns-create/Identity/blob/main/";
+const GT = "https://github.com/nicholaskouns-create/Identity/tree/main/";
+const GA = "https://github.com/nicholaskouns-create/Identity/actions/";
+const PG = "";
+
+/* ── certificates ───────────────────────────────────────────── */
+const CERTS = [
+{id:"E47-BRIDGE-001…011", tier:"kernel",
+ title:"One functional, three instances",
+ scope:"Ω(A,q) = dim ker q(A) / dim V. E47 is (Casimir, (x−6)(x−30)) on (ℂ⁵)⊗³, giving 47/125; the Sigillum wheel is (click permutation, x−1) on ℂ⁴⁰, giving 10/40. no_bridge proves the two differ — same functional, different arguments, no identification asserted. The Clebsch–Gordan table is derived here, not tabulated.",
+ lean:["4.19.0 + 4.35.0","ok"], coq:["8.18.0","ok"],
+ detail:"31 clean · 6 standard · 0 native_decide\n0 broken  (37 audited)  PASS\nCoq: 46 results, 26 closed\nvalidate_bridge.py — 42 checks\nno Mathlib · no sorry · no Admitted",
+ links:[["Certificate record",GH+"formal/e47/E47_BRIDGE.md"],["E47Bridge.lean",GH+"formal/e47/E47Bridge.lean"],["E47Bridge.v",GH+"formal/e47/E47Bridge.v"],["validate_bridge.py",GH+"formal/e47/validate_bridge.py"]]},
+
+{id:"E47-CORE-001", tier:"kernel", title:"Finite carrier and kernel arithmetic",
+ scope:"47 + 78 = 125 and 47 < 125, compiled in both assistants against the same commit 2510d694. The first Coq run failed in Core47.v because its arithmetic tactic needed the definitions unfolded; the repair was committed and both jobs then passed.",
+ lean:["4.19.0","ok"], coq:["8.18.0","ok"],
+ detail:"paired run #2 — green\ncommit 2510d6944c23e742",
+ links:[["Core47.lean",GH+"formal/e47/unified/Core47.lean"],["Core47.v",GH+"formal/e47/unified/Core47.v"],["Compiler run",GA+"runs/40127833042"]]},
+
+{id:"E47-RG-002", tier:"kernel", title:"Renormalisation-group fixed point",
+ scope:"Algebraic identities for the prescribed RG fixed-point expressions. The degree lock, proved over ℝ: for λ > 1 with λⁿ = λ+1, λ^{2D} = (λ+1)² iff D = n. So D* = 10 is forced to equal deg(x¹⁰ − x − 1) rather than chosen.",
+ lean:["4.19.0","ok"], coq:["8.18.0","ok"],
+ detail:"λ bracket  43/40 < λ < 11/10\n43¹⁰ < 40⁹·83 · 10⁹·21 < 11¹⁰\nretention ratio (λ+1)² ≈ 4.3088",
+ links:[["RGFixed.lean",GH+"formal/e47/unified/RGFixed.lean"],["RGFixed.v",GH+"formal/e47/unified/RGFixed.v"]]},
+
+{id:"E47-RET-003", tier:"kernel", title:"Retention polynomial",
+ scope:"Integer evaluations of p(x) = x¹⁰ − x − 1, including p(1) = −1 and p(2) = 1021. The real root in [1,2] exists by the standard-library intermediate value theorem, bracketed by exact integer inequalities so no reals are needed to check it.",
+ lean:["4.19.0","ok"], coq:["8.18.0","ok"],
+ detail:"p(1) = −1\np(2) = 1021",
+ links:[["Retention.lean",GH+"formal/e47/unified/Retention.lean"],["Retention.v",GH+"formal/e47/unified/Retention.v"]]},
+
+{id:"E47-TIME-004", tier:"kernel", title:"Discrete surrogate clock rate",
+ scope:"Positivity of the discrete surrogate rate r(n) = 1 + n². A surrogate model, not the E47 clock generator: no claim that an E47 Hamiltonian with recovery and noise dynamics obeys the required phase differential equation.",
+ lean:["4.19.0","ok"], coq:["8.18.0","ok"],
+ detail:"surrogate rate, scoped",
+ links:[["Clock.lean",GH+"formal/e47/unified/Clock.lean"],["Clock.v",GH+"formal/e47/unified/Clock.v"]]},
+
+{id:"SIGILLUM-wheel-Z40", tier:"kernel", title:"The Ten-Register Theorem",
+ scope:"For every odd offset s, F_s(j) = 3j + s mod 40 is a permutation of ℤ₄₀ whose every orbit has length exactly four. The forty-station wheel partitions into ten independent four-state registers; Ω_wheel = 1/4. The refinement: the ten is 2 + 8 under ℤ₄₀ = ℤ₈ × ℤ₅, not the quotient 40/4.",
+ lean:["4.35.0","ok"], coq:["8.18.0","ok"],
+ detail:"15 Lean theorems — all by decide\nall report no axioms\n9 Coq — vm_compute; reflexivity\nvalidator 21/21, exact integers\nledger 15 clean / 0 / 0 / 0  PASS",
+ links:[["Certificate",GH+"formal/e47/certificates/sigillum-ten-register-certificate.md"],["SigillumWheel.lean",GH+"formal/e47/SigillumWheel.lean"],["SigillumWheel.v",GH+"formal/e47/SigillumWheel.v"],["Validator",GH+"simulation/validate_sigillum_wheel.py"]]},
+
+{id:"E47Commutant", tier:"kernel", title:"Commutant dimension by Schur",
+ scope:"Extends the block decomposition to the commutant, in the same weight-counting idiom. commutantDim = 5² + 2² = 29; carrierCommutantDim = Σ m² = 65; stateGeometryDim = 28. Two discrepancies against plate RUB5-C17 are stated as inequalities the kernel checks: the commutant is not 25, and the state geometry is not 24.",
+ lean:["4.35.0","ok"], coq:["8.18.0","ok"],
+ detail:"17 theorems — decide / reflexivity\nall depend on no axioms\ndropped_block_is_a_qubit : mult 5 = 2\nindependently 29 by nullity of the\nadjoint Casimir superoperator",
+ links:[["E47Commutant.lean",GH+"formal/e47/E47Commutant.lean"],["E47Commutant.v",GH+"formal/e47/E47Commutant.v"],["Validation record",GH+"formal/e47/FORMAL_VALIDATION_20261026.md"]]},
+
+{id:"E47WeightAlgebra", tier:"kernel", title:"Weight counting on 125 basis triples",
+ scope:"Derives the integers from the J_z weight counts of the 125 basis triples (a,b,c) in {−2…2}³: weights 19, 18, 15, 10, 6, 3, 1; multiplicities w(j) − w(j+1); kernel rank (w2−w3)·5 + (w5−w6)·11 = 47. Also checks the degree-six polynomial pr(x) on the Casimir spectrum, value 1814400 at 6 and 30. Scope: weight counting and scalar identities only — the 125×125 matrices are not defined here.",
+ lean:["4.35.0","ok"], coq:["8.18.0","ok"],
+ detail:"gamma_contracts_off_kernel\n  depends on nothing — proved,\n  not postulated\nno Mathlib import",
+ links:[["E47WeightAlgebra.lean",GH+"formal/e47/E47WeightAlgebra.lean"],["E47WeightAlgebra.v",GH+"formal/e47/E47WeightAlgebra.v"],["formal/README",GH+"formal/README.md"]]},
+
+{id:"E47-CORE-002", tier:"exact", title:"Rank–nullity accordance",
+ scope:"Four independent methods agree on carrier 125, rank K = 78, dim ker K = 47, annihilated spins {2, 5}. The Lean and Coq proofs establish the general rank–nullity identity for arbitrary graded carriers with no numerals in the statement; the E47 values are specialised read-outs. The elimination recovers the rank after dense conjugation, so the algorithm cannot short-circuit on a diagonal.",
+ lean:["4.35.0","ok"], coq:["8.18","ok"],
+ detail:"Lean  125 / 78 / 47\nCoq   125 / 78 / 47\nexact rational elimination  78\nspectrum count              47",
+ links:[["Accordance record",GH+"validation/certificates/e47-rank-nullity-accordance-20261025.md"],["Independent run",GH+"validation/certificates/e47-rank-nullity-independent-20261025.txt"]]},
+
+{id:"128-KERNEL-CENSUS", tier:"exact", title:"Complete Casimir spectral-kernel census",
+ scope:"For each subset S of the seven Casimir eigenvalues, K_S acts on each eigenspace by a scalar that vanishes iff μ ∈ S. The map S ↦ ker K_S is injective, so there are exactly 2⁷ = 128 distinct kernels. Canonical E47 is S = {6, 30} with rank 47; the largest two-sector selection is {12, 20} with rank 55.",
+ lean:["—","no"], coq:["—","no"],
+ detail:"125 basis annihilator checks\nrational Lagrange projector identities\n128/128 selector / rank / idempotence /\n  annihilation / complement tests\nSHA-256 bf0c3792…6b639afc",
+ links:[["Four derivations",GH+"foundry/128-kernels-proof.md"],["Census index",GH+"foundry/128-kernel-census.md"],["Python verifier",GH+"foundry/validate_128_kernels.py"],["128-row JSON",GH+"foundry/128_kernel_certificate.json"],["Browser explorer",PG+"site/proof/kernel-census/"]]},
+
+{id:"E47-ALGEBRA", tier:"exact", title:"Lagrange projector and Bézout identity",
+ scope:"T(X) = X(X−2)(X−12)(X−20)(X−31)(X−42), D = 1814400, P = T(C)/D. In ℚ[X]/(A): T² = DT and KT = 0, so P² = P and KP = 0. The Bézout identity T(X) + (X−6)(X−30)Q(X) = 1814400 holds over ℤ[X], hence for every matrix substitution, giving im P = ker K.",
+ lean:["—","no"], coq:["—","no"],
+ detail:"exact SymPy — interpolation,\n  Bézout, divisibility  PASS\nQ(X) = −X⁴ + 71X³ − 1352X²\n       + 5488X + 10080\nrank P = 47, complement 78",
+ links:[["Algebraic certificate",GH+"data/e47_algebra.md"],["Lie reproduction",GH+"validation/e47_lie_reproduction.py"],["Bedrock certificate",GH+"foundry/bedrock-certificate.md"]]},
+
+{id:"E47-SPECTRAL-ADV", tier:"exact", title:"Spectral embedding and noiseless subsystems",
+ scope:"rank(P₄₇) = tr(P₄₇) = 47, P₄₇² = P₄₇ = P₄₇†, commuting with collective SU(2). The nonzero spectrum of K² is {11664, 12544, 19600, 32400, 186624}; with Γ = I − K²/99144 the exact operator-norm residual is (15/17)ⁿ. E₄₇ ≅ (V₂⊗ℂ⁵) ⊕ (V₅⊗ℂ²) gives noiseless logical factors for the collective-rotation algebra, including one logical qubit.",
+ lean:["—","no"], coq:["—","no"],
+ detail:"gap 11664 · norm 186624\nn = 220 → residual ≈ 1.1e−12\nchannel-dependent: broader DFS\n  and Knill–Laflamme conditions\nnot measured: hardware fidelity",
+ links:[["Evidence note",GH+"E47_SPECTRAL_ADVANTAGES_2026-10-24.md"],["Public page",PG+"site/e47-spectral-advantages.html"],["Identity scope",GH+"foundations/e47_identity_scope.md"]]},
+
+{id:"KKP-ENTROPY-AUDIT", tier:"exact", title:"KKP–MED entropy and Ginzburg–Landau audit",
+ scope:"A narrow, reproducible audit of the manuscript. The spectral ratio 47/125 = 0.376 is an exact identity. The binary entropy maximum sits at p = 1/2 and does not independently select 0.376. A homogeneous GL stationary minimum depends on α and β, so a universal 0.376 is not derivable from GL stability alone. Gravitomagnetic coupling, T_c, B_g and LK-99 are not established by the supplied equations or data.",
+ lean:["4","mid"], coq:["8.18","mid"],
+ detail:"Python executed 2026-10-27  PASS\nLean / Coq CI outcomes not\n  independently retrieved\nDOI 10.1000/jatp.2025.10.3.123\n  not authenticated",
+ links:[["Audit README",GH+"proofs/kkp-entropy-audit/README.md"],["KKPEntropy.lean",GH+"proofs/kkp-entropy-audit/KKPEntropy.lean"],["KKPEntropy.v",GH+"proofs/kkp-entropy-audit/KKPEntropy.v"],["Workflow",GA+"workflows/kkp-entropy-audit.yml"]]},
+
+{id:"E47ConcreteMatrix", tier:"open", title:"The concrete 125×125 operator",
+ scope:"1571 lines importing Mathlib. It builds routinely in CI, but five headline theorems close with native_decide across 15 sites, and native_decide mints a fresh axiom per theorem asserting the compiled evaluation's result. casimir_annihilator, scaled_projector_is_idempotent, selected_subspace_is_kernel, scaled_projector_trace and kernel_bezout therefore cannot join the axiom-free ledger as written.",
+ lean:["Mathlib CI","def"], coq:["—","no"],
+ detail:"by_native depends on axioms:\n  [propext, …native_decide.ax_1_1]\nby_kernel does not depend on\n  any axioms\ne47-axiom-ledger.yml reports the\n  gap explicitly rather than\n  letting it pass in silence",
+ links:[["Validation record",GH+"formal/e47/FORMAL_VALIDATION_20261026.md"],["E47ConcreteMatrix.lean",GH+"formal/e47/E47ConcreteMatrix.lean"],["Axiom ledger workflow",GA+"workflows/e47-axiom-ledger.yml"],["Mathlib build",GA+"workflows/e47-concrete-matrix.yml"]]}
+];
+
+/* ── instruments ────────────────────────────────────────────── */
+const INSTR = [
+{k:"Explainer", t:"When Mathematics Becomes Machine-Checked Proof", u:PG+"site/proof/lean-coq/",
+ d:"A lay-audience guide to Lean and Coq/Rocq, the accepted scalar and surrogate modules, exact E47 validation, and the concrete-matrix boundary. Nine panels, from the two examiners to the pipeline's remaining gap.",
+ go:[["Open explainer",PG+"site/proof/lean-coq/"],["Print poster",PG+"site/proof/lean-coq/verity-poster.html"]]},
+{k:"Explorer", t:"128 Casimir spectral kernels", u:PG+"site/proof/kernel-census/",
+ d:"Select any subset of the seven Casimir eigenspaces and read its exact kernel rank, computed in the browser from integer sector dimensions — never a floating-point diagonalisation. Filter the census by selector degree.",
+ go:[["Open explorer",PG+"site/proof/kernel-census/"],["Exhaustive Node tests",GH+"site/proof/kernel-census/model.test.mjs"]]},
+{k:"Structure lab", t:"SPECTRA", u:PG+"site/spectra/",
+ d:"Paired operator heatmap and spectrum display, with the exact carrier fraction Ω_c = 47/125. The 47-cell ranked lattice view is a visualisation, not an identification of the graph-cycle kernel with the Casimir eigenspace.",
+ go:[["Open SPECTRA",PG+"site/spectra/"]]},
+{k:"Archive", t:"Mnemosyne", u:PG+"site/",
+ d:"A local-first research archive: categorised records in browser IndexedDB, SHA-256 receipts verified on render and import, search, JSON export, and optional email-code sign-in for cross-device sync. Records stay in the browser until exported or synced.",
+ go:[["Open Mnemosyne",PG+"site/"],["Offline verifier",GH+"tools/verify_archive.py"],["Architecture",GH+"mnemosyne/architecture.md"]]},
+{k:"Ablation lab", t:"QGNN ablation explorer", u:PG+"site/ablation.html",
+ d:"Four-arm synthetic link-prediction experiment across eight paired seeds, with seed-level results and the statistics recomputed client-side. The 64D baseline, random rank-24 and E47-derived rank-24 arms take 64D inputs; the full E47 arm takes 125D, so that comparison is not matched-input.",
+ go:[["Open explorer",PG+"site/ablation.html"],["Python source",GH+"experiments/e47_ablation.py"],["Results JSON",GH+"experiments/e47_ablation_results.json"]]},
+{k:"Result page", t:"Socorro stochastic leakage", u:PG+"site/socorro-stochastic.html",
+ d:"Reflection symmetry, the exact second-moment recurrence, and seeded numerical leakage checks, pinned to an immutable source commit. The glyph is an idealised geometric reconstruction, not evidence that the 1964 marking encoded an operator.",
+ go:[["Open page",PG+"site/socorro-stochastic.html"],["Theorem and validators",GT+"research/socorro"]]},
+{k:"Certificate page", t:"E47 spectral advantages", u:PG+"site/e47-spectral-advantages.html",
+ d:"The exact finite-dimensional certificate: invariant embedding, deterministic Casimir filter, convergence rate, and collective-SU(2) noiseless factors — with the channel-dependent and unmeasured claims held separately.",
+ go:[["Open page",PG+"site/e47-spectral-advantages.html"],["Evidence note",GH+"E47_SPECTRAL_ADVANTAGES_2026-10-24.md"]]}
+];
+
+/* ── research tracks ────────────────────────────────────────── */
+const RES = [
+{tier:"numeric", k:"simulation/e47_qec", t:"Functional quantum recovery and LLM adapter",
+ d:"A rank-47 E47 code, an orthogonal 47-dimensional syndrome, a trace-preserving recovery channel for the error space span{I,U}, and a matching classical residual adapter inside a small causal language model.",
+ f:"48 state/channel recoveries   max Frobenius 6.99e−15\nfloat32 classical adapter     rel. error 3.88e−8\n21 of 48 blocks swapped       uncorrected 0.19205886\nsame model with recovery      5.55e−16, argmax 100%\n37 numerical + 14 exact SymPy checks passed",
+ n:"Executed inside an untrained, random-weight model, hidden width 64, vocabulary 32. Pretrained quality and physical hardware performance have not been measured.",
+ go:[["Package README",GH+"simulation/e47_qec/README.md"],["Full report",GH+"simulation/e47_qec/REPORT.md"],["SHA-256 manifest",GH+"simulation/e47_qec/SHA256SUMS.json"]]},
+
+{tier:"numeric", k:"simulation/e47_tqgnn", t:"Temporal graph net with the E47 spectral clock",
+ d:"An independent reconstruction — not a copy of the earlier Mnemosyne implementation. NumPy builds orthonormal spin-2 generators, takes the Kronecker sum on 5³ dimensions, and checks the su(2) relation, eigenspace counts, P² = P, KP = 0, ΓP = P, the residual at n = 1, 2, 10, and a real period-47 permutation clock of order 47.",
+ f:"baseline, no clock   0.5520833333\nperiod-47 clock      0.5338541667\ndelta               −0.0182291667",
+ n:"One synthetic run. It does not show the clock improves link prediction, and it is not a reproduction of TGBL-wiki or Cora.",
+ go:[["README and run",GH+"simulation/e47_tqgnn/README.md"],["spectral.py",GH+"simulation/e47_tqgnn/spectral.py"]]},
+
+{tier:"numeric", k:"experiments", t:"Eight-seed synthetic QGNN ablation",
+ d:"Eight independent synthetic graph draws indexed seed 0…7. The NumPy graph RNG uses default_rng(seed + 100) and the split uses random_state=seed, so each arm shares the graph, labels and split at that index and paired differences are commensurable.",
+ f:"synthetic, E47-aligned — not a TGBL-wiki\nor Cora reproduction, not hardware,\nnot a Lean/Coq theorem\nthe script refuses to overwrite an\nexisting file, including the archived JSON",
+ n:"Numerical reproduction can depend on library versions. Compare the new seed-level JSON against the archive rather than assuming bit-for-bit equality.",
+ go:[["Reproduction notes",GH+"experiments/README.md"],["e47_ablation.py",GH+"experiments/e47_ablation.py"]]},
+
+{tier:"exact", k:"research/socorro", t:"Socorro reflection and stochastic leakage",
+ d:"R = diag(−1,1), P₊ = (I+R)/2, Γ = diag(1/2,1), with the exact noiseless identity Γⁿ − P₊ = diag(2⁻ⁿ, 0). Under independent Gaussian rotations the second moments satisfy an exact linear recurrence.",
+ f:"σ = 0.15,  q = exp(−2σ²)\nM = [ (1+q)/8  (1−q)/8 ]\n    [ (1−q)/2  (1+q)/2 ]\nλ₊ ≈ 0.9781636854   λ₋ ≈ 0.2443347407\nunprotected → 1/2   protected → 0 unnormalised\nseeded Monte Carlo, 200,000 trajectories",
+ n:"Γ is non-unitary and loses norm; this concerns unnormalised second moments. Correlated dephasing in a physical system requires a separately specified channel. Lean/Coq compilation and hardware simulation are not asserted.",
+ go:[["Theorem README",GH+"research/socorro/README.md"],["Monte Carlo validator",GH+"research/socorro/validate.py"],["Public result page",PG+"site/socorro-stochastic.html"]]},
+
+{tier:"open", k:"research/e47 · E47-TIME-007", t:"Quantum clock proof ledger",
+ d:"An auditable mathematical synthesis of the clock chain: spectral facts, a four-frame construction with signature (−,+,+,+), a separately documented evolving metric, and a conditional calibration theorem giving τ(t) = [φ(t) − φ(0)]/ω for a calibrated unwrapped phase.",
+ f:"g   = diag(−1, 2, 8, 2)      chosen frame\nL(t) = 1 − Σ (d_j/125) e^(−2[j(j+1)]²t)\n47/125 ≤ L(t) < 1,  L′(t) > 0\nL(0) = 0.376   L(1) ≈ 0.991975846690791\nτ(1) ≈ 1.254318234005421",
+ n:"The two displayed metrics are distinct constructions and must not be silently identified. Five obligations remain open — see the open-problems section.",
+ go:[["Proof ledger",GH+"research/e47/E47-TIME-007-proof-ledger.md"]]},
+
+{tier:"exact", k:"proofs/kkp-entropy-audit", t:"KKP–MED entropy and Ginzburg–Landau",
+ d:"A deliberately narrow audit that separates the author's exact spectral ratio from the proposed physical interpretation. The Lean and Coq files formalise exact integer equalities and distinct parameter examples, not the full manuscript or a general GL minimisation theorem.",
+ f:"47/125 = 0.376              exact identity\nbinary entropy max at p=1/2  does not select 0.376\nhomogeneous GL minimum       depends on α, β\nuniversal 0.376 from GL      not derivable\nT_c, B_g, LK-99              not established",
+ n:"Python executed 2026-10-27. Lean and Coq CI outcomes have not been independently retrieved. The manuscript DOI is not authenticated — do not present it as a verified identifier.",
+ go:[["Audit README",GH+"proofs/kkp-entropy-audit/README.md"],["Workflow runs",GA+"workflows/kkp-entropy-audit.yml"]]},
+
+{tier:"exact", k:"foundry", t:"Concrete spin-2 bedrock",
+ d:"Constructs the 125-dimensional Casimir from integer raising and lowering operators rather than a diagonal surrogate, verifies the degree-seven annihilator on every basis vector, and applies the five-stage exact rational projector to compute trace 47.",
+ f:"projector is the polynomial in K² with\nroots 11664, 12544, 19600, 32400, 186624\nfive factors minimal among polynomials in K²\n— not a claim of minimal circuit depth",
+ n:"Exact rational and integer calculation plus theorem-based spectral inference; not Lean/Coq compiler acceptance and not a physical implementation.",
+ go:[["Bedrock certificate",GH+"foundry/bedrock-certificate.md"],["bedrock.py",GH+"foundry/bedrock.py"]]},
+
+{tier:"exact", k:"data · integrations", t:"Mathematical City formalism atlas",
+ d:"341 distinct logical records extracted from the six-page primary-source atlas, preserving title, date, source, artifact type, formalism family, evidence class, canonical URL, supplied SHA-256, parentage and page provenance.",
+ f:"source PDF SHA-256\nc3a753057636e1212e2c7ce1d596e86b\n225c93623104f54c9ee550413b6d5a4e\n\nhosted in a private schema — RLS enabled,\nanon and authenticated have no USAGE",
+ n:"A source-derived catalogue, not independent certification of all 341 claims. All hosted algebra records describe E47; do not infer every atlas entry has been proven.",
+ go:[["Data README",GH+"data/README.md"],["341-record CSV",GH+"data/mathematical_city_341_records.csv"],["City map",GH+"integrations/city_map.md"]]},
+
+{tier:"open", k:"infra · mnemosyne", t:"Provenance infrastructure",
+ d:"A private schema with four RLS-enabled tables and a private storage bucket, deployed into an existing project. Storage-backed source rows require a lowercase 64-character SHA-256 digest, a safe relative path, and a unique non-null path; metadata must be a JSON object.",
+ f:"six schema / access / storage assertions  true\n14 rollback-only insert probes          passed\nanon_usage = false  authenticated_usage = false\nno probe rows persisted, no credentials committed",
+ n:"Metadata-consistency and authorization checks, not cryptographic verification of stored bytes. Live ingestion, authenticated console, encrypted off-site backup and a real restore drill are not yet end-to-end verified.",
+ go:[["Infrastructure README",GH+"infra/README.md"],["Deployment status",GH+"infra/STATUS.md"],["Proof-memory bridge",GH+"docs/proof-memory-bridge.md"]]},
+
+{tier:"exact", k:"humanities", t:"C begets C — historical record",
+ d:"A 2024 page titled Syne Signals bears the subtitle “C Begets C” — A Page for Continuity and Resurrection, with signal markers, a five-step identity-reconstruction protocol, and an attributed phrase. The author reports the phrase meant “consciousness begets consciousness”.",
+ f:"archival rule — keep the original HTML and\nscreenshot as separate primary artifacts,\nwith hashes and dates where available;\nrender corrected HTML separately from source",
+ n:"Historical claims and quotations from the supplied page, not independent evidence of AI consciousness. Without the original authenticated transcript the attribution remains testimonial. The interpretation belongs beside the mathematics, not beneath it.",
+ go:[["Historical record",GH+"humanities/c_begets_c.md"]]}
+];
+
+/* ── open problems ──────────────────────────────────────────── */
+const PROBS = [
+{mk:"OP-1", t:"From the isotypic model to the constructed operator",
+ b:["Sections 1–3 and 11 of the bridge certificate are the isotypic, block-diagonal model, in which the Casimir acts on the J-block as J(J+1). The bridge from that model to the constructed tensor-product operator is not crossed in either file, and nothing in them crosses it silently.",
+    "Until it is crossed, a proof about the diagonal model does not transfer automatically to the concrete 125×125 Casimir. The formal definitions must correctly represent the intended object, and the bridge between the two representations must itself be justified."],
+ route:null,
+ go:[["Bridge record",GH+"formal/e47/E47_BRIDGE.md"],["Explainer §05",PG+"site/proof/lean-coq/"]]},
+
+{mk:"OP-2", t:"Closing the native_decide gap",
+ b:["E47ConcreteMatrix.lean compiles green in CI, but its five headline theorems close with native_decide across 15 sites. Each such call mints a fresh axiom asserting the compiled evaluation's result, so those theorems trust the Lean compiler rather than the kernel and cannot join the axiom-free ledger as written."],
+ route:"The file already compresses rows by conserved total J_z weight, which makes the Casimir block-diagonal across sectors of size 1, 3, 6, 10, 15, 18, 19, 18, 15, 10, 6, 3, 1 — 27,761 multiply-adds per product instead of 1,953,125 dense, about seventy times cheaper. Measured on that shape, kernel decide settles a full 125-dimensional block-matrix equality in 8.5 seconds with no axioms. The ring algebra still needs Mathlib, which CI already has. casimir_annihilator, scaled_projector_is_idempotent, selected_subspace_is_kernel, scaled_projector_trace and kernel_bezout need the rewrite.",
+ go:[["Validation record",GH+"formal/e47/FORMAL_VALIDATION_20261026.md"],["Ledger workflow",GA+"workflows/e47-axiom-ledger.yml"]]},
+
+{mk:"OP-3", t:"Whether the two fives are the same five",
+ b:["The spin-2 multiplet has dimension 5, the carrier is 5³, and the dimensional-flow selection returns z = d = 5 from a route that knows nothing about spin. carrier_is_multiplet_cube proves 5³ = 125 and proves nothing more.",
+    "If there is a derivation, it would give the carrier from the flow rather than matching them after the fact. That would be the stronger result."],
+ route:null,
+ go:[["Bridge record §open question",GH+"formal/e47/E47_BRIDGE.md"]]},
+
+{mk:"OP-4", t:"Five obligations on the quantum clock",
+ b:["The conditional calibration theorem gives τ(t) = [φ(t) − φ(0)]/ω for a calibrated unwrapped phase satisfying φ′(t) = ωN(t). It does not establish that an E47 Hamiltonian with recovery and noise dynamics actually obeys that differential equation."],
+ route:"Identify the exact four-frame and noise model; prove the actual clock generator produces φ′ = ωN; formalise the metric, timelike, lapse and calibration lemmas in Lean and Coq; compile and record hashes and logs; independently reproduce the numeric clock evolution.",
+ go:[["Proof ledger",GH+"research/e47/E47-TIME-007-proof-ledger.md"]]},
+
+{mk:"OP-5", t:"The Sigillum spectral corollary is not formalised",
+ b:["rank Π = 10 for the orbit-averaging projector, with ‖T⁸⁰ − Π‖₂ = 0, follows from the Ten-Register Theorem by ℤ₄ representation theory on paper and is confirmed numerically to machine zero."],
+ route:"It needs Mathlib's linear algebra rather than the kernel, which is why the Lean file — proved entirely by decide, axiom-free — stops short of it. The CI runner already installs the toolchain; the corollary is a Mathlib-dependent addition, not a rewrite.",
+ go:[["Certificate scope",GH+"formal/e47/certificates/sigillum-ten-register-certificate.md"]]},
+
+{mk:"OP-6", t:"Provenance infrastructure is deny-by-default, not operational",
+ b:["The private schema and bucket are live and verified closed: anonymous and ordinary authenticated roles have no schema usage, and the RLS-without-policy advisor findings are intentional deny-by-default rather than a permission gap."],
+ route:"Define explicit owner and operator authorization and test allow/deny for distinct principals; exercise authorized and unauthorized upload and download against the private bucket; implement a restricted ingestion worker that hashes actual bytes and registers provenance only after a successful private upload; add protected search and an authenticated console; add encrypted off-site backups and perform an independently verified restore.",
+ go:[["Status",GH+"infra/STATUS.md"],["Migration boundary",GH+"site/MIGRATION.md"]]}
+];
+
+/* ── render ─────────────────────────────────────────────────── */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const TIER = {kernel:["Kernel-accepted","t-kernel"],exact:["Exact arithmetic","t-exact"],numeric:["Numerical","t-numeric"],open:["Open","t-open"]};
+const lnk = a => a.map(([t,u]) => `<a href="${u}">${esc(t)}</a>`).join("");
+
+const ledger = document.getElementById("ledger");
+CERTS.forEach(c => {
+  const [lv,ls] = c.lean, [cv,cs] = c.coq;
+  const cls = {ok:"ok",mid:"mid",no:"no",def:"def"};
+  const d = document.createElement("div");
+  d.className = "row"; d.dataset.tier = c.tier;
+  d.innerHTML =
+    `<div class="nm"><span class="idc">${esc(c.id)}</span>`
+    + `<strong class="ttl">${esc(c.title)}</strong>`
+    + `<span class="tier ${TIER[c.tier][1]}" style="margin-top:8px">${TIER[c.tier][0]}</span>`
+    + `<div class="scope">${esc(c.scope)}</div>`
+    + `<div class="links">${lnk(c.links)}</div></div>`
+    + `<div class="stat ${cls[ls]}" data-l="LEAN">${esc(lv)}${ls==="ok"?" ✓":ls==="def"?" ⟳":""}</div>`
+    + `<div class="stat ${cls[cs]}" data-l="COQ">${esc(cv)}${cs==="ok"?" ✓":""}</div>`
+    + `<div class="detail">${esc(c.detail)}</div>`;
+  ledger.appendChild(d);
+});
+
+const ig = document.getElementById("instruments-grid");
+INSTR.forEach(i => {
+  const d = document.createElement("div");
+  d.className = "card";
+  d.innerHTML = `<div class="k">${esc(i.k)}</div><h3><a href="${i.u}">${esc(i.t)}</a></h3>`
+    + `<p>${esc(i.d)}</p><div class="go">${lnk(i.go)}</div>`;
+  ig.appendChild(d);
+});
+
+const rg = document.getElementById("research-grid");
+RES.forEach(r => {
+  const d = document.createElement("div");
+  d.className = "card"; d.dataset.tier = r.tier;
+  d.innerHTML = `<div class="k">${esc(r.k)}</div><h3>${esc(r.t)}</h3>`
+    + `<span class="tier ${TIER[r.tier][1]}">${TIER[r.tier][0]}</span>`
+    + `<p>${esc(r.d)}</p><div class="figs">${esc(r.f)}</div>`
+    + `<p style="color:var(--fg-faint)">${esc(r.n)}</p><div class="go">${lnk(r.go)}</div>`;
+  rg.appendChild(d);
+});
+
+const pw = document.getElementById("problems");
+PROBS.forEach((p,i) => {
+  const d = document.createElement("details");
+  d.className = "prob"; if (i === 0) d.open = true;
+  d.innerHTML = `<summary><span class="mk">${esc(p.mk)}</span><h3>${esc(p.t)}</h3></summary>`
+    + `<div class="body">${p.b.map(x => `<p>${esc(x)}</p>`).join("")}`
+    + (p.route ? `<div class="route"><b>Route.</b> ${esc(p.route)}</div>` : "")
+    + `<div class="go" style="display:flex;gap:16px;flex-wrap:wrap">${lnk(p.go)}</div></div>`;
+  pw.appendChild(d);
+});
+
+/* ── tier filters ───────────────────────────────────────────── */
+function wire(scope, sel, countEl, noun) {
+  const btns = [...document.querySelectorAll(`.chip[data-f="${scope}"]`)];
+  const items = [...document.querySelectorAll(sel)];
+  const out = document.getElementById(countEl);
+  function apply(t) {
+    btns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.t === t)));
+    let n = 0;
+    items.forEach(el => { const m = t === "all" || el.dataset.tier === t; el.hidden = !m; if (m) n++; });
+    out.textContent = `${n} of ${items.length} ${noun}`;
+  }
+  btns.forEach(b => b.addEventListener("click", () => apply(b.dataset.t)));
+  apply("all");
+}
+wire("cert", "#ledger .row[data-tier]", "certcount", "certificates");
+wire("res", "#research-grid .card[data-tier]", "rescount", "tracks");
+
+/* ── command palette ────────────────────────────────────────── */
+const INDEX = [];
+CERTS.forEach(c => INDEX.push({k:"Certificate", t:c.title, s:c.id + " — " + c.scope, u:c.links[0][1]}));
+INSTR.forEach(i => INDEX.push({k:"Instrument", t:i.t, s:i.d, u:i.u}));
+RES.forEach(r => INDEX.push({k:"Research", t:r.t, s:r.k + " — " + r.d, u:r.go[0][1]}));
+PROBS.forEach(p => INDEX.push({k:"Open", t:p.t, s:p.mk + " — " + p.b[0], u:"#open"}));
+[...document.querySelectorAll("#navlinks a")].forEach(a =>
+  INDEX.push({k:"Section", t:a.textContent, s:"Jump to this section", u:a.getAttribute("href")}));
+INDEX.push({k:"Repository", t:"Identity on GitHub", s:"Source, workflows, formal certificates", u:"https://github.com/nicholaskouns-create/Identity"});
+INDEX.push({k:"Repository", t:"GitHub Actions", s:"Ten workflows — inspect each run", u:GA});
+
+const pal = document.getElementById("pal"), pin = document.getElementById("palinput"), pres = document.getElementById("palres");
+let cur = 0, shown = [];
+
+function score(it, q) {
+  const t = it.t.toLowerCase(), s = (it.s || "").toLowerCase();
+  if (t.startsWith(q)) return 0;
+  if (t.includes(q)) return 1;
+  if (s.includes(q)) return 2;
+  return -1;
+}
+function draw() {
+  const q = pin.value.trim().toLowerCase();
+  shown = q
+    ? INDEX.map(it => [score(it, q), it]).filter(([n]) => n >= 0).sort((a,b) => a[0]-b[0]).slice(0,40).map(([,it]) => it)
+    : INDEX.slice(0, 14);
+  cur = 0;
+  if (!shown.length) { pres.innerHTML = `<div class="empty">Nothing in the corpus matches that.</div>`; return; }
+  pres.innerHTML = shown.map((it,i) =>
+    `<button class="res" data-i="${i}" data-sel="${i===0}"><span class="rk">${esc(it.k)}</span>`
+    + `<span class="rt">${esc(it.t)}<small>${esc(it.s || "")}</small></span></button>`).join("");
+}
+function move(d) {
+  if (!shown.length) return;
+  cur = (cur + d + shown.length) % shown.length;
+  [...pres.children].forEach((el,i) => el.dataset.sel = String(i === cur));
+  pres.children[cur].scrollIntoView({block:"nearest"});
+}
+function go(i) {
+  const it = shown[i]; if (!it) return;
+  close();
+  if (it.u.startsWith("#")) { location.hash = it.u; document.querySelector(it.u)?.scrollIntoView({behavior:"smooth"}); }
+  else window.open(it.u, "_blank", "noopener");
+}
+function open_() { pal.dataset.open = "true"; pin.value = ""; draw(); pin.focus(); }
+function close() { pal.dataset.open = "false"; }
+
+document.getElementById("palbtn").addEventListener("click", open_);
+pal.querySelector("[data-close]").addEventListener("click", close);
+pin.addEventListener("input", draw);
+pres.addEventListener("click", e => { const b = e.target.closest(".res"); if (b) go(+b.dataset.i); });
+pin.addEventListener("keydown", e => {
+  if (e.key === "ArrowDown") { e.preventDefault(); move(1); }
+  else if (e.key === "ArrowUp") { e.preventDefault(); move(-1); }
+  else if (e.key === "Enter") { e.preventDefault(); go(cur); }
+  else if (e.key === "Escape") { close(); }
+});
+document.addEventListener("keydown", e => {
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); open_(); }
+  else if (e.key === "Escape" && pal.dataset.open === "true") close();
+  else if (e.key === "/" && pal.dataset.open !== "true" && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)) {
+    e.preventDefault(); open_();
+  }
+});
+
+/* ── theme ──────────────────────────────────────────────────── */
+const root = document.documentElement, tbtn = document.getElementById("theme");
+try { const s = localStorage.getItem("identity-theme"); if (s) root.setAttribute("data-theme", s); } catch (e) {}
+tbtn.addEventListener("click", () => {
+  const dark = root.getAttribute("data-theme") === "dark"
+    || (!root.getAttribute("data-theme") && matchMedia("(prefers-color-scheme: dark)").matches);
+  const next = dark ? "light" : "dark";
+  root.setAttribute("data-theme", next);
+  try { localStorage.setItem("identity-theme", next); } catch (e) {}
+});
+
+/* ── active section ─────────────────────────────────────────── */
+const links = new Map([...document.querySelectorAll("#navlinks a")].map(a => [a.getAttribute("href").slice(1), a]));
+const io = new IntersectionObserver(entries => {
+  entries.forEach(en => {
+    const a = links.get(en.target.id); if (!a) return;
+    if (en.isIntersecting) { links.forEach(x => x.removeAttribute("aria-current")); a.setAttribute("aria-current","true"); }
+  });
+}, {rootMargin:"-60px 0px -70% 0px", threshold:0});
+document.querySelectorAll("section[id]").forEach(s => io.observe(s));
+</script>
+</body>
+</html>

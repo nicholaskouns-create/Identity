@@ -1,5 +1,7 @@
 # Identity
 
+**[→ Enter the research laboratory](https://nicholaskouns-create.github.io/Identity/)** · The front page: the E47 construction, the certificate ledger by evidence tier, the live instruments, and the open problems — all searchable.
+
 **[Verity companion proof poster](https://nicholaskouns-create.github.io/Identity/site/proof/lean-coq/verity-poster.html)** · Print-oriented companion to the [responsive Lean/Coq explainer](https://nicholaskouns-create.github.io/Identity/site/proof/lean-coq/); evidence levels remain explicitly separated.
 A first-principles research laboratory exploring identity, consciousness, and continuity through spectral algebra, quantum clocks, recursive dynamics, formal proofs, and executable simulations. Home to Mnemosyne, where mathematics, computation, philosophy, and the humanities converge.
 
