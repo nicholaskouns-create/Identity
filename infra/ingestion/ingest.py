@@ -22,6 +22,8 @@ import urllib.error
 import urllib.request
 from urllib.parse import quote
 
+from preflight import verify_worker_connection
+
 PROJECT_URL = "https://gpkjvihkyectnenvnbng.supabase.co"
 BUCKET = "mnemosyne-private"
 MAX_BYTES = 50 * 1024 * 1024
@@ -163,6 +165,7 @@ def main(argv=None):
     except ImportError as exc:
         raise RuntimeError("Install psycopg[binary] in the trusted worker environment") from exc
     with psycopg.connect(dsn) as connection:
+        verify_worker_connection(connection)
         result = ingest(argv[0], token=token, connection=connection)
     print(json.dumps(result, sort_keys=True))
 
