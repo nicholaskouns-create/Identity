@@ -1,0 +1,54 @@
+name: Eliashberg closure formal certificates
+on:
+  push:
+    paths:
+      - 'formal/eliashberg/**'
+      - '.github/workflows/eliashberg-formal.yml'
+  pull_request:
+    paths:
+      - 'formal/eliashberg/**'
+      - '.github/workflows/eliashberg-formal.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  torch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - run: python formal/eliashberg/validate_torch.py
+  lean:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install elan and pinned Lean 4.19.0
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0 --no-modify-path
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Resolve pinned Mathlib and compile
+        working-directory: formal/eliashberg
+        run: |
+          lake update
+          lake exe cache get
+          lake env lean EliashbergClosure.lean
+          printf 'import EliashbergClosure\n#print axioms EliashbergClosure.coupling_closure\n#print axioms EliashbergClosure.logarithmic_moment\n#print axioms EliashbergClosure.second_moment\n' > Audit.lean
+          lake env lean Audit.lean
+  coq:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq 8.18 and compile
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y coq
+          coqc --version
+          test "$(coqc --version | grep -oE 'version 8\.18' | head -1)" = "version 8.18"
+          coqc -Q formal/eliashberg '' formal/eliashberg/EliashbergClosure.v
