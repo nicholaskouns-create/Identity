@@ -27,12 +27,10 @@ as a classical quantum-statevector simulation.
 
 For B†=−B, U(t)=exp(tB), A(t)=U(t)AU(t)†, P(t)=U(t)PU(t)†, and γ>0:
 dψ/dt=−γA(t)ψ+[Ṗ(t),P(t)]ψ.
-The closed-form solution is ψ(t)=U(t)exp(−γAt)ψ₀ because [Ṗ,P]=B on
-kernel-to-complement blocks; the equality with B must **not** be assumed for
-arbitrary B including block-diagonal terms. For a general B, the closed-form
-expression solves the stated ODE only if B=[Ṗ,P] or its block-diagonal
-component acts trivially on the trajectory. **Our numerical implementation
-chooses B with only off-diagonal kernel/complement coupling**, so equality holds.
+The closed-form solution is ψ(t)=U(t)exp(−γAt)ψ₀ provided B has only off-diagonal kernel/complement blocks. For a general
+anti-Hermitian B, [Ṗ,P] extracts only the off-diagonal part of B; the
+closed-form formula needs a corresponding block-diagonal transport term.
+**The numerical implementation uses a purely off-diagonal B.**
 
 Consequently ||(I−P(t))ψ(t)|| ≤ exp(−γΔt)||(I−P(0))ψ₀|| where Δ=11664.
 This illustrates moving invariant-space tracking; physical biological
