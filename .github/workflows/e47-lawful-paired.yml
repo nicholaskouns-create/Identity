@@ -1,0 +1,29 @@
+name: E47 lawful canonicalization paired proofs
+on:
+  push:
+    branches: [formal/e47-lawful-canonicalization-20261029]
+  pull_request:
+    paths:
+      - 'formal/e47/lawful/**'
+      - '.github/workflows/e47-lawful-paired.yml'
+  workflow_dispatch:
+jobs:
+  lean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean 4.35 via elan
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain leanprover/lean4:v4.35.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile Lean
+        run: |
+          lean --version
+          lean formal/e47/lawful/E47Lawful.lean
+  coq:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile in Coq 8.18 container
+        run: |
+          docker run --rm -v "$PWD:/work" -w /work --user root coqorg/coq:8.18 sh -c 'coqc --version && coqc formal/e47/lawful/E47Lawful.v'

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>E47 Proof Instruments | Mathematical City</title>
+<style>
+:root{font-family:system-ui,sans-serif;color:#17233a;background:#f4f7fb}body{max-width:1000px;margin:auto;padding:2rem 1rem}h1{font-size:2rem}p{line-height:1.6}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem}.card{background:white;border:1px solid #cbd5e1;border-radius:12px;padding:1.2rem}a{color:#174ea6}small,.muted{color:#516175}.status{font-weight:700}.pass{color:#086747}.fail{color:#a01e23}.pending{color:#7c5600}code{overflow-wrap:anywhere}button{padding:.65rem 1rem;border-radius:8px;background:#183d77;color:white;border:0;cursor:pointer}button:focus-visible,a:focus-visible{outline:3px solid #d79b14;outline-offset:3px}
+</style></head><body>
+<nav><a href="../">Lean / Coq explainer</a> · <a href="../../">Proof directory</a> · <a href="https://github.com/nicholaskouns-create/Identity/pull/92">Source PR #92</a></nav>
+<h1>E47 · Independent proof instruments</h1>
+<p>Four separate evidence tracks. A browser arithmetic result is <strong>not</strong> a Lean or Coq kernel certificate. Compiler status is retrieved from GitHub, and unavailable data remains unverified.</p>
+<div class="grid">
+<section class="card"><h2>Exact browser arithmetic</h2><p id="arith" class="status">Checking…</p><p id="detail"></p><button id="recheck">Recompute</button><p><small>Checks the supplied sector dimensions, not the SU(2) decomposition theorem.</small></p></section>
+<section class="card"><h2>Lean 4</h2><p id="lean" class="status pending">Not checked</p><p><a href="https://github.com/nicholaskouns-create/Identity/blob/formal/e47-lawful-canonicalization-20261029/formal/e47/lawful/E47Lawful.lean">Lean source</a></p></section>
+<section class="card"><h2>Coq 8.18</h2><p id="coq" class="status pending">Not checked</p><p><a href="https://github.com/nicholaskouns-create/Identity/blob/formal/e47-lawful-canonicalization-20261029/formal/e47/lawful/E47Lawful.v">Coq source</a></p></section>
+<section class="card"><h2>Open bridge obligations</h2><p class="status pending">OPEN</p><p>125×125 concrete intertwiner and invertibility; independently formalized Clebsch–Gordan multiplicities; thirteen disjoint dependency-route certificates.</p></section>
+</div>
+<p id="receipt" aria-live="polite">Fetching GitHub CI metadata…</p>
+<p><a href="https://github.com/nicholaskouns-create/Identity/actions/workflows/e47-lawful-paired.yml">Paired workflow and run history</a> · <a href="https://github.com/nicholaskouns-create/Identity/actions/runs/40909824331">Initial repaired run</a></p>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+function check(){const d=[1,9,25,28,27,22,13];const sum=d.reduce((a,b)=>a+b,0),kernel=d[2]+d[5],complement=sum-kernel,ratio=kernel/sum;const ok=sum===125&&kernel===47&&complement===78&&47*1000===376*125;$("arith").textContent=ok?"PASS · exact integer identities":"FAIL · arithmetic mismatch";$("arith").className="status "+(ok?"pass":"fail");$("detail").textContent="Carrier "+sum+" · selected "+kernel+" · complement "+complement+" · Ω = "+ratio.toFixed(3);}
+$("recheck").addEventListener("click",check);check();
+const sha="75bec7c7de50cd9968d3f2646abd7096ecef2148";
+const repo="nicholaskouns-create/Identity";
+async function load(){
+try{const u="https://api.github.com/repos/"+repo+"/actions/runs?head_sha="+sha+"&per_page=30";const r=await fetch(u,{headers:{"Accept":"application/vnd.github+json"}});if(!r.ok)throw Error("GitHub API HTTP "+r.status);const data=await r.json();const run=(data.workflow_runs||[]).find(x=>x.name==="E47 lawful canonicalization paired proofs");if(!run)throw Error("No matching workflow run found");const jr=await fetch(run.jobs_url,{headers:{"Accept":"application/vnd.github+json"}});if(!jr.ok)throw Error("Job API HTTP "+jr.status);const jobs=(await jr.json()).jobs||[];for(const id of ["lean","coq"]){const job=jobs.find(j=>j.name===id);const target=$(id);const step=job?.steps?.find(s=>s.name==="Compile Lean"||s.name==="Compile in Coq 8.18 container");const pass=job?.conclusion==="success"&&step?.conclusion==="success";target.textContent=pass?"PASS · compiler completed":job?.conclusion==="failure"?"FAIL · inspect CI":job?.status==="in_progress"?"RUNNING · compiler pending":"UNVERIFIED · "+(job?.status||"no job");target.className="status "+(pass?"pass":job?.conclusion==="failure"?"fail":"pending");}
+$("receipt").replaceChildren(document.createTextNode("GitHub run "+run.id+" · "+run.status+" · "+(run.conclusion||"pending")+" · "));const a=document.createElement("a");a.href=run.html_url;a.textContent="Open immutable run receipt";$("receipt").append(a);
+}catch(e){for(const id of ["lean","coq"]){$(id).textContent="UNVERIFIED · CI status unavailable";$(id).className="status pending";}$("receipt").textContent="GitHub verification unavailable: "+e.message;}}
+load();
+</script></body></html>
