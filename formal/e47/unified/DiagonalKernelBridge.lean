@@ -139,6 +139,62 @@ theorem kernel_distinct_root_split
     v = projector e a b v := ((kernel_iff_projector_fixed e a b v).mp hv).symm
     _ = _ := distinct_root_projector_sum e a b hab v
 
+
+/-! ## MC-121 additive complementary-sector decomposition
+
+The diagonal two-root projector P has the explicit complementary
+coordinate projector Q. The identities P Q = Q P = 0 and P + Q = I
+hold over an arbitrary index type, without a finite-dimensional
+surrogate for the concrete Casimir. -/
+
+def complement (e : ι → Int) (a b : Int) (v : ι → Int) : ι → Int :=
+  fun i => if e i = a ∨ e i = b then 0 else v i
+
+theorem complement_idempotent (e : ι → Int) (a b : Int) (v : ι → Int) :
+    complement e a b (complement e a b v) = complement e a b v := by
+  funext i
+  by_cases ha : e i = a
+  · simp [complement, ha]
+  by_cases hb : e i = b
+  · simp [complement, hb]
+  · simp [complement, ha, hb]
+
+theorem projector_complement_zero (e : ι → Int) (a b : Int) (v : ι → Int) :
+    projector e a b (complement e a b v) = fun _ => 0 := by
+  funext i
+  by_cases ha : e i = a
+  · simp [projector, complement, ha]
+  by_cases hb : e i = b
+  · simp [projector, complement, hb]
+  · simp [projector, complement, ha, hb]
+
+theorem complement_projector_zero (e : ι → Int) (a b : Int) (v : ι → Int) :
+    complement e a b (projector e a b v) = fun _ => 0 := by
+  funext i
+  by_cases ha : e i = a
+  · simp [projector, complement, ha]
+  by_cases hb : e i = b
+  · simp [projector, complement, hb]
+  · simp [projector, complement, ha, hb]
+
+theorem projector_complement_sum (e : ι → Int) (a b : Int) (v : ι → Int) :
+    (fun i => projector e a b v i + complement e a b v i) = v := by
+  funext i
+  by_cases ha : e i = a
+  · simp [projector, complement, ha]
+  by_cases hb : e i = b
+  · simp [projector, complement, hb]
+  · simp [projector, complement, ha, hb]
+
+theorem filter_complement_eq_filter (e : ι → Int) (a b : Int) (v : ι → Int) :
+    filter e a b (complement e a b v) = filter e a b v := by
+  funext i
+  by_cases ha : e i = a
+  · simp [filter, complement, ha]
+  by_cases hb : e i = b
+  · simp [filter, complement, hb]
+  · simp [filter, complement, ha, hb]
+
 end E47DiagonalSelector
 
 #print axioms E47DiagonalSelector.projector_idempotent
@@ -150,3 +206,8 @@ end E47DiagonalSelector
 #print axioms E47DiagonalSelector.distinct_root_projectors_orthogonal
 #print axioms E47DiagonalSelector.distinct_root_projector_sum
 #print axioms E47DiagonalSelector.kernel_distinct_root_split
+#print axioms E47DiagonalSelector.complement_idempotent
+#print axioms E47DiagonalSelector.projector_complement_zero
+#print axioms E47DiagonalSelector.complement_projector_zero
+#print axioms E47DiagonalSelector.projector_complement_sum
+#print axioms E47DiagonalSelector.filter_complement_eq_filter

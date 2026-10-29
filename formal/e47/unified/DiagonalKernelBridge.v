@@ -130,6 +130,60 @@ Proof.
   lia.
 Qed.
 
+
+(* MC-121 complementary-sector decomposition.
+   P and Q are complementary coordinate projectors in a supplied
+   eigenbasis. This does not identify the concrete Casimir eigenspaces. *)
+Definition complement (v : I -> Z) (i : I) : Z :=
+  if Z.eq_dec (eigen i) a then 0
+  else if Z.eq_dec (eigen i) b then 0 else v i.
+
+Theorem complement_idempotent :
+  forall (v : I -> Z) (i : I),
+    complement (complement v) i = complement v i.
+Proof.
+  intros v i. unfold complement.
+  destruct (Z.eq_dec (eigen i) a); [reflexivity|].
+  destruct (Z.eq_dec (eigen i) b); reflexivity.
+Qed.
+
+Theorem projector_complement_zero :
+  forall (v : I -> Z) (i : I), projector (complement v) i = 0.
+Proof.
+  intros v i. unfold projector, complement.
+  destruct (Z.eq_dec (eigen i) a); [reflexivity|].
+  destruct (Z.eq_dec (eigen i) b); reflexivity.
+Qed.
+
+Theorem complement_projector_zero :
+  forall (v : I -> Z) (i : I), complement (projector v) i = 0.
+Proof.
+  intros v i. unfold projector, complement.
+  destruct (Z.eq_dec (eigen i) a); [reflexivity|].
+  destruct (Z.eq_dec (eigen i) b); reflexivity.
+Qed.
+
+Theorem projector_complement_sum :
+  forall (v : I -> Z) (i : I),
+    projector v i + complement v i = v i.
+Proof.
+  intros v i. unfold projector, complement.
+  destruct (Z.eq_dec (eigen i) a); [lia|].
+  destruct (Z.eq_dec (eigen i) b); lia.
+Qed.
+
+Theorem filter_complement_eq_filter :
+  forall (v : I -> Z) (i : I),
+    filter (complement v) i = filter v i.
+Proof.
+  intros v i. unfold filter, complement.
+  destruct (Z.eq_dec (eigen i) a) as [ha|ha].
+  - rewrite ha. ring.
+  - destruct (Z.eq_dec (eigen i) b) as [hb|hb].
+    + rewrite hb. ring.
+    + reflexivity.
+Qed.
+
 End GeneralDiagonal.
 
 Print Assumptions projector_idempotent.
@@ -141,3 +195,8 @@ Print Assumptions root_projector_idempotent.
 Print Assumptions distinct_root_projectors_orthogonal.
 Print Assumptions distinct_root_projector_sum.
 Print Assumptions kernel_distinct_root_split.
+Print Assumptions complement_idempotent.
+Print Assumptions projector_complement_zero.
+Print Assumptions complement_projector_zero.
+Print Assumptions projector_complement_sum.
+Print Assumptions filter_complement_eq_filter.
