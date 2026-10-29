@@ -26,4 +26,4 @@ jobs:
       - uses: actions/checkout@v4
       - name: Compile in Coq 8.18 container
         run: |
-          docker run --rm -v "$PWD:/work" -w /work coqorg/coq:8.18 sh -c 'coqc --version && coqc formal/e47/lawful/E47Lawful.v'
+          docker run --rm -v "$PWD:/work" -w /work coqorg/coq:8.18 sh -c 'coqc --version && mkdir -p /tmp/e47-proof && cp formal/e47/lawful/E47Lawful.v /tmp/e47-proof/ && cd /tmp/e47-proof && coqc E47Lawful.v'
