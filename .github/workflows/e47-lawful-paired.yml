@@ -1,0 +1,28 @@
+name: E47 lawful canonicalization paired proofs
+on:
+  push:
+    branches: [formal/e47-lawful-canonicalization-20261029]
+  pull_request:
+    paths:
+      - 'formal/e47/lawful/**'
+      - '.github/workflows/e47-lawful-paired.yml'
+  workflow_dispatch:
+jobs:
+  lean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          lean-version: '4.35.0'
+          build: false
+          test: false
+      - name: Compile Lean theorem file
+        run: lean formal/e47/lawful/E47Lawful.lean
+  coq:
+    runs-on: ubuntu-latest
+    container: coqorg/coq:8.18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile Coq theorem file
+        run: coqc formal/e47/lawful/E47Lawful.v
