@@ -80,6 +80,56 @@ Proof.
         rewrite H. ring.
 Qed.
 
+
+(* Additive MC-121 root-space splitting for two distinct integer roots.
+   These are coordinate projectors in a supplied eigenbasis, not a
+   diagonalization of the concrete 125-by-125 Casimir. *)
+Definition root_projector (r : Z) (v : I -> Z) (i : I) : Z :=
+  if Z.eq_dec (eigen i) r then v i else 0.
+
+Theorem root_projector_idempotent :
+  forall (r : Z) (v : I -> Z) (i : I),
+    root_projector r (root_projector r v) i = root_projector r v i.
+Proof.
+  intros r v i. unfold root_projector.
+  destruct (Z.eq_dec (eigen i) r); reflexivity.
+Qed.
+
+Theorem distinct_root_projectors_orthogonal :
+  a <> b -> forall (v : I -> Z) (i : I),
+    root_projector a (root_projector b v) i = 0.
+Proof.
+  intros hab v i. unfold root_projector.
+  destruct (Z.eq_dec (eigen i) a) as [ha|ha].
+  - destruct (Z.eq_dec (eigen i) b) as [hb|hb].
+    + exfalso. apply hab. lia.
+    + reflexivity.
+  - reflexivity.
+Qed.
+
+Theorem distinct_root_projector_sum :
+  a <> b -> forall (v : I -> Z) (i : I),
+    projector v i = root_projector a v i + root_projector b v i.
+Proof.
+  intros hab v i. unfold projector, root_projector.
+  destruct (Z.eq_dec (eigen i) a) as [ha|ha].
+  - destruct (Z.eq_dec (eigen i) b) as [hb|hb].
+    + exfalso. apply hab. lia.
+    + lia.
+  - destruct (Z.eq_dec (eigen i) b) as [hb|hb]; lia.
+Qed.
+
+Theorem kernel_distinct_root_split :
+  a <> b -> forall (v : I -> Z) (i : I),
+    (forall j, filter v j = 0) ->
+    v i = root_projector a v i + root_projector b v i.
+Proof.
+  intros hab v i hv.
+  pose proof (proj1 (kernel_iff_projector_fixed v) hv i) as hp.
+  pose proof (distinct_root_projector_sum hab v i) as hs.
+  lia.
+Qed.
+
 End GeneralDiagonal.
 
 Print Assumptions projector_idempotent.
@@ -87,3 +137,7 @@ Print Assumptions filter_projector_zero.
 Print Assumptions projector_filter_zero.
 Print Assumptions projector_commutes_diagonal.
 Print Assumptions kernel_iff_projector_fixed.
+Print Assumptions root_projector_idempotent.
+Print Assumptions distinct_root_projectors_orthogonal.
+Print Assumptions distinct_root_projector_sum.
+Print Assumptions kernel_distinct_root_split.
