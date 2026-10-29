@@ -23,3 +23,9 @@ If registration fails after successful upload, an unregistered object can remain
 Localhost integration tests and rollback-only live SQL checks verify code behavior and the deployed table's SQL contract. They do not establish real hosted Storage upload/download, restricted-login connectivity, operator authorization, encrypted backups, or restore. A production rollout requires separately provisioned least-privilege credentials and an authorized, non-sensitive test object with a successful hosted readback and registration.
 
 The `mnemosyne_private` schema remains inaccessible to anonymous and ordinary authenticated clients. No public endpoint or RLS policy is created.
+
+## Private metadata search (2026-10-27)
+
+Run `MNEMOSYNE_DB_DSN=... python infra/ingestion/search.py "search term" --limit 20` in a trusted operator environment with a restricted PostgreSQL SELECT login. Search covers registered title, optional metadata description, and exact SHA-256 digest. Results contain only id, title, digest, evidence class and timestamp. Search is bounded to 1–100 rows, uses parameterized SQL, escapes LIKE metacharacters, sets the transaction READ ONLY and a 5-second statement timeout. No public endpoint, browser connection, storage path, document body, or privileged credential is introduced.
+
+The existing private ingestion test workflow discovers `test_search.py` alongside ingestion tests. Run `python -m unittest discover -s infra/ingestion -p 'test_*.py' -v` for secret-free tests. This is metadata-only search, not document extraction, full-text indexing, or a deployed owner-authorized research API.
