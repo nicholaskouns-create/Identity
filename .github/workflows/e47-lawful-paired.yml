@@ -12,17 +12,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: leanprover/lean-action@v1
-        with:
-          lean-version: '4.35.0'
-          build: false
-          test: false
-      - name: Compile Lean theorem file
-        run: lean formal/e47/lawful/E47Lawful.lean
+      - name: Install Lean 4.35 via elan
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain leanprover/lean4:v4.35.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile Lean
+        run: |
+          lean --version
+          lean formal/e47/lawful/E47Lawful.lean
   coq:
     runs-on: ubuntu-latest
-    container: coqorg/coq:8.18
     steps:
       - uses: actions/checkout@v4
-      - name: Compile Coq theorem file
-        run: coqc formal/e47/lawful/E47Lawful.v
+      - name: Compile in Coq 8.18 container
+        run: |
+          docker run --rm -v "$PWD:/work" -w /work --user root coqorg/coq:8.18 sh -c 'coqc --version && coqc formal/e47/lawful/E47Lawful.v'
