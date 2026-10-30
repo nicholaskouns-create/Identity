@@ -34,6 +34,16 @@ class PaperPinTests(unittest.TestCase):
         paper = next(r for r in DATA["repairs"] if r["id"] == "paper")
         self.assertEqual(paper["redirects"][0]["href"], PAPER)
 
+    def test_merged_tower_pin_provenance_is_current(self):
+        tower = next(s for s in DATA["stations"] if s["slug"] == "tower")
+        paper = next(r for r in DATA["repairs"] if r["id"] == "paper")
+        self.assertIn("Tower PR #5 merged an immutable pin", tower["gist"])
+        self.assertIn("Merged Tower PR #5 now pins", paper["why"])
+        self.assertIn(COMMIT, paper["why"])
+        self.assertIn("research/fib-lucas-tower-paper", paper["why"])
+        self.assertNotIn("already checks that branch as a fallback", paper["why"])
+        self.assertNotIn("which Tower already checks as a fallback", tower["gist"])
+
     def test_historical_failures_and_validator_preserved(self):
         self.assertEqual(len(DATA["repairs"]), 4)
         paper = next(r for r in DATA["repairs"] if r["id"] == "paper")
