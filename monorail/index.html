@@ -160,10 +160,12 @@ function station(slug){
   const s = DATA.stations.find(x => x.slug === slug);
   if (!s) return missing("No such door");
   const exits = s.links.map(l => {
+    // A historical 401 is an authorization boundary, not a locally replaced source.
+    const restricted = l.state === "repaired" && DATA.repairs.some(r => r.id === l.repair && r.status === "401");
     const dest = l.state === "repaired" && l.repair
-      ? `<a class="mono warn" href="#/repair/${esc(l.repair)}">Replaced locally</a>`
+      ? `<a class="mono warn" href="#/repair/${esc(l.repair)}">${restricted ? "Owner-only source · public alternatives" : "Repair details"}</a>`
       : `<a class="mono faint" href="${esc(l.href)}">${esc(l.href.replace(/^https:\/\//,""))}</a>`;
-    const tag = l.state === "live" ? `<span class="mono ok">Live</span>` : `<span class="mono warn">Repair</span>`;
+    const tag = l.state === "live" ? `<span class="mono ok">Live</span>` : restricted ? `<span class="mono warn">Restricted</span>` : `<span class="mono warn">Repair</span>`;
     return `<li><span style="min-width:0"><span style="display:block">${esc(l.label)}</span>${dest}</span>${tag}</li>`;
   }).join("");
   return `
@@ -183,16 +185,18 @@ function station(slug){
 function repair(id){
   const r = DATA.repairs.find(x => x.id === id);
   if (!r) return missing("No such repair");
+  const restricted = r.status === "401";
   const dest = r.redirects.map(d =>
     `<li style="display:block"><a href="${esc(d.href)}"><span style="display:block">${esc(d.label)}</span><span class="mono faint">${esc(d.href.replace(/^https:\/\//,""))}</span></a></li>`
   ).join("");
   return `
     <a class="kicker" href="#/">Corpus</a>
-    <p class="mono bad" style="margin-top:1rem;font-size:.75rem">${esc(r.status)} · replaced locally</p>
+    <p class="mono bad" style="margin-top:1rem;font-size:.75rem">${esc(r.status)} · ${restricted ? "restricted source, not replaced" : "historical broken link"}</p>
     <h1>${esc(r.title)}</h1>
     <p style="max-width:36rem">${esc(r.why)}</p>
     <p class="mono faint" style="font-size:.75rem;word-break:break-all">${esc(r.failed)}</p>
     <p class="dim" style="font-size:.9rem">Found on ${esc(r.foundOn)}.</p>
+    ${restricted ? `<p class="dim" style="font-size:.9rem">Google Drive permission metadata checked 30 October 2026: owner-only. Whether this restriction was intentional is unknown. The public links below are separate records, not a replacement for or validation of the restricted file.</p>` : ""}
     <div class="note" style="margin-top:1.5rem"><p class="faint" style="font-size:.85rem">Construction</p><p>${esc(r.construction)}</p></div>
     <h2 style="margin-top:2rem">Where to go instead</h2>
     <ul class="exits">${dest}</ul>`;
