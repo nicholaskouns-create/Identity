@@ -53,10 +53,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # E47ConcreteMatrix and E47Kernel29 both `import Mathlib`, so neither can be
-          # audited by a bare `lean`; both are handled by the concrete-ledger job below.
+          # All three files importing Mathlib must use the pinned Lake environment.
+          # Fail on partition drift rather than silently skipping future imports.
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          root = Path("formal/e47")
+          actual = {p.name for p in root.rglob("*.lean")
+                    if re.search(r"(?m)^\s*import\s+Mathlib(?:\s|$)", p.read_text())}
+          expected = {"E47ConcreteMatrix.lean", "E47Kernel29.lean", "E47Richardson.lean"}
+          assert actual == expected, f"Mathlib audit partition drift: {sorted(actual ^ expected)}"
+          print("Mathlib files routed to Lake:", ", ".join(sorted(actual)))
+          PY
           mapfile -t FILES < <(find formal/e47 -name '*.lean' \
-            ! -name 'E47ConcreteMatrix.lean' ! -name 'E47Kernel29.lean' | sort)
+            ! -name 'E47ConcreteMatrix.lean' ! -name 'E47Kernel29.lean' \
+            ! -name 'E47Richardson.lean' | sort)
           python3 scripts/axiom_ledger.py "${FILES[@]}" | tee axiom-ledger-core.txt
       - uses: actions/upload-artifact@v4
         if: always()
@@ -64,10 +75,10 @@ jobs:
           name: axiom-ledger-core
           path: axiom-ledger-core.txt
 
-  # Mathlib file: needs the compilation cache, so it runs separately and
-  # carries its native_decide gap explicitly.
+  # Mathlib files need the compilation cache; only E47ConcreteMatrix is
+  # allowed a tracked native_decide gap. Richardson must remain kernel-audited.
   concrete-ledger:
-    name: E47ConcreteMatrix — native_decide tracked, not silent
+    name: Mathlib certificates — native_decide tracked only in concrete matrix
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
@@ -96,9 +107,48 @@ jobs:
           python3 ../../scripts/axiom_ledger.py \
             --lean-cmd "lake env lean" \
             --allow-native ../e47/E47ConcreteMatrix.lean \
-            ../e47/E47ConcreteMatrix.lean ../e47/E47Kernel29.lean | tee ../../axiom-ledger-concrete.txt
+            ../e47/E47ConcreteMatrix.lean ../e47/E47Kernel29.lean \
+            ../e47/E47Richardson.lean | tee ../../axiom-ledger-concrete.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: axiom-ledger-concrete
           path: axiom-ledger-concrete.txt
+
+  # Paired Coq compilation for the Richardson file merged in PR #95.
+  # The previous green formal-validation workflow did not compile this file.
+  richardson-coq:
+    name: Richardson Coq 8.18 — compile and audit assumptions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq coq
+          coqc --version
+      - name: Compile seven Richardson theorems and print assumptions
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmp="$(mktemp -d)"
+          trap 'rm -rf "$tmp"' EXIT
+          cp formal/e47/E47Richardson.v "$tmp/E47Richardson.v"
+          cat >> "$tmp/E47Richardson.v" <<'COQ'
+          Print Assumptions E47Richardson.step_minimax.
+          Print Assumptions E47Richardson.stability_lower.
+          Print Assumptions E47Richardson.stability_upper.
+          Print Assumptions E47Richardson.slow_sector.
+          Print Assumptions E47Richardson.fast_sector.
+          Print Assumptions E47Richardson.retained_sector.
+          Print Assumptions E47Richardson.normalized_identity.
+          COQ
+          (cd "$tmp" && coqc -q E47Richardson.v) | tee coq-richardson-assumptions.txt
+          test "$(grep -c 'Closed under the global context' coq-richardson-assumptions.txt)" -eq 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coq-richardson-assumptions
+          path: coq-richardson-assumptions.txt
