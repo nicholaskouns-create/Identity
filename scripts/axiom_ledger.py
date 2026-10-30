@@ -38,7 +38,8 @@ from pathlib import Path
 
 STANDARD = {"propext", "Classical.choice", "Quot.sound"}
 NATIVE_PAT = re.compile(r"ofReduceBool|native_decide\.ax|ofReduceNat")
-AXLINE = re.compile(r"^'([^']+)' (?:depends on axioms: \[(.*)\]|does not depend on any axioms)")
+AXLINE = re.compile(r"'([^']+)' (?:depends on axioms: \[(.*)\]|does not depend on any axioms)")
+SOURCE_PRINT = re.compile(r"(?m)^\s*#print\s+axioms\s+([\w.]+)\s*(?:--.*)?$")
 SOURCE_BAD = re.compile(r"(^|\s)(sorry|admit)(\s|$)")
 SOURCE_AXIOM = re.compile(r"^\s*axiom\s+\w+", re.M)
 
@@ -49,7 +50,7 @@ def classify(axioms: list[str]) -> str:
     if any("sorryAx" in a for a in axioms):
         return "BROKEN"
     if any(NATIVE_PAT.search(a) for a in axioms):
-        return "NATIVE"
+        return "NATIVE" if all(a in STANDARD or NATIVE_PAT.search(a) for a in axioms) else "BROKEN"
     if set(axioms) <= STANDARD:
         return "STANDARD"
     return "BROKEN"
@@ -87,6 +88,8 @@ def main() -> int:
     ap.add_argument("--allow-native", action="append", default=[],
                     help="file permitted to carry native_decide axioms (tracked, not silent)")
     ap.add_argument("--timeout", type=int, default=2400)
+    ap.add_argument("--min-audits", type=int, default=0,
+                    help="fail if fewer theorem axiom reports are parsed")
     args = ap.parse_args()
 
     allow = {Path(a).name for a in args.allow_native}
@@ -105,6 +108,7 @@ def main() -> int:
             continue
 
         failures.extend(check_source(path))
+        expected_prints = SOURCE_PRINT.findall(path.read_text(encoding="utf-8"))
 
         rc, out = run_lean(path, args.lean_cmd, args.timeout)
         if rc != 0:
@@ -117,7 +121,7 @@ def main() -> int:
 
         rows = []
         for line in out.splitlines():
-            m = AXLINE.match(line.strip())
+            m = AXLINE.search(line.strip())
             if not m:
                 continue
             name, ax = m.group(1), m.group(2)
@@ -133,6 +137,16 @@ def main() -> int:
                 else:
                     failures.append(f"{path}: {name} closed by native_decide (not kernel-checked)")
 
+        if len(rows) != len(expected_prints):
+            failures.append(f"{path}: axiom output mismatch: {len(rows)} parsed for "
+                            f"{len(expected_prints)} #print axioms directives; "
+                            f"compiler output tail: {out[-1000:]!r}")
+        else:
+            for printed, (reported, _, _) in zip(expected_prints, rows):
+                if reported != printed and not reported.endswith("." + printed):
+                    failures.append(f"{path}: axiom theorem mismatch: "
+                                    f"requested {printed}, reported {reported}")
+
         flag = "  [native allowed here]" if path.name in allow else ""
         print(f"\n  {path}{flag}")
         if not rows:
@@ -143,6 +157,8 @@ def main() -> int:
 
     print("\n" + "=" * 78)
     total = sum(tally.values())
+    if total < args.min_audits:
+        failures.append(f"axiom audit coverage: {total} < required {args.min_audits}")
     print(f"  {tally['CLEAN']} clean   {tally['STANDARD']} standard-axioms   "
           f"{tally['NATIVE']} native_decide   {tally['BROKEN']} broken   ({total} audited)")
 
