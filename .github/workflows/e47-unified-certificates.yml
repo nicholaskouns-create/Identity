@@ -24,7 +24,7 @@ jobs:
             lean "$f"
           done
   coq:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: Install Coq compiler
@@ -34,7 +34,8 @@ jobs:
       - name: Compile seven Coq modules
         run: |
           set -euxo pipefail
-          coqc --version
+          coqc --version | tee coq-unified-version.txt
+          grep -Fq 'version 8.18.0' coq-unified-version.txt
           : > coq-unified-assumptions.txt
           for f in formal/e47/unified/{Core47,RGFixed,Retention,Clock,EncodedOracle,Spin2Generators,Tensor125}.v; do
             coqc "$f" | tee -a coq-unified-assumptions.txt
@@ -50,6 +51,7 @@ jobs:
           name: coq-unified-assumption-audit
           path: |
             coq-unified-assumptions.txt
+            coq-unified-version.txt
             coq-unified-sha256.txt
             coq-unified-commit.txt
 
