@@ -243,6 +243,17 @@ theorem concreteCasimirZ_next_five_columns :
         concreteCasimirEntry i (nextFiveColumn j) = 0 := by
   decide
 
+/-! ## Concrete Casimir centrality [C,Z], columns 10..14
+All 625 entries use the original 125-term D*U product in C.
+This finite block extends the earlier 0..9 certificates. Columns 15..124
+and [C,U], [C,D] remain separate formal obligations. -/
+theorem concreteCasimirZ_columns_ten_through_fourteen :
+    ∀ i : Fin 125, ∀ j : Fin 5,
+      (totalZ i i -
+        totalZ (columnsTenThroughFourteen j) (columnsTenThroughFourteen j)) *
+        concreteCasimirEntry i (columnsTenThroughFourteen j) = 0 := by
+  decide
+
 end E47Tensor125
 
 #print axioms E47Tensor125.totalZ_up_bracket_entries
@@ -273,3 +284,5 @@ end E47Tensor125
 
 #print axioms E47Tensor125.concreteCasimirZ_first_five_columns
 #print axioms E47Tensor125.concreteCasimirZ_next_five_columns
+
+#print axioms E47Tensor125.concreteCasimirZ_columns_ten_through_fourteen
