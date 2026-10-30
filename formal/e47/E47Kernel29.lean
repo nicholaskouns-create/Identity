@@ -28,3 +28,8 @@ theorem qubit_algebra_eq : logicalOperatorDim = 4 := by
   norm_num [logicalOperatorDim, logicalDim]
 
 end E47Kernel29
+
+#print axioms E47Kernel29.carrier_eq
+#print axioms E47Kernel29.selected_eq
+#print axioms E47Kernel29.intertwiner_eq
+#print axioms E47Kernel29.qubit_algebra_eq
