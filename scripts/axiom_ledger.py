@@ -38,7 +38,7 @@ from pathlib import Path
 
 STANDARD = {"propext", "Classical.choice", "Quot.sound"}
 NATIVE_PAT = re.compile(r"ofReduceBool|native_decide\.ax|ofReduceNat")
-AXLINE = re.compile(r"'([^']+)' (?:depends on axioms: \[(.*)\]|does not depend on any axioms)")
+AXLINE = re.compile(r"'([^']+)' (?:depends on axioms: \\[([^\\]]*)\\]|does not depend on any axioms)", re.DOTALL)
 SOURCE_PRINT = re.compile(r"(?m)^\s*#print\s+axioms\s+([\w.]+)\s*(?:--.*)?$")
 SOURCE_BAD = re.compile(r"(^|\s)(sorry|admit)(\s|$)")
 SOURCE_AXIOM = re.compile(r"^\s*axiom\s+\w+", re.M)
@@ -120,10 +120,7 @@ def main() -> int:
             failures.append(f"{path}: compiler reports a declaration uses sorry")
 
         rows = []
-        for line in out.splitlines():
-            m = AXLINE.search(line.strip())
-            if not m:
-                continue
+        for m in AXLINE.finditer(out):
             name, ax = m.group(1), m.group(2)
             axioms = [a.strip() for a in ax.split(",")] if ax else []
             verdict = classify(axioms)
