@@ -1,0 +1,35 @@
+name: Murmuration public feed
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+permissions:
+  contents: write
+concurrency:
+  group: murmuration-public-feed
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate adapter
+        run: python -m unittest discover -s tests -p 'test_murmuration_sync.py'
+      - name: Collect public source metadata
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python tools/murmuration_sync.py
+      - name: Commit only changed feed
+        run: |
+          git add murmuration/feed.json
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'data: refresh public Murmuration source feed'
+          git push
