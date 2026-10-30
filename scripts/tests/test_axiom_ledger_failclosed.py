@@ -24,8 +24,8 @@ class AxiomLedgerParserTests(unittest.TestCase):
 
     def test_multiline_native_axiom_report(self):
         output = ("info: source:4:1: 'E47Concrete.kernel_bezout' depends on axioms: "
-                  "[propext,\\n Classical.choice,\\n "
-                  "kernel_bezout._native.native_decide.ax_1_1]\\n")
+                  "[propext,\n Classical.choice,\n "
+                  "kernel_bezout._native.native_decide.ax_1_1]\n")
         matches = list(ledger.AXLINE.finditer(output))
         self.assertEqual(len(matches), 1)
         self.assertEqual(matches[0].group(1), "E47Concrete.kernel_bezout")
