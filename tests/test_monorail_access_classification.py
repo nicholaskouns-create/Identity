@@ -113,6 +113,30 @@ class MonorailRestrictedAccessTest(unittest.TestCase):
         self.assertNotIn("four broken links replaced locally", HTML)
         self.assertNotIn("Only what failed is replaced", HTML)
 
+    def test_pending_highlighter_station_discloses_404_and_proposal(self):
+        """Actual station renderer must not hide the failed source or imply a merge."""
+        import subprocess
+
+        esc_js = next(line for line in HTML.splitlines() if line.startswith("function esc(s)"))
+        station_js = "function station(slug){" + HTML.split("function station(slug){", 1)[1].split(
+            "\nfunction repair(id){", 1
+        )[0]
+        program = (
+            "const DATA = " + json.dumps(DATA) + ";\n"
+            + esc_js + "\n" + station_js + "\n"
+            + "console.log(station('tower'));"
+        )
+        rendered = subprocess.run(
+            ["node", "-e", program], check=True, capture_output=True, text=True
+        ).stdout
+        highlighter = next(r for r in DATA["repairs"] if r["id"] == "highlight")
+        self.assertIn("Historical 404: " + highlighter["failed"], rendered)
+        self.assertIn('href="' + highlighter["redirects"][0]["href"] + '"', rendered)
+        self.assertIn("Proposed same-version bundle · not deployed", rendered)
+        self.assertIn("Pending merge", rendered)
+        self.assertIn('href="#/repair/highlight"', rendered)
+        self.assertNotIn('href="' + highlighter["failed"] + '"', rendered)
+
     def test_original_404_repair_path_remains(self):
         self.assertIn('r.status === "401"', HTML)
         self.assertIn('historical broken link', HTML)
