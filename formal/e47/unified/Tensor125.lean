@@ -214,6 +214,46 @@ theorem thirdBracketColumnPartition_exact :
     thirdBracketColumnPartition = List.range 125 := by
   decide
 
+
+/-! ## First concrete Casimir centrality block: [C,Z] columns 0..4
+
+C = D*U + Z*(Z+I), with the *actual* 125-term D*U matrix product.
+Since Z is diagonal, [C,Z]ᵢⱼ = (Zⱼⱼ-Zᵢᵢ)Cᵢⱼ.
+The finite equality below checks every row and columns 0..4.
+This is not the full 125-column centrality theorem, nor a spectral claim. -/
+
+def concreteCasimirEntry (i j : Fin 125) : Int :=
+  mulEntry totalDown totalUp i j +
+    (if i = j then totalZ i i * (totalZ i i + 1) else 0)
+
+theorem concreteCasimirZ_first_five_columns :
+    ∀ i : Fin 125, ∀ j : Fin 5,
+      (totalZ i i -
+        totalZ (firstFiveColumn j) (firstFiveColumn j)) *
+        concreteCasimirEntry i (firstFiveColumn j) = 0 := by
+  decide
+
+/-! ## Concrete Casimir centrality [C,Z], columns 5..9
+The entry uses the same 125-term D*U product and diagonal Z correction
+as the first block. All 125 rows are checked; no spectral assumption. -/
+theorem concreteCasimirZ_next_five_columns :
+    ∀ i : Fin 125, ∀ j : Fin 5,
+      (totalZ i i -
+        totalZ (nextFiveColumn j) (nextFiveColumn j)) *
+        concreteCasimirEntry i (nextFiveColumn j) = 0 := by
+  decide
+
+/-! ## Concrete Casimir centrality [C,Z], columns 10..14
+All 625 entries use the original 125-term D*U product in C.
+This finite block extends the earlier 0..9 certificates. Columns 15..124
+and [C,U], [C,D] remain separate formal obligations. -/
+theorem concreteCasimirZ_columns_ten_through_fourteen :
+    ∀ i : Fin 125, ∀ j : Fin 5,
+      (totalZ i i -
+        totalZ (columnsTenThroughFourteen j) (columnsTenThroughFourteen j)) *
+        concreteCasimirEntry i (columnsTenThroughFourteen j) = 0 := by
+  decide
+
 end E47Tensor125
 
 #print axioms E47Tensor125.totalZ_up_bracket_entries
@@ -241,3 +281,8 @@ end E47Tensor125
 #print axioms E47Tensor125.candidateCasimirSpectrum_exact
 #print axioms E47Tensor125.candidateCasimirMoments
 #print axioms E47Tensor125.candidateCasimirFirstMomentMatchesConcreteTrace
+
+#print axioms E47Tensor125.concreteCasimirZ_first_five_columns
+#print axioms E47Tensor125.concreteCasimirZ_next_five_columns
+
+#print axioms E47Tensor125.concreteCasimirZ_columns_ten_through_fourteen
