@@ -1,4 +1,4 @@
-From Coq Require Import QArith QArith_base.
+From Coq Require Import QArith QArith_base ZArith Lia.
 Open Scope Q_scope.
 Module E47Richardson.
 Definition eps : Q := 1#99144.
@@ -18,4 +18,34 @@ Proof. unfold multiplier, eps; vm_compute; reflexivity. Qed.
 Lemma normalized_identity (k : Q) :
   1 - eps * (k*k) == 1 - (32#17) * ((k/432)*(k/432)).
 Proof. unfold eps; field; discriminate. Qed.
+(* Exact rational absolute value, using the decidable Q order. *)
+Definition absQ (q : Q) : Q := if Z.ltb (Qnum q) 0%Z then -q else q.
+
+(* Cross-multiplication is exactly Coq's Qle definition.
+   Reflect a finite integer decision into a genuine rational inequality. *)
+Definition qle_dec (p q : Q) : bool :=
+  Z.leb (Qnum p * Z.pos (Qden q)) (Qnum q * Z.pos (Qden p)).
+Lemma qle_dec_sound (p q : Q) :
+  qle_dec p q = true -> p <= q.
+Proof.
+  unfold qle_dec, Qle.
+  intro h.
+  apply Z.leb_le in h.
+  exact h.
+Qed.
+
+(* No concrete 125x125 Casimir spectrum is assumed here. *)
+Lemma complement_envelope :
+  absQ (multiplier 32400) <= 15#17 /\
+  absQ (multiplier 12544) <= 15#17 /\
+  absQ (multiplier 11664) <= 15#17 /\
+  absQ (multiplier 19600) <= 15#17 /\
+  absQ (multiplier 186624) <= 15#17.
+Proof. repeat split; apply qle_dec_sound; vm_compute; reflexivity. Qed.
+
+Lemma complement_bound_attained :
+  absQ (multiplier 11664) == 15#17 /\
+  absQ (multiplier 186624) == 15#17.
+Proof. vm_compute; split; reflexivity. Qed.
+
 End E47Richardson.

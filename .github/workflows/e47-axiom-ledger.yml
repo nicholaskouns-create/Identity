@@ -139,7 +139,7 @@ jobs:
       - name: Retrieve Mathlib compilation cache
         working-directory: formal/e47-concrete
         run: lake exe cache get
-      - name: Compile and audit all seven Richardson theorems without native allowance
+      - name: Compile and audit nine Richardson theorems without native allowance
         working-directory: formal/e47-concrete
         shell: bash
         run: |
@@ -155,11 +155,13 @@ jobs:
           #print axioms E47Richardson.retained_two
           #print axioms E47Richardson.retained_five
           #print axioms E47Richardson.normalized_identity
+          #print axioms E47Richardson.complement_envelope
+          #print axioms E47Richardson.complement_bound_attained
           LEAN
           sha256sum ../e47/E47Richardson.lean "$tmp/E47Richardson.lean" | tee ../../richardson-source-sha256.txt
           python3 ../../scripts/axiom_ledger.py --lean-cmd "lake env lean" \
             "$tmp/E47Richardson.lean" | tee ../../axiom-ledger-richardson.txt
-          grep -q '(7 audited)' ../../axiom-ledger-richardson.txt
+          grep -q '(9 audited)' ../../axiom-ledger-richardson.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -182,7 +184,7 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq coq
           coqc --version
-      - name: Compile seven Richardson theorems and print assumptions
+      - name: Compile nine Richardson theorems and print assumptions
         shell: bash
         run: |
           set -euo pipefail
@@ -197,9 +199,11 @@ jobs:
           Print Assumptions E47Richardson.fast_sector.
           Print Assumptions E47Richardson.retained_sector.
           Print Assumptions E47Richardson.normalized_identity.
+          Print Assumptions E47Richardson.complement_envelope.
+          Print Assumptions E47Richardson.complement_bound_attained.
           COQ
           (cd "$tmp" && coqc -q E47Richardson.v) | tee coq-richardson-assumptions.txt
-          test "$(grep -c 'Closed under the global context' coq-richardson-assumptions.txt)" -eq 7
+          test "$(grep -c 'Closed under the global context' coq-richardson-assumptions.txt)" -eq 9
       - uses: actions/upload-artifact@v4
         if: always()
         with:
