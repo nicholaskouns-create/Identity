@@ -16,13 +16,28 @@ jobs:
           curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
           sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-      - name: Compile seven Lean modules
+      - name: Compile seven Lean modules and retain axiom evidence
         run: |
           set -euxo pipefail
-          lean --version
+          lean --version | tee lean-unified-version.txt
+          : > lean-unified-axioms.txt
           for f in formal/e47/unified/{Core47,RGFixed,Retention,Clock,EncodedOracle,Spin2Generators,Tensor125}.lean; do
-            lean "$f"
+            lean "$f" | tee -a lean-unified-axioms.txt
           done
+          for theorem in candidateCasimirSpectrum_exact candidateCasimirMoments candidateCasimirFirstMomentMatchesConcreteTrace; do
+            grep -Fq "E47Tensor125.${theorem}" lean-unified-axioms.txt
+          done
+          sha256sum formal/e47/unified/Tensor125.lean > lean-unified-sha256.txt
+          git rev-parse HEAD > lean-unified-commit.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lean-unified-candidate-axiom-audit
+          path: |
+            lean-unified-axioms.txt
+            lean-unified-version.txt
+            lean-unified-sha256.txt
+            lean-unified-commit.txt
   coq:
     runs-on: ubuntu-24.04
     steps:
