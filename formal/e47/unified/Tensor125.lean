@@ -254,6 +254,17 @@ theorem concreteCasimirZ_columns_ten_through_fourteen :
         concreteCasimirEntry i (columnsTenThroughFourteen j) = 0 := by
   decide
 
+/-! ## Concrete Casimir centrality [C,Z], columns 15..19
+Each of the 625 entries is evaluated against the actual 125-term D*U
+product and diagonal Z correction. No spectrum or rank assumption.
+Columns 20..124 and [C,U], [C,D] remain separate formal obligations. -/
+theorem concreteCasimirZ_columns_fifteen_through_nineteen :
+    ∀ i : Fin 125, ∀ j : Fin 5,
+      (totalZ i i -
+        totalZ (idx (15 + j.val)) (idx (15 + j.val))) *
+        concreteCasimirEntry i (idx (15 + j.val)) = 0 := by
+  decide
+
 end E47Tensor125
 
 #print axioms E47Tensor125.totalZ_up_bracket_entries
@@ -286,3 +297,5 @@ end E47Tensor125
 #print axioms E47Tensor125.concreteCasimirZ_next_five_columns
 
 #print axioms E47Tensor125.concreteCasimirZ_columns_ten_through_fourteen
+
+#print axioms E47Tensor125.concreteCasimirZ_columns_fifteen_through_nineteen
