@@ -170,6 +170,18 @@ theorem totalUp_down_bracket_columns_ten_through_fourteen :
 /-! Columns 15..19 are retained in Tensor125Columns15to19.lean,
     isolated to avoid the CI runner lifetime limit. -/
 
+/-! The 25 five-column intervals partition all 125 column indices.
+This arithmetic lemma is a bridge for aggregating separately compiled
+concrete commutator certificates; it is not itself an integrated
+commutator theorem. -/
+def thirdBracketColumnPartition : List Nat :=
+  (List.range 25).flatMap (fun block =>
+    (List.range 5).map (fun offset => 5 * block + offset))
+
+theorem thirdBracketColumnPartition_exact :
+    thirdBracketColumnPartition = List.range 125 := by
+  decide
+
 end E47Tensor125
 
 #print axioms E47Tensor125.totalZ_up_bracket_entries
@@ -191,3 +203,5 @@ end E47Tensor125
 #print axioms E47Tensor125.totalUp_down_bracket_columns_ten_through_fourteen
 
 
+
+#print axioms E47Tensor125.thirdBracketColumnPartition_exact
