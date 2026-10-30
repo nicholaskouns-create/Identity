@@ -59,7 +59,7 @@ class MonorailRestrictedAccessTest(unittest.TestCase):
         program = (
             "const DATA = " + json.dumps(DATA) + ";\n"
             + esc_js + "\n" + station_js + "\n"
-            + "console.log(JSON.stringify({matrix:station('matrix'),time:station('time')}));"
+            + "console.log(JSON.stringify({matrix:station('matrix'),time:station('time'),tower:station('tower')}));"
         )
         result = subprocess.run(
             ["node", "-e", program], check=True, capture_output=True, text=True
@@ -71,6 +71,8 @@ class MonorailRestrictedAccessTest(unittest.TestCase):
             self.assertIn('href="#/repair/' + repair_id + '"', rendered[slug])
             self.assertIn("Original restricted source", rendered[slug])
             self.assertIn("Owner-only source · public alternatives", rendered[slug])
+        self.assertIn("Pending merge", rendered["tower"])
+        self.assertIn('href="#/repair/highlight"', rendered["tower"])
 
     def test_machine_readable_401_and_404_classes_remain_distinct(self):
         stations = {s["slug"]: s for s in DATA["stations"]}
@@ -83,11 +85,11 @@ class MonorailRestrictedAccessTest(unittest.TestCase):
             link = next(l for l in stations[slug]["links"] if l.get("repair") == repair_id)
             self.assertEqual(link["state"], "restricted")
             self.assertEqual(link["href"], repairs[repair_id]["failed"])
-        for repair_id in ("highlight", "paper"):
+        for repair_id, expected_state in (("highlight", "pending"), ("paper", "repaired")):
             link = next(l for l in stations["tower"]["links"] if l.get("repair") == repair_id)
-            self.assertEqual(link["state"], "repaired")
+            self.assertEqual(link["state"], expected_state)
         self.assertIn('l.state === "restricted"', HTML)
-        self.assertIn('(l.state === "repaired" || l.state === "restricted")', HTML)
+        self.assertIn('(l.state === "repaired" || l.state === "restricted" || l.state === "pending")', HTML)
 
     def test_401_not_described_as_replaced(self):
         self.assertIn("restricted source, not replaced", HTML)
