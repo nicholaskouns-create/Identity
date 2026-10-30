@@ -71,7 +71,7 @@ class MonorailRestrictedAccessTest(unittest.TestCase):
             self.assertIn('href="#/repair/' + repair_id + '"', rendered[slug])
             self.assertIn("Original restricted source", rendered[slug])
             self.assertIn("Owner-only source · public alternatives", rendered[slug])
-        self.assertIn("Pending merge", rendered["tower"])
+        self.assertIn("Merged source fix", rendered["tower"])
         self.assertIn('href="#/repair/highlight"', rendered["tower"])
 
     def test_machine_readable_401_and_404_classes_remain_distinct(self):
@@ -85,7 +85,7 @@ class MonorailRestrictedAccessTest(unittest.TestCase):
             link = next(l for l in stations[slug]["links"] if l.get("repair") == repair_id)
             self.assertEqual(link["state"], "restricted")
             self.assertEqual(link["href"], repairs[repair_id]["failed"])
-        for repair_id, expected_state in (("highlight", "pending"), ("paper", "repaired")):
+        for repair_id, expected_state in (("highlight", "repaired"), ("paper", "repaired")):
             link = next(l for l in stations["tower"]["links"] if l.get("repair") == repair_id)
             self.assertEqual(link["state"], expected_state)
         self.assertIn('l.state === "restricted"', HTML)
@@ -108,13 +108,13 @@ class MonorailRestrictedAccessTest(unittest.TestCase):
         self.assertEqual(og.group(1), twitter.group(1))
         self.assertIn("two 404s and two restricted 401s", meta.group(1))
         self.assertIn("Restricted originals remain distinct", og.group(1))
-        self.assertIn("one highlighter repair is pending merge", HTML)
+        self.assertIn("the Tower highlighter source fix has merged (public deployment unverified)", HTML)
         self.assertIn("Public alternatives do not replace private sources", HTML)
         self.assertNotIn("four broken links replaced locally", HTML)
         self.assertNotIn("Only what failed is replaced", HTML)
 
-    def test_pending_highlighter_station_discloses_404_and_proposal(self):
-        """Actual station renderer must not hide the failed source or imply a merge."""
+    def test_merged_highlighter_station_discloses_historical_404_and_source(self):
+        """Actual station renderer must preserve the failed source without implying public deployment."""
         import subprocess
 
         esc_js = next(line for line in HTML.splitlines() if line.startswith("function esc(s)"))
@@ -132,10 +132,27 @@ class MonorailRestrictedAccessTest(unittest.TestCase):
         highlighter = next(r for r in DATA["repairs"] if r["id"] == "highlight")
         self.assertIn("Historical 404: " + highlighter["failed"], rendered)
         self.assertIn('href="' + highlighter["redirects"][0]["href"] + '"', rendered)
-        self.assertIn("Proposed same-version bundle · not deployed", rendered)
-        self.assertIn("Pending merge", rendered)
+        self.assertIn("Merged source fix · public deployment unverified", rendered)
+        self.assertIn("Merged source fix", rendered)
         self.assertIn('href="#/repair/highlight"', rendered)
         self.assertNotIn('href="' + highlighter["failed"] + '"', rendered)
+
+    def test_highlighter_merge_evidence_is_source_scoped(self):
+        """The source repair is merged; this is not an anonymous deployment test."""
+        repairs = {r["id"]: r for r in DATA["repairs"]}
+        tower = next(s for s in DATA["stations"] if s["slug"] == "tower")
+        highlighter = repairs["highlight"]
+        self.assertEqual(highlighter["status"], "404")  # historical failure preserved
+        self.assertEqual(highlighter["sourceEvidence"]["pull_request"],
+                         "https://github.com/nicholaskouns-create/tower/pull/4")
+        self.assertEqual(highlighter["sourceEvidence"]["merge_commit"],
+                         "1e1306c984cb5b290371d815ca9853e6c2b3eb5e")
+        self.assertEqual(highlighter["sourceEvidence"]["ci_result"], "success")
+        self.assertIn("deployment unverified", highlighter["sourceEvidence"]["scope"])
+        self.assertEqual(next(l for l in tower["links"] if l.get("repair") == "highlight")["state"],
+                         "repaired")
+        self.assertIn("public deployment unverified", HTML)
+        self.assertNotIn("one highlighter repair is pending merge", HTML)
 
     def test_original_404_repair_path_remains(self):
         self.assertIn('r.status === "401"', HTML)
