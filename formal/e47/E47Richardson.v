@@ -18,19 +18,22 @@ Proof. unfold multiplier, eps; vm_compute; reflexivity. Qed.
 Lemma normalized_identity (k : Q) :
   1 - eps * (k*k) == 1 - (32#17) * ((k/432)*(k/432)).
 Proof. unfold eps; field; discriminate. Qed.
+(* Exact rational absolute value, using the decidable Q order. *)
+Definition absQ (q : Q) : Q := if Qlt_bool q 0 then -q else q.
+
 (* Finite complement-sector check. Qle_bool is the exact Q-order
    decision procedure; no concrete 125x125 spectrum is assumed here. *)
 Lemma complement_envelope :
-  Qle_bool (Qabs (multiplier 32400)) (15#17) = true /\
-  Qle_bool (Qabs (multiplier 12544)) (15#17) = true /\
-  Qle_bool (Qabs (multiplier 11664)) (15#17) = true /\
-  Qle_bool (Qabs (multiplier 19600)) (15#17) = true /\
-  Qle_bool (Qabs (multiplier 186624)) (15#17) = true.
+  Qle_bool (absQ (multiplier 32400)) (15#17) = true /\
+  Qle_bool (absQ (multiplier 12544)) (15#17) = true /\
+  Qle_bool (absQ (multiplier 11664)) (15#17) = true /\
+  Qle_bool (absQ (multiplier 19600)) (15#17) = true /\
+  Qle_bool (absQ (multiplier 186624)) (15#17) = true.
 Proof. vm_compute; repeat split; reflexivity. Qed.
 
 Lemma complement_bound_attained :
-  Qeq_bool (Qabs (multiplier 11664)) (15#17) = true /\
-  Qeq_bool (Qabs (multiplier 186624)) (15#17) = true.
+  Qeq_bool (absQ (multiplier 11664)) (15#17) = true /\
+  Qeq_bool (absQ (multiplier 186624)) (15#17) = true.
 Proof. vm_compute; split; reflexivity. Qed.
 
 End E47Richardson.
