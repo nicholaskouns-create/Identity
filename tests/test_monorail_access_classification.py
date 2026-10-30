@@ -97,6 +97,22 @@ class MonorailRestrictedAccessTest(unittest.TestCase):
         self.assertIn("not a replacement for or validation of the restricted file", HTML)
         self.assertNotIn("replaced locally</p>", HTML)
 
+    def test_preview_and_home_copy_preserve_401_boundary(self):
+        """Metadata and the landing view must not imply private 401s were repaired."""
+        meta = re.search(r'<meta name="description" content="([^"]+)">', HTML)
+        og = re.search(r'<meta property="og:description" content="([^"]+)">', HTML)
+        twitter = re.search(r'<meta name="twitter:description" content="([^"]+)">', HTML)
+        self.assertIsNotNone(meta)
+        self.assertIsNotNone(og)
+        self.assertIsNotNone(twitter)
+        self.assertEqual(og.group(1), twitter.group(1))
+        self.assertIn("two 404s and two restricted 401s", meta.group(1))
+        self.assertIn("Restricted originals remain distinct", og.group(1))
+        self.assertIn("one highlighter repair is pending merge", HTML)
+        self.assertIn("Public alternatives do not replace private sources", HTML)
+        self.assertNotIn("four broken links replaced locally", HTML)
+        self.assertNotIn("Only what failed is replaced", HTML)
+
     def test_original_404_repair_path_remains(self):
         self.assertIn('r.status === "401"', HTML)
         self.assertIn('historical broken link', HTML)
