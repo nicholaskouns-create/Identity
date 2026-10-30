@@ -1,0 +1,22 @@
+name: Mnemosyne and Monorail read-only posture audit
+on:
+  pull_request:
+    paths:
+      - 'infra/audits/mnemosyne_monorail_posture*'
+      - '.github/workflows/mnemosyne-posture-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  secret-free-contract-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile and execute secret-free tests
+        run: |
+          python -m py_compile infra/audits/mnemosyne_monorail_posture.py infra/audits/test_mnemosyne_monorail_posture.py
+          python -m unittest discover -s infra/audits -p 'test_mnemosyne_monorail_posture.py' -v
