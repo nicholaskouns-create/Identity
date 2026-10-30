@@ -397,3 +397,15 @@ Theorem totalUp_down_bracket_columns_onehundredten_through_onehundredfourteen :
 Proof. vm_compute. reflexivity. Qed.
 
 Print Assumptions totalUp_down_bracket_columns_onehundredten_through_onehundredfourteen.
+
+
+(* Concrete third-bracket columns 115..119: all 625 entries of
+   [totalUp,totalDown] = 2 totalZ from explicit 125-state generators.
+   No imported commutator conclusion. Columns 120..124 remain open. *)
+Theorem totalUp_down_bracket_columns_onehundredfifteen_through_onehundrednineteen :
+  List.forallb
+    (fun j => List.forallb (fun i => ud_entry_ok i j) (List.seq 0 125))
+    (List.seq 115 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions totalUp_down_bracket_columns_onehundredfifteen_through_onehundrednineteen.
