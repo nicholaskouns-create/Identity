@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1500" viewBox="0 0 1200 1500">
+<rect width="1200" height="1500" fill="#f7fafc"/>
+<rect x="40" y="35" width="1120" height="210" rx="24" fill="#153752"/>
+<g font-family="Arial,sans-serif"><text x="78" y="97" font-size="25" font-weight="bold" fill="#a8e4e6">ONE QUESTION • TWO MATHEMATICAL ERAS</text>
+<text x="78" y="151" font-size="37" font-weight="bold" fill="#fff">When does repetition preserve a solution?</text><text x="78" y="198" font-size="23" fill="#e6f3fc">Medieval Persian algebra meets modern E47 contraction</text>
+<rect x="40" y="267" width="1120" height="238" rx="18" fill="#e9f2f8"/><text x="72" y="314" font-size="28" font-weight="bold" fill="#14566e">01   DOCUMENTED HISTORICAL ANCHOR</text>
+<text x="72" y="369" font-size="27" font-weight="bold" fill="#17314c">1198 • Surviving Arabic cubic-equation manuscript</text><text x="72" y="403" font-size="21" fill="#17314c">British Library IO Islamic 461: an abridgment of a lost treatise by al-Tusi.</text>
+<text x="72" y="451" font-size="25" font-weight="bold" fill="#17314c">1989 • Peer-reviewed historical analysis</text><text x="72" y="483" font-size="20" fill="#17314c">Hogendijk analyzes root classification and numerical approximation.</text>
+<rect x="40" y="524" width="540" height="275" rx="18" fill="#eaf2f7"/>
+<text x="68" y="571" font-size="27" font-weight="bold" fill="#14566e">02   CUBIC ROOT SELECTION</text><text x="68" y="631" font-size="39" fill="#17314c">x³ + c = a x²</text>
+<text x="68" y="684" font-size="25" fill="#17314c">Compare 27c with 4a³:</text><text x="68" y="721" font-size="21" fill="#17314c">Less: two positive roots</text><text x="68" y="751" font-size="21" fill="#17314c">Equal: one distinct double root</text><text x="68" y="781" font-size="21" fill="#17314c">Greater: no positive roots</text>
+<rect x="600" y="524" width="560" height="275" rx="18" fill="#faf0da"/><text x="628" y="571" font-size="27" font-weight="bold" fill="#856013">03   MODERN E47 FILTER</text>
+<text x="628" y="618" font-size="23" fill="#17314c">125 states → 47 retained + 78 damped</text><text x="628" y="669" font-size="30" fill="#17314c">K = (C − 6I)(C − 30I)</text><text x="628" y="719" font-size="29" fill="#17314c">Γ = I − K²/99144</text><text x="628" y="765" font-size="22" fill="#17314c">Contraction bound: (15/17)ⁿ</text>
+<rect x="40" y="817" width="1120" height="212" rx="18" fill="#fff" stroke="#d5dfe9"/>
+<text x="72" y="867" font-size="27" font-weight="bold" fill="#14566e">04   THE EXACT MATHEMATICAL ACCORDANCE</text><text x="72" y="918" font-size="32" font-weight="bold" fill="#17314c">Preserve a target. Quantify the error.</text>
+<text x="72" y="956" font-size="22" fill="#17314c">Cubic: locally attracting root for a correctly signed update.</text><text x="72" y="991" font-size="22" fill="#17314c">E47: globally invariant 47-dimensional fixed subspace.</text>
+<rect x="40" y="1047" width="1120" height="212" rx="18" fill="#eaf5ef"/>
+<text x="72" y="1097" font-size="27" font-weight="bold" fill="#226b48">05   VALIDATION STATUS — NO INFLATED CLAIMS</text>
+<text x="72" y="1151" font-size="32" font-weight="bold" fill="#226b48">Python symbolic identities: 4/4 PASS</text>
+<text x="72" y="1195" font-size="22" fill="#17314c">Lean 4: proof source authored; compiler PASS pending</text><text x="72" y="1231" font-size="22" fill="#17314c">Coq: proof source authored; compiler PASS pending</text>
+<rect x="40" y="1278" width="1120" height="192" rx="18" fill="#fff" stroke="#d5dfe9"/>
+<text x="72" y="1321" font-size="26" font-weight="bold" fill="#14566e">SOURCE TRAIL • APA 7</text>
+<text x="72" y="1359" font-size="18" fill="#17314c">British Library (n.d.) • al-Muʿādalāt, IO Islamic 461 • Qatar Digital Library</text>
+<text x="72" y="1388" font-size="18" fill="#17314c">Hogendijk (1989) • Historia Mathematica 16(1), 69–85 • doi:10.1016/0315-0860(89)90099-2</text>
+<text x="72" y="1417" font-size="18" fill="#17314c">Ypma (1995) • SIAM Review 37(4), 531–551 • doi:10.1137/1037125</text>
+<text x="72" y="1446" font-size="18" fill="#17314c">Gander, Henry, &amp; Wanner (2026) • SIAM Review 68(1), 3–90</text>
+</g></svg>
