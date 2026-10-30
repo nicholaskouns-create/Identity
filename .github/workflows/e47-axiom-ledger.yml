@@ -139,18 +139,34 @@ jobs:
       - name: Retrieve Mathlib compilation cache
         working-directory: formal/e47-concrete
         run: lake exe cache get
-      - name: Compile and audit Richardson without native allowance
+      - name: Compile and audit all seven Richardson theorems without native allowance
         working-directory: formal/e47-concrete
         shell: bash
         run: |
           set -euo pipefail
+          tmp="$(mktemp -d)"
+          trap 'rm -rf "$tmp"' EXIT
+          cp ../e47/E47Richardson.lean "$tmp/E47Richardson.lean"
+          cat >> "$tmp/E47Richardson.lean" <<'LEAN'
+          #print axioms E47Richardson.step_minimax
+          #print axioms E47Richardson.stability_window
+          #print axioms E47Richardson.slow_sector
+          #print axioms E47Richardson.fast_sector
+          #print axioms E47Richardson.retained_two
+          #print axioms E47Richardson.retained_five
+          #print axioms E47Richardson.normalized_identity
+          LEAN
+          sha256sum ../e47/E47Richardson.lean "$tmp/E47Richardson.lean" | tee ../../richardson-source-sha256.txt
           python3 ../../scripts/axiom_ledger.py --lean-cmd "lake env lean" \
-            ../e47/E47Richardson.lean | tee ../../axiom-ledger-richardson.txt
+            "$tmp/E47Richardson.lean" | tee ../../axiom-ledger-richardson.txt
+          grep -q '(7 audited)' ../../axiom-ledger-richardson.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: axiom-ledger-richardson
-          path: axiom-ledger-richardson.txt
+          path: |
+            axiom-ledger-richardson.txt
+            richardson-source-sha256.txt
 
   # Paired Coq compilation for the Richardson file merged in PR #95.
   # The previous green formal-validation workflow did not compile this file.
