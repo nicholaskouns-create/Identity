@@ -77,5 +77,38 @@ class PaperPinTests(unittest.TestCase):
         self.assertIn("Source pinned", rendered)
 
 
+    def test_restricted_repair_cards_link_original_for_authorized_access(self):
+        """A 401 repair card must retain an openable original and separate public context."""
+        import subprocess
+
+        esc_js = next(line for line in HTML.splitlines() if line.startswith("function esc(s)"))
+        repair_js = "function repair(id){" + HTML.split("function repair(id){", 1)[1].split(
+            "\nfunction richardson(){", 1
+        )[0]
+        program = (
+            "const DATA = " + json.dumps(DATA) + ";\n"
+            + esc_js + "\n" + repair_js + "\n"
+            + "for (const id of ['mirror', 'modsync']) "
+              "console.log(JSON.stringify({id, html: repair(id)}));"
+        )
+        output = subprocess.run(
+            ["node", "-e", program], check=True, capture_output=True, text=True
+        ).stdout
+        rendered = [json.loads(line) for line in output.splitlines()]
+        self.assertEqual({row["id"] for row in rendered}, {"mirror", "modsync"})
+        for row in rendered:
+            original = next(r for r in DATA["repairs"] if r["id"] == row["id"])
+            html = row["html"]
+            self.assertEqual(original["status"], "401")
+            self.assertIn('href="' + original["failed"] + '"', html)
+            self.assertIn(
+                "Open original restricted Drive source (sign-in or access request may be required)",
+                html,
+            )
+            self.assertIn('href="' + original["redirects"][0]["href"] + '"', html)
+            self.assertIn("restricted source, not replaced", html)
+            self.assertNotIn("Replaced locally", html)
+
+
 if __name__ == "__main__":
     unittest.main()
