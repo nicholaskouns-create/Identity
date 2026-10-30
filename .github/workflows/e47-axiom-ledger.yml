@@ -75,8 +75,8 @@ jobs:
           name: axiom-ledger-core
           path: axiom-ledger-core.txt
 
-  # Mathlib files need the compilation cache; only E47ConcreteMatrix is
-  # allowed a tracked native_decide gap. Richardson must remain kernel-audited.
+  # Mathlib concrete files need the compilation cache. Only
+  # E47ConcreteMatrix has a tracked native_decide allowance.
   concrete-ledger:
     name: Mathlib certificates — native_decide tracked only in concrete matrix
     runs-on: ubuntu-24.04
@@ -107,13 +107,50 @@ jobs:
           python3 ../../scripts/axiom_ledger.py \
             --lean-cmd "lake env lean" \
             --allow-native ../e47/E47ConcreteMatrix.lean \
-            ../e47/E47ConcreteMatrix.lean ../e47/E47Kernel29.lean \
-            ../e47/E47Richardson.lean | tee ../../axiom-ledger-concrete.txt
+            ../e47/E47ConcreteMatrix.lean ../e47/E47Kernel29.lean | tee ../../axiom-ledger-concrete.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: axiom-ledger-concrete
           path: axiom-ledger-concrete.txt
+
+
+  # Separate fast certificate: Richardson cannot be blocked behind the
+  # expensive concrete 125x125 native_decide matrix audit.
+  richardson-lean:
+    name: Richardson Lean 4.35 — Mathlib compilation and axiom audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Lean 4.35.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --no-modify-path --default-toolchain leanprover/lean4:v4.35.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Resolve pinned Mathlib
+        working-directory: formal/e47-concrete
+        run: |
+          set -euo pipefail
+          lake update
+          test -f lake-manifest.json
+      - name: Retrieve Mathlib compilation cache
+        working-directory: formal/e47-concrete
+        run: lake exe cache get
+      - name: Compile and audit Richardson without native allowance
+        working-directory: formal/e47-concrete
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../../scripts/axiom_ledger.py --lean-cmd "lake env lean" \
+            ../e47/E47Richardson.lean | tee ../../axiom-ledger-richardson.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: axiom-ledger-richardson
+          path: axiom-ledger-richardson.txt
 
   # Paired Coq compilation for the Richardson file merged in PR #95.
   # The previous green formal-validation workflow did not compile this file.
