@@ -560,3 +560,14 @@ Theorem concreteCasimirZ_first_five_columns :
 Proof. vm_compute. reflexivity. Qed.
 
 Print Assumptions concreteCasimirZ_first_five_columns.
+
+(* Concrete Casimir centrality [C,Z] for all rows, columns 5..9.
+   Reuses the actual 125-term D*U matrix product, not spectral data. *)
+Theorem concreteCasimirZ_next_five_columns :
+  List.forallb
+    (fun j => List.forallb
+      (fun i => concreteCasimirZEntryOK i j) (List.seq 0 125))
+    (List.seq 5 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions concreteCasimirZ_next_five_columns.
