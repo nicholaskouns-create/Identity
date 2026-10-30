@@ -13,4 +13,19 @@ theorem normalized_identity (k : ℚ) :
     1 - eps * k^2 = 1 - (32/17 : ℚ) * (k/432)^2 := by
   dsimp [eps]
   ring
+/-! The five nonretained Casimir sectors, enumerated from k2.
+    This finite bound does not itself identify the concrete Casimir spectrum. -/
+theorem complement_envelope :
+    |multiplier 0| ≤ (15 / 17 : ℚ) ∧
+    |multiplier 1| ≤ (15 / 17 : ℚ) ∧
+    |multiplier 3| ≤ (15 / 17 : ℚ) ∧
+    |multiplier 4| ≤ (15 / 17 : ℚ) ∧
+    |multiplier 6| ≤ (15 / 17 : ℚ) := by
+  norm_num [multiplier, eps, k2]
+
+theorem complement_bound_attained :
+    |multiplier 3| = (15 / 17 : ℚ) ∧
+    |multiplier 6| = (15 / 17 : ℚ) := by
+  norm_num [multiplier, eps, k2]
+
 end E47Richardson

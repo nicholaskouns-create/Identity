@@ -1,0 +1,222 @@
+{
+  "record_id": "FOURIER-47-125-001",
+  "construction": "Cyclic DFT on R^125; selected frequencies -23 through 23",
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "dtype": "complex128",
+  "seed": 47,
+  "matrix_norm": "operator 2-norm",
+  "rank": 47,
+  "checks": [
+    {
+      "name": "125 cyclotomic orthogonality identities",
+      "kind": "exact",
+      "passed": true,
+      "detail": {
+        "passed": 125,
+        "total": 125
+      }
+    },
+    {
+      "name": "47 distinct selected frequencies",
+      "kind": "exact",
+      "passed": true,
+      "detail": "1 + 2*23 = 47"
+    },
+    {
+      "name": "conjugate-closed selection",
+      "kind": "exact",
+      "passed": true,
+      "detail": "S = -S modulo 125"
+    },
+    {
+      "name": "dimension split",
+      "kind": "exact",
+      "passed": true,
+      "detail": "47 + 78 = 125"
+    },
+    {
+      "name": "impulse fraction",
+      "kind": "exact",
+      "passed": true,
+      "detail": "47/125 = 0.376 = 37.6%"
+    },
+    {
+      "name": "mixed-signal fraction",
+      "kind": "exact",
+      "passed": true,
+      "detail": "1/(1+1/4) = 4/5 = 80%"
+    },
+    {
+      "name": "Fourier orthonormality",
+      "kind": "numerical",
+      "passed": true,
+      "residual": 1.2619008310872851e-15,
+      "tolerance": 1e-12
+    },
+    {
+      "name": "idempotence",
+      "kind": "numerical",
+      "passed": true,
+      "residual": 5.242299562826188e-16,
+      "tolerance": 1e-12
+    },
+    {
+      "name": "self-adjointness",
+      "kind": "numerical",
+      "passed": true,
+      "residual": 2.341484095754216e-16,
+      "tolerance": 1e-12
+    },
+    {
+      "name": "reality",
+      "kind": "numerical",
+      "passed": true,
+      "residual": 2.1995886723474284e-16,
+      "tolerance": 1e-12
+    },
+    {
+      "name": "real-basis orthonormality",
+      "kind": "numerical",
+      "passed": true,
+      "residual": 7.707830383932772e-15,
+      "tolerance": 1e-12
+    },
+    {
+      "name": "real-basis reconstruction",
+      "kind": "numerical",
+      "passed": true,
+      "residual": 9.402155180737577e-15,
+      "tolerance": 1e-12
+    },
+    {
+      "name": "78 zero eigenvalues",
+      "kind": "numerical",
+      "passed": true,
+      "residual": 1.0897349325369214e-15,
+      "tolerance": 1e-12
+    },
+    {
+      "name": "47 unit eigenvalues",
+      "kind": "numerical",
+      "passed": true,
+      "residual": 1.7763568394002505e-15,
+      "tolerance": 1e-12
+    },
+    {
+      "name": "trace 47",
+      "kind": "numerical",
+      "passed": true,
+      "residual": 1.1076058106129247e-19,
+      "tolerance": 1e-12
+    },
+    {
+      "name": "all 125 impulse fractions",
+      "kind": "numerical",
+      "passed": true,
+      "residual": 3.885780586188048e-16,
+      "tolerance": 1e-12
+    },
+    {
+      "name": "complement orthogonality",
+      "kind": "numerical",
+      "passed": true,
+      "residual": 4.0406858221165713e-16,
+      "tolerance": 1e-12
+    },
+    {
+      "name": "all 125 Fourier basis actions",
+      "kind": "numerical",
+      "passed": true,
+      "residual": 7.757411617565251e-16,
+      "tolerance": 1e-12
+    },
+    {
+      "name": "1000 energy decompositions",
+      "kind": "numerical",
+      "passed": true,
+      "residual": 1.3322676295501878e-15,
+      "tolerance": 1e-12
+    },
+    {
+      "name": "1000 coordinate reconstructions",
+      "kind": "numerical",
+      "passed": true,
+      "residual": 4.3543715567871055e-15,
+      "tolerance": 1e-12
+    },
+    {
+      "name": "1000 discarded perturbations",
+      "kind": "numerical",
+      "passed": true,
+      "residual": 6.960907321194917e-16,
+      "tolerance": 1e-12
+    },
+    {
+      "name": "retention dc",
+      "kind": "numerical",
+      "passed": true,
+      "residual": 2.220446049250313e-16,
+      "tolerance": 1e-12
+    },
+    {
+      "name": "retention freq_3",
+      "kind": "numerical",
+      "passed": true,
+      "residual": 2.220446049250313e-16,
+      "tolerance": 1e-12
+    },
+    {
+      "name": "retention freq_20",
+      "kind": "numerical",
+      "passed": true,
+      "residual": 1.1102230246251565e-16,
+      "tolerance": 1e-12
+    },
+    {
+      "name": "retention freq_40",
+      "kind": "numerical",
+      "passed": true,
+      "residual": 2.719097381593801e-29,
+      "tolerance": 1e-12
+    },
+    {
+      "name": "retention mixed",
+      "kind": "numerical",
+      "passed": true,
+      "residual": 5.551115123125783e-16,
+      "tolerance": 1e-12
+    },
+    {
+      "name": "retention impulse",
+      "kind": "numerical",
+      "passed": true,
+      "residual": 5.551115123125783e-17,
+      "tolerance": 1e-12
+    },
+    {
+      "name": "original equivalence example",
+      "kind": "numerical",
+      "passed": true,
+      "residual": 8.228871535158106e-14,
+      "tolerance": 1e-12
+    }
+  ],
+  "energy_retention": {
+    "dc": 1.0000000000000002,
+    "freq_3": 1.0000000000000002,
+    "freq_20": 0.9999999999999999,
+    "freq_40": 2.719097381593801e-29,
+    "mixed": 0.8000000000000006,
+    "ramp": 0.9942347483704114,
+    "impulse": 0.37600000000000006
+  },
+  "equivalence": {
+    "input_distance": 15.811388300841891,
+    "projected_distance": 8.228871535158106e-14
+  },
+  "passed": 28,
+  "total": 28,
+  "source_sha256": "5cbe38bb861e7151e44241ebc79e18e1ffcb43b80bcc18889a5146b41e69e26a",
+  "scope": "Exact integer/rational checks and mathematical proof plus floating-point implementation validation. Identification with a Casimir-selected projector requires an explicit map; none is asserted here."
+}
