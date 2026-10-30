@@ -162,9 +162,14 @@ function station(slug){
   const exits = s.links.map(l => {
     // A historical 401 is an authorization boundary, not a locally replaced source.
     const restricted = l.state === "restricted" && DATA.repairs.some(r => r.id === l.repair && r.status === "401");
+    const pendingHighlight = l.state === "pending" && l.repair === "highlight";
+    const proposedHighlight = pendingHighlight ? DATA.repairs.find(r => r.id === "highlight").redirects[0].href : "";
+    // Show the historical 404 and the independently listed candidate without claiming deployment.
     // Restricted sources keep their original access URL visible beside public context.
     const dest = restricted
       ? `<a class="mono faint" title="Original restricted source" href="${esc(l.href)}">${esc(l.href.replace(/^https:\/\//,""))}</a><a class="mono warn" style="display:block" href="#/repair/${esc(l.repair)}">Owner-only source · public alternatives</a>`
+      : pendingHighlight
+      ? `<span class="mono faint" title="Historical 404, not a working source">Historical 404: ${esc(l.href)}</span><a class="mono warn" style="display:block" href="${esc(proposedHighlight)}">Proposed same-version bundle · not deployed</a><a class="mono warn" style="display:block" href="#/repair/highlight">Repair details</a>`
       : (l.state === "repaired" || l.state === "restricted" || l.state === "pending") && l.repair
       ? `<a class="mono warn" href="#/repair/${esc(l.repair)}">Repair details</a>`
       : `<a class="mono faint" href="${esc(l.href)}">${esc(l.href.replace(/^https:\/\//,""))}</a>`;
