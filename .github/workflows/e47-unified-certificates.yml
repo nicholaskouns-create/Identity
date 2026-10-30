@@ -331,7 +331,7 @@ jobs:
           original = (root / 'Tensor125.lean').read_text().split('theorem highest_weight', 1)[0]
           isolated = (root / 'Tensor125Columns105to109.lean').read_text().split('/-! ## Isolated', 1)[0]
           assert original == isolated, '105..109 generator definitions drifted from original'
-          print('SPIN2_COLUMNS_100_104_SHARED_DEFINITIONS_MATCH')
+          print('SPIN2_COLUMNS_105_109_SHARED_DEFINITIONS_MATCH')
           PY
       - name: Install pinned Lean 4.19.0
         run: |
