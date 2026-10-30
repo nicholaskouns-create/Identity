@@ -38,7 +38,7 @@ from pathlib import Path
 
 STANDARD = {"propext", "Classical.choice", "Quot.sound"}
 NATIVE_PAT = re.compile(r"ofReduceBool|native_decide\.ax|ofReduceNat")
-AXLINE = re.compile(r"'([^']+)' (?:depends on axioms: \\[([^\\]]*)\\]|does not depend on any axioms)", re.DOTALL)
+AXLINE = re.compile(r"'([^']+)' (?:depends on axioms: \[([^\]]*)\]|does not depend on any axioms)", re.DOTALL)
 SOURCE_PRINT = re.compile(r"(?m)^\s*#print\s+axioms\s+([\w.]+)\s*(?:--.*)?$")
 SOURCE_BAD = re.compile(r"(^|\s)(sorry|admit)(\s|$)")
 SOURCE_AXIOM = re.compile(r"^\s*axiom\s+\w+", re.M)
