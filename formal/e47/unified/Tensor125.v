@@ -571,3 +571,15 @@ Theorem concreteCasimirZ_next_five_columns :
 Proof. vm_compute. reflexivity. Qed.
 
 Print Assumptions concreteCasimirZ_next_five_columns.
+
+(* Exact [C,Z] columns 10..14: 625 concrete entries from the genuine
+   125-term D*U product and diagonal Z correction. No assumed spectrum,
+   imported Casimir centrality theorem, or admitted lemma. *)
+Theorem concreteCasimirZ_columns_ten_through_fourteen :
+  List.forallb
+    (fun j => List.forallb
+      (fun i => concreteCasimirZEntryOK i j) (List.seq 0 125))
+    (List.seq 10 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions concreteCasimirZ_columns_ten_through_fourteen.
