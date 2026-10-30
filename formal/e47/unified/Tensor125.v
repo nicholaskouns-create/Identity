@@ -148,20 +148,22 @@ Theorem candidateCasimirSpectrum_exact :
      (42%nat, 13%nat)].
 Proof. vm_compute. reflexivity. Qed.
 
-Definition candidateCasimirMoment (p : nat) : nat :=
-  List.fold_right Nat.add 0%nat
+(* Use binary Z for moments: a 58500%nat numeral overflows the Coq 8.18
+   evaluator stack before the proof. Preserve the failed CI as evidence. *)
+Definition candidateCasimirMoment (p : nat) : Z :=
+  List.fold_right Z.add 0
     (List.map (fun j =>
-      (multiplicity j * (2 * j + 1) * Nat.pow (j * (j + 1)) p)%nat)
-      (List.seq 0 7)).
+      Z.of_nat (multiplicity j * (2 * j + 1)) *
+      Z.pow (Z.of_nat (j * (j + 1))) (Z.of_nat p)) (List.seq 0 7)).
 
 Theorem candidateCasimirMoments :
-  candidateCasimirMoment 0%nat = 125%nat /\
-  candidateCasimirMoment 1%nat = 2250%nat /\
-  candidateCasimirMoment 2%nat = 58500%nat.
+  candidateCasimirMoment 0%nat = 125 /\
+  candidateCasimirMoment 1%nat = 2250 /\
+  candidateCasimirMoment 2%nat = 58500.
 Proof. vm_compute. repeat split; reflexivity. Qed.
 
 Theorem candidateCasimirFirstMomentMatchesConcreteTrace :
-  Z.of_nat (candidateCasimirMoment 1%nat) =
+  candidateCasimirMoment 1%nat =
     List.fold_right Z.add 0 (List.map casimirDiag (List.seq 0 125)).
 Proof. rewrite concrete_casimir_trace. vm_compute. reflexivity. Qed.
 
