@@ -1,0 +1,91 @@
+{
+  "schema_version": "monorail.reconciliation.v1",
+  "snapshot_source": "public.mathematical_identities @ gpkjvihkyectnenvnbng, 2026-10-25",
+  "consistent": 0,
+  "unregistered": 8,
+  "upgrades_requiring_approval": 1,
+  "promotion_blocked": true,
+  "rows": [
+    {
+      "theorem_id": "E47-BRACKETS-EXACT",
+      "route_class": "E1",
+      "city_class": null,
+      "city_status": null,
+      "verdict": "UNREGISTERED",
+      "detail": "no citizen_code matches; do not auto-create \u2014 a route may not mint a civic identity",
+      "blocks_promotion": true
+    },
+    {
+      "theorem_id": "E47-CARRIER-BRIDGE",
+      "route_class": "E0",
+      "city_class": null,
+      "city_status": null,
+      "verdict": "UNREGISTERED",
+      "detail": "no citizen_code matches; do not auto-create \u2014 a route may not mint a civic identity",
+      "blocks_promotion": true
+    },
+    {
+      "theorem_id": "E47-CASIMIR-CENTRAL-Z",
+      "route_class": "E0",
+      "city_class": null,
+      "city_status": null,
+      "verdict": "UNREGISTERED",
+      "detail": "no citizen_code matches; do not auto-create \u2014 a route may not mint a civic identity",
+      "blocks_promotion": true
+    },
+    {
+      "theorem_id": "E47-KERNEL-47",
+      "route_class": "E0",
+      "city_class": "E1",
+      "city_status": "validated",
+      "verdict": "UPGRADE_REQUIRES_APPROVAL",
+      "detail": "route declares E0, citizen holds E1. Transfer does not upgrade evidence; route this through approval_queue as a human_gate canonical promotion.",
+      "blocks_promotion": true
+    },
+    {
+      "theorem_id": "E47-RANK-78",
+      "route_class": "E1",
+      "city_class": null,
+      "city_status": null,
+      "verdict": "UNREGISTERED",
+      "detail": "no citizen_code matches; do not auto-create \u2014 a route may not mint a civic identity",
+      "blocks_promotion": true
+    },
+    {
+      "theorem_id": "E47-SPECTRAL-CENSUS",
+      "route_class": "E0",
+      "city_class": null,
+      "city_status": null,
+      "verdict": "UNREGISTERED",
+      "detail": "no citizen_code matches; do not auto-create \u2014 a route may not mint a civic identity",
+      "blocks_promotion": true
+    },
+    {
+      "theorem_id": "E47-SPIN2-GENERATORS",
+      "route_class": "E0",
+      "city_class": null,
+      "city_status": null,
+      "verdict": "UNREGISTERED",
+      "detail": "no citizen_code matches; do not auto-create \u2014 a route may not mint a civic identity",
+      "blocks_promotion": true
+    },
+    {
+      "theorem_id": "E47-TENSOR-125",
+      "route_class": "E0",
+      "city_class": null,
+      "city_status": null,
+      "verdict": "UNREGISTERED",
+      "detail": "no citizen_code matches; do not auto-create \u2014 a route may not mint a civic identity",
+      "blocks_promotion": true
+    },
+    {
+      "theorem_id": "E47-WEIGHT-ALGEBRA",
+      "route_class": "E0",
+      "city_class": null,
+      "city_status": null,
+      "verdict": "UNREGISTERED",
+      "detail": "no citizen_code matches; do not auto-create \u2014 a route may not mint a civic identity",
+      "blocks_promotion": true
+    }
+  ]
+}

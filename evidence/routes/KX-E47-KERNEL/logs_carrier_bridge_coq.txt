@@ -1,0 +1,4 @@
+$ coq formal/e47/unified/E47Bridge.v
+exit 0
+
+

@@ -1,0 +1,6 @@
+$ lean formal/e47/unified/E47Centrality.lean
+exit 0
+
+'E47Centrality.casimir_commutes_with_weight' depends on axioms: [propext, Quot.sound]
+'E47Centrality.casimir_preserves_weight_spaces' depends on axioms: [propext, Quot.sound]
+'E47Centrality.casimir_diagonal_agrees' depends on axioms: [propext]

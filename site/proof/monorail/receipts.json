@@ -1,0 +1,223 @@
+[
+ {
+  "artifact_hashes": [
+   "4d6165564bbebb5e7aea2e704db455fa24b45c7ebf26f9b08ff0cdda4b54c481"
+  ],
+  "assumptions": [
+   "'E47Spin2.commutator_up_down' depends on axioms: [propext]",
+   "'E47Spin2.commutator_z_down' depends on axioms: [propext]",
+   "'E47Spin2.commutator_z_up' depends on axioms: [propext]",
+   "'E47Spin2.spin2_casimir_scalar' depends on axioms: [propext]"
+  ],
+  "compiler_version": "Lean (version 4.35.0, x86_64-unknown-linux-gnu, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)",
+  "environment_lock_hash": "34c931aaf21b24dbda35ab11790c1aa3505b29a9a07bd486a7f5d49a2821a88e",
+  "evidence_class": "E0",
+  "object_id": "E47-CASIMIR",
+  "parent_receipt_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "proof_system": "Lean",
+  "receipt_hash": "2aaca38b45473469f692f3c8ecdee3b9f733c6b6273580614154ee198ef68cee",
+  "route_id": "KX-E47-KERNEL",
+  "run_url": null,
+  "schema_version": "monorail.passport.v1",
+  "scope": "Only the exact statements these files compile. Does not claim the concrete 125x125 tensor Casimir bridge, which remains an open obligation on the Observatory Spur.",
+  "source_commit": "ce6a7001a3658ce391693573275691883de4791f",
+  "source_hash": "4d6165564bbebb5e7aea2e704db455fa24b45c7ebf26f9b08ff0cdda4b54c481",
+  "station": "spin2_generators",
+  "theorem_id": "E47-SPIN2-GENERATORS",
+  "timestamp_utc": "2026-10-25T20:22:14Z",
+  "verification_status": "PASS"
+ },
+ {
+  "artifact_hashes": [
+   "0eed5bc59c6ad4e010ebd02bb25c07bd6d2958a79233861e8ddd7a4f4b0735ff"
+  ],
+  "assumptions": [],
+  "compiler_version": "The Coq Proof Assistant, version 8.18.0",
+  "environment_lock_hash": "34c931aaf21b24dbda35ab11790c1aa3505b29a9a07bd486a7f5d49a2821a88e",
+  "evidence_class": "E0",
+  "object_id": "E47-CASIMIR",
+  "parent_receipt_hash": "2aaca38b45473469f692f3c8ecdee3b9f733c6b6273580614154ee198ef68cee",
+  "proof_system": "Coq",
+  "receipt_hash": "0b564280629cf9bb891c606c4dbfa2ff1091049f51e0d77dccf7acf2f84b03ff",
+  "route_id": "KX-E47-KERNEL",
+  "run_url": null,
+  "schema_version": "monorail.passport.v1",
+  "scope": "Only the exact statements these files compile. Does not claim the concrete 125x125 tensor Casimir bridge, which remains an open obligation on the Observatory Spur.",
+  "source_commit": "ce6a7001a3658ce391693573275691883de4791f",
+  "source_hash": "0eed5bc59c6ad4e010ebd02bb25c07bd6d2958a79233861e8ddd7a4f4b0735ff",
+  "station": "spin2_generators_coq",
+  "theorem_id": "E47-SPIN2-GENERATORS",
+  "timestamp_utc": "2026-10-25T20:22:19Z",
+  "verification_status": "PASS"
+ },
+ {
+  "artifact_hashes": [
+   "6d12408e0a0820865d8e7d6dd6de6038929e18f819b11c93b6971320da572f1e"
+  ],
+  "assumptions": [],
+  "compiler_version": "Lean (version 4.35.0, x86_64-unknown-linux-gnu, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)",
+  "environment_lock_hash": "34c931aaf21b24dbda35ab11790c1aa3505b29a9a07bd486a7f5d49a2821a88e",
+  "evidence_class": "E0",
+  "object_id": "E47-CASIMIR",
+  "parent_receipt_hash": "0b564280629cf9bb891c606c4dbfa2ff1091049f51e0d77dccf7acf2f84b03ff",
+  "proof_system": "Lean",
+  "receipt_hash": "46cbc24650bcbd52ce00be68c619a305d0da4c6d58a8e3e0a477b541392a381d",
+  "route_id": "KX-E47-KERNEL",
+  "run_url": null,
+  "schema_version": "monorail.passport.v1",
+  "scope": "Only the exact statements these files compile. Does not claim the concrete 125x125 tensor Casimir bridge, which remains an open obligation on the Observatory Spur.",
+  "source_commit": "ce6a7001a3658ce391693573275691883de4791f",
+  "source_hash": "6d12408e0a0820865d8e7d6dd6de6038929e18f819b11c93b6971320da572f1e",
+  "station": "triple_tensor",
+  "theorem_id": "E47-TENSOR-125",
+  "timestamp_utc": "2026-10-25T20:23:48Z",
+  "verification_status": "PASS"
+ },
+ {
+  "artifact_hashes": [
+   "3c3e714cb90c61668097be6ac4e386d4af071f0234e16bd2b5ce97a42d0218ba"
+  ],
+  "assumptions": [
+   "'WeightAlgebra.lam_zero_iff' depends on axioms: [propext]",
+   "'WeightAlgebra.pr_expanded' depends on axioms: [propext, Classical.choice, Quot.sound]"
+  ],
+  "compiler_version": "Lean (version 4.35.0, x86_64-unknown-linux-gnu, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)",
+  "environment_lock_hash": "34c931aaf21b24dbda35ab11790c1aa3505b29a9a07bd486a7f5d49a2821a88e",
+  "evidence_class": "E0",
+  "object_id": "E47-CASIMIR",
+  "parent_receipt_hash": "46cbc24650bcbd52ce00be68c619a305d0da4c6d58a8e3e0a477b541392a381d",
+  "proof_system": "Lean",
+  "receipt_hash": "142381de1a121031e59032e23db021452bc566ba288238d3764f9754043e47b1",
+  "route_id": "KX-E47-KERNEL",
+  "run_url": null,
+  "schema_version": "monorail.passport.v1",
+  "scope": "Only the exact statements these files compile. Does not claim the concrete 125x125 tensor Casimir bridge, which remains an open obligation on the Observatory Spur.",
+  "source_commit": "ce6a7001a3658ce391693573275691883de4791f",
+  "source_hash": "3c3e714cb90c61668097be6ac4e386d4af071f0234e16bd2b5ce97a42d0218ba",
+  "station": "weight_decomposition",
+  "theorem_id": "E47-WEIGHT-ALGEBRA",
+  "timestamp_utc": "2026-10-25T20:23:53Z",
+  "verification_status": "PASS"
+ },
+ {
+  "artifact_hashes": [
+   "93dff06e304fa05746774036cda872452ccc557dd73889a3a7c1eb1dc45f2f5c"
+  ],
+  "assumptions": [],
+  "compiler_version": "Lean (version 4.35.0, x86_64-unknown-linux-gnu, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)",
+  "environment_lock_hash": "34c931aaf21b24dbda35ab11790c1aa3505b29a9a07bd486a7f5d49a2821a88e",
+  "evidence_class": "E0",
+  "object_id": "E47-CASIMIR",
+  "parent_receipt_hash": "142381de1a121031e59032e23db021452bc566ba288238d3764f9754043e47b1",
+  "proof_system": "Lean",
+  "receipt_hash": "bd4e9035a75778ba9e4c4b29ed973aa9b5907907579b1758b4ee2d2b7273a11e",
+  "route_id": "KX-E47-KERNEL",
+  "run_url": null,
+  "schema_version": "monorail.passport.v1",
+  "scope": "Only the exact statements these files compile. Does not claim the concrete 125x125 tensor Casimir bridge, which remains an open obligation on the Observatory Spur.",
+  "source_commit": "ce6a7001a3658ce391693573275691883de4791f",
+  "source_hash": "93dff06e304fa05746774036cda872452ccc557dd73889a3a7c1eb1dc45f2f5c",
+  "station": "spectral_census",
+  "theorem_id": "E47-SPECTRAL-CENSUS",
+  "timestamp_utc": "2026-10-25T20:23:54Z",
+  "verification_status": "PASS"
+ },
+ {
+  "artifact_hashes": [
+   "250a23086f9653d6f2f4b2977571954770b2dab6a38de6a97fc096f96d2b7d24"
+  ],
+  "assumptions": [
+   "'E47RankNullity.dimension_identity' depends on axioms: [propext, Classical.choice, Quot.sound]",
+   "'E47RankNullity.dimension_identity_numeric' depends on axioms: [propext, Classical.choice, Quot.sound]",
+   "'E47RankNullity.kernel_eq' depends on axioms: [propext, Classical.choice, Quot.sound]",
+   "'E47RankNullity.rank_eq' depends on axioms: [propext, Classical.choice, Quot.sound]",
+   "'E47RankNullity.rank_nullity' depends on axioms: [propext, Classical.choice, Quot.sound]"
+  ],
+  "compiler_version": "Lean (version 4.35.0, x86_64-unknown-linux-gnu, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)",
+  "environment_lock_hash": "34c931aaf21b24dbda35ab11790c1aa3505b29a9a07bd486a7f5d49a2821a88e",
+  "evidence_class": "E0",
+  "object_id": "E47-CASIMIR",
+  "parent_receipt_hash": "bd4e9035a75778ba9e4c4b29ed973aa9b5907907579b1758b4ee2d2b7273a11e",
+  "proof_system": "Lean",
+  "receipt_hash": "fe96eb945abe906b45166a7bffdd0621d1de115d35d046bd4bbd18c3db530b8f",
+  "route_id": "KX-E47-KERNEL",
+  "run_url": null,
+  "schema_version": "monorail.passport.v1",
+  "scope": "Only the exact statements these files compile. Does not claim the concrete 125x125 tensor Casimir bridge, which remains an open obligation on the Observatory Spur.",
+  "source_commit": "ce6a7001a3658ce391693573275691883de4791f",
+  "source_hash": "250a23086f9653d6f2f4b2977571954770b2dab6a38de6a97fc096f96d2b7d24",
+  "station": "kernel_dimension",
+  "theorem_id": "E47-KERNEL-47",
+  "timestamp_utc": "2026-10-25T20:23:54Z",
+  "verification_status": "PASS"
+ },
+ {
+  "artifact_hashes": [
+   "426a35e8418ec98ba5595bda23526897f736c25a1b490a5457f51fd7a371a982"
+  ],
+  "assumptions": [],
+  "compiler_version": "The Coq Proof Assistant, version 8.18.0",
+  "environment_lock_hash": "34c931aaf21b24dbda35ab11790c1aa3505b29a9a07bd486a7f5d49a2821a88e",
+  "evidence_class": "E0",
+  "object_id": "E47-CASIMIR",
+  "parent_receipt_hash": "fe96eb945abe906b45166a7bffdd0621d1de115d35d046bd4bbd18c3db530b8f",
+  "proof_system": "Coq",
+  "receipt_hash": "59c7d03e211bace5ff57da153f40ea637f250cd0ba99bd382f0c13cc2074fbd5",
+  "route_id": "KX-E47-KERNEL",
+  "run_url": null,
+  "schema_version": "monorail.passport.v1",
+  "scope": "Only the exact statements these files compile. Does not claim the concrete 125x125 tensor Casimir bridge, which remains an open obligation on the Observatory Spur.",
+  "source_commit": "ce6a7001a3658ce391693573275691883de4791f",
+  "source_hash": "426a35e8418ec98ba5595bda23526897f736c25a1b490a5457f51fd7a371a982",
+  "station": "kernel_dimension_coq",
+  "theorem_id": "E47-KERNEL-47",
+  "timestamp_utc": "2026-10-25T20:23:55Z",
+  "verification_status": "PASS"
+ },
+ {
+  "artifact_hashes": [
+   "028a4acf8ded0661dfc9eaa511da7ff5523c198a64ed1c5c06dc852eca14feb8"
+  ],
+  "assumptions": [],
+  "compiler_version": "Python 3.13.17",
+  "environment_lock_hash": "34c931aaf21b24dbda35ab11790c1aa3505b29a9a07bd486a7f5d49a2821a88e",
+  "evidence_class": "E1",
+  "object_id": "E47-CASIMIR",
+  "parent_receipt_hash": "59c7d03e211bace5ff57da153f40ea637f250cd0ba99bd382f0c13cc2074fbd5",
+  "proof_system": "Python",
+  "receipt_hash": "9a8340f8aee651984fdde83546718956785fe00e61988a9bb3bf99e3f2aaa882",
+  "route_id": "KX-E47-KERNEL",
+  "run_url": null,
+  "schema_version": "monorail.passport.v1",
+  "scope": "Only the exact statements these files compile. Does not claim the concrete 125x125 tensor Casimir bridge, which remains an open obligation on the Observatory Spur.",
+  "source_commit": "ce6a7001a3658ce391693573275691883de4791f",
+  "source_hash": "028a4acf8ded0661dfc9eaa511da7ff5523c198a64ed1c5c06dc852eca14feb8",
+  "station": "exact_matrix_rank",
+  "theorem_id": "E47-RANK-78",
+  "timestamp_utc": "2026-10-25T20:23:58Z",
+  "verification_status": "PASS"
+ },
+ {
+  "artifact_hashes": [
+   "29a4f9fc5ed78ea79a085084356d337b377ee46f997228131a30396d70567caa"
+  ],
+  "assumptions": [],
+  "compiler_version": "Python 3.13.17",
+  "environment_lock_hash": "34c931aaf21b24dbda35ab11790c1aa3505b29a9a07bd486a7f5d49a2821a88e",
+  "evidence_class": "E1",
+  "object_id": "E47-CASIMIR",
+  "parent_receipt_hash": "9a8340f8aee651984fdde83546718956785fe00e61988a9bb3bf99e3f2aaa882",
+  "proof_system": "Python",
+  "receipt_hash": "041409988f953fecbe166a7a8a9d7bd489031da3f026dc0c0ce5c4468dd5ff1a",
+  "route_id": "KX-E47-KERNEL",
+  "run_url": null,
+  "schema_version": "monorail.passport.v1",
+  "scope": "Only the exact statements these files compile. Does not claim the concrete 125x125 tensor Casimir bridge, which remains an open obligation on the Observatory Spur.",
+  "source_commit": "ce6a7001a3658ce391693573275691883de4791f",
+  "source_hash": "29a4f9fc5ed78ea79a085084356d337b377ee46f997228131a30396d70567caa",
+  "station": "exact_bracket_trace",
+  "theorem_id": "E47-BRACKETS-EXACT",
+  "timestamp_utc": "2026-10-25T20:23:58Z",
+  "verification_status": "PASS"
+ }
+]

@@ -1,0 +1,13 @@
+$ lean formal/e47/unified/Tensor125.lean
+exit 0
+
+'E47Tensor125.totalZ_up_bracket_entries' does not depend on any axioms
+'E47Tensor125.totalZ_down_bracket_entries' does not depend on any axioms
+'E47Tensor125.diagonal_weight_counts' does not depend on any axioms
+'E47Tensor125.spin_multiplicities_from_diagonal' does not depend on any axioms
+'E47Tensor125.dimension_from_diagonal' does not depend on any axioms
+'E47Tensor125.selected_block_dimension_from_diagonal' does not depend on any axioms
+'E47Tensor125.totalZ_trace' does not depend on any axioms
+'E47Tensor125.totalZ_diagonal_square_trace' does not depend on any axioms
+'E47Tensor125.totalUp_down_bracket_diagonal' does not depend on any axioms
+'E47Tensor125.concrete_casimir_trace' does not depend on any axioms

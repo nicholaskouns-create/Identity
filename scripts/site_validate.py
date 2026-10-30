@@ -26,6 +26,9 @@ LEAN_FILES = [
     "formal/e47/unified/EncodedOracle.lean",
     "formal/e47/unified/Spin2Generators.lean",
     "formal/e47/unified/Tensor125.lean",
+    "formal/e47/unified/RankNullity47.lean",
+    "formal/e47/unified/E47Bridge.lean",
+    "formal/e47/unified/E47Centrality.lean",
 ]
 COQ_FILES = [
     "formal/e47/E47Spectral.v",
@@ -38,16 +41,26 @@ COQ_FILES = [
     "formal/e47/unified/EncodedOracle.v",
     "formal/e47/unified/Spin2Generators.v",
     "formal/e47/unified/Tensor125.v",
+    "formal/e47/unified/RankNullity47.v",
+    "formal/e47/unified/E47Bridge.v",
 ]
 PYTHON_FILES = [
     "simulation/validate_e47.py",
     "validation/e47_tensor_bracket_trace_exact.py",
+    "validation/e47_rank_nullity_exact.py",
 ]
 SKIPPED = [
     (
         "formal/e47/E47ConcreteMatrix.lean",
         "Imports Mathlib. This run does not build Mathlib, and the file is not in scripts/validate-formal-local.sh.",
-    )
+    ),
+    (
+        "formal/e47/unified/E47Centrality.v",
+        "Rocq mirror of E47Centrality.lean, written but NOT YET COMPILED. "
+        "coqc had not finished after 15 minutes locally, so the file is "
+        "recorded as not run rather than claimed as accepted. The Lean "
+        "module is compiled and is in LEAN_FILES.",
+    ),
 ]
 
 

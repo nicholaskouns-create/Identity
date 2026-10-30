@@ -1,0 +1,11 @@
+$ python validation/e47_tensor_bracket_trace_exact.py
+exit 0
+
+PASS [Z,U]=U, all 15625 entries: exact integer residual = 0
+PASS [Z,D]=-D, all 15625 entries: exact integer residual = 0
+PASS [U,D]=2Z, all 15625 entries: exact integer residual = 0
+PASS [C,Z]=0, all 15625 entries: exact integer residual = 0
+PASS [C,U]=0, all 15625 entries: exact integer residual = 0
+PASS [C,D]=0, all 15625 entries: exact integer residual = 0
+PASS trace(C)=2250; trace(C^2)=58500
+NOTE: this integer weight basis is not orthonormal; C need not be symmetric here

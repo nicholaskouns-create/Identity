@@ -1,0 +1,256 @@
+{
+  "schema_version": "monorail.route_manifest.v1",
+  "route_id": "KX-E47-KERNEL",
+  "title": "K Express \u00b7 carrier to kernel dimension certificate",
+  "service": "K-Express",
+  "origin": "Canonical Manifest Depot",
+  "destination": "Frozen Release Depot",
+  "object_id": "E47-CASIMIR",
+  "scope": "Only the exact statements these files compile. The carrier bridge connects the WEIGHT data of the concrete 125-state operator to the block decomposition; it does NOT establish dim ker (C-6I)(C-30I) = 47 for the full Casimir, which still needs centrality and eigenspace identification (lanes #17, #19) and remains open.",
+  "source_commit": "c21abd25e4e97299883b3440ac0f6ba93ab77082",
+  "environment_lock_hash": "41ea5216f362051897c76833b201527059d5117d5b3a1fc62aa3d4c2e53b3b38",
+  "generated_utc": "2026-10-25T23:39:28Z",
+  "status": "LIMITED SERVICE",
+  "certified": true,
+  "chain_intact": true,
+  "chain_notes": [
+    "chain intact across 12 receipt(s)"
+  ],
+  "stations": [
+    {
+      "station": "spin2_generators",
+      "theorem_id": "E47-SPIN2-GENERATORS",
+      "status": "PASS",
+      "evidence_class": "E0",
+      "receipt_hash": "197e213e21d6ea81d29df46672990d23deec5a8280016c7a6771063b12f49008"
+    },
+    {
+      "station": "spin2_generators_coq",
+      "theorem_id": "E47-SPIN2-GENERATORS",
+      "status": "PASS",
+      "evidence_class": "E0",
+      "receipt_hash": "06d0eb3d694664c430b12147715f443ef87ff6b02622d5235140b31cc45faa73"
+    },
+    {
+      "station": "triple_tensor",
+      "theorem_id": "E47-TENSOR-125",
+      "status": "PASS",
+      "evidence_class": "E0",
+      "receipt_hash": "8bec729b5604efafbb3844eef3e887157324a9f55fc1904a616b9a8c9f8a02e2"
+    },
+    {
+      "station": "weight_decomposition",
+      "theorem_id": "E47-WEIGHT-ALGEBRA",
+      "status": "PASS",
+      "evidence_class": "E0",
+      "receipt_hash": "48bb83f123f8bb0094c59dc5d03db15081e808b9097fec7b4399e0554794be53"
+    },
+    {
+      "station": "spectral_census",
+      "theorem_id": "E47-SPECTRAL-CENSUS",
+      "status": "PASS",
+      "evidence_class": "E0",
+      "receipt_hash": "48019884bb7effe8bec8c5b0dc18f91537adeed4188ea7d0847b3791c625b1ad"
+    },
+    {
+      "station": "kernel_dimension",
+      "theorem_id": "E47-KERNEL-47",
+      "status": "PASS",
+      "evidence_class": "E0",
+      "receipt_hash": "21b199a794884e690ac798dcc7ce69d357b61980056a7166f9994f347d67d8a3"
+    },
+    {
+      "station": "kernel_dimension_coq",
+      "theorem_id": "E47-KERNEL-47",
+      "status": "PASS",
+      "evidence_class": "E0",
+      "receipt_hash": "21eed9b4baa9ddeae957c6e19f381f893bc20652990063a4a7b4b3bbbbd905a1"
+    },
+    {
+      "station": "carrier_bridge",
+      "theorem_id": "E47-CARRIER-BRIDGE",
+      "status": "PASS",
+      "evidence_class": "E0",
+      "receipt_hash": "4813e8e630fb34e511128d9b456bade78ace90566ed88be178df933cc4845965"
+    },
+    {
+      "station": "carrier_bridge_coq",
+      "theorem_id": "E47-CARRIER-BRIDGE",
+      "status": "PASS",
+      "evidence_class": "E0",
+      "receipt_hash": "0fdefd24a4234cfbed7020d6df8438848770a820ce4089557b936a4fd2480ade"
+    },
+    {
+      "station": "casimir_centrality_z",
+      "theorem_id": "E47-CASIMIR-CENTRAL-Z",
+      "status": "PASS",
+      "evidence_class": "E0",
+      "receipt_hash": "2bfb7e2334d74f7dd12b3898da7a9eb3e0b97a2f4e9dd2c20a29ce21129bbe5e"
+    },
+    {
+      "station": "exact_matrix_rank",
+      "theorem_id": "E47-RANK-78",
+      "status": "PASS",
+      "evidence_class": "E1",
+      "receipt_hash": "8a324eff903b852cd340242ef39f08bfa419b0e1f33d0be63910f059d11fc39f"
+    },
+    {
+      "station": "exact_bracket_trace",
+      "theorem_id": "E47-BRACKETS-EXACT",
+      "status": "PASS",
+      "evidence_class": "E1",
+      "receipt_hash": "07e133144a8433c467f32af5891edac6f085e121a42b9134b99f919f154d390a"
+    }
+  ],
+  "open_defects": 0,
+  "citizen_reconciliation": {
+    "schema_version": "monorail.reconciliation.v1",
+    "snapshot_source": "public.mathematical_identities @ gpkjvihkyectnenvnbng, 2026-10-25",
+    "consistent": 0,
+    "unregistered": 8,
+    "upgrades_requiring_approval": 1,
+    "promotion_blocked": true,
+    "rows": [
+      {
+        "theorem_id": "E47-BRACKETS-EXACT",
+        "route_class": "E1",
+        "city_class": null,
+        "city_status": null,
+        "verdict": "UNREGISTERED",
+        "detail": "no citizen_code matches; do not auto-create \u2014 a route may not mint a civic identity",
+        "blocks_promotion": true
+      },
+      {
+        "theorem_id": "E47-CARRIER-BRIDGE",
+        "route_class": "E0",
+        "city_class": null,
+        "city_status": null,
+        "verdict": "UNREGISTERED",
+        "detail": "no citizen_code matches; do not auto-create \u2014 a route may not mint a civic identity",
+        "blocks_promotion": true
+      },
+      {
+        "theorem_id": "E47-CASIMIR-CENTRAL-Z",
+        "route_class": "E0",
+        "city_class": null,
+        "city_status": null,
+        "verdict": "UNREGISTERED",
+        "detail": "no citizen_code matches; do not auto-create \u2014 a route may not mint a civic identity",
+        "blocks_promotion": true
+      },
+      {
+        "theorem_id": "E47-KERNEL-47",
+        "route_class": "E0",
+        "city_class": "E1",
+        "city_status": "validated",
+        "verdict": "UPGRADE_REQUIRES_APPROVAL",
+        "detail": "route declares E0, citizen holds E1. Transfer does not upgrade evidence; route this through approval_queue as a human_gate canonical promotion.",
+        "blocks_promotion": true
+      },
+      {
+        "theorem_id": "E47-RANK-78",
+        "route_class": "E1",
+        "city_class": null,
+        "city_status": null,
+        "verdict": "UNREGISTERED",
+        "detail": "no citizen_code matches; do not auto-create \u2014 a route may not mint a civic identity",
+        "blocks_promotion": true
+      },
+      {
+        "theorem_id": "E47-SPECTRAL-CENSUS",
+        "route_class": "E0",
+        "city_class": null,
+        "city_status": null,
+        "verdict": "UNREGISTERED",
+        "detail": "no citizen_code matches; do not auto-create \u2014 a route may not mint a civic identity",
+        "blocks_promotion": true
+      },
+      {
+        "theorem_id": "E47-SPIN2-GENERATORS",
+        "route_class": "E0",
+        "city_class": null,
+        "city_status": null,
+        "verdict": "UNREGISTERED",
+        "detail": "no citizen_code matches; do not auto-create \u2014 a route may not mint a civic identity",
+        "blocks_promotion": true
+      },
+      {
+        "theorem_id": "E47-TENSOR-125",
+        "route_class": "E0",
+        "city_class": null,
+        "city_status": null,
+        "verdict": "UNREGISTERED",
+        "detail": "no citizen_code matches; do not auto-create \u2014 a route may not mint a civic identity",
+        "blocks_promotion": true
+      },
+      {
+        "theorem_id": "E47-WEIGHT-ALGEBRA",
+        "route_class": "E0",
+        "city_class": null,
+        "city_status": null,
+        "verdict": "UNREGISTERED",
+        "detail": "no citizen_code matches; do not auto-create \u2014 a route may not mint a civic identity",
+        "blocks_promotion": true
+      }
+    ]
+  },
+  "ledger": {
+    "mode": "LIVE-READ / WRITE-GATED",
+    "write_bundle": "evidence/routes/KX-E47-KERNEL/supabase_write_bundle.sql",
+    "statements_emitted": 24,
+    "executed": false,
+    "reason": "city_formalism.monorail_receipts not deployed; production DDL awaits explicit approval",
+    "reconciliation": {
+      "in_both": 0,
+      "ledger_only": [],
+      "local_only": [
+        "06d0eb3d694664c430b12147715f443ef87ff6b02622d5235140b31cc45faa73",
+        "07e133144a8433c467f32af5891edac6f085e121a42b9134b99f919f154d390a",
+        "0fdefd24a4234cfbed7020d6df8438848770a820ce4089557b936a4fd2480ade",
+        "197e213e21d6ea81d29df46672990d23deec5a8280016c7a6771063b12f49008",
+        "21b199a794884e690ac798dcc7ce69d357b61980056a7166f9994f347d67d8a3",
+        "21eed9b4baa9ddeae957c6e19f381f893bc20652990063a4a7b4b3bbbbd905a1",
+        "2bfb7e2334d74f7dd12b3898da7a9eb3e0b97a2f4e9dd2c20a29ce21129bbe5e",
+        "48019884bb7effe8bec8c5b0dc18f91537adeed4188ea7d0847b3791c625b1ad",
+        "4813e8e630fb34e511128d9b456bade78ace90566ed88be178df933cc4845965",
+        "48bb83f123f8bb0094c59dc5d03db15081e808b9097fec7b4399e0554794be53",
+        "8a324eff903b852cd340242ef39f08bfa419b0e1f33d0be63910f059d11fc39f",
+        "8bec729b5604efafbb3844eef3e887157324a9f55fc1904a616b9a8c9f8a02e2"
+      ],
+      "consistent": false
+    }
+  },
+  "adapters": [
+    {
+      "adapter": "github",
+      "mode": "LIVE",
+      "git": true,
+      "lean": "Lean (version 4.35.0, x86_64-unknown-linux-gnu, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)",
+      "coqc": "The Coq Proof Assistant, version 8.18.0",
+      "python": "Python 3.13.17"
+    },
+    {
+      "adapter": "supabase",
+      "mode": "LIVE-READ / WRITE-GATED",
+      "project_ref": "gpkjvihkyectnenvnbng",
+      "reads": "LIVE (performed via Supabase MCP this session)",
+      "writes": "GATED \u2014 statements emitted for review; none executed",
+      "ledger_table": "city_formalism.monorail_receipts",
+      "ledger_deployed": "NO \u2014 migration awaits explicit approval",
+      "cube_moves": "untouched by design"
+    },
+    {
+      "adapter": "notion",
+      "mode": "READ-VERIFIED / WRITE-DEFERRED",
+      "charter_page": "3a246094fd3081f0a356e5102d1561b9",
+      "citadel_page": "3a246094fd308146a357c72c634d225c",
+      "writes": "deferred \u2014 canonical promotion requires explicit human approval"
+    },
+    {
+      "adapter": "pages",
+      "mode": "LIVE (generator) / PUBLISH-DEFERRED",
+      "publishes": "no \u2014 writes a file; deployment is a separate authorized step"
+    }
+  ],
+  "transport_law": "(x,Q) |-> (T(x), M_T(Q)); transfer does not upgrade evidence"
+}

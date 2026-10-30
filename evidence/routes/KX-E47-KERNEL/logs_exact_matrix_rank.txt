@@ -1,0 +1,14 @@
+$ python validation/e47_rank_nullity_exact.py
+exit 0
+
+carrier dimension N            = 125   (= sum of multiplicities)
+K = p(C) conjugated, density   =  70.3% nonzero entries
+rank K   (exact elimination)   = 78
+dim ker K = N - rank K         = 47
+rank + nullity                 = 125  ==  N : True
+
+annihilated spins              = [2, 5]  -> Casimir [6, 30]
+nullity from spectrum          = 25 + 22 = 47
+matches elimination            : True
+
+VERDICT  rank 78 + ker 47 = 125   [47 and 78 derived, not defined]

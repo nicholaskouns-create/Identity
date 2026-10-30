@@ -1,0 +1,96 @@
+name: Monorail route certification
+
+# Runs the Elevated Reproducibility Monorail over a route and publishes the
+# evidence bundle as a CI artifact. Read-only with respect to the repository:
+# it never commits, never promotes, and never writes to a live database.
+
+on:
+  pull_request:
+    paths:
+      - 'formal/e47/**'
+      - 'validation/**'
+      - 'monorail/**'
+      - 'run_route.py'
+      - '.github/workflows/monorail-route.yml'
+  workflow_dispatch:
+    inputs:
+      route_id:
+        description: 'Route to certify'
+        required: false
+        default: 'KX-E47-KERNEL'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: monorail-route-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  certify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Coq and Python
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y coq python3 python3-numpy
+
+      - name: Install Lean 4.35.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error \
+            https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+            -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.35.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Monorail scenario tests
+        run: python3 monorail/tests/test_monorail.py
+
+      - name: Install Node for the browser verifier
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Migration dry run and integrity tests (throwaway database)
+        run: |
+          set -euo pipefail
+          sudo apt-get install -y postgresql postgresql-contrib
+          # Actions runners have no systemd; pg_ctlcluster is the reliable start.
+          sudo pg_ctlcluster "$(pg_lsclusters -h | awk 'NR==1{print $1}')" main start \
+            || sudo service postgresql start
+          until sudo -u postgres psql -tc 'select 1' >/dev/null 2>&1; do sleep 2; done
+          sudo -u postgres psql -q -c 'drop database if exists monorail_test;'
+          sudo -u postgres psql -q -c 'create database monorail_test;'
+          sudo -u postgres psql -q -d monorail_test -c 'create schema city_formalism;'
+          sudo -u postgres psql -v ON_ERROR_STOP=1 -q -d monorail_test \
+            -f infra/supabase/monorail_receipts.sql
+          python3 monorail/tests/test_migration_pg.py
+          python3 monorail/tests/test_canonical_crosslang.py
+
+      - name: Certify the route
+        id: route
+        run: |
+          set +e
+          python3 run_route.py "${{ github.event.inputs.route_id || 'KX-E47-KERNEL' }}"
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Evidence bundle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: monorail-evidence
+          path: evidence/routes/
+
+      - name: Route summary
+        if: always()
+        run: python3 scripts/monorail_summary.py "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail if the route did not certify
+        if: always()
+        run: test "${{ steps.route.outputs.code }}" = "0"

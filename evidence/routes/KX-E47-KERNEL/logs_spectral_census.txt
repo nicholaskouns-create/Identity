@@ -1,0 +1,4 @@
+$ lean formal/e47/E47Spectral.lean
+exit 0
+
+

@@ -1,0 +1,9 @@
+$ lean formal/e47/unified/RankNullity47.lean
+exit 0
+
+'E47RankNullity.rank_nullity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'E47RankNullity.dimension_identity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'E47RankNullity.kernel_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'E47RankNullity.rank_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'E47RankNullity.dimension_identity_numeric' depends on axioms: [propext, Classical.choice, Quot.sound]
+'E47RankNullity.carrier_eq' does not depend on any axioms

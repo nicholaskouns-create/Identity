@@ -1,0 +1,7 @@
+{
+  "schema_version": "monorail.correction_status.v1",
+  "route_id": "KX-E47-KERNEL",
+  "suspended": false,
+  "open_defects": [],
+  "ledger": "evidence/routes/KX-E47-KERNEL/correction_status.jsonl"
+}

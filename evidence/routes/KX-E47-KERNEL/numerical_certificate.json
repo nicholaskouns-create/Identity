@@ -1,0 +1,20 @@
+{
+  "schema_version": "monorail.numerical_certificate.v1",
+  "route_id": "KX-E47-KERNEL",
+  "source_commit": "c21abd25e4e97299883b3440ac0f6ba93ab77082",
+  "exact_arithmetic_stations": [
+    {
+      "station": "exact_matrix_rank",
+      "theorem_id": "E47-RANK-78",
+      "status": "PASS",
+      "evidence_class": "E1"
+    },
+    {
+      "station": "exact_bracket_trace",
+      "theorem_id": "E47-BRACKETS-EXACT",
+      "status": "PASS",
+      "evidence_class": "E1"
+    }
+  ],
+  "note": "E1 fare. Exact rational arithmetic, not a formal proof."
+}

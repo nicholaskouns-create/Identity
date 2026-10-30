@@ -1,0 +1,9 @@
+$ lean formal/e47/unified/E47Bridge.lean
+exit 0
+
+'E47Bridge.concrete_weights_match_coupling' does not depend on any axioms
+'E47Bridge.kernel_from_matrix' depends on axioms: [propext, Classical.choice, Quot.sound]
+'E47Bridge.rank_from_matrix' depends on axioms: [propext, Classical.choice, Quot.sound]
+'E47Bridge.blocks_agree' does not depend on any axioms
+'E47Bridge.rank_nullity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'E47Bridge.trace_casimir_from_blocks' does not depend on any axioms

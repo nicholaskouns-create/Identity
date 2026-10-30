@@ -1,0 +1,19 @@
+$ lean formal/e47/E47WeightAlgebra.lean
+exit 0
+
+'WeightAlgebra.basis_size' does not depend on any axioms
+'WeightAlgebra.weight_counts' does not depend on any axioms
+'WeightAlgebra.weight_symmetric' does not depend on any axioms
+'WeightAlgebra.weight_total' does not depend on any axioms
+'WeightAlgebra.weight_window' does not depend on any axioms
+'WeightAlgebra.multiplicities' does not depend on any axioms
+'WeightAlgebra.dimension_identity' does not depend on any axioms
+'WeightAlgebra.multiplicities_reproduce_weights' does not depend on any axioms
+'WeightAlgebra.lam_zero_iff' depends on axioms: [propext]
+'WeightAlgebra.kernel_rank_from_weights' does not depend on any axioms
+'WeightAlgebra.kernel_dim_from_blocks' does not depend on any axioms
+'WeightAlgebra.gamma_contracts_off_kernel' does not depend on any axioms
+'WeightAlgebra.pr_on_nodes' does not depend on any axioms
+'WeightAlgebra.pr_normalizer' does not depend on any axioms
+'WeightAlgebra.pr_expanded' depends on axioms: [propext, Classical.choice, Quot.sound]
+'WeightAlgebra.pr_degree_six_monic' does not depend on any axioms

@@ -1,0 +1,7 @@
+$ coq formal/e47/unified/Spin2Generators.v
+exit 0
+
+Closed under the global context
+Closed under the global context
+Closed under the global context
+Closed under the global context

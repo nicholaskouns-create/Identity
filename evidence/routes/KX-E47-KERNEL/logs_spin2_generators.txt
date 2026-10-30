@@ -1,0 +1,7 @@
+$ lean formal/e47/unified/Spin2Generators.lean
+exit 0
+
+'E47Spin2.commutator_z_up' depends on axioms: [propext]
+'E47Spin2.commutator_z_down' depends on axioms: [propext]
+'E47Spin2.commutator_up_down' depends on axioms: [propext]
+'E47Spin2.spin2_casimir_scalar' depends on axioms: [propext]

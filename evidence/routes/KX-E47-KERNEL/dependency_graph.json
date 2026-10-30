@@ -1,0 +1,73 @@
+{
+  "schema_version": "monorail.dependency_graph.v1",
+  "route_id": "KX-E47-KERNEL",
+  "root": "E47-CASIMIR",
+  "parents": [
+    "E47-CARRIER-125"
+  ],
+  "edges": [
+    {
+      "from": "spin2_generators",
+      "to": "spin2_generators_coq",
+      "relation": "precedes"
+    },
+    {
+      "from": "spin2_generators_coq",
+      "to": "triple_tensor",
+      "relation": "precedes"
+    },
+    {
+      "from": "triple_tensor",
+      "to": "weight_decomposition",
+      "relation": "precedes"
+    },
+    {
+      "from": "weight_decomposition",
+      "to": "spectral_census",
+      "relation": "precedes"
+    },
+    {
+      "from": "spectral_census",
+      "to": "kernel_dimension",
+      "relation": "precedes"
+    },
+    {
+      "from": "kernel_dimension",
+      "to": "kernel_dimension_coq",
+      "relation": "precedes"
+    },
+    {
+      "from": "kernel_dimension_coq",
+      "to": "carrier_bridge",
+      "relation": "precedes"
+    },
+    {
+      "from": "carrier_bridge",
+      "to": "carrier_bridge_coq",
+      "relation": "precedes"
+    },
+    {
+      "from": "carrier_bridge_coq",
+      "to": "casimir_centrality_z",
+      "relation": "precedes"
+    },
+    {
+      "from": "casimir_centrality_z",
+      "to": "exact_matrix_rank",
+      "relation": "precedes"
+    },
+    {
+      "from": "exact_matrix_rank",
+      "to": "exact_bracket_trace",
+      "relation": "precedes"
+    }
+  ],
+  "proof_forge_issues": [
+    15,
+    16,
+    17,
+    18,
+    19,
+    21
+  ]
+}
