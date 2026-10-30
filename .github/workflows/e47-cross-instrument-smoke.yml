@@ -1,0 +1,32 @@
+name: E47 cross-instrument smoke
+on:
+  push:
+    paths:
+      - 'tools/e47_instrument_bridge.py'
+      - 'tests/test_e47_instrument_bridge.py'
+      - '.github/workflows/e47-cross-instrument-smoke.yml'
+  pull_request:
+    paths:
+      - 'tools/e47_instrument_bridge.py'
+      - 'tests/test_e47_instrument_bridge.py'
+      - '.github/workflows/e47-cross-instrument-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test spectral bridge and deterministic receipt
+        run: python -m unittest discover -s tests -p 'test_e47_instrument_bridge.py' -v
+      - name: Run source-provenance bridge
+        run: python tools/e47_instrument_bridge.py > "$RUNNER_TEMP/e47-receipt.json"
+      - name: Archive local execution receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: e47-cross-instrument-receipt
+          path: ${{ runner.temp }}/e47-receipt.json
