@@ -233,6 +233,16 @@ theorem concreteCasimirZ_first_five_columns :
         concreteCasimirEntry i (firstFiveColumn j) = 0 := by
   decide
 
+/-! ## Concrete Casimir centrality [C,Z], columns 5..9
+The entry uses the same 125-term D*U product and diagonal Z correction
+as the first block. All 125 rows are checked; no spectral assumption. -/
+theorem concreteCasimirZ_next_five_columns :
+    ∀ i : Fin 125, ∀ j : Fin 5,
+      (totalZ i i -
+        totalZ (nextFiveColumn j) (nextFiveColumn j)) *
+        concreteCasimirEntry i (nextFiveColumn j) = 0 := by
+  decide
+
 end E47Tensor125
 
 #print axioms E47Tensor125.totalZ_up_bracket_entries
@@ -262,3 +272,4 @@ end E47Tensor125
 #print axioms E47Tensor125.candidateCasimirFirstMomentMatchesConcreteTrace
 
 #print axioms E47Tensor125.concreteCasimirZ_first_five_columns
+#print axioms E47Tensor125.concreteCasimirZ_next_five_columns
