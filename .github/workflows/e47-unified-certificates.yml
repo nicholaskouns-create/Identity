@@ -35,9 +35,12 @@ jobs:
         run: |
           set -euxo pipefail
           coqc --version
+          : > coq-unified-assumptions.txt
           for f in formal/e47/unified/{Core47,RGFixed,Retention,Clock,EncodedOracle,Spin2Generators,Tensor125}.v; do
-            coqc "$f"
+            coqc "$f" | tee -a coq-unified-assumptions.txt
           done
+          expected=$(grep -h '^Print Assumptions ' formal/e47/unified/{Core47,RGFixed,Retention,Clock,EncodedOracle,Spin2Generators,Tensor125}.v | wc -l)
+          actual=$(grep -c '^Closed under the global context
 
   integer-matrix:
     runs-on: ubuntu-latest
@@ -150,3 +153,165 @@ jobs:
           set -euxo pipefail
           lean --version
           lean formal/e47/unified/Tensor125Columns80to84.lean
+ coq-unified-assumptions.txt)
+          test "$actual" -eq "$expected"
+          sha256sum formal/e47/unified/Tensor125.v > coq-unified-sha256.txt
+          git rev-parse HEAD > coq-unified-commit.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coq-unified-assumption-audit
+          path: |
+            coq-unified-assumptions.txt
+            coq-unified-sha256.txt
+            coq-unified-commit.txt
+
+  integer-matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install exact-matrix test dependency
+        run: python -m pip install numpy==2.2.6
+      - name: Check concrete integer tensor commutators and Casimir
+        run: python validation/e47_tensor_bracket_trace_exact.py
+
+  lean-columns-65-69:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit shared concrete spin-2 generator definitions
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          root = Path('formal/e47/unified')
+          original = (root / 'Tensor125.lean').read_text().split('theorem highest_weight', 1)[0]
+          isolated = (root / 'Tensor125Columns65to69.lean').read_text().split('/-! ## Isolated', 1)[0]
+          assert original == isolated, '65..69 generator definitions drifted from original'
+          print('SPIN2_COLUMNS_65_69_SHARED_DEFINITIONS_MATCH')
+          PY
+      - name: Install Lean 4.19.0 via elan
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile exact 625-entry bracket and audit axioms
+        run: |
+          set -euxo pipefail
+          lean --version
+          lean formal/e47/unified/Tensor125Columns65to69.lean
+
+  lean-columns-70-74:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit shared concrete spin-2 generator definitions
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          root = Path('formal/e47/unified')
+          original = (root / 'Tensor125.lean').read_text().split('theorem highest_weight', 1)[0]
+          isolated = (root / 'Tensor125Columns70to74.lean').read_text().split('/-! ## Isolated', 1)[0]
+          assert original == isolated, '70..74 generator definitions drifted from original'
+          print('SPIN2_COLUMNS_70_74_SHARED_DEFINITIONS_MATCH')
+          PY
+      - name: Install Lean 4.19.0 via elan
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile exact 625-entry bracket and audit axioms
+        run: |
+          set -euxo pipefail
+          lean --version
+          lean formal/e47/unified/Tensor125Columns70to74.lean
+
+  lean-columns-75-79:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit shared concrete spin-2 generator definitions
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          root = Path('formal/e47/unified')
+          original = (root / 'Tensor125.lean').read_text().split('theorem highest_weight', 1)[0]
+          isolated = (root / 'Tensor125Columns75to79.lean').read_text().split('/-! ## Isolated', 1)[0]
+          assert original == isolated, '75..79 generator definitions drifted from original'
+          print('SPIN2_COLUMNS_75_79_SHARED_DEFINITIONS_MATCH')
+          PY
+      - name: Install Lean 4.19.0 via elan
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile exact 625-entry bracket and audit axioms
+        run: |
+          set -euxo pipefail
+          lean --version
+          lean formal/e47/unified/Tensor125Columns75to79.lean
+
+  lean-columns-80-84:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit shared concrete spin-2 generator definitions
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          root = Path('formal/e47/unified')
+          original = (root / 'Tensor125.lean').read_text().split('theorem highest_weight', 1)[0]
+          isolated = (root / 'Tensor125Columns80to84.lean').read_text().split('/-! ## Isolated', 1)[0]
+          assert original == isolated, '80..84 generator definitions drifted from original'
+          print('SPIN2_COLUMNS_80_84_SHARED_DEFINITIONS_MATCH')
+          PY
+      - name: Install Lean 4.19.0 via elan
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile exact 625-entry bracket and audit axioms
+        run: |
+          set -euxo pipefail
+          lean --version
+          lean formal/e47/unified/Tensor125Columns80to84.lean
+
+  lean-columns-85-89:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify exact shared 125-state generator definitions
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          root = Path('formal/e47/unified')
+          original = (root / 'Tensor125.lean').read_text().split('theorem highest_weight', 1)[0]
+          isolated = (root / 'Tensor125Columns85to89.lean').read_text().split('/-! ## Isolated', 1)[0]
+          assert original == isolated, '85..89 generator definitions drifted from original'
+          print('SPIN2_COLUMNS_85_89_SHARED_DEFINITIONS_MATCH')
+          PY
+      - name: Install pinned Lean 4.19.0
+        run: |
+          set -euo pipefail
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile 625 genuine bracket entries and retain axiom evidence
+        run: |
+          set -euo pipefail
+          lean --version | tee lean-columns-85-89-version.txt
+          lean formal/e47/unified/Tensor125Columns85to89.lean | tee lean-columns-85-89-axioms.txt
+          grep -Fq "'E47Tensor125.totalUp_down_bracket_columns_eightyfive_through_eightynine' depends on axioms: [propext]" lean-columns-85-89-axioms.txt
+          sha256sum formal/e47/unified/Tensor125Columns85to89.lean > lean-columns-85-89-sha256.txt
+          git rev-parse HEAD > lean-columns-85-89-commit.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lean-columns-85-89-proof-audit
+          path: |
+            lean-columns-85-89-version.txt
+            lean-columns-85-89-axioms.txt
+            lean-columns-85-89-sha256.txt
+            lean-columns-85-89-commit.txt
