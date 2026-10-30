@@ -24,7 +24,7 @@ jobs:
           for f in formal/e47/unified/{Core47,RGFixed,Retention,Clock,EncodedOracle,Spin2Generators,Tensor125}.lean; do
             lean "$f" | tee -a lean-unified-axioms.txt
           done
-          for theorem in candidateCasimirSpectrum_exact candidateCasimirMoments candidateCasimirFirstMomentMatchesConcreteTrace concreteCasimirZ_first_five_columns concreteCasimirZ_next_five_columns; do
+          for theorem in candidateCasimirSpectrum_exact candidateCasimirMoments candidateCasimirFirstMomentMatchesConcreteTrace concreteCasimirZ_first_five_columns concreteCasimirZ_next_five_columns concreteCasimirZ_columns_ten_through_fourteen; do
             grep -Fq "E47Tensor125.${theorem}" lean-unified-axioms.txt
           done
           sha256sum formal/e47/unified/Tensor125.lean > lean-unified-sha256.txt
