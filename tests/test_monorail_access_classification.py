@@ -43,10 +43,27 @@ class MonorailRestrictedAccessTest(unittest.TestCase):
         for slug, repair_id in (("matrix", "mirror"), ("time", "modsync")):
             links = [l for l in stations[slug]["links"] if l.get("repair") == repair_id]
             self.assertEqual(len(links), 1)
-            self.assertEqual(links[0]["state"], "repaired")
+            self.assertEqual(links[0]["state"], "restricted")
         self.assertIn('r.status === "401"', HTML)
         self.assertIn("Owner-only source · public alternatives", HTML)
         self.assertIn("Restricted</span>", HTML)
+
+    def test_machine_readable_401_and_404_classes_remain_distinct(self):
+        stations = {s["slug"]: s for s in DATA["stations"]}
+        repairs = {r["id"]: r for r in DATA["repairs"]}
+        self.assertEqual(
+            {r["id"] for r in DATA["repairs"] if r["status"] == "401"},
+            {"mirror", "modsync"},
+        )
+        for slug, repair_id in (("matrix", "mirror"), ("time", "modsync")):
+            link = next(l for l in stations[slug]["links"] if l.get("repair") == repair_id)
+            self.assertEqual(link["state"], "restricted")
+            self.assertEqual(link["href"], repairs[repair_id]["failed"])
+        for repair_id in ("highlight", "paper"):
+            link = next(l for l in stations["tower"]["links"] if l.get("repair") == repair_id)
+            self.assertEqual(link["state"], "repaired")
+        self.assertIn('l.state === "restricted"', HTML)
+        self.assertIn('(l.state === "repaired" || l.state === "restricted")', HTML)
 
     def test_401_not_described_as_replaced(self):
         self.assertIn("restricted source, not replaced", HTML)
