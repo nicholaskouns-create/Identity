@@ -619,3 +619,15 @@ Theorem concreteCasimirZ_columns_twentyfive_through_twentynine :
 Proof. vm_compute. reflexivity. Qed.
 
 Print Assumptions concreteCasimirZ_columns_twentyfive_through_twentynine.
+
+(* Concrete Casimir centrality [C,Z], all 125 rows and columns 30..34.
+   Uses the genuine 125-term D*U product and no assumed spectrum.
+   This is a finite 625-entry theorem, not complete centrality. *)
+Theorem concreteCasimirZ_columns_thirty_through_thirtyfour :
+  List.forallb
+    (fun j => List.forallb
+      (fun i => concreteCasimirZEntryOK i j) (List.seq 0 125))
+    (List.seq 30 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions concreteCasimirZ_columns_thirty_through_thirtyfour.
