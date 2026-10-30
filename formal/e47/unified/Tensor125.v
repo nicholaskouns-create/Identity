@@ -132,3 +132,57 @@ Proof. vm_compute. reflexivity. Qed.
 
 Print Assumptions totalUp_down_bracket_diagonal.
 Print Assumptions concrete_casimir_trace.
+
+
+(* MC-300 / DBSK-C01: finite degree-two capacity from the concrete
+   125-state totalZ diagonal. This enumerates all distinct sector pairs,
+   not yet the full Casimir eigenspace theorem or the general polynomial
+   root-counting argument. *)
+
+Definition sectorDim (j : nat) : nat :=
+  (multiplicity j * (2 * j + 1))%nat.
+
+Theorem sector_dimensions_from_diagonal :
+  List.map sectorDim (List.seq 0 7) =
+    [1%nat; 9%nat; 25%nat; 28%nat; 27%nat; 22%nat; 13%nat].
+Proof. vm_compute. reflexivity. Qed.
+
+Definition singleSectorBoundOk (j : nat) : bool :=
+  Nat.leb (sectorDim j) 28%nat.
+
+Theorem every_single_sector_at_most_28 :
+  List.forallb singleSectorBoundOk (List.seq 0 7) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Definition distinctPairBoundOk (i j : nat) : bool :=
+  if Nat.eqb i j then true
+  else Nat.leb (sectorDim i + sectorDim j)%nat 55%nat.
+
+Theorem every_distinct_pair_at_most_55 :
+  List.forallb
+    (fun i => List.forallb (distinctPairBoundOk i) (List.seq 0 7))
+    (List.seq 0 7) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Definition uniqueMaximalPairOk (i j : nat) : bool :=
+  if Nat.eqb i j then true else
+    Bool.eqb
+      (Nat.eqb (sectorDim i + sectorDim j)%nat 55%nat)
+      (orb (andb (Nat.eqb i 3%nat) (Nat.eqb j 4%nat))
+           (andb (Nat.eqb i 4%nat) (Nat.eqb j 3%nat))).
+
+Theorem unique_maximal_quadratic_pair :
+  List.forallb
+    (fun i => List.forallb (uniqueMaximalPairOk i) (List.seq 0 7))
+    (List.seq 0 7) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Theorem canonical_e47_pair_dimension :
+  (sectorDim 2%nat + sectorDim 5%nat)%nat = 47%nat.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions sector_dimensions_from_diagonal.
+Print Assumptions every_single_sector_at_most_28.
+Print Assumptions every_distinct_pair_at_most_55.
+Print Assumptions unique_maximal_quadratic_pair.
+Print Assumptions canonical_e47_pair_dimension.

@@ -17,11 +17,11 @@ jobs:
           curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
           sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-      - name: Compile seven Lean modules
+      - name: Compile eight Lean modules
         run: |
           set -euxo pipefail
           lean --version
-          for f in formal/e47/unified/{Core47,RGFixed,Retention,Clock,EncodedOracle,Spin2Generators,Tensor125}.lean; do
+          for f in formal/e47/unified/{Core47,RGFixed,Retention,Clock,EncodedOracle,Spin2Generators,Tensor125,SpectralMask128}.lean; do
             lean "$f"
           done
   coq:
@@ -32,11 +32,11 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y coq
-      - name: Compile seven Coq modules
+      - name: Compile eight Coq modules
         run: |
           set -euxo pipefail
           coqc --version
-          for f in formal/e47/unified/{Core47,RGFixed,Retention,Clock,EncodedOracle,Spin2Generators,Tensor125}.v; do
+          for f in formal/e47/unified/{Core47,RGFixed,Retention,Clock,EncodedOracle,Spin2Generators,Tensor125,SpectralMask128}.v; do
             coqc "$f"
           done
 
