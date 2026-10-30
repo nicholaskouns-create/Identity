@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 
 HTML = (Path(__file__).resolve().parents[1] / "monorail" / "index.html").read_text(encoding="utf-8")
-MATCH = re.search(r'<script id="data" type="application/json">([\\s\\S]*?)</script>', HTML)
+MATCH = re.search(r'<script id="data" type="application/json">([\s\S]*?)</script>', HTML)
 if not MATCH:
     raise RuntimeError("Monorail JSON corpus is missing")
 DATA = json.loads(MATCH.group(1))
