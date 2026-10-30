@@ -539,3 +539,24 @@ Proof.
 Qed.
 
 Print Assumptions totalUp_down_bracket_full_columns.
+
+
+(* Concrete C = D*U + Z*(Z+I), using the genuine 125-term product.
+   Z is diagonal, so [C,Z]_{ij} = (Z_jj-Z_ii)*C_ij.
+   This checks every row and columns 0..4, not the full matrix.
+   No imported Casimir centrality axiom or spectral conclusion. *)
+Definition concreteCasimirEntry (i j : nat) : Z :=
+  mulEntry totalDown totalUp i j +
+    (if Nat.eqb i j then totalZ i i * (totalZ i i + 1) else 0).
+
+Definition concreteCasimirZEntryOK (i j : nat) : bool :=
+  Z.eqb ((totalZ i i - totalZ j j) * concreteCasimirEntry i j) 0.
+
+Theorem concreteCasimirZ_first_five_columns :
+  List.forallb
+    (fun j => List.forallb
+      (fun i => concreteCasimirZEntryOK i j) (List.seq 0 125))
+    (List.seq 0 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions concreteCasimirZ_first_five_columns.
