@@ -22,6 +22,16 @@ class AxiomLedgerParserTests(unittest.TestCase):
         self.assertEqual(match.group(1), "E47.foo")
         self.assertEqual(ledger.classify(match.group(2).split(", ")), "STANDARD")
 
+    def test_multiline_native_axiom_report(self):
+        output = ("info: source:4:1: 'E47Concrete.kernel_bezout' depends on axioms: "
+                  "[propext,\\n Classical.choice,\\n "
+                  "kernel_bezout._native.native_decide.ax_1_1]\\n")
+        matches = list(ledger.AXLINE.finditer(output))
+        self.assertEqual(len(matches), 1)
+        self.assertEqual(matches[0].group(1), "E47Concrete.kernel_bezout")
+        self.assertEqual(ledger.classify(
+            [x.strip() for x in matches[0].group(2).split(",")]), "NATIVE")
+
     def test_native_with_unrecognized_axiom_is_broken(self):
         self.assertEqual(ledger.classify(["Lean.ofReduceBool", "User.hiddenAxiom"]), "BROKEN")
         self.assertEqual(ledger.classify(["Lean.ofReduceBool", "propext"]), "NATIVE")
