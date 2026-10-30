@@ -1,4 +1,4 @@
-From Coq Require Import QArith QArith_base.
+From Coq Require Import QArith QArith_base ZArith Lia.
 Open Scope Q_scope.
 Module E47Richardson.
 Definition eps : Q := 1#99144.
@@ -19,21 +19,21 @@ Lemma normalized_identity (k : Q) :
   1 - eps * (k*k) == 1 - (32#17) * ((k/432)*(k/432)).
 Proof. unfold eps; field; discriminate. Qed.
 (* Exact rational absolute value, using the decidable Q order. *)
-Definition absQ (q : Q) : Q := if Qlt_bool q 0 then -q else q.
+Definition absQ (q : Q) : Q := if Z.ltb (Qnum q) 0%Z then -q else q.
 
-(* Finite complement-sector check. Qle_bool is the exact Q-order
+(* Finite complement-sector check. Qle is the exact Q-order
    decision procedure; no concrete 125x125 spectrum is assumed here. *)
 Lemma complement_envelope :
-  Qle_bool (absQ (multiplier 32400)) (15#17) = true /\
-  Qle_bool (absQ (multiplier 12544)) (15#17) = true /\
-  Qle_bool (absQ (multiplier 11664)) (15#17) = true /\
-  Qle_bool (absQ (multiplier 19600)) (15#17) = true /\
-  Qle_bool (absQ (multiplier 186624)) (15#17) = true.
-Proof. vm_compute; repeat split; reflexivity. Qed.
+  absQ (multiplier 32400) <= 15#17 /\
+  absQ (multiplier 12544) <= 15#17 /\
+  absQ (multiplier 11664) <= 15#17 /\
+  absQ (multiplier 19600) <= 15#17 /\
+  absQ (multiplier 186624) <= 15#17.
+Proof. vm_compute; repeat split; lia. Qed.
 
 Lemma complement_bound_attained :
-  Qeq_bool (absQ (multiplier 11664)) (15#17) = true /\
-  Qeq_bool (absQ (multiplier 186624)) (15#17) = true.
+  absQ (multiplier 11664) == 15#17 /\
+  absQ (multiplier 186624) == 15#17.
 Proof. vm_compute; split; reflexivity. Qed.
 
 End E47Richardson.
