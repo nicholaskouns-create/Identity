@@ -643,3 +643,14 @@ Theorem concreteCasimirZ_columns_thirtyfive_through_thirtynine :
 Proof. vm_compute. reflexivity. Qed.
 
 Print Assumptions concreteCasimirZ_columns_thirtyfive_through_thirtynine.
+
+(* Concrete [C,Z], all 125 rows and columns 40..44.
+   Finite evaluation of the original 125-term D*U product; no assumed spectrum. *)
+Theorem concreteCasimirZ_columns_forty_through_fortyfour :
+  List.forallb
+    (fun j => List.forallb
+      (fun i => concreteCasimirZEntryOK i j) (List.seq 0 125))
+    (List.seq 40 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions concreteCasimirZ_columns_forty_through_fortyfour.
