@@ -1,0 +1,36 @@
+Richardson contraction run
+Date: 2026-10-29
+Command: python3 richardson_sim.py
+Certificates: E47Richardson.lean, E47Richardson.v, E47Spectral.lean
+Initial vector: coordinate i = (17*i + 3) mod 97, centered and normalized.
+Q4.28: round half up to a multiple of 2^{-28} after each diagonal step.
+
+sector  mult  K^2      multiplier     role
+J=0      1    32400   0.6732026144  contract
+J=1      9    12544   0.8734769628  contract
+J=2     25        0   1.0000000000  retain
+J=3     28    11664   0.8823529412  contract
+J=4     27    19600   0.8023077544  contract
+J=5     22        0   1.0000000000  retain
+J=6     13   186624  -0.8823529412  contract
+
+worst |multiplier| = 0.882352941176
+15/17              = 0.882352941176
+gap                = 0.000e+00
+
+||P x0|| = 0.633018   ||(I-P) x0|| = 0.774137
+   n      float R_perp    Q4.28 R_perp      ||dx||     (15/17)^n
+   0    7.7414e-01    7.7414e-01    1.2008e-08    1.0000e+00
+   1    6.5659e-01    6.5659e-01    1.5137e-08    8.8235e-01
+   5    3.5782e-01    3.5782e-01    1.7921e-08    5.3482e-01
+  10    1.7917e-01    1.7917e-01    1.8540e-08    2.8604e-01
+  20    4.8932e-02    4.8932e-02    1.8487e-08    8.1818e-02
+  50    1.1107e-03    1.1107e-03    1.7876e-08    1.9148e-03
+ 100    2.0863e-06    2.0908e-06    4.2960e-08    3.6663e-06
+ 150    3.9664e-09    1.0835e-07    1.0552e-07    7.0202e-09
+ 200    7.5748e-12    1.0835e-07    1.0860e-07    1.3442e-11
+ 220    6.1944e-13    1.0835e-07    1.0860e-07    1.0998e-12
+ 250    1.4490e-14    1.0835e-07    1.0860e-07    2.5739e-14
+
+kernel after 250 float steps: 0.6330176497
+kernel after 250 Q4.28 steps: 0.6330176477
