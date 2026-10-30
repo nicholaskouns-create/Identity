@@ -1,0 +1,20 @@
+name: Monorail navigation source checks
+
+on:
+  pull_request:
+    paths:
+      - 'monorail/**'
+      - '.github/workflows/monorail-navigation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-links:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Monorail paper source and historical census
+        run: python3 -m unittest discover -s monorail/tests -v
