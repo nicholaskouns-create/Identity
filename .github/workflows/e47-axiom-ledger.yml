@@ -99,6 +99,8 @@ jobs:
       - name: Retrieve Mathlib compilation cache
         working-directory: formal/e47-concrete
         run: lake exe cache get
+      - name: Fail-closed parser regression tests
+        run: python3 -m unittest discover -s scripts/tests -p test_axiom_ledger_failclosed.py -v
       - name: Audit axioms
         shell: bash
         working-directory: formal/e47-concrete
@@ -107,6 +109,7 @@ jobs:
           python3 ../../scripts/axiom_ledger.py \
             --lean-cmd "lake env lean" \
             --allow-native ../e47/E47ConcreteMatrix.lean \
+            --min-audits 9 \
             ../e47/E47ConcreteMatrix.lean ../e47/E47Kernel29.lean | tee ../../axiom-ledger-concrete.txt
       - uses: actions/upload-artifact@v4
         if: always()
