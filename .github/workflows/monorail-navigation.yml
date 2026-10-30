@@ -16,5 +16,8 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+      # The wider monorail/tests suite includes PostgreSQL and direct-execution
+      # harnesses. They run under the route certification workflow, not here.
+      # This workflow tests the public navigation source and rendered Tower exit.
       - name: Check Monorail paper source and historical census
-        run: python3 -m unittest discover -s monorail/tests -v
+        run: python3 -m unittest discover -s monorail/tests -p 'test_paper_pin.py' -v
