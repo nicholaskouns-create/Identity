@@ -31,6 +31,23 @@ class FakeResponse:
         return b"x"
 
 
+
+class FakeSourceResponse:
+    status = 200
+
+    def __init__(self, payload):
+        self.payload = payload
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_):
+        return False
+
+    def read(self):
+        return self.payload
+
+
 class PublicDoorProbeTests(unittest.TestCase):
     def setUp(self):
         self.data = probe.read_corpus()
@@ -70,11 +87,28 @@ class PublicDoorProbeTests(unittest.TestCase):
         self.assertIsNone(result["http_status"])
         self.assertEqual(result["outcome"], "network_error")
 
+    def test_public_monorail_bytes_match_checkout(self):
+        payload = probe.CORPUS.read_bytes()
+        with patch.object(probe, "urlopen", return_value=FakeSourceResponse(payload)):
+            result = probe.probe_monorail_source()
+        self.assertEqual(result["http_status"], 200)
+        self.assertTrue(result["matches_source"])
+        self.assertEqual(result["outcome"], "http_ok")
+
+    def test_public_monorail_source_mismatch_is_not_success(self):
+        with patch.object(probe, "urlopen", return_value=FakeSourceResponse(b"stale deployment")):
+            result = probe.probe_monorail_source()
+        self.assertEqual(result["http_status"], 200)
+        self.assertFalse(result["matches_source"])
+        self.assertEqual(result["outcome"], "source_mismatch")
+
     def test_full_audit_preserves_historical_failures(self):
-        with patch.object(probe, "probe_door", side_effect=lambda s: {
+        with patch.object(probe, "probe_monorail_source", return_value={"outcome": "http_ok", "matches_source": True}), \
+             patch.object(probe, "probe_door", side_effect=lambda s: {
             "slug": s["slug"], "title": s["name"], "url": s["href"],
             "http_status": 200, "final_url": s["href"], "outcome": "http_ok"}):
             result = probe.audit(self.data)
+        self.assertTrue(result["monorail_entry"]["matches_source"])
         self.assertEqual(result["http_ok"], 17)
         self.assertEqual(result["source_exit_count"], 54)
         self.assertEqual(result["historical_census"]["links_followed"], 177)
