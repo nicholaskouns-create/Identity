@@ -48,6 +48,30 @@ class MonorailRestrictedAccessTest(unittest.TestCase):
         self.assertIn("Owner-only source · public alternatives", HTML)
         self.assertIn("Restricted</span>", HTML)
 
+    def test_restricted_original_url_remains_clickable_in_rendered_station(self):
+        """Exercise the actual station() renderer with Node, not only JSON labels."""
+        import subprocess
+
+        esc_js = next(line for line in HTML.splitlines() if line.startswith("function esc(s)"))
+        station_js = "function station(slug){" + HTML.split("function station(slug){", 1)[1].split(
+            "\\nfunction repair(id){", 1
+        )[0]
+        program = (
+            "const DATA = " + json.dumps(DATA) + ";\\n"
+            + esc_js + "\\n" + station_js + "\\n"
+            + "console.log(JSON.stringify({matrix:station('matrix'),time:station('time')}));"
+        )
+        result = subprocess.run(
+            ["node", "-e", program], check=True, capture_output=True, text=True
+        )
+        rendered = json.loads(result.stdout)
+        repairs = {r["id"]: r for r in DATA["repairs"]}
+        for slug, repair_id in (("matrix", "mirror"), ("time", "modsync")):
+            self.assertIn('href="' + repairs[repair_id]["failed"] + '"', rendered[slug])
+            self.assertIn('href="#/repair/' + repair_id + '"', rendered[slug])
+            self.assertIn("Original restricted source", rendered[slug])
+            self.assertIn("Owner-only source · public alternatives", rendered[slug])
+
     def test_machine_readable_401_and_404_classes_remain_distinct(self):
         stations = {s["slug"]: s for s in DATA["stations"]}
         repairs = {r["id"]: r for r in DATA["repairs"]}
