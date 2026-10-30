@@ -21,3 +21,20 @@ jobs:
       # This workflow tests the public navigation source and rendered Tower exit.
       - name: Check Monorail paper source and historical census
         run: python3 -m unittest discover -s monorail/tests -p 'test_paper_pin.py' -v
+
+  public-door-http:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test HTTP evidence classification without network
+        run: python3 -m unittest discover -s monorail/tests -p 'test_live_probe.py' -v
+      - name: Probe the 17 anonymous public doors
+        run: python3 monorail/probe_public_doors.py --output monorail/live-door-evidence.json
+      - name: Preserve observed HTTP statuses and transport errors
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: monorail-public-door-http-evidence
+          path: monorail/live-door-evidence.json
+          if-no-files-found: warn
