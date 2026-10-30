@@ -23,7 +23,7 @@ jobs:
           set -euo pipefail
           mkdir -p evidence/mc88
           lean --version | tee evidence/mc88/lean-version.txt
-          git rev-parse HEAD | tee evidence/mc88/commit.txt
+          git -c safe.directory="$PWD" rev-parse HEAD | tee evidence/mc88/commit.txt
           sha256sum formal/e47/optimal/MC88OptimalStep.lean | tee evidence/mc88/lean-source.sha256
           lean formal/e47/optimal/MC88OptimalStep.lean 2>&1 | tee evidence/mc88/lean-audit.txt
           if grep -q 'sorryAx' evidence/mc88/lean-audit.txt; then exit 1; fi
@@ -47,7 +47,7 @@ jobs:
           mkdir -p evidence/mc88
           coqc --version | tee evidence/mc88/coq-version.txt
           coqc --version | grep -F 'version 8.20.1'
-          git rev-parse HEAD | tee evidence/mc88/commit.txt
+          git -c safe.directory="$PWD" rev-parse HEAD | tee evidence/mc88/commit.txt
           sha256sum formal/e47/optimal/MC88OptimalStep.v | tee evidence/mc88/coq-source.sha256
           coqc formal/e47/optimal/MC88OptimalStep.v 2>&1 | tee evidence/mc88/coq-audit.txt
           test "$(grep -c 'Closed under the global context' evidence/mc88/coq-audit.txt)" -eq 5
