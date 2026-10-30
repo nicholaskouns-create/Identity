@@ -54,5 +54,28 @@ class PaperPinTests(unittest.TestCase):
                             for r in paper["redirects"]))
 
 
+    def test_tower_station_directly_links_pinned_manuscript(self):
+        """The rendered Tower exit must open the verified source, not only a repair card."""
+        import subprocess
+
+        esc_js = next(line for line in HTML.splitlines() if line.startswith("function esc(s)"))
+        station_js = "function station(slug){" + HTML.split("function station(slug){", 1)[1].split(
+            "\nfunction repair(id){", 1
+        )[0]
+        program = (
+            "const DATA = " + json.dumps(DATA) + ";\n"
+            + esc_js + "\n" + station_js + "\n"
+            + "console.log(station('tower'));"
+        )
+        rendered = subprocess.run(
+            ["node", "-e", program], check=True, capture_output=True, text=True
+        ).stdout
+        self.assertIn('href="' + PAPER + '"', rendered)
+        self.assertIn("Original manuscript · immutable source", rendered)
+        self.assertIn('href="#/repair/paper"', rendered)
+        self.assertIn("Historical 404 and pin provenance", rendered)
+        self.assertIn("Source pinned", rendered)
+
+
 if __name__ == "__main__":
     unittest.main()
