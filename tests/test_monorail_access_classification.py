@@ -114,7 +114,7 @@ class MonorailRestrictedAccessTest(unittest.TestCase):
         self.assertNotIn("Only what failed is replaced", HTML)
 
     def test_merged_highlighter_station_discloses_historical_404_and_source(self):
-        """Actual station renderer must not hide the failed source or imply a merge."""
+        """Actual station renderer must preserve the failed source without implying public deployment."""
         import subprocess
 
         esc_js = next(line for line in HTML.splitlines() if line.startswith("function esc(s)"))
