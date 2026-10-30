@@ -112,6 +112,38 @@ theorem concrete_casimir_trace :
     ((List.range 125).map (fun n => casimirDiag (idx n))).sum = 2250 := by
   decide
 
+
+/-! Candidate Casimir spectral moments from the *computed* Z-weight counts.
+The candidate eigenvalue/multiplicity pairs are a consistency constraint,
+NOT an assertion that the concrete 125×125 Casimir has these eigenspaces.
+A separate polynomial-annihilation/rank proof is required. -/
+def candidateCasimirSpectrum : List (Nat × Nat) :=
+  (List.range 7).map fun j =>
+    (j * (j + 1), multiplicity j * (2 * j + 1))
+
+theorem candidateCasimirSpectrum_exact :
+    candidateCasimirSpectrum =
+      [(0, 1), (2, 9), (6, 25), (12, 28),
+       (20, 27), (30, 22), (42, 13)] := by
+  decide
+
+def candidateCasimirMoment (p : Nat) : Nat :=
+  ((List.range 7).map fun j =>
+    multiplicity j * (2 * j + 1) * (j * (j + 1)) ^ p).sum
+
+theorem candidateCasimirMoments :
+    candidateCasimirMoment 0 = 125 ∧
+    candidateCasimirMoment 1 = 2250 ∧
+    candidateCasimirMoment 2 = 58500 := by
+  decide
+
+theorem candidateCasimirFirstMomentMatchesConcreteTrace :
+    (candidateCasimirMoment 1 : Int) =
+      ((List.range 125).map (fun n => casimirDiag (idx n))).sum := by
+  have h : candidateCasimirMoment 1 = 2250 := by decide
+  rw [h]
+  exact concrete_casimir_trace.symm
+
 /-! ## First five complete columns of the third concrete Lie bracket
 
 This is a bounded, compiler-checkable extension of the diagonal theorem.
@@ -205,3 +237,7 @@ end E47Tensor125
 
 
 #print axioms E47Tensor125.thirdBracketColumnPartition_exact
+
+#print axioms E47Tensor125.candidateCasimirSpectrum_exact
+#print axioms E47Tensor125.candidateCasimirMoments
+#print axioms E47Tensor125.candidateCasimirFirstMomentMatchesConcreteTrace
