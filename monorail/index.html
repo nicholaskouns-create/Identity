@@ -162,8 +162,11 @@ function station(slug){
   const exits = s.links.map(l => {
     // A historical 401 is an authorization boundary, not a locally replaced source.
     const restricted = l.state === "restricted" && DATA.repairs.some(r => r.id === l.repair && r.status === "401");
-    const dest = (l.state === "repaired" || l.state === "restricted") && l.repair
-      ? `<a class="mono warn" href="#/repair/${esc(l.repair)}">${restricted ? "Owner-only source · public alternatives" : "Repair details"}</a>`
+    // Restricted sources keep their original access URL visible beside public context.
+    const dest = restricted
+      ? `<a class="mono faint" title="Original restricted source" href="${esc(l.href)}">${esc(l.href.replace(/^https:\/\//,""))}</a><a class="mono warn" style="display:block" href="#/repair/${esc(l.repair)}">Owner-only source · public alternatives</a>`
+      : (l.state === "repaired" || l.state === "restricted") && l.repair
+      ? `<a class="mono warn" href="#/repair/${esc(l.repair)}">Repair details</a>`
       : `<a class="mono faint" href="${esc(l.href)}">${esc(l.href.replace(/^https:\/\//,""))}</a>`;
     const tag = l.state === "live" ? `<span class="mono ok">Live</span>` : restricted ? `<span class="mono warn">Restricted</span>` : `<span class="mono warn">Repair</span>`;
     return `<li><span style="min-width:0"><span style="display:block">${esc(l.label)}</span>${dest}</span>${tag}</li>`;
