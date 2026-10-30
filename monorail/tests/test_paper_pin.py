@@ -60,11 +60,11 @@ class PaperPinTests(unittest.TestCase):
 
         esc_js = next(line for line in HTML.splitlines() if line.startswith("function esc(s)"))
         station_js = "function station(slug){" + HTML.split("function station(slug){", 1)[1].split(
-            "\\nfunction repair(id){", 1
+            "\nfunction repair(id){", 1
         )[0]
         program = (
-            "const DATA = " + json.dumps(DATA) + ";\\n"
-            + esc_js + "\\n" + station_js + "\\n"
+            "const DATA = " + json.dumps(DATA) + ";\n"
+            + esc_js + "\n" + station_js + "\n"
             + "console.log(station('tower'));"
         )
         rendered = subprocess.run(
