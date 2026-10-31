@@ -701,3 +701,14 @@ Theorem concreteCasimirZ_columns_sixty_through_sixtyfour :
 Proof. vm_compute. reflexivity. Qed.
 
 Print Assumptions concreteCasimirZ_columns_sixty_through_sixtyfour.
+
+(* Concrete [C,Z] for all 125 rows and columns 65..69. Exact D*U
+   multiplication, with no assumed spectrum, centrality or kernel rank. *)
+Theorem concreteCasimirZ_columns_sixtyfive_through_sixtynine :
+  List.forallb
+    (fun j => List.forallb
+      (fun i => concreteCasimirZEntryOK i j) (List.seq 0 125))
+    (List.seq 65 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions concreteCasimirZ_columns_sixtyfive_through_sixtynine.
