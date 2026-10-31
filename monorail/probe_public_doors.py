@@ -23,6 +23,29 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
 CORPUS = Path(__file__).with_name("index.html")
 SOURCE_URL = "https://nicholaskouns-create.github.io/Identity/monorail/"
 
+# Historical 17-door source identities, not a redirect policy or an alias
+# registry. A station may be intentionally moved only with an explicit
+# reviewed update to this audit fixture; the independent apps stay untouched.
+EXPECTED_STATION_URLS = {
+    "home": "https://nicholaskouns-create.github.io/",
+    "city": "https://nicholaskouns-create.github.io/E47-Kartekeya/",
+    "work": "https://nicholaskouns-create.github.io/work/",
+    "identity": "https://nicholaskouns-create.github.io/Identity/",
+    "mnemosyne": "https://nicholaskouns-create.github.io/Identity/site/",
+    "lean": "https://nicholaskouns-create.github.io/Identity/site/proof/lean-coq/",
+    "plate": "https://nicholaskouns-create.github.io/e47-formal-validation.html",
+    "spectra": "https://nicholaskouns-create.github.io/Identity/site/spectra/",
+    "observatory": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/observatory/?view=learn",
+    "instruments": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/instruments/",
+    "neutrino": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/neutrino-flavor/",
+    "matrix": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/matrix/",
+    "time": "https://nicholaskouns-create.github.io/Time/",
+    "planetarium": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/e47-planetarium/",
+    "noesis": "https://nicholaskouns-create.github.io/noesis/",
+    "lucas": "https://nicholaskouns-create.github.io/lucas-companion.html",
+    "tower": "https://nicholaskouns-create.github.io/tower/#/explore",
+}
+
 
 def read_corpus(path: Path = CORPUS) -> dict:
     html = path.read_text(encoding="utf-8")
@@ -33,6 +56,13 @@ def read_corpus(path: Path = CORPUS) -> dict:
     stations = data["stations"]
     if len(stations) != 17 or len({s["slug"] for s in stations}) != 17:
         raise ValueError("Monorail 17-door identity census changed")
+    observed_urls = {s["slug"]: s["href"] for s in stations}
+    if observed_urls != EXPECTED_STATION_URLS:
+        changed = sorted(
+            slug for slug in set(observed_urls) | set(EXPECTED_STATION_URLS)
+            if observed_urls.get(slug) != EXPECTED_STATION_URLS.get(slug)
+        )
+        raise ValueError("Door URL identity changed; review explicitly: " + ", ".join(changed))
     if len(data["repairs"]) != 4:
         raise ValueError("Historical four-failure ledger changed")
     for s in stations:
