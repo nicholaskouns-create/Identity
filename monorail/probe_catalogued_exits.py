@@ -195,7 +195,16 @@ def receipt_url(observed_url: str, source_url: str) -> str:
     # Browser SPA fragments are never sent over HTTP. Compare the served URL
     # against the fragment-free source so a pinned query (e.g. Eidolon
     # ?module=eidolon#flight) survives in the evidence receipt.
-    if (observed_url == urldefrag(source_url)[0]
+    # A same-exit trailing-slash canonicalization may preserve the pinned
+    # query while changing the URL's spelling. Keep that reviewed view in the
+    # public receipt instead of silently dropping ?view=atlas or ?module=eidolon.
+    # Never preserve a newly introduced or altered query.
+    same_exit = (
+        observed.scheme == source.scheme
+        and observed.netloc.lower() == source.netloc.lower()
+        and (observed.path.rstrip("/") or "/") == (source.path.rstrip("/") or "/")
+    )
+    if ((same_exit and observed.query == source.query)
             or (reviewed and observed_url == urldefrag(reviewed)[0])):
         return observed._replace(fragment="").geturl()
     return observed._replace(query="", fragment="").geturl()
