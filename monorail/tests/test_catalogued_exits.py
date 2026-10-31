@@ -188,6 +188,92 @@ class CataloguedExitTests(unittest.TestCase):
             server.server_close()
             thread.join(timeout=3)
 
+    def test_wrong_exit_redirect_is_blocked_before_followup(self):
+        # An unrelated HTTP 200 used to satisfy the original exit probe
+        # after a 302, despite changing the requested link's identity.
+        from http.server import BaseHTTPRequestHandler, HTTPServer
+        from threading import Thread
+
+        class Redirect(BaseHTTPRequestHandler):
+            paths = []
+
+            def do_GET(self):
+                self.paths.append(self.path)
+                self.send_response(302 if self.path == "/start" else 200)
+                if self.path == "/start":
+                    self.send_header("Location", "/unrelated?token=not-for-receipt")
+                self.end_headers()
+
+            def log_message(self, *_):
+                pass
+
+        server = HTTPServer(("127.0.0.1", 0), Redirect)
+        thread = Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            original = f"http://127.0.0.1:{server.server_port}/start"
+            row = {"station": "test", "label": "public exit",
+                   "url": original, "state": "live"}
+            result = probe.probe_exit(row, timeout=3)
+            self.assertEqual(result["http_status"], 302)
+            self.assertEqual(result["outcome"], "exit_identity_redirect_blocked")
+            self.assertEqual(result["final_url"],
+                             f"http://127.0.0.1:{server.server_port}/unrelated")
+            self.assertEqual(Redirect.paths, ["/start"])
+            self.assertNotIn("token=", str(result))
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=3)
+
+    def test_same_exit_trailing_slash_redirect_still_allowed(self):
+        from http.server import BaseHTTPRequestHandler, HTTPServer
+        from threading import Thread
+
+        class Redirect(BaseHTTPRequestHandler):
+            def do_GET(self):
+                if self.path == "/start":
+                    self.send_response(302)
+                    self.send_header("Location", "/start/?canonical=1")
+                else:
+                    self.send_response(200)
+                self.end_headers()
+                if self.path.startswith("/start/"):
+                    self.wfile.write(b"same exit")
+
+            def log_message(self, *_):
+                pass
+
+        server = HTTPServer(("127.0.0.1", 0), Redirect)
+        thread = Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            original = f"http://127.0.0.1:{server.server_port}/start"
+            row = {"station": "test", "label": "public exit",
+                   "url": original, "state": "live"}
+            result = probe.probe_exit(row, timeout=3)
+            self.assertEqual((result["http_status"], result["outcome"]),
+                             (200, "http_ok"))
+            self.assertTrue(result["final_url"].endswith("/start/?canonical=1"))
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=3)
+
+    def test_wrong_exit_redirect_counts_as_failure(self):
+        def simulated(row):
+            if row["station"] == "home" and row["label"] == "Identity":
+                return dict(row, outcome="exit_identity_redirect_blocked",
+                            http_status=302)
+            return dict(row, outcome="http_ok", http_status=200)
+
+        with patch.object(probe, "probe_exit", side_effect=simulated):
+            receipt = probe.audit(self.data, workers=1)
+        self.assertEqual(receipt["http_ok"], 50)
+        self.assertEqual(receipt["http_error"], 1)
+        self.assertEqual(receipt["exit_identity_redirect_blocked"], 1)
+        self.assertEqual(receipt["historical_census"]["failures"], 4)
+
     def test_blocked_redirect_counts_as_failure_not_success(self):
         def simulated(row):
             if row["station"] == "home" and row["label"] == "Identity":
