@@ -1,4 +1,5 @@
 """Offline invariants for the independent 54-exit HTTP evidence lane."""
+import json
 import sys
 import unittest
 from copy import deepcopy
@@ -200,6 +201,42 @@ class CataloguedExitTests(unittest.TestCase):
         self.assertEqual(receipt["http_error"], 1)
         self.assertEqual(receipt["restricted_redirect_blocked"], 1)
         self.assertEqual(receipt["historical_census"]["failures"], 4)
+
+
+    def test_public_exit_swap_rejected_before_any_network_probe(self):
+        # Reproduces the R34 defect: two live 200-returning URLs could be
+        # exchanged while 54/51/3 counts and private exclusions stayed fixed.
+        data = deepcopy(self.data)
+        first, second = data["stations"][0]["links"][:2]
+        first["href"], second["href"] = second["href"], first["href"]
+        with patch.object(probe, "probe_exit") as request:
+            with self.assertRaisesRegex(ValueError, "Catalogued exit identity changed"):
+                probe.audit(data, workers=1)
+            request.assert_not_called()
+
+    def test_public_exit_query_and_spa_fragment_are_identity(self):
+        for station_slug, label, url in (
+            ("work", "Tower", "https://nicholaskouns-create.github.io/tower/"),
+            ("lucas", "Observatory atlas",
+             "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/observatory/"),
+        ):
+            with self.subTest(station=station_slug, label=label):
+                data = deepcopy(self.data)
+                station = next(s for s in data["stations"]
+                               if s["slug"] == station_slug)
+                next(l for l in station["links"] if l["label"] == label)["href"] = url
+                with self.assertRaisesRegex(ValueError, "Catalogued exit identity changed"):
+                    probe.partition_exits(data)
+
+    def test_reviewable_fixture_covers_all_54_original_exits(self):
+        fixture = json.loads(probe.EXPECTED_EXIT_IDENTITIES_PATH.read_text(
+            encoding="utf-8"))
+        rows = fixture["exits"]
+        self.assertEqual(len(rows), 54)
+        self.assertEqual(len({(r["station"], r["label"]) for r in rows}), 54)
+        self.assertEqual(sum(r["state"] == "restricted" for r in rows), 2)
+        self.assertEqual(sum(r["repair"] == "highlight" for r in rows), 1)
+        probe.verify_catalogued_exit_identities(self.data)
 
 
 if __name__ == "__main__":
