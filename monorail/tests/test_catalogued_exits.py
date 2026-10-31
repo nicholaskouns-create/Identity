@@ -260,6 +260,23 @@ class CataloguedExitTests(unittest.TestCase):
             server.server_close()
             thread.join(timeout=3)
 
+    def test_only_exact_deployed_spectra_redirect_is_reviewed(self):
+        from urllib.request import Request
+
+        source, target = next(iter(probe.REVIEWED_EXTERNAL_REDIRECTS.items()))
+        redirect = probe.SameExitRedirect(source)
+        req = Request(source)
+        approved = redirect.redirect_request(req, None, 302, "Found", {}, target)
+        self.assertEqual(approved.full_url, target)
+
+        for altered in (target + "&unexpected=1",
+                        "https://unrelated.example.org/",
+                        "https://dune-orchid-berry-mountain.grok.me/other"):
+            with self.subTest(altered=altered):
+                with self.assertRaises(probe.ExitIdentityRedirectBlocked):
+                    redirect.redirect_request(req, None, 302, "Found", {},
+                                              altered)
+
     def test_wrong_exit_redirect_counts_as_failure(self):
         def simulated(row):
             if row["station"] == "home" and row["label"] == "Identity":
