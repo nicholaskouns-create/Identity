@@ -114,6 +114,49 @@ class CataloguedExitTests(unittest.TestCase):
         self.assertEqual(result["outcome"], "http_ok")
 
 
+    def test_spa_fragment_does_not_erase_pinned_eidolon_query_in_receipt(self):
+        # Reproduce the existing source identity. urllib never sends #flight,
+        # but the catalogued ?module=eidolon query is a reviewed part of the
+        # exit URL and must survive in the public HTTP receipt.
+        public, _ = probe.partition_exits(self.data)
+        row = next(r for r in public
+                   if r["station"] == "instruments"
+                   and r["label"] == "Eidolon flight")
+        source = row["url"]
+        self.assertEqual(source,
+                         "https://nicholaskouns-create.github.io/"
+                         "E47-Kartekeya/interfaces/kouns-core/?module=eidolon#flight")
+        http_url = source.split("#", 1)[0]
+
+        class Response:
+            status = 200
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                return False
+
+            def geturl(self):
+                return http_url
+
+            def read(self, n):
+                self_read = n
+                assert self_read == 1
+                return b"x"
+
+        with patch.object(probe, "safe_urlopen", return_value=Response()) as opened:
+            receipt = probe.probe_exit(row)
+        self.assertEqual(opened.call_args.args[0].full_url, http_url)
+        self.assertEqual((receipt["http_status"], receipt["outcome"]),
+                         (200, "http_ok"))
+        self.assertEqual(receipt["final_url"], http_url)
+        # Unreviewed additions are still redacted.
+        self.assertEqual(
+            probe.receipt_url(http_url + "&access_token=PRIVATE_VALUE", source),
+            http_url.split("?")[0],
+        )
+
     def test_drive_redirect_is_blocked_before_followup_request(self):
         # Reproduce urllib's default 302-follow behavior with a real local
         # HTTP server. The redirect target must never receive a request.
