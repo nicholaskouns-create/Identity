@@ -107,6 +107,40 @@ class PublicDoorProbeTests(unittest.TestCase):
                     with self.assertRaisesRegex(ValueError, "Door URL identity changed"):
                         probe.read_corpus(path)
 
+    def test_historical_repair_classification_and_source_are_pinned(self):
+        # Previously read_corpus checked only len(repairs)==4. Exchanging
+        # 401/404 labels, or rewriting the original Tower paper URL, passed
+        # the door source check and contaminated the historical receipt.
+        for variant in ("swapped_status", "paper_source"):
+            with self.subTest(variant=variant):
+                data = deepcopy(self.data)
+                repairs = {r["id"]: r for r in data["repairs"]}
+                if variant == "swapped_status":
+                    repairs["mirror"]["status"] = "404"
+                    repairs["highlight"]["status"] = "401"
+                else:
+                    repairs["paper"]["failed"] = (
+                        "https://raw.githubusercontent.com/nicholaskouns-create/"
+                        "E47-Kartekeya/main/incorrect/tower_paper.tex"
+                    )
+                self.assertEqual(len(data["repairs"]), 4)
+                with TemporaryDirectory() as directory:
+                    original = probe.CORPUS.read_text(encoding="utf-8")
+                    marker = '<script id="data" type="application/json">'
+                    prefix, rest = original.split(marker, 1)
+                    _, suffix = rest.split("</script>", 1)
+                    path = Path(directory) / "index.html"
+                    path.write_text(
+                        prefix + marker + json.dumps(data, separators=(",", ":"))
+                        + "</script>" + suffix, encoding="utf-8"
+                    )
+                    with patch.object(probe, "probe_door") as request:
+                        with self.assertRaisesRegex(
+                            ValueError, "Historical repair identity changed"
+                        ):
+                            probe.read_corpus(path)
+                        request.assert_not_called()
+
     def test_restricted_originals_are_not_door_requests(self):
         doors = {s["href"] for s in self.data["stations"]}
         restricted = {l["href"] for s in self.data["stations"]
