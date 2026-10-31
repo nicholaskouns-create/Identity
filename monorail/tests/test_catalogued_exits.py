@@ -182,7 +182,7 @@ class CataloguedExitTests(unittest.TestCase):
             result = probe.probe_exit(row, timeout=3)
             self.assertEqual((result["http_status"], result["outcome"]),
                              (200, "http_ok"))
-            self.assertEqual(result["final_url"], original)
+            self.assertEqual(result["final_url"], row["url"])
             self.assertNotIn("canonical=1", str(result))
         finally:
             server.shutdown()
