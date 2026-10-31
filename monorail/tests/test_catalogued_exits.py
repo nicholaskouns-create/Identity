@@ -481,5 +481,57 @@ class CataloguedExitTests(unittest.TestCase):
         probe.verify_catalogued_exit_identities(self.data)
 
 
+    def test_pinned_exit_query_redirect_cannot_switch_view(self):
+        # Before R47, a same-host/same-path 302 could silently replace a
+        # source-pinned view or instrument and be reported as HTTP 200.
+        # Exercise the actual urllib redirect handler without a network call.
+        from urllib.request import Request
+
+        public, _ = probe.partition_exits(self.data)
+        for station, label, old_query, new_query in (
+            ("lucas", "Observatory atlas", "?view=atlas", "?view=learn"),
+            ("instruments", "Eidolon flight",
+             "?module=eidolon", "?module=other"),
+        ):
+            with self.subTest(station=station, label=label):
+                row = next(r for r in public if r["station"] == station
+                           and r["label"] == label)
+                source = row["url"].split("#", 1)[0]
+                changed = source.replace(old_query, new_query)
+                self.assertNotEqual(changed, source)
+                handler = probe.SameExitRedirect(source)
+                with self.assertRaises(
+                    probe.ExitIdentityRedirectBlocked
+                ) as blocked:
+                    handler.redirect_request(
+                        Request(source), None, 302, "Found", {}, changed
+                    )
+                with patch.object(probe, "safe_urlopen",
+                                  side_effect=blocked.exception):
+                    receipt = probe.probe_exit(row)
+                self.assertEqual(
+                    (receipt["http_status"], receipt["outcome"]),
+                    (302, "exit_identity_redirect_blocked"),
+                )
+                self.assertEqual(receipt["final_url"], source.split("?")[0])
+                self.assertNotIn(new_query, json.dumps(receipt))
+
+                # The original pinned query remains valid across the
+                # preexisting trailing-slash canonicalization.
+                canonical = source.replace("/" + old_query, old_query)
+                same = handler.redirect_request(
+                    Request(source), None, 302, "Found", {}, canonical
+                )
+                self.assertEqual(same.full_url, canonical)
+
+        # An unpinned public exit still permits canonical query redirects.
+        unpinned = "https://nicholaskouns-create.github.io/Identity/"
+        same = probe.SameExitRedirect(unpinned).redirect_request(
+            Request(unpinned), None, 302, "Found", {},
+            unpinned + "?canonical=1"
+        )
+        self.assertEqual(same.full_url, unpinned + "?canonical=1")
+
+
 if __name__ == "__main__":
     unittest.main()
