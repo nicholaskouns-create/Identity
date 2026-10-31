@@ -61,6 +61,8 @@ jobs:
           set -euo pipefail
           coqc --version | tee coq-110-114-version.txt
           grep -Fq 'version 8.18.0' coq-110-114-version.txt
+          grep -Fq 'Theorem concreteCasimirZ_columns_onehundredten_through_onehundredfourteen :' formal/e47/unified/Tensor125.v
+          grep -Fq 'Print Assumptions concreteCasimirZ_columns_onehundredten_through_onehundredfourteen.' formal/e47/unified/Tensor125.v
           coqc formal/e47/unified/Tensor125.v | tee coq-110-114-assumptions.txt
           test "$(grep -c '^Closed under the global context$' coq-110-114-assumptions.txt)" -eq "$(grep -c '^Print Assumptions ' formal/e47/unified/Tensor125.v)"
           sha256sum formal/e47/unified/Tensor125.v > coq-110-114-sha256.txt
