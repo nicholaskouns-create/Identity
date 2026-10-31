@@ -2,8 +2,8 @@ name: E47 Casimir-U column 4 native evaluator audit
 on:
   pull_request:
     paths:
-      - 'formal/e47/unified/Tensor125CasimirUColumn3Native.lean'
-      - 'formal/e47/unified/Tensor125CasimirUColumn3.v'
+      - 'formal/e47/unified/Tensor125CasimirUColumn4Native.lean'
+      - 'formal/e47/unified/Tensor125CasimirUColumn4.v'
       - '.github/workflows/e47-casimir-u-column4-native.yml'
   workflow_dispatch:
 jobs:
@@ -18,7 +18,7 @@ jobs:
           from pathlib import Path
           root = Path('formal/e47/unified')
           canonical = (root/'Tensor125.lean').read_text().split('theorem highest_weight',1)[0]
-          native = (root/'Tensor125CasimirUColumn3Native.lean').read_text().removeprefix('import Lean\n').split('/-! ## Concrete',1)[0]
+          native = (root/'Tensor125CasimirUColumn4Native.lean').read_text().removeprefix('import Lean\n').split('/-! ## Concrete',1)[0]
           assert native == canonical, 'Generator definitions differ'
           print('CU4_NATIVE_GENERATOR_PARITY_PASS')
           PY
@@ -32,7 +32,7 @@ jobs:
         run: |
           set -euo pipefail
           git rev-parse HEAD | tee lean-cu4-native-commit.txt
-          sha256sum formal/e47/unified/Tensor125CasimirUColumn3Native.lean | tee lean-cu4-native-source-sha256.txt
+          sha256sum formal/e47/unified/Tensor125CasimirUColumn4Native.lean | tee lean-cu4-native-source-sha256.txt
           lean --version | tee lean-cu4-native-version.txt
           grep -Fq 'Lean (version 4.19.0' lean-cu4-native-version.txt
       - uses: actions/upload-artifact@v4
@@ -42,7 +42,7 @@ jobs:
       - name: Compile and print exact native trust assumptions
         run: |
           set -euo pipefail
-          lean formal/e47/unified/Tensor125CasimirUColumn3Native.lean 2>&1 | tee lean-cu4-native-axioms.txt
+          lean formal/e47/unified/Tensor125CasimirUColumn4Native.lean 2>&1 | tee lean-cu4-native-axioms.txt
           grep -Fq 'E47Tensor125.concreteCasimirU_column_four_native' lean-cu4-native-axioms.txt
           grep -Fq '[propext, Lean.ofReduceBool]' lean-cu4-native-axioms.txt
           ! grep -Eq 'sorryAx|admit|unsafe' lean-cu4-native-axioms.txt
@@ -64,11 +64,11 @@ jobs:
         run: |
           set -euo pipefail
           git rev-parse HEAD | tee coq-cu4-native-commit.txt
-          sha256sum formal/e47/unified/Tensor125CasimirUColumn3.v | tee coq-cu4-native-source-sha256.txt
+          sha256sum formal/e47/unified/Tensor125CasimirUColumn4.v | tee coq-cu4-native-source-sha256.txt
           coqc --version | tee coq-cu4-native-version.txt
           grep -Fq 'version 8.18.0' coq-cu4-native-version.txt
           coqc -Q formal/e47/unified E47Tensor formal/e47/unified/Tensor125.v > coq-cu4-native-base.txt 2>&1
-          coqc -Q formal/e47/unified E47Tensor formal/e47/unified/Tensor125CasimirUColumn3.v 2>&1 | tee coq-cu4-native-assumptions.txt
+          coqc -Q formal/e47/unified E47Tensor formal/e47/unified/Tensor125CasimirUColumn4.v 2>&1 | tee coq-cu4-native-assumptions.txt
           grep -Fxq 'Closed under the global context' coq-cu4-native-assumptions.txt
       - uses: actions/upload-artifact@v4
         if: always()
