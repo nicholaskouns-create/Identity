@@ -182,7 +182,8 @@ class CataloguedExitTests(unittest.TestCase):
             result = probe.probe_exit(row, timeout=3)
             self.assertEqual((result["http_status"], result["outcome"]),
                              (200, "http_ok"))
-            self.assertTrue(result["final_url"].endswith("/start?canonical=1"))
+            self.assertEqual(result["final_url"], row["url"])
+            self.assertNotIn("canonical=1", str(result))
         finally:
             server.shutdown()
             server.server_close()
@@ -254,11 +255,69 @@ class CataloguedExitTests(unittest.TestCase):
             result = probe.probe_exit(row, timeout=3)
             self.assertEqual((result["http_status"], result["outcome"]),
                              (200, "http_ok"))
-            self.assertTrue(result["final_url"].endswith("/start/?canonical=1"))
+            self.assertEqual(result["final_url"], original + "/")
+            self.assertNotIn("canonical=1", str(result))
         finally:
             server.shutdown()
             server.server_close()
             thread.join(timeout=3)
+
+    def test_unreviewed_redirect_query_not_persisted_in_receipt(self):
+        # The HTTP request may use the redirect query, but the public
+        # evidence artifact must not retain its potentially private value.
+        from http.server import BaseHTTPRequestHandler, HTTPServer
+        from threading import Thread
+
+        class Redirect(BaseHTTPRequestHandler):
+            paths = []
+
+            def do_GET(self):
+                self.paths.append(self.path)
+                if self.path == "/start":
+                    self.send_response(302)
+                    self.send_header("Location", "/start?access_token=PRIVATE_VALUE")
+                else:
+                    self.send_response(200)
+                self.end_headers()
+                if self.path != "/start":
+                    self.wfile.write(b"ok")
+
+            def log_message(self, *_):
+                pass
+
+        server = HTTPServer(("127.0.0.1", 0), Redirect)
+        thread = Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            original = f"http://127.0.0.1:{server.server_port}/start"
+            row = {"station": "test", "label": "public exit",
+                   "url": original, "state": "live"}
+            result = probe.probe_exit(row, timeout=3)
+            self.assertEqual((result["http_status"], result["outcome"]),
+                             (200, "http_ok"))
+            self.assertEqual(result["final_url"], original)
+            self.assertEqual(Redirect.paths,
+                             ["/start", "/start?access_token=PRIVATE_VALUE"])
+            self.assertNotIn("PRIVATE_VALUE", json.dumps(result))
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=3)
+
+    def test_reviewed_spectra_query_preserved_but_unknown_query_redacted(self):
+        source, target = next(iter(probe.REVIEWED_EXTERNAL_REDIRECTS.items()))
+        self.assertEqual(probe.receipt_url(target.split("#")[0], source),
+                         target.split("#")[0])
+        self.assertEqual(
+            probe.receipt_url("https://example.org/start?secret=PRIVATE_VALUE",
+                              "https://example.org/start"),
+            "https://example.org/start",
+        )
+        self.assertEqual(
+            probe.receipt_url("https://example.org/start?view=learn",
+                              "https://example.org/start?view=learn"),
+            "https://example.org/start?view=learn",
+        )
 
     def test_only_exact_deployed_spectra_redirect_is_reviewed(self):
         from urllib.request import Request
