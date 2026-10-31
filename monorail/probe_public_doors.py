@@ -101,6 +101,24 @@ def safe_door_open(req: Request, timeout: float):
     return build_opener(SameDoorRedirect(req.full_url)).open(req, timeout=timeout)
 
 
+def receipt_door_url(observed_url: str, source_url: str) -> str:
+    """Redact unreviewed redirect queries from public door HTTP receipts.
+
+    HTTP redirects may need a query to complete the request, but a query
+    introduced by the destination is not part of the 17-door source fixture
+    and could contain a credential. Preserve only the exact pinned query.
+    """
+    observed, source = urlsplit(observed_url), urlsplit(source_url)
+    same_door = (
+        observed.scheme == source.scheme
+        and observed.netloc.lower() == source.netloc.lower()
+        and (observed.path.rstrip("/") or "/") == (source.path.rstrip("/") or "/")
+    )
+    if same_door and observed.query == source.query:
+        return observed._replace(fragment="").geturl()
+    return observed._replace(query="", fragment="").geturl()
+
+
 def probe_door(station: dict, timeout: float = 12) -> dict:
     url = station["href"]
     record = {"slug": station["slug"], "title": station["name"],
@@ -111,16 +129,16 @@ def probe_door(station: dict, timeout: float = 12) -> dict:
     try:
         with safe_door_open(req, timeout=timeout) as response:
             record["http_status"] = response.status
-            record["final_url"] = response.geturl()
+            record["final_url"] = receipt_door_url(response.geturl(), url)
             response.read(1)
             record["outcome"] = "http_ok" if 200 <= response.status < 400 else "http_error"
     except DoorIdentityRedirectBlocked as error:
         record["http_status"] = error.code
-        record["final_url"] = error.geturl()
+        record["final_url"] = receipt_door_url(error.geturl(), url)
         record["outcome"] = "door_identity_redirect_blocked"
     except HTTPError as error:
         record["http_status"] = error.code
-        record["final_url"] = error.geturl()
+        record["final_url"] = receipt_door_url(error.geturl(), url)
         record["outcome"] = "http_error"
     except (URLError, TimeoutError, OSError) as error:
         record["error_type"] = type(error).__name__
