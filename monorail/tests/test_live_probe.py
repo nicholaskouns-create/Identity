@@ -356,5 +356,44 @@ class PublicDoorProbeTests(unittest.TestCase):
         self.assertEqual(receipt["historical_census"]["failures"], 4)
 
 
+    def test_pinned_observatory_view_redirect_cannot_silently_change_view(self):
+        # A 302 from ?view=learn to ?view=atlas used to count as HTTP OK.
+        # The same path and host are not enough for a query-pinned door.
+        from urllib.request import Request
+
+        station = next(s for s in self.data["stations"]
+                       if s["slug"] == "observatory")
+        source = station["href"]
+        changed = source.replace("?view=learn", "?view=atlas")
+        self.assertNotEqual(source, changed)
+        handler = probe.SameDoorRedirect(source)
+        with self.assertRaises(probe.DoorIdentityRedirectBlocked) as blocked:
+            handler.redirect_request(
+                Request(source), None, 302, "Found", {}, changed
+            )
+        with patch.object(probe, "safe_door_open",
+                          side_effect=blocked.exception):
+            receipt = probe.probe_door(station)
+        self.assertEqual((receipt["http_status"], receipt["outcome"]),
+                         (302, "door_identity_redirect_blocked"))
+        self.assertEqual(receipt["final_url"], source.split("?")[0])
+        self.assertNotIn("view=atlas", json.dumps(receipt))
+
+        # An unchanged pinned query is allowed, including slash canonicalization.
+        same = handler.redirect_request(
+            Request(source), None, 302, "Found", {},
+            source.replace("/?view=learn", "?view=learn")
+        )
+        self.assertEqual(same.full_url, source.replace("/?view=learn", "?view=learn"))
+
+        # Unpinned public doors retain their preexisting query redirects.
+        unpinned = "https://nicholaskouns-create.github.io/work/"
+        canonical = probe.SameDoorRedirect(unpinned).redirect_request(
+            Request(unpinned), None, 302, "Found", {},
+            unpinned + "?canonical=1"
+        )
+        self.assertEqual(canonical.full_url, unpinned + "?canonical=1")
+
+
 if __name__ == "__main__":
     unittest.main()
