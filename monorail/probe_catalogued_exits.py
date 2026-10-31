@@ -43,6 +43,46 @@ EXPECTED_REPAIR_URLS = {
 }
 
 
+# Reviewable navigation fixture. Unlike a count-only 51/3 census, this
+# catches public exit URL swaps, query/fragment loss and relabeling without
+# creating or merging any Mathematical City citizen identity.
+EXPECTED_EXIT_IDENTITIES_PATH = Path(__file__).with_name("expected_exit_identities.json")
+
+
+def verify_catalogued_exit_identities(data: dict) -> None:
+    baseline = json.loads(EXPECTED_EXIT_IDENTITIES_PATH.read_text(encoding="utf-8"))
+    expected = baseline["exits"]
+    observed = [
+        {"station": station["slug"], "label": link["label"],
+         "url": link["href"], "state": link["state"],
+         "repair": link.get("repair")}
+        for station in data["stations"] for link in station["links"]
+    ]
+
+    def by_identity(rows: list[dict]) -> dict:
+        indexed = {}
+        for row in rows:
+            key = (row["station"], row["label"])
+            if key in indexed:
+                raise ValueError("Duplicate catalogued exit identity: " + "/".join(key))
+            indexed[key] = (row["url"], row["state"], row.get("repair"))
+        return indexed
+
+    expected_by_id = by_identity(expected)
+    observed_by_id = by_identity(observed)
+    if len(expected) != 54 or len(observed) != 54:
+        raise ValueError("Catalogued exit fixture count changed; review explicitly")
+    if observed_by_id != expected_by_id:
+        changed = sorted(
+            "/".join(key) for key in set(observed_by_id) | set(expected_by_id)
+            if observed_by_id.get(key) != expected_by_id.get(key)
+        )
+        raise ValueError(
+            "Catalogued exit identity changed; review explicitly: "
+            + ", ".join(changed)
+        )
+
+
 def partition_exits(data: dict) -> tuple[list[dict], list[dict]]:
     public, excluded = [], []
     repairs = {r["id"]: r for r in data["repairs"]}
@@ -77,6 +117,7 @@ def partition_exits(data: dict) -> tuple[list[dict], list[dict]]:
     if (len(observed_excluded) != len(excluded)
             or observed_excluded != EXPECTED_EXCLUDED):
         raise ValueError("Excluded original URL identities changed; review explicitly")
+    verify_catalogued_exit_identities(data)
     return public, excluded
 
 
