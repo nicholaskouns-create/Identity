@@ -1,5 +1,5 @@
 /- E47-A06: exact integer coefficient certificate, independent of Casimir spectrum.
-   Polynomials have degree at most six and are represented by coefficients 0..6.
+   Polynomials have degree ix most six and are represented by coefficients 0..6.
    Multiplication is the exact convolution on these coefficients.
    This proves the finite coefficient identity, not the concrete matrix
    annihilator, projector rank, or any unverified eigenspace claim. -/
@@ -7,14 +7,14 @@ namespace E47BezoutA06
 
 abbrev Poly7 := Fin 7 → Int
 
-def at (n : Nat) : Fin 7 := ⟨n % 7, Nat.mod_lt n (by decide)⟩
+def ix (n : Nat) : Fin 7 := ⟨n % 7, Nat.mod_lt n (by decide)⟩
 
 def factor (r : Int) : Poly7 := fun i =>
   if i.val = 0 then -r else if i.val = 1 then 1 else 0
 
 def pmul (p q : Poly7) : Poly7 := fun i =>
   ((List.range (i.val + 1)).map
-    (fun k => p (at k) * q (at (i.val - k)))).sum
+    (fun k => p (ix k) * q (ix (i.val - k)))).sum
 
 def tPoly : Poly7 :=
   pmul (pmul (pmul (pmul (pmul
@@ -42,7 +42,7 @@ theorem bezout_polynomial :
   exact bezout_coefficients i
 
 def eval7 (p : Poly7) (x : Int) : Int :=
-  ((List.range 7).map (fun i => p (at i) * x ^ i)).sum
+  ((List.range 7).map (fun i => p (ix i) * x ^ i)).sum
 
 theorem selected_values :
     eval7 tPoly 6 = 1814400 ∧ eval7 tPoly 30 = 1814400 := by
