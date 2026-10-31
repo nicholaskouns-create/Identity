@@ -174,6 +174,21 @@ def safe_urlopen(req: Request, timeout: float):
     return build_opener(SameExitRedirect(req.full_url)).open(req, timeout=timeout)
 
 
+def receipt_url(observed_url: str, source_url: str) -> str:
+    """Keep only reviewed query parameters in durable HTTP evidence.
+
+    A same-exit redirect may legitimately use a query for its HTTP request,
+    but a new query is not part of the pinned source identity and may carry
+    credentials. Do not persist it in public CI artifacts.
+    """
+    observed, source = urlsplit(observed_url), urlsplit(source_url)
+    reviewed = REVIEWED_EXTERNAL_REDIRECTS.get(source_url)
+    if (observed_url == source_url
+            or (reviewed and observed_url == urldefrag(reviewed)[0])):
+        return observed._replace(fragment="").geturl()
+    return observed._replace(query="", fragment="").geturl()
+
+
 def probe_exit(row: dict, timeout: float = 15) -> dict:
     result = dict(row)
     result.update(http_status=None, final_url=None, outcome="network_error")
@@ -186,26 +201,27 @@ def probe_exit(row: dict, timeout: float = 15) -> dict:
     try:
         with safe_urlopen(req, timeout=timeout) as response:
             result["http_status"] = response.status
-            result["final_url"] = response.geturl()
+            observed_final_url = response.geturl()
+            result["final_url"] = receipt_url(observed_final_url, row["url"])
             response.read(1)
             result["outcome"] = ("http_ok" if 200 <= response.status < 400
                                  else "http_error")
             reviewed = REVIEWED_EXTERNAL_REDIRECTS.get(row["url"])
-            if (reviewed and result["final_url"]
-                    and urlsplit(result["final_url"])._replace(fragment="").geturl()
+            if (reviewed and observed_final_url
+                    and urlsplit(observed_final_url)._replace(fragment="").geturl()
                     == urlsplit(reviewed)._replace(fragment="").geturl()):
                 result["reviewed_redirect"] = reviewed
     except RestrictedDriveRedirect as error:
         result["http_status"] = error.code
-        result["final_url"] = error.geturl()
+        result["final_url"] = receipt_url(error.geturl(), row["url"])
         result["outcome"] = "restricted_redirect_blocked"
     except ExitIdentityRedirectBlocked as error:
         result["http_status"] = error.code
-        result["final_url"] = error.geturl()
+        result["final_url"] = receipt_url(error.geturl(), row["url"])
         result["outcome"] = "exit_identity_redirect_blocked"
     except HTTPError as error:
         result["http_status"] = error.code
-        result["final_url"] = error.geturl()
+        result["final_url"] = receipt_url(error.geturl(), row["url"])
         result["outcome"] = "http_error"
     except (URLError, TimeoutError, OSError) as error:
         result["error_type"] = type(error).__name__
