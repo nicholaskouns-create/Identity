@@ -20,7 +20,7 @@ jobs:
           original = (root / 'Tensor125.lean').read_text().split('theorem highest_weight', 1)[0]
           isolated = (root / 'Tensor125CasimirZ85to89.lean').read_text().split('/-! ## Isolated', 1)[0]
           assert original == isolated, '125-state generator definitions diverged'
-          print('CASIMIR_Z_80_84_GENERATOR_PARITY_PASS')
+          print('CASIMIR_Z_85_89_GENERATOR_PARITY_PASS')
           PY
       - name: Install pinned Lean 4.19.0
         run: |
