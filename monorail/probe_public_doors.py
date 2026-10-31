@@ -17,7 +17,8 @@ from pathlib import Path
 import re
 import sys
 from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
+from urllib.parse import urlsplit
+from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 CORPUS = Path(__file__).with_name("index.html")
 SOURCE_URL = "https://nicholaskouns-create.github.io/Identity/monorail/"
@@ -40,6 +41,36 @@ def read_corpus(path: Path = CORPUS) -> dict:
     return data
 
 
+class DoorIdentityRedirectBlocked(HTTPError):
+    """A redirect away from the requested door; destination not fetched."""
+
+
+class SameDoorRedirect(HTTPRedirectHandler):
+    """Allow trailing-slash/query redirects, never a different door or host."""
+
+    def __init__(self, original_url: str):
+        super().__init__()
+        self.original = urlsplit(original_url)
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        target = urlsplit(newurl)
+        original_path = self.original.path.rstrip("/") or "/"
+        target_path = target.path.rstrip("/") or "/"
+        if (target.scheme != self.original.scheme
+                or target.netloc.lower() != self.original.netloc.lower()
+                or target_path != original_path):
+            # Never follow an unreviewed destination. Do not log query tokens.
+            safe_url = target._replace(query="", fragment="").geturl()
+            raise DoorIdentityRedirectBlocked(
+                safe_url, code, "door_identity_redirect_blocked", headers, fp
+            )
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+def safe_door_open(req: Request, timeout: float):
+    return build_opener(SameDoorRedirect(req.full_url)).open(req, timeout=timeout)
+
+
 def probe_door(station: dict, timeout: float = 12) -> dict:
     url = station["href"]
     record = {"slug": station["slug"], "title": station["name"],
@@ -48,11 +79,15 @@ def probe_door(station: dict, timeout: float = 12) -> dict:
     req = Request(url, headers={"User-Agent": "MathematicalCity-Monorail-Audit/1.0",
                                 "Accept": "text/html,*/*"})
     try:
-        with urlopen(req, timeout=timeout) as response:
+        with safe_door_open(req, timeout=timeout) as response:
             record["http_status"] = response.status
             record["final_url"] = response.geturl()
             response.read(1)
             record["outcome"] = "http_ok" if 200 <= response.status < 400 else "http_error"
+    except DoorIdentityRedirectBlocked as error:
+        record["http_status"] = error.code
+        record["final_url"] = error.geturl()
+        record["outcome"] = "door_identity_redirect_blocked"
     except HTTPError as error:
         record["http_status"] = error.code
         record["final_url"] = error.geturl()
@@ -72,7 +107,7 @@ def probe_monorail_source(path: Path = CORPUS, timeout: float = 12) -> dict:
     req = Request(SOURCE_URL, headers={"User-Agent": "MathematicalCity-Monorail-Audit/1.0",
                                       "Accept": "text/html,*/*"})
     try:
-        with urlopen(req, timeout=timeout) as response:
+        with safe_door_open(req, timeout=timeout) as response:
             payload = response.read()
             record["http_status"] = response.status
             record["served_sha256"] = hashlib.sha256(payload).hexdigest()
@@ -80,6 +115,9 @@ def probe_monorail_source(path: Path = CORPUS, timeout: float = 12) -> dict:
             record["outcome"] = ("http_error" if response.status >= 400
                                  else "http_ok" if record["matches_source"]
                                  else "source_mismatch")
+    except DoorIdentityRedirectBlocked as error:
+        record["http_status"] = error.code
+        record["outcome"] = "door_identity_redirect_blocked"
     except HTTPError as error:
         record["http_status"] = error.code
         record["outcome"] = "http_error"
@@ -109,7 +147,11 @@ def audit(data: dict, workers: int = 4) -> dict:
         "monorail_entry": probe_monorail_source(),
         "doors": results,
         "http_ok": sum(r["outcome"] == "http_ok" for r in results),
-        "http_error": sum(r["outcome"] == "http_error" for r in results),
+        "http_error": sum(r["outcome"] in {"http_error", "door_identity_redirect_blocked"}
+                          for r in results),
+        "door_identity_redirect_blocked": sum(
+            r["outcome"] == "door_identity_redirect_blocked" for r in results
+        ),
         "network_error": sum(r["outcome"] == "network_error" for r in results),
         "claim_boundary": "HTTP GET only; not a browser render, JS test, exit crawl or Pages revision attestation",
     }
@@ -118,7 +160,8 @@ def audit(data: dict, workers: int = 4) -> dict:
 def exit_status(result: dict, allow_undeployed_source: bool = False) -> int:
     """Keep live status failures strict; only permit expected PR source divergence."""
     entry = result["monorail_entry"]
-    if result["http_error"] or entry["outcome"] == "http_error":
+    if (result["http_error"]
+            or entry["outcome"] in {"http_error", "door_identity_redirect_blocked"}):
         return 1
     if entry["outcome"] == "source_mismatch" and not allow_undeployed_source:
         return 1
@@ -140,6 +183,7 @@ def main(argv: list[str] | None = None) -> int:
     entry = result["monorail_entry"]
     print(f"Monorail entry: {entry['http_status'] or 'NETWORK'}; "
           f"served bytes match source: {entry['matches_source']}")
+    print(f"Door identity redirects blocked: {result['door_identity_redirect_blocked']}")
     print(f"17 public doors: {result['http_ok']} HTTP OK; "
           f"{result['http_error']} HTTP failures; "
           f"{result['network_error']} transport failures")
