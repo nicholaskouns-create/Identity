@@ -1,0 +1,384 @@
+{
+  "description": "Source-backed navigation audit fixture only; no citizen or certificate identities. Update explicitly in a reviewed PR when an existing exit intentionally changes.",
+  "baseline": "2026-10-31 Monorail Gestalt 54 catalogued exits; 51 public, 3 excluded",
+  "exits": [
+    {
+      "station": "city",
+      "label": "Coherence runtime",
+      "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/coherence-runtime/",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "city",
+      "label": "Instrument portal",
+      "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/instrument-portal/",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "city",
+      "label": "Kartekeya host",
+      "url": "https://gpkjvihkyectnenvnbng.supabase.co/functions/v1/city-app-host/kartekeya",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "city",
+      "label": "SEE host",
+      "url": "https://gpkjvihkyectnenvnbng.supabase.co/functions/v1/city-app-host/see/",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "home",
+      "label": "Formal validation",
+      "url": "https://nicholaskouns-create.github.io/e47-formal-validation.html",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "home",
+      "label": "Identity",
+      "url": "https://nicholaskouns-create.github.io/Identity/",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "home",
+      "label": "Observatory",
+      "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/observatory/",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "home",
+      "label": "The City",
+      "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "identity",
+      "label": "Kernel census",
+      "url": "https://nicholaskouns-create.github.io/Identity/site/proof/kernel-census/",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "identity",
+      "label": "Lean · Coq",
+      "url": "https://nicholaskouns-create.github.io/Identity/site/proof/lean-coq/",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "identity",
+      "label": "Mnemosyne",
+      "url": "https://nicholaskouns-create.github.io/Identity/site/",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "identity",
+      "label": "SPECTRA",
+      "url": "https://nicholaskouns-create.github.io/Identity/site/spectra/",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "instruments",
+      "label": "City live",
+      "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/city-live/",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "instruments",
+      "label": "Eidolon flight",
+      "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/kouns-core/?module=eidolon#flight",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "instruments",
+      "label": "Neutrino",
+      "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/neutrino-flavor/",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "lean",
+      "label": "Census note",
+      "url": "https://github.com/nicholaskouns-create/Identity/blob/main/foundry/128-kernel-census.md",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "lean",
+      "label": "Certificate workflow",
+      "url": "https://github.com/nicholaskouns-create/Identity/actions/workflows/e47-unified-certificates.yml",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "lean",
+      "label": "Identity repo",
+      "url": "https://github.com/nicholaskouns-create/Identity",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "lucas",
+      "label": "Flowshield",
+      "url": "https://nicholaskouns-create.github.io/flowshield.html",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "lucas",
+      "label": "Nexus",
+      "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/nexus/",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "lucas",
+      "label": "Observatory atlas",
+      "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/observatory/?view=atlas",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "matrix",
+      "label": "Constants 19/19",
+      "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/data/MC-E47-CONSTANTS-20260923.json",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "matrix",
+      "label": "Drive mirror",
+      "url": "https://docs.google.com/document/d/1wCmn5J4Tjo0qVV5AOoHUxD1tXComhPf7lU1ntzKtaMs/edit",
+      "state": "restricted",
+      "repair": "mirror"
+    },
+    {
+      "station": "matrix",
+      "label": "Parity certificate",
+      "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/data/MC-MATRIX-PARITY-20260921-001.json",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "matrix",
+      "label": "Prism certificate",
+      "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/data/MC-MATRIX-E47-PRISM-20260922-001.json",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "mnemosyne",
+      "label": "128-kernel proof",
+      "url": "https://github.com/nicholaskouns-create/Identity/blob/main/foundry/128-kernels-proof.md",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "mnemosyne",
+      "label": "Ablation",
+      "url": "https://nicholaskouns-create.github.io/Identity/site/ablation.html",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "mnemosyne",
+      "label": "SPECTRA grok lab",
+      "url": "https://tundra-hazel-glade-blade.grok.me/",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "neutrino",
+      "label": "Python validator",
+      "url": "https://github.com/nicholaskouns-create/E47-Kartekeya/blob/main/research/e47/validation/e47_neutrino_flavor_advanced_simulation.py",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "neutrino",
+      "label": "Simulation note",
+      "url": "https://github.com/nicholaskouns-create/E47-Kartekeya/blob/main/research/e47/E47_Neutrino_Flavor_Advanced_Simulation.md",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "noesis",
+      "label": "Discover",
+      "url": "https://nicholaskouns-create.github.io/noesis/discover.html",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "noesis",
+      "label": "Registry",
+      "url": "https://nicholaskouns-create.github.io/noesis/registry.json",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "noesis",
+      "label": "Research engine",
+      "url": "https://nicholaskouns-create.github.io/research-engine.html",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "observatory",
+      "label": "machine.json",
+      "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/observatory/machine.json",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "observatory",
+      "label": "Planetarium",
+      "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/e47-planetarium/",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "observatory",
+      "label": "Route packets",
+      "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/route-packets/",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "planetarium",
+      "label": "Observatory",
+      "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/observatory/",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "planetarium",
+      "label": "Research workbench",
+      "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/e47-research-workbench/",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "plate",
+      "label": "E47Commutant.lean",
+      "url": "https://github.com/nicholaskouns-create/Identity/blob/main/formal/e47/E47Commutant.lean",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "plate",
+      "label": "E47Commutant.v",
+      "url": "https://github.com/nicholaskouns-create/Identity/blob/main/formal/e47/E47Commutant.v",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "plate",
+      "label": "Graph evidence",
+      "url": "https://nicholaskouns-create.github.io/e47-graph-evidence.html",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "spectra",
+      "label": "Operator lab",
+      "url": "https://dune-orchid-berry-mountain.grok.me/?lab=operator#operator",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "spectra",
+      "label": "Spectra on the host",
+      "url": "https://gpkjvihkyectnenvnbng.supabase.co/functions/v1/city-app-host/spectra/",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "time",
+      "label": "Clock certificate",
+      "url": "https://nicholaskouns-create.github.io/Time/data/certificate.json",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "time",
+      "label": "Matrix simulator",
+      "url": "https://nicholaskouns-create.github.io/matrix-quantum-simulator/",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "time",
+      "label": "MODSYNC validator",
+      "url": "https://drive.google.com/file/d/1-bCyEuWcN1rtRb1IJF02O8tTe7RbmaEC/view",
+      "state": "restricted",
+      "repair": "modsync"
+    },
+    {
+      "station": "time",
+      "label": "Moment ladder",
+      "url": "https://nicholaskouns-create.github.io/e47-moment-ladder/",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "tower",
+      "label": "highlight.js 11.10.0",
+      "url": "https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/lib/highlight.min.js",
+      "state": "repaired",
+      "repair": "highlight"
+    },
+    {
+      "station": "tower",
+      "label": "Tower paper pin (source)",
+      "url": "https://github.com/nicholaskouns-create/E47-Kartekeya/blob/c14e98bd6d701723c887a5ba3a34b8caf902ab55/research/e47/papers/fib_lucas_tower/tower_paper.tex",
+      "state": "repaired",
+      "repair": "paper"
+    },
+    {
+      "station": "tower",
+      "label": "Validator that does exist",
+      "url": "https://github.com/nicholaskouns-create/E47-Kartekeya/blob/main/research/e47/validation/e47_fib_lucas_tower_validate.py",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "work",
+      "label": "Melanie",
+      "url": "https://nicholaskouns-create.github.io/melanie/",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "work",
+      "label": "Nexus songs",
+      "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/nexus/songs/",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "work",
+      "label": "NOESIS grok mirror",
+      "url": "https://flora-raven-arch-leaf.grok.me",
+      "state": "live",
+      "repair": null
+    },
+    {
+      "station": "work",
+      "label": "Tower",
+      "url": "https://nicholaskouns-create.github.io/tower/#/explore",
+      "state": "live",
+      "repair": null
+    }
+  ]
+}
