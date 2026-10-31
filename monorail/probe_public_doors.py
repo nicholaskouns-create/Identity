@@ -130,6 +130,9 @@ def receipt_door_url(observed_url: str, source_url: str) -> str:
     and could contain a credential. Preserve only the exact pinned query.
     """
     observed, source = urlsplit(observed_url), urlsplit(source_url)
+    # Blocked 30x targets may contain user:password@host. Never persist
+    # unreviewed URL userinfo in the public door navigation receipt.
+    observed = observed._replace(netloc=observed.netloc.rsplit("@", 1)[-1])
     same_door = (
         observed.scheme == source.scheme
         and observed.netloc.lower() == source.netloc.lower()
