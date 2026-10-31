@@ -154,7 +154,7 @@ class CataloguedExitTests(unittest.TestCase):
             server.server_close()
             thread.join(timeout=3)
 
-    def test_regular_redirect_remains_reachable(self):
+    def test_same_exit_query_redirect_remains_reachable(self):
         from http.server import BaseHTTPRequestHandler, HTTPServer
         from threading import Thread
 
@@ -162,11 +162,11 @@ class CataloguedExitTests(unittest.TestCase):
             def do_GET(self):
                 if self.path == "/start":
                     self.send_response(302)
-                    self.send_header("Location", "/ok")
+                    self.send_header("Location", "/start?canonical=1")
                 else:
                     self.send_response(200)
                 self.end_headers()
-                if self.path == "/ok":
+                if self.path == "/start?canonical=1":
                     self.wfile.write(b"x")
 
             def log_message(self, *_):
@@ -182,7 +182,7 @@ class CataloguedExitTests(unittest.TestCase):
             result = probe.probe_exit(row, timeout=3)
             self.assertEqual((result["http_status"], result["outcome"]),
                              (200, "http_ok"))
-            self.assertTrue(result["final_url"].endswith("/ok"))
+            self.assertTrue(result["final_url"].endswith("/start?canonical=1"))
         finally:
             server.shutdown()
             server.server_close()
