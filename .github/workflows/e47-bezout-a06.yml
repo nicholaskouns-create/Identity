@@ -1,0 +1,60 @@
+name: E47 A06 paired Bezout coefficient certificate
+on:
+  pull_request:
+    paths:
+      - 'formal/e47/unified/Tensor125BezoutA06.lean'
+      - 'formal/e47/unified/Tensor125BezoutA06.v'
+      - '.github/workflows/e47-bezout-a06.yml'
+  workflow_dispatch:
+jobs:
+  lean-bezout-a06:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean 4.19.0
+        run: |
+          set -euo pipefail
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile exact coefficients and audit axioms
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > lean-a06-commit.txt
+          sha256sum formal/e47/unified/Tensor125BezoutA06.lean > lean-a06-source-sha256.txt
+          lean --version | tee lean-a06-version.txt
+          grep -Fq 'Lean (version 4.19.0' lean-a06-version.txt
+          lean formal/e47/unified/Tensor125BezoutA06.lean 2>&1 | tee lean-a06-axioms.txt
+          for theorem in bezout_coefficients bezout_polynomial selected_values bezout_evaluations; do
+            grep -Fq "E47BezoutA06.$theorem" lean-a06-axioms.txt
+          done
+          ! grep -Eq 'sorryAx|admit|unsafe' lean-a06-axioms.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lean-a06-provenance
+          path: lean-a06-*.txt
+  coq-bezout-a06:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq 8.18.0
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y coq
+      - name: Compile exact coefficients and audit assumptions
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > coq-a06-commit.txt
+          sha256sum formal/e47/unified/Tensor125BezoutA06.v > coq-a06-source-sha256.txt
+          coqc --version | tee coq-a06-version.txt
+          grep -Fq 'version 8.18.0' coq-a06-version.txt
+          coqc formal/e47/unified/Tensor125BezoutA06.v 2>&1 | tee coq-a06-assumptions.txt
+          test "$(grep -c '^Closed under the global context$' coq-a06-assumptions.txt)" -eq 3
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coq-a06-provenance
+          path: coq-a06-*.txt
