@@ -724,3 +724,15 @@ Theorem concreteCasimirZ_columns_seventy_through_seventyfour :
 Proof. vm_compute. reflexivity. Qed.
 
 Print Assumptions concreteCasimirZ_columns_seventy_through_seventyfour.
+
+(* Concrete [C,Z], all 125 rows and columns 75..79. This checks 625
+   exact entries of the original 125-term D*U matrix product and diagonal Z.
+   No spectral multiplicity, rank or centrality is imported as an axiom. *)
+Theorem concreteCasimirZ_columns_seventyfive_through_seventynine :
+  List.forallb
+    (fun j => List.forallb
+      (fun i => concreteCasimirZEntryOK i j) (List.seq 0 125))
+    (List.seq 75 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions concreteCasimirZ_columns_seventyfive_through_seventynine.
