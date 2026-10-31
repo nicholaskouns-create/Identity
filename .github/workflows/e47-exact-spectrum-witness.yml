@@ -1,0 +1,35 @@
+name: E47 exact Casimir spectrum witness
+on:
+  pull_request:
+    paths:
+      - 'validation/e47_exact_spectrum_witness.py'
+      - '.github/workflows/e47-exact-spectrum-witness.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  exact-spectrum-witness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Execute exact integer annihilator and modular rank checks
+        run: |
+          set -euo pipefail
+          python --version | tee e47-spectrum-python-version.txt
+          python validation/e47_exact_spectrum_witness.py | tee e47-spectrum-witness.json
+          grep -Fq '"status": "EXACT_INTEGER_AND_MODULAR_WITNESS_PASS"' e47-spectrum-witness.json
+          sha256sum validation/e47_exact_spectrum_witness.py > e47-spectrum-source-sha256.txt
+          git rev-parse HEAD > e47-spectrum-commit.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-exact-spectrum-modular-witness
+          path: |
+            e47-spectrum-python-version.txt
+            e47-spectrum-witness.json
+            e47-spectrum-source-sha256.txt
+            e47-spectrum-commit.txt
