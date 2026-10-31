@@ -3,8 +3,8 @@
 
 Separate from the 17-door entry probe and the historical 177-link census.
 Never request the two restricted Drive originals or the known-broken
-historical Tower highlighter URL. Stop 30x redirects into Google Drive/Docs
-before urllib sends a second request; record the blocked redirect as failure. Public HTTP outcomes are evidence, not
+historical Tower highlighter URL. Stop 30x redirects into Google Drive/Docs or a different public exit
+before urllib sends a second request; record blocked redirects as failures. Public HTTP outcomes are evidence, not
 compiler certificates. No response bodies are stored.
 """
 from __future__ import annotations
@@ -125,24 +125,41 @@ class RestrictedDriveRedirect(HTTPError):
     """Redirect to an unreviewed Google Drive/Docs destination, not fetched."""
 
 
-class NoDriveRedirect(HTTPRedirectHandler):
-    """Stop before urllib follows a public URL into a Drive/Docs resource."""
+class ExitIdentityRedirectBlocked(HTTPError):
+    """Redirect to a different exit identity; destination not fetched."""
+
+
+class SameExitRedirect(HTTPRedirectHandler):
+    """Allow same-exit redirects, never an unrelated page, host or private Drive."""
+
+    def __init__(self, original_url: str):
+        super().__init__()
+        self.original = urlsplit(original_url)
 
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         target = urlsplit(newurl)
+        # Do not request restricted Drive originals even when a public exit
+        # redirects into one. Check this before the general identity guard.
+        safe_url = target._replace(query="", fragment="").geturl()
         if target.hostname in {"drive.google.com", "docs.google.com"}:
-            # Keep a provenance URL but never persist redirect query tokens.
-            safe_url = target._replace(query="", fragment="").geturl()
             raise RestrictedDriveRedirect(
                 safe_url, code, "restricted_drive_redirect_blocked", headers, fp
+            )
+        original_path = self.original.path.rstrip("/") or "/"
+        target_path = target.path.rstrip("/") or "/"
+        if (target.scheme != self.original.scheme
+                or target.netloc.lower() != self.original.netloc.lower()
+                or target_path != original_path):
+            raise ExitIdentityRedirectBlocked(
+                safe_url, code, "exit_identity_redirect_blocked", headers, fp
             )
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
 def safe_urlopen(req: Request, timeout: float):
-    # urllib's default urlopen follows 30x before probe_exit can inspect
-    # final_url. An explicit redirect handler prevents that private request.
-    return build_opener(NoDriveRedirect()).open(req, timeout=timeout)
+    # urllib follows 30x before probe_exit can inspect final_url. Constrain
+    # redirects to the original exit identity before the follow-up request.
+    return build_opener(SameExitRedirect(req.full_url)).open(req, timeout=timeout)
 
 
 def probe_exit(row: dict, timeout: float = 15) -> dict:
@@ -165,6 +182,10 @@ def probe_exit(row: dict, timeout: float = 15) -> dict:
         result["http_status"] = error.code
         result["final_url"] = error.geturl()
         result["outcome"] = "restricted_redirect_blocked"
+    except ExitIdentityRedirectBlocked as error:
+        result["http_status"] = error.code
+        result["final_url"] = error.geturl()
+        result["outcome"] = "exit_identity_redirect_blocked"
     except HTTPError as error:
         result["http_status"] = error.code
         result["final_url"] = error.geturl()
@@ -188,8 +209,12 @@ def audit(data: dict, workers: int = 6) -> dict:
         "excluded_originals": excluded,
         "historical_census": HISTORICAL,
         "http_ok": sum(r["outcome"] == "http_ok" for r in results),
-        "http_error": sum(r["outcome"] in {"http_error", "restricted_redirect_blocked"}
-                          for r in results),
+        "http_error": sum(r["outcome"] in {
+            "http_error", "restricted_redirect_blocked",
+            "exit_identity_redirect_blocked"} for r in results),
+        "exit_identity_redirect_blocked": sum(
+            r["outcome"] == "exit_identity_redirect_blocked" for r in results
+        ),
         "restricted_redirect_blocked": sum(
             r["outcome"] == "restricted_redirect_blocked" for r in results
         ),
@@ -215,7 +240,9 @@ def main() -> int:
           + "; HTTP failures: " + str(result["http_error"])
           + "; transport failures: " + str(result["network_error"])
           + "; Drive redirects blocked: "
-          + str(result["restricted_redirect_blocked"]))
+          + str(result["restricted_redirect_blocked"])
+          + "; wrong-exit redirects blocked: "
+          + str(result["exit_identity_redirect_blocked"]))
     for row in result["results"]:
         print(str(row["http_status"] or "NETWORK") + " "
               + row["station"] + "/" + row["label"] + ": " + row["url"])
