@@ -21,6 +21,8 @@ jobs:
       # This workflow tests the public navigation source and rendered Tower exit.
       - name: Check Monorail paper source and historical census
         run: python3 -m unittest discover -s monorail/tests -p 'test_paper_pin.py' -v
+      - name: Check HTML entity encoding in station and repair links
+        run: python3 -m unittest discover -s monorail/tests -p 'test_html_escaping.py' -v
 
   public-door-http:
     runs-on: ubuntu-24.04
