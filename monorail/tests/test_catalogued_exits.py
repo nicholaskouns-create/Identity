@@ -362,6 +362,42 @@ class CataloguedExitTests(unittest.TestCase):
             "https://example.org/start?view=learn",
         )
 
+    def test_pinned_exit_query_survives_trailing_slash_canonicalization(self):
+        # R48 regression: the redirect guard already permits the same pinned
+        # view with a trailing slash normalized, but receipt_url previously
+        # stripped that query from final_url despite reporting HTTP 200.
+        from urllib.request import Request
+
+        cases = (
+            ("https://nicholaskouns-create.github.io/"
+             "E47-Kartekeya/interfaces/observatory/?view=atlas",
+             "https://nicholaskouns-create.github.io/"
+             "E47-Kartekeya/interfaces/observatory?view=atlas"),
+            ("https://nicholaskouns-create.github.io/"
+             "E47-Kartekeya/interfaces/kouns-core/?module=eidolon#flight",
+             "https://nicholaskouns-create.github.io/"
+             "E47-Kartekeya/interfaces/kouns-core?module=eidolon"),
+        )
+        for source, target in cases:
+            with self.subTest(source=source):
+                http_source = source.split("#", 1)[0]
+                handler = probe.SameExitRedirect(http_source)
+                allowed = handler.redirect_request(
+                    Request(http_source), None, 302, "Found", {}, target
+                )
+                self.assertEqual(allowed.full_url, target)
+                self.assertEqual(probe.receipt_url(target, source), target)
+
+                # A changed query is still unreviewed and must not survive
+                # into the durable public navigation evidence.
+                altered = target + "&access_token=PRIVATE_VALUE"
+                self.assertEqual(
+                    probe.receipt_url(altered, source), target.split("?")[0]
+                )
+                self.assertNotIn(
+                    "PRIVATE_VALUE", probe.receipt_url(altered, source)
+                )
+
     def test_only_exact_deployed_spectra_redirect_is_reviewed(self):
         from urllib.request import Request
 
