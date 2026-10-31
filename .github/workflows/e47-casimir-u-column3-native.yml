@@ -1,0 +1,77 @@
+name: E47 Casimir-U column 3 native evaluator audit
+on:
+  pull_request:
+    paths:
+      - 'formal/e47/unified/Tensor125CasimirUColumn3Native.lean'
+      - 'formal/e47/unified/Tensor125CasimirUColumn3.v'
+      - '.github/workflows/e47-casimir-u-column2-native.yml'
+  workflow_dispatch:
+jobs:
+  lean-native-cu3:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check exact concrete generator parity
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('formal/e47/unified')
+          canonical = (root/'Tensor125.lean').read_text().split('theorem highest_weight',1)[0]
+          native = (root/'Tensor125CasimirUColumn3Native.lean').read_text().removeprefix('import Lean\n').split('/-! ## Concrete',1)[0]
+          assert native == canonical, 'Generator definitions differ'
+          print('CU3_NATIVE_GENERATOR_PARITY_PASS')
+          PY
+      - name: Install pinned Lean 4.19.0
+        run: |
+          set -euo pipefail
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Preserve provenance before expensive computation
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee lean-cu3-native-commit.txt
+          sha256sum formal/e47/unified/Tensor125CasimirUColumn3Native.lean | tee lean-cu3-native-source-sha256.txt
+          lean --version | tee lean-cu3-native-version.txt
+          grep -Fq 'Lean (version 4.19.0' lean-cu3-native-version.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lean-cu3-native-preflight
+          path: lean-cu3-native-*.txt
+      - name: Compile and print exact native trust assumptions
+        run: |
+          set -euo pipefail
+          lean formal/e47/unified/Tensor125CasimirUColumn3Native.lean 2>&1 | tee lean-cu3-native-axioms.txt
+          grep -Fq 'E47Tensor125.concreteCasimirU_column_three_native' lean-cu3-native-axioms.txt
+          grep -Fq '[propext, Lean.ofReduceBool]' lean-cu3-native-axioms.txt
+          ! grep -Eq 'sorryAx|admit|unsafe' lean-cu3-native-axioms.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lean-cu3-native-audit
+          path: lean-cu3-native-*.txt
+  coq-cu3-crosscheck:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq 8.18.0
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y coq
+      - name: Compile independent Coq column 3 and audit assumptions
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee coq-cu3-native-commit.txt
+          sha256sum formal/e47/unified/Tensor125CasimirUColumn3.v | tee coq-cu3-native-source-sha256.txt
+          coqc --version | tee coq-cu3-native-version.txt
+          grep -Fq 'version 8.18.0' coq-cu3-native-version.txt
+          coqc -Q formal/e47/unified E47Tensor formal/e47/unified/Tensor125.v > coq-cu3-native-base.txt 2>&1
+          coqc -Q formal/e47/unified E47Tensor formal/e47/unified/Tensor125CasimirUColumn3.v 2>&1 | tee coq-cu3-native-assumptions.txt
+          grep -Fxq 'Closed under the global context' coq-cu3-native-assumptions.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coq-cu3-native-crosscheck
+          path: coq-cu3-native-*.txt
