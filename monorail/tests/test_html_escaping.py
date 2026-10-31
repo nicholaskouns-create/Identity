@@ -33,7 +33,7 @@ def run_js(source):
 
 class HtmlEscapingTests(unittest.TestCase):
     def test_all_five_metacharacters_encoded(self):
-        result = run_js('console.log(esc(\'&<>"\\\\\'\'));')
+        result = run_js('console.log(esc(String.fromCharCode(38,60,62,34,39)));')
         self.assertEqual(result, "&amp;&lt;&gt;&quot;&#39;")
 
     def test_station_label_is_text_not_markup(self):
