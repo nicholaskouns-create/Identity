@@ -3,6 +3,9 @@ from __future__ import annotations
 
 import sys
 import unittest
+import json
+from copy import deepcopy
+from tempfile import TemporaryDirectory
 from pathlib import Path
 from unittest.mock import patch
 from urllib.error import HTTPError, URLError
@@ -58,6 +61,51 @@ class PublicDoorProbeTests(unittest.TestCase):
         self.assertEqual([(r["id"], r["status"]) for r in self.data["repairs"]],
                          [("highlight", "404"), ("paper", "404"),
                           ("mirror", "401"), ("modsync", "401")])
+
+    def test_station_url_swap_rejected_before_network(self):
+        # Before R33, exchanging two 200-returning station URLs preserved
+        # the 17-count and public host check, silently changing identities.
+        data = deepcopy(self.data)
+        stations = {s["slug"]: s for s in data["stations"]}
+        stations["matrix"]["href"], stations["neutrino"]["href"] = (
+            stations["neutrino"]["href"], stations["matrix"]["href"]
+        )
+        self.assertEqual(len(stations), 17)
+        self.assertTrue(all(s["href"].startswith(
+            "https://nicholaskouns-create.github.io/"
+        ) for s in data["stations"]))
+        with TemporaryDirectory() as directory:
+            original = probe.CORPUS.read_text(encoding="utf-8")
+            marker = '<script id="data" type="application/json">'
+            prefix, rest = original.split(marker, 1)
+            _, suffix = rest.split("</script>", 1)
+            mutated = (prefix + marker + json.dumps(data, separators=(",", ":"))
+                       + "</script>" + suffix)
+            path = Path(directory) / "index.html"
+            path.write_text(mutated, encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "Door URL identity changed"):
+                probe.read_corpus(path)
+
+    def test_station_query_and_fragment_identity_pinned(self):
+        # The Observatory query and Tower SPA fragment are part of their
+        # source identity; losing either must not pass a 17-door census.
+        for slug, replacement in (
+            ("observatory", "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/observatory/"),
+            ("tower", "https://nicholaskouns-create.github.io/tower/"),
+        ):
+            with self.subTest(slug=slug):
+                data = deepcopy(self.data)
+                next(s for s in data["stations"] if s["slug"] == slug)["href"] = replacement
+                with TemporaryDirectory() as directory:
+                    original = probe.CORPUS.read_text(encoding="utf-8")
+                    marker = '<script id="data" type="application/json">'
+                    prefix, rest = original.split(marker, 1)
+                    _, suffix = rest.split("</script>", 1)
+                    path = Path(directory) / "index.html"
+                    path.write_text(prefix + marker + json.dumps(data, separators=(",", ":"))
+                                    + "</script>" + suffix, encoding="utf-8")
+                    with self.assertRaisesRegex(ValueError, "Door URL identity changed"):
+                        probe.read_corpus(path)
 
     def test_restricted_originals_are_not_door_requests(self):
         doors = {s["href"] for s in self.data["stations"]}
