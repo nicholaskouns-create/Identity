@@ -1,0 +1,74 @@
+name: E47 Casimir-Z full Coq and Lean partition audit
+on:
+  pull_request:
+    paths:
+      - 'formal/e47/unified/Tensor125CasimirZIntegration.lean'
+      - 'formal/e47/unified/Tensor125CasimirZIntegration.v'
+      - '.github/workflows/e47-casimir-z-integrate.yml'
+  workflow_dispatch:
+jobs:
+  lean-casimir-z-partition:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check original concrete generator parity
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('formal/e47/unified')
+          original = (root / 'Tensor125.lean').read_text().split('theorem highest_weight', 1)[0]
+          isolated = (root / 'Tensor125CasimirZIntegration.lean').read_text().split('/-! ## Exact', 1)[0]
+          assert original == isolated, 'generator definitions diverged'
+          print('E47_CZ_INTEGRATION_GENERATOR_PARITY_PASS')
+          PY
+      - name: Install Lean 4.19.0
+        run: |
+          set -euo pipefail
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile partition and conditional assembly; audit axioms
+        run: |
+          set -euo pipefail
+          lean --version | tee lean-cz-integration-version.txt
+          grep -Fq 'Lean (version 4.19.0' lean-cz-integration-version.txt
+          lean formal/e47/unified/Tensor125CasimirZIntegration.lean | tee lean-cz-integration-axioms.txt
+          grep -Fq 'E47Tensor125.concreteCasimirZ_column_partition' lean-cz-integration-axioms.txt
+          grep -Fq 'E47Tensor125.concreteCasimirZ_full_from_block_hypotheses' lean-cz-integration-axioms.txt
+          ! grep -Eq 'sorryAx|admit|unsafe' lean-cz-integration-axioms.txt
+          sha256sum formal/e47/unified/Tensor125CasimirZIntegration.lean > lean-cz-integration-sha256.txt
+          git rev-parse HEAD > lean-cz-integration-commit.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lean-cz-partition-conditional-audit
+          path: |
+            lean-cz-integration-*.txt
+  coq-casimir-z-full:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq 8.18.0
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y coq
+      - name: Compile all concrete blocks and full theorem; audit assumptions
+        run: |
+          set -euo pipefail
+          coqc --version | tee coq-cz-full-version.txt
+          grep -Fq 'version 8.18.0' coq-cz-full-version.txt
+          grep -Fq 'Theorem concreteCasimirZ_full_columns :' formal/e47/unified/Tensor125CasimirZIntegration.v
+          grep -Fq 'Print Assumptions concreteCasimirZ_full_columns.' formal/e47/unified/Tensor125CasimirZIntegration.v
+          coqc -Q formal/e47/unified E47Tensor formal/e47/unified/Tensor125.v > coq-cz-base-assumptions.txt
+          coqc -Q formal/e47/unified E47Tensor formal/e47/unified/Tensor125CasimirZIntegration.v | tee coq-cz-full-assumptions.txt
+          test "$(grep -c '^Closed under the global context$' coq-cz-full-assumptions.txt)" -eq "$(grep -c '^Print Assumptions ' formal/e47/unified/Tensor125CasimirZIntegration.v)"
+          sha256sum formal/e47/unified/Tensor125.v formal/e47/unified/Tensor125CasimirZIntegration.v > coq-cz-full-sha256.txt
+          git rev-parse HEAD > coq-cz-full-commit.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coq-cz-full-125-assumption-audit
+          path: |
+            coq-cz-full-*.txt
