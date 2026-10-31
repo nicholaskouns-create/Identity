@@ -23,10 +23,31 @@ OUTPUT = Path("monorail/live-exit-evidence.json")
 HISTORICAL = {"links_followed": 177, "failures": 4,
               "status": "retained historical baseline; not re-crawled"}
 
+# Immutable identities of the three historical exclusions. The catalogue's
+# mutable "state" label is not sufficient authorization evidence: exchanging
+# one restricted label for another could otherwise cause a private original
+# to be anonymously requested while the 51/3 counts still appear correct.
+EXPECTED_EXCLUDED = {
+    "https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/lib/highlight.min.js":
+        "historical_404_not_requested",
+    "https://docs.google.com/document/d/1wCmn5J4Tjo0qVV5AOoHUxD1tXComhPf7lU1ntzKtaMs/edit":
+        "owner_only_original_not_requested",
+    "https://drive.google.com/file/d/1-bCyEuWcN1rtRb1IJF02O8tTe7RbmaEC/view":
+        "owner_only_original_not_requested",
+}
+EXPECTED_REPAIR_URLS = {
+    "highlight": "https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/lib/highlight.min.js",
+    "mirror": "https://docs.google.com/document/d/1wCmn5J4Tjo0qVV5AOoHUxD1tXComhPf7lU1ntzKtaMs/edit",
+    "modsync": "https://drive.google.com/file/d/1-bCyEuWcN1rtRb1IJF02O8tTe7RbmaEC/view",
+}
+
 
 def partition_exits(data: dict) -> tuple[list[dict], list[dict]]:
     public, excluded = [], []
     repairs = {r["id"]: r for r in data["repairs"]}
+    for repair_id, original_url in EXPECTED_REPAIR_URLS.items():
+        if repairs[repair_id]["failed"] != original_url:
+            raise ValueError("Historical repair URL identity changed: " + repair_id)
     for station in data["stations"]:
         for link in station["links"]:
             row = {"station": station["slug"], "label": link["label"],
@@ -51,6 +72,10 @@ def partition_exits(data: dict) -> tuple[list[dict], list[dict]]:
         "owner_only_original_not_requested",
     ]:
         raise ValueError("Historical exclusions changed; review explicitly")
+    observed_excluded = {r["url"]: r["reason"] for r in excluded}
+    if (len(observed_excluded) != len(excluded)
+            or observed_excluded != EXPECTED_EXCLUDED):
+        raise ValueError("Excluded original URL identities changed; review explicitly")
     return public, excluded
 
 
