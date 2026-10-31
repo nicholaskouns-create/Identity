@@ -48,3 +48,20 @@ jobs:
           name: monorail-public-door-http-evidence
           path: monorail/live-door-evidence.json
           if-no-files-found: warn
+
+  catalogued-exit-http:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify exit scope and private exclusions offline
+        run: python3 -m unittest discover -s monorail/tests -p 'test_catalogued_exits.py' -v
+      - name: Probe the 51 public catalogued exits (non-gating evidence)
+        run: python3 monorail/probe_catalogued_exits.py
+      - name: Preserve every observed exit status and failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: monorail-catalogued-exit-http-evidence
+          path: monorail/live-exit-evidence.json
+          if-no-files-found: warn
