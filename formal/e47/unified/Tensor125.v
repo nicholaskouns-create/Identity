@@ -784,3 +784,15 @@ Theorem concreteCasimirZ_columns_ninetyfive_through_ninetynine :
 Proof. vm_compute. reflexivity. Qed.
 
 Print Assumptions concreteCasimirZ_columns_ninetyfive_through_ninetynine.
+
+(* Concrete [C,Z] for all 125 rows and columns 100..104. This checks
+   the original 125-term D*U product of the explicit spin-2 triple tensor.
+   No spectral multiplicity, kernel rank, or centrality axiom is imported. *)
+Theorem concreteCasimirZ_columns_onehundred_through_onehundredfour :
+  List.forallb
+    (fun j => List.forallb
+      (fun i => concreteCasimirZEntryOK i j) (List.seq 0 125))
+    (List.seq 100 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions concreteCasimirZ_columns_onehundred_through_onehundredfour.
