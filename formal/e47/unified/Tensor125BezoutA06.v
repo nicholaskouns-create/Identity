@@ -59,16 +59,7 @@ Theorem bezout_evaluations :
   forall x : Z,
     eval7 (fun i => tPoly i + pmul kPoly qPoly i) x =
     eval7 (constant 1814400) x.
-Proof.
-  intro x.
-  unfold eval7.
-  f_equal.
-  apply List.map_ext_in.
-  intros i Hi.
-  rewrite bezout_coefficients.
-  - reflexivity.
-  - apply List.in_seq in Hi. lia.
-Qed.
+Proof. intro x. vm_compute. reflexivity. Qed.
 
 Print Assumptions bezout_coefficients.
 Print Assumptions selected_values.
