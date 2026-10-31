@@ -30,7 +30,15 @@ jobs:
       - name: Test HTTP evidence classification without network
         run: python3 -m unittest discover -s monorail/tests -p 'test_live_probe.py' -v
       - name: Probe the 17 anonymous public doors
-        run: python3 monorail/probe_public_doors.py --output monorail/live-door-evidence.json
+        # A PR is not yet deployed. Preserve the source mismatch in the JSON,
+        # but do not fail a PR solely because Pages still serves main.
+        # Workflow dispatch remains strict about source-byte parity.
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            python3 monorail/probe_public_doors.py --output monorail/live-door-evidence.json --allow-undeployed-source
+          else
+            python3 monorail/probe_public_doors.py --output monorail/live-door-evidence.json
+          fi
       - name: Preserve observed HTTP statuses and transport errors
         if: always()
         uses: actions/upload-artifact@v4
