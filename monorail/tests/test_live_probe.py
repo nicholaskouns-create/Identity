@@ -116,6 +116,20 @@ class PublicDoorProbeTests(unittest.TestCase):
         self.assertEqual(len(result["restricted_originals_not_requested"]), 2)
         self.assertIn("not a browser render", result["claim_boundary"])
 
+    def test_pr_source_mismatch_is_recorded_but_does_not_mask_http_failures(self):
+        result = {"monorail_entry": {"outcome": "source_mismatch"},
+                  "http_error": 0, "network_error": 0}
+        self.assertEqual(probe.exit_status(result), 1)
+        self.assertEqual(probe.exit_status(result, allow_undeployed_source=True), 0)
+        result["http_error"] = 1
+        self.assertEqual(probe.exit_status(result, allow_undeployed_source=True), 1)
+        result["http_error"] = 0
+        result["network_error"] = 1
+        self.assertEqual(probe.exit_status(result, allow_undeployed_source=True), 2)
+        result["network_error"] = 0
+        result["monorail_entry"]["outcome"] = "http_error"
+        self.assertEqual(probe.exit_status(result, allow_undeployed_source=True), 1)
+
 
 if __name__ == "__main__":
     unittest.main()
