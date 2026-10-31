@@ -179,6 +179,34 @@ class PublicDoorProbeTests(unittest.TestCase):
         self.assertEqual(probe.exit_status(result, allow_undeployed_source=True), 1)
 
 
+    def test_only_exact_pinned_door_query_is_retained(self):
+        station = next(s for s in self.data["stations"]
+                       if s["slug"] == "observatory")
+        source = station["href"]
+        with patch.object(probe, "safe_door_open",
+                          return_value=FakeResponse(source)):
+            unchanged = probe.probe_door(station)
+        self.assertEqual(unchanged["final_url"], source)
+
+        # A same-path redirect can succeed without disclosing new query data.
+        redirected = source + "&access_token=PRIVATE_VALUE"
+        with patch.object(probe, "safe_door_open",
+                          return_value=FakeResponse(redirected)):
+            result = probe.probe_door(station)
+        self.assertEqual(result["outcome"], "http_ok")
+        self.assertEqual(result["final_url"], source.split("?")[0])
+        self.assertNotIn("PRIVATE_VALUE", str(result))
+
+        # Error receipts must not expose unreviewed query values either.
+        error = HTTPError(redirected, 404, "Not Found", {}, None)
+        with patch.object(probe, "safe_door_open", side_effect=error):
+            failed = probe.probe_door(station)
+        self.assertEqual((failed["http_status"], failed["outcome"]),
+                         (404, "http_error"))
+        self.assertEqual(failed["final_url"], source.split("?")[0])
+        self.assertNotIn("PRIVATE_VALUE", str(failed))
+
+
     def test_redirected_door_identity_is_blocked_before_followup(self):
         # Real loopback 302: the old urllib opener followed /door to /wrong
         # and reported 200. The corrected probe rejects the destination.
@@ -196,7 +224,7 @@ class PublicDoorProbeTests(unittest.TestCase):
                 elif self.path == "/source":
                     target = "/other"
                 elif self.path == "/same":
-                    target = "/same/?view=learn"
+                    target = "/same/?access_token=PRIVATE_VALUE"
                 else:
                     self.send_response(200)
                     self.end_headers()
@@ -228,6 +256,8 @@ class PublicDoorProbeTests(unittest.TestCase):
                                     "href": base + "/same"}, timeout=3)
             self.assertEqual((same["http_status"], same["outcome"]),
                              (200, "http_ok"))
+            self.assertEqual(same["final_url"], base + "/same/")
+            self.assertNotIn("PRIVATE_VALUE", str(same))
             with patch.object(probe, "SOURCE_URL", base + "/source"):
                 source = probe.probe_monorail_source(timeout=3)
             self.assertEqual((source["http_status"], source["outcome"]),
