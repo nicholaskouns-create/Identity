@@ -1,15 +1,15 @@
 {
   "schema": "mc.murmuration.feed/1",
-  "generated_at": "2026-10-30T21:29:19.487033Z",
+  "generated_at": "2026-10-31T01:35:38.052003Z",
   "scope": "public-github-metadata-only",
   "sources": [
     {
       "id": "github:nicholaskouns-create/Identity",
       "kind": "public_github_repository",
       "url": "https://github.com/nicholaskouns-create/Identity",
-      "commit_sha": "78de0478766c030841bb531953f0ab006cc9458b",
-      "commit_url": "https://github.com/nicholaskouns-create/Identity/commit/78de0478766c030841bb531953f0ab006cc9458b",
-      "source_timestamp": "2026-10-30T20:00:28Z",
+      "commit_sha": "9b8fb7df4125cb3166bb1bac292205b0e2f6416f",
+      "commit_url": "https://github.com/nicholaskouns-create/Identity/commit/9b8fb7df4125cb3166bb1bac292205b0e2f6416f",
+      "source_timestamp": "2026-10-30T21:59:50Z",
       "status": "ok"
     },
     {
@@ -28,5 +28,5 @@
     "A source commit SHA is not a theorem certificate",
     "No browser execution or deployed instrument health verified"
   ],
-  "sha256": "2965ac947370281b2b0bd1019958818a90ca2e2638a52ed9d50a2bd87c8e69e8"
+  "sha256": "d949c5ed8ecf04c3bead0b321f8c76323eb68f7faf4946fa26570ca5075649b9"
 }
