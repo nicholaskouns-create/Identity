@@ -47,6 +47,18 @@ EXPECTED_STATION_URLS = {
 }
 
 
+# Historical repair evidence is immutable input, not a live HTTP result.
+# Pin all four original URLs and classifications so the public 17-door
+# receipt cannot silently relabel an owner-only 401 as a repaired 404/200.
+# New findings belong in separate, additive evidence, not in this baseline.
+EXPECTED_HISTORICAL_REPAIRS = {
+    "highlight": ("404", "https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/lib/highlight.min.js"),
+    "paper": ("404", "https://raw.githubusercontent.com/nicholaskouns-create/E47-Kartekeya/main/research/e47/papers/fib_lucas_tower/tower_paper.tex"),
+    "mirror": ("401", "https://docs.google.com/document/d/1wCmn5J4Tjo0qVV5AOoHUxD1tXComhPf7lU1ntzKtaMs/edit"),
+    "modsync": ("401", "https://drive.google.com/file/d/1-bCyEuWcN1rtRb1IJF02O8tTe7RbmaEC/view"),
+}
+
+
 def read_corpus(path: Path = CORPUS) -> dict:
     html = path.read_text(encoding="utf-8")
     match = re.search(r'<script id="data" type="application/json">([\s\S]*?)</script>', html)
@@ -63,8 +75,17 @@ def read_corpus(path: Path = CORPUS) -> dict:
             if observed_urls.get(slug) != EXPECTED_STATION_URLS.get(slug)
         )
         raise ValueError("Door URL identity changed; review explicitly: " + ", ".join(changed))
-    if len(data["repairs"]) != 4:
+    repairs = data["repairs"]
+    if len(repairs) != 4 or len({r["id"] for r in repairs}) != 4:
         raise ValueError("Historical four-failure ledger changed")
+    observed_repairs = {r["id"]: (str(r["status"]), r["failed"]) for r in repairs}
+    if observed_repairs != EXPECTED_HISTORICAL_REPAIRS:
+        changed = sorted(
+            repair_id for repair_id in set(observed_repairs) | set(EXPECTED_HISTORICAL_REPAIRS)
+            if observed_repairs.get(repair_id) != EXPECTED_HISTORICAL_REPAIRS.get(repair_id)
+        )
+        raise ValueError("Historical repair identity changed; review explicitly: "
+                         + ", ".join(changed))
     for s in stations:
         if not s["href"].startswith("https://nicholaskouns-create.github.io/"):
             raise ValueError("Door outside declared public Pages host: " + s["href"])
