@@ -379,6 +379,43 @@ class CataloguedExitTests(unittest.TestCase):
                     redirect.redirect_request(req, None, 302, "Found", {},
                                               altered)
 
+    def test_blocked_redirect_userinfo_is_redacted_from_public_receipt(self):
+        # The original query-only redaction still leaked user:password@host
+        # from a blocked 302 target into the archived final_url.
+        from urllib.request import Request
+
+        source = "https://example.org/start"
+        cases = (
+            ("https://user:PRIVATE_PASSWORD@unrelated.example.org/else"
+             "?access_token=PRIVATE_TOKEN",
+             "https://unrelated.example.org/else",
+             "exit_identity_redirect_blocked"),
+            ("https://user:PRIVATE_PASSWORD@docs.google.com/document/d/private/edit"
+             "?access_token=PRIVATE_TOKEN",
+             "https://docs.google.com/document/d/private/edit",
+             "restricted_redirect_blocked"),
+        )
+        for target, expected, outcome in cases:
+            with self.subTest(outcome=outcome):
+                redirect = probe.SameExitRedirect(source)
+                with self.assertRaises((
+                    probe.ExitIdentityRedirectBlocked,
+                    probe.RestrictedDriveRedirect,
+                )) as raised:
+                    redirect.redirect_request(
+                        Request(source), None, 302, "Found", {}, target
+                    )
+                row = {"station": "test", "label": "public redirect",
+                       "url": source, "state": "live"}
+                with patch.object(probe, "safe_urlopen",
+                                  side_effect=raised.exception):
+                    receipt = probe.probe_exit(row)
+                self.assertEqual(receipt["http_status"], 302)
+                self.assertEqual(receipt["outcome"], outcome)
+                self.assertEqual(receipt["final_url"], expected)
+                self.assertNotIn("PRIVATE_", json.dumps(receipt))
+                self.assertNotIn("user:", json.dumps(receipt))
+
     def test_wrong_exit_redirect_counts_as_failure(self):
         def simulated(row):
             if row["station"] == "home" and row["label"] == "Identity":
