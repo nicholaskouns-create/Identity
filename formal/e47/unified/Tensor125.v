@@ -760,3 +760,15 @@ Theorem concreteCasimirZ_columns_eightyfive_through_eightynine :
 Proof. vm_compute. reflexivity. Qed.
 
 Print Assumptions concreteCasimirZ_columns_eightyfive_through_eightynine.
+
+(* Concrete [C,Z] for all 125 rows and columns 90..94, using the
+   original spin-2 triple-tensor generators and genuine 125-term D*U
+   matrix product. No spectrum, centrality or kernel rank is assumed. *)
+Theorem concreteCasimirZ_columns_ninety_through_ninetyfour :
+  List.forallb
+    (fun j => List.forallb
+      (fun i => concreteCasimirZEntryOK i j) (List.seq 0 125))
+    (List.seq 90 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions concreteCasimirZ_columns_ninety_through_ninetyfour.
