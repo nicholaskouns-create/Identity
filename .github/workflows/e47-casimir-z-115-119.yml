@@ -2,7 +2,7 @@ name: E47 concrete Casimir-Z 115-119 paired receipt
 on:
   pull_request:
     paths:
-      - 'formal/e47/unified/Tensor125CasimirZ110to114.lean'
+      - 'formal/e47/unified/Tensor125CasimirZ115to119.lean'
       - 'formal/e47/unified/Tensor125.v'
       - '.github/workflows/e47-casimir-z-115-119.yml'
   workflow_dispatch:
@@ -18,7 +18,7 @@ jobs:
           from pathlib import Path
           root = Path('formal/e47/unified')
           original = (root / 'Tensor125.lean').read_text().split('theorem highest_weight', 1)[0]
-          isolated = (root / 'Tensor125CasimirZ110to114.lean').read_text().split('/-! ## Isolated', 1)[0]
+          isolated = (root / 'Tensor125CasimirZ115to119.lean').read_text().split('/-! ## Isolated', 1)[0]
           assert original == isolated, '125-state generator definitions diverged'
           print('CASIMIR_Z_115_119_GENERATOR_PARITY_PASS')
           PY
@@ -33,9 +33,9 @@ jobs:
           set -euo pipefail
           lean --version | tee lean-115-119-version.txt
           grep -Fq 'Lean (version 4.19.0' lean-115-119-version.txt
-          lean formal/e47/unified/Tensor125CasimirZ110to114.lean | tee lean-115-119-axioms.txt
+          lean formal/e47/unified/Tensor125CasimirZ115to119.lean | tee lean-115-119-axioms.txt
           grep -Fq "'E47Tensor125.concreteCasimirZ_columns_onehundredfifteen_through_onehundrednineteen' depends on axioms: [propext]" lean-115-119-axioms.txt
-          sha256sum formal/e47/unified/Tensor125CasimirZ110to114.lean > lean-115-119-sha256.txt
+          sha256sum formal/e47/unified/Tensor125CasimirZ115to119.lean > lean-115-119-sha256.txt
           git rev-parse HEAD > lean-115-119-commit.txt
       - uses: actions/upload-artifact@v4
         if: always()
