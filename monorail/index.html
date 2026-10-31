@@ -91,7 +91,7 @@ const KEEP = SECTORS.flatMap(s => Array(s.mult).fill(s.retain));
 const MARKS = [0, 1, 5, 10, 20, 50, 100, 150, 200, 220, 250];
 let stepN = 20;
 
-function esc(s){return String(s).replace(/[&<>"']/g, c => ({'&':'&','<':'<','>':'>','"':'"',"'":'&#39;'}[c]));}
+function esc(s){return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function sci(v){return v === 0 ? "0" : v.toExponential(3);}
 function q(v){return Math.floor(v / ULP + 0.5) * ULP;}
 function initial(){
