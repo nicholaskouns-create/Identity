@@ -1,6 +1,7 @@
 """Offline invariants for the independent 54-exit HTTP evidence lane."""
 import sys
 import unittest
+from copy import deepcopy
 from pathlib import Path
 from unittest.mock import patch
 from urllib.error import HTTPError, URLError
@@ -25,6 +26,28 @@ class CataloguedExitTests(unittest.TestCase):
                 "https://drive.google.com/file/d/1-bCyEuWcN1rtRb1IJF02O8tTe7RbmaEC/view",
             },
         )
+
+    def test_state_label_swap_cannot_expose_private_original(self):
+        # Previously the 51/3 count and exclusion reasons still passed when
+        # a private original was relabeled live and an unrelated link restricted.
+        for repair_id in ("mirror", "modsync"):
+            with self.subTest(repair_id=repair_id):
+                data = deepcopy(self.data)
+                original = next(link for station in data["stations"]
+                                for link in station["links"]
+                                if link.get("repair") == repair_id)
+                original["state"] = "live"
+                data["stations"][0]["links"][0]["state"] = "restricted"
+                with self.assertRaisesRegex(ValueError, "Excluded original URL"):
+                    probe.partition_exits(data)
+
+    def test_repair_ledger_cannot_silently_change_private_url(self):
+        data = deepcopy(self.data)
+        next(r for r in data["repairs"] if r["id"] == "mirror")["failed"] = (
+            "https://docs.google.com/document/d/replaced/edit"
+        )
+        with self.assertRaisesRegex(ValueError, "Historical repair URL identity"):
+            probe.partition_exits(data)
 
     def test_pinned_tower_paper_is_public_candidate(self):
         public, _ = probe.partition_exits(self.data)
