@@ -3,7 +3,8 @@
 
 Separate from the 17-door entry probe and the historical 177-link census.
 Never request the two restricted Drive originals or the known-broken
-historical Tower highlighter URL. Public HTTP outcomes are evidence, not
+historical Tower highlighter URL. Stop 30x redirects into Google Drive/Docs
+before urllib sends a second request; record the blocked redirect as failure. Public HTTP outcomes are evidence, not
 compiler certificates. No response bodies are stored.
 """
 from __future__ import annotations
@@ -15,7 +16,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import urldefrag, urlsplit
-from urllib.request import Request, urlopen
+from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 from probe_public_doors import read_corpus
 
@@ -79,6 +80,30 @@ def partition_exits(data: dict) -> tuple[list[dict], list[dict]]:
     return public, excluded
 
 
+class RestrictedDriveRedirect(HTTPError):
+    """Redirect to an unreviewed Google Drive/Docs destination, not fetched."""
+
+
+class NoDriveRedirect(HTTPRedirectHandler):
+    """Stop before urllib follows a public URL into a Drive/Docs resource."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        target = urlsplit(newurl)
+        if target.hostname in {"drive.google.com", "docs.google.com"}:
+            # Keep a provenance URL but never persist redirect query tokens.
+            safe_url = target._replace(query="", fragment="").geturl()
+            raise RestrictedDriveRedirect(
+                safe_url, code, "restricted_drive_redirect_blocked", headers, fp
+            )
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+def safe_urlopen(req: Request, timeout: float):
+    # urllib's default urlopen follows 30x before probe_exit can inspect
+    # final_url. An explicit redirect handler prevents that private request.
+    return build_opener(NoDriveRedirect()).open(req, timeout=timeout)
+
+
 def probe_exit(row: dict, timeout: float = 15) -> dict:
     result = dict(row)
     result.update(http_status=None, final_url=None, outcome="network_error")
@@ -89,12 +114,16 @@ def probe_exit(row: dict, timeout: float = 15) -> dict:
         "Accept": "*/*",
     })
     try:
-        with urlopen(req, timeout=timeout) as response:
+        with safe_urlopen(req, timeout=timeout) as response:
             result["http_status"] = response.status
             result["final_url"] = response.geturl()
             response.read(1)
             result["outcome"] = ("http_ok" if 200 <= response.status < 400
                                  else "http_error")
+    except RestrictedDriveRedirect as error:
+        result["http_status"] = error.code
+        result["final_url"] = error.geturl()
+        result["outcome"] = "restricted_redirect_blocked"
     except HTTPError as error:
         result["http_status"] = error.code
         result["final_url"] = error.geturl()
@@ -118,7 +147,11 @@ def audit(data: dict, workers: int = 6) -> dict:
         "excluded_originals": excluded,
         "historical_census": HISTORICAL,
         "http_ok": sum(r["outcome"] == "http_ok" for r in results),
-        "http_error": sum(r["outcome"] == "http_error" for r in results),
+        "http_error": sum(r["outcome"] in {"http_error", "restricted_redirect_blocked"}
+                          for r in results),
+        "restricted_redirect_blocked": sum(
+            r["outcome"] == "restricted_redirect_blocked" for r in results
+        ),
         "network_error": sum(r["outcome"] == "network_error" for r in results),
         "results": results,
         "evidence_boundary": (
@@ -139,7 +172,9 @@ def main() -> int:
           + str(len(result["excluded_originals"])))
     print("HTTP OK: " + str(result["http_ok"])
           + "; HTTP failures: " + str(result["http_error"])
-          + "; transport failures: " + str(result["network_error"]))
+          + "; transport failures: " + str(result["network_error"])
+          + "; Drive redirects blocked: "
+          + str(result["restricted_redirect_blocked"]))
     for row in result["results"]:
         print(str(row["http_status"] or "NETWORK") + " "
               + row["station"] + "/" + row["label"] + ": " + row["url"])

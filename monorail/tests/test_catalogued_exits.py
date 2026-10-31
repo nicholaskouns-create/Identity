@@ -71,7 +71,7 @@ class CataloguedExitTests(unittest.TestCase):
         row = {"station": "test", "label": "sample",
                "url": "https://example.org/missing", "state": "live"}
         error = HTTPError(row["url"], 404, "Not Found", {}, None)
-        with patch.object(probe, "urlopen", side_effect=error):
+        with patch.object(probe, "safe_urlopen", side_effect=error):
             result = probe.probe_exit(row)
         self.assertEqual((result["http_status"], result["outcome"]),
                          (404, "http_error"))
@@ -79,7 +79,7 @@ class CataloguedExitTests(unittest.TestCase):
     def test_transport_error_is_not_http_success(self):
         row = {"station": "test", "label": "sample",
                "url": "https://example.org/unavailable", "state": "live"}
-        with patch.object(probe, "urlopen", side_effect=URLError("offline")):
+        with patch.object(probe, "safe_urlopen", side_effect=URLError("offline")):
             result = probe.probe_exit(row)
         self.assertIsNone(result["http_status"])
         self.assertEqual(result["outcome"], "network_error")
@@ -106,11 +106,100 @@ class CataloguedExitTests(unittest.TestCase):
                 assert self_read == 1
                 return b"x"
 
-        with patch.object(probe, "urlopen", return_value=Response()) as opened:
+        with patch.object(probe, "safe_urlopen", return_value=Response()) as opened:
             result = probe.probe_exit(row)
         self.assertEqual(opened.call_args.args[0].full_url,
                          "https://example.org/tower/")
         self.assertEqual(result["outcome"], "http_ok")
+
+
+    def test_drive_redirect_is_blocked_before_followup_request(self):
+        # Reproduce urllib's default 302-follow behavior with a real local
+        # HTTP server. The redirect target must never receive a request.
+        from http.server import BaseHTTPRequestHandler, HTTPServer
+        from threading import Thread
+
+        class Redirect(BaseHTTPRequestHandler):
+            target = ""
+
+            def do_GET(self):
+                self.send_response(302)
+                self.send_header("Location", self.target)
+                self.end_headers()
+
+            def log_message(self, *_):
+                pass
+
+        server = HTTPServer(("127.0.0.1", 0), Redirect)
+        thread = Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            for original in (
+                "https://docs.google.com/document/d/1wCmn5J4Tjo0qVV5AOoHUxD1tXComhPf7lU1ntzKtaMs/edit",
+                "https://drive.google.com/file/d/1-bCyEuWcN1rtRb1IJF02O8tTe7RbmaEC/view",
+            ):
+                with self.subTest(original=original):
+                    Redirect.target = original + "?token=not-for-receipt"
+                    row = {"station": "test", "label": "public redirect",
+                           "url": f"http://127.0.0.1:{server.server_port}/start",
+                           "state": "live"}
+                    result = probe.probe_exit(row, timeout=3)
+                    self.assertEqual(result["http_status"], 302)
+                    self.assertEqual(result["outcome"], "restricted_redirect_blocked")
+                    self.assertEqual(result["final_url"], original)
+                    self.assertNotIn("token=", str(result))
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=3)
+
+    def test_regular_redirect_remains_reachable(self):
+        from http.server import BaseHTTPRequestHandler, HTTPServer
+        from threading import Thread
+
+        class Redirect(BaseHTTPRequestHandler):
+            def do_GET(self):
+                if self.path == "/start":
+                    self.send_response(302)
+                    self.send_header("Location", "/ok")
+                else:
+                    self.send_response(200)
+                self.end_headers()
+                if self.path == "/ok":
+                    self.wfile.write(b"x")
+
+            def log_message(self, *_):
+                pass
+
+        server = HTTPServer(("127.0.0.1", 0), Redirect)
+        thread = Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            row = {"station": "test", "label": "public redirect",
+                   "url": f"http://127.0.0.1:{server.server_port}/start",
+                   "state": "live"}
+            result = probe.probe_exit(row, timeout=3)
+            self.assertEqual((result["http_status"], result["outcome"]),
+                             (200, "http_ok"))
+            self.assertTrue(result["final_url"].endswith("/ok"))
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=3)
+
+    def test_blocked_redirect_counts_as_failure_not_success(self):
+        def simulated(row):
+            if row["station"] == "home" and row["label"] == "Identity":
+                return dict(row, outcome="restricted_redirect_blocked",
+                            http_status=302)
+            return dict(row, outcome="http_ok", http_status=200)
+
+        with patch.object(probe, "probe_exit", side_effect=simulated):
+            receipt = probe.audit(self.data, workers=1)
+        self.assertEqual(receipt["http_ok"], 50)
+        self.assertEqual(receipt["http_error"], 1)
+        self.assertEqual(receipt["restricted_redirect_blocked"], 1)
+        self.assertEqual(receipt["historical_census"]["failures"], 4)
 
 
 if __name__ == "__main__":
