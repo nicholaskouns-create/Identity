@@ -182,6 +182,10 @@ def receipt_url(observed_url: str, source_url: str) -> str:
     credentials. Do not persist it in public CI artifacts.
     """
     observed, source = urlsplit(observed_url), urlsplit(source_url)
+    # A blocked 30x target can carry URL userinfo (user:password@host).
+    # It is not part of any reviewed exit identity and must never enter the
+    # public CI artifact, even when the redirect query has been removed.
+    observed = observed._replace(netloc=observed.netloc.rsplit("@", 1)[-1])
     reviewed = REVIEWED_EXTERNAL_REDIRECTS.get(source_url)
     # Browser SPA fragments are never sent over HTTP. Compare the served URL
     # against the fragment-free source so a pinned query (e.g. Eidolon
