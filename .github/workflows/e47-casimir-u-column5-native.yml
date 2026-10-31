@@ -43,7 +43,7 @@ jobs:
         run: |
           set -euo pipefail
           lean formal/e47/unified/Tensor125CasimirUColumn5Native.lean 2>&1 | tee lean-cu5-native-axioms.txt
-          grep -Fq 'E47Tensor125.concreteCasimirU_column_four_native' lean-cu5-native-axioms.txt
+          grep -Fq 'E47Tensor125.concreteCasimirU_column_five_native' lean-cu5-native-axioms.txt
           grep -Fq '[propext, Lean.ofReduceBool]' lean-cu5-native-axioms.txt
           ! grep -Eq 'sorryAx|admit|unsafe' lean-cu5-native-axioms.txt
       - uses: actions/upload-artifact@v4
