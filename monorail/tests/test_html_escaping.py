@@ -55,6 +55,17 @@ class HtmlEscapingTests(unittest.TestCase):
         self.assertIn("&amp;x=1", result)
         self.assertNotIn('href="https://example.invalid/?q="onclick="test"', result)
 
+    def test_home_navigation_does_not_promise_restricted_redirects(self):
+        # Owner-only 401 originals remain linked but are not redirected.
+        # A historical 404 also remains in the record. Home must describe
+        # separate alternatives, not promise that broken exits redirect.
+        home = HTML.split("function home(){", 1)[1].split("\nfunction station(slug){", 1)[0]
+        self.assertNotIn("broken exits already redirected", home)
+        self.assertIn("owner-only Drive sources remain restricted", home)
+        self.assertIn("working alternatives are separately labeled", home)
+        for repair_id in ("mirror", "modsync"):
+            self.assertEqual(next(r["status"] for r in DATA["repairs"] if r["id"] == repair_id), "401")
+
     def test_restricted_originals_and_census_preserved(self):
         self.assertEqual(len(DATA["stations"]), 17)
         self.assertEqual(sum(len(s["links"]) for s in DATA["stations"]), 54)
