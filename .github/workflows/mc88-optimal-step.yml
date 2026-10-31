@@ -1,0 +1,58 @@
+name: MC-88 paired rational optimal-step certificates
+on:
+  pull_request:
+    paths:
+      - 'formal/e47/optimal/MC88OptimalStep.lean'
+      - 'formal/e47/optimal/MC88OptimalStep.v'
+      - '.github/workflows/mc88-optimal-step.yml'
+  workflow_dispatch:
+
+jobs:
+  lean:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Lean 4.19.0
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile MC-88 and audit axioms
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/mc88
+          lean --version | tee evidence/mc88/lean-version.txt
+          git -c safe.directory="$PWD" rev-parse HEAD | tee evidence/mc88/commit.txt
+          sha256sum formal/e47/optimal/MC88OptimalStep.lean | tee evidence/mc88/lean-source.sha256
+          lean formal/e47/optimal/MC88OptimalStep.lean 2>&1 | tee evidence/mc88/lean-audit.txt
+          if grep -q 'sorryAx' evidence/mc88/lean-audit.txt; then exit 1; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mc88-lean-certificate
+          path: evidence/mc88/
+  coq:
+    runs-on: ubuntu-24.04
+    container:
+      image: coqorg/coq:8.20.1
+      options: --user 0:0
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile MC-88 and audit assumptions
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="/home/coq/.opam/${COMPILER}/bin:$PATH"
+          mkdir -p evidence/mc88
+          coqc --version | tee evidence/mc88/coq-version.txt
+          coqc --version | grep -F 'version 8.20.1'
+          git -c safe.directory="$PWD" rev-parse HEAD | tee evidence/mc88/commit.txt
+          sha256sum formal/e47/optimal/MC88OptimalStep.v | tee evidence/mc88/coq-source.sha256
+          coqc formal/e47/optimal/MC88OptimalStep.v 2>&1 | tee evidence/mc88/coq-audit.txt
+          test "$(grep -c 'Closed under the global context' evidence/mc88/coq-audit.txt)" -eq 5
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mc88-coq-certificate
+          path: evidence/mc88/
