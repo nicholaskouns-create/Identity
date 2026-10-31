@@ -241,6 +241,43 @@ class PublicDoorProbeTests(unittest.TestCase):
         self.assertNotIn("PRIVATE_VALUE", str(failed))
 
 
+    def test_blocked_door_redirect_userinfo_never_enters_receipt(self):
+        # The public-door lane is separate from the already repaired exit
+        # lane. A blocked cross-host 302 previously retained user:password@
+        # even though its query was stripped. Exercise the real handler.
+        from urllib.request import Request
+
+        station = next(s for s in self.data["stations"]
+                       if s["slug"] == "tower")
+        source = station["href"]
+        target = ("https://auditor:PRIVATE_PASSWORD@unreviewed.example.org/"
+                  "other?access_token=PRIVATE_TOKEN")
+        handler = probe.SameDoorRedirect(source)
+        with self.assertRaises(probe.DoorIdentityRedirectBlocked) as blocked:
+            handler.redirect_request(
+                Request(source), None, 302, "Found", {}, target
+            )
+        with patch.object(probe, "safe_door_open",
+                          side_effect=blocked.exception):
+            receipt = probe.probe_door(station)
+        self.assertEqual(
+            (receipt["http_status"], receipt["outcome"]),
+            (302, "door_identity_redirect_blocked"),
+        )
+        self.assertEqual(receipt["final_url"],
+                         "https://unreviewed.example.org/other")
+        self.assertNotIn("PRIVATE_PASSWORD", json.dumps(receipt))
+        self.assertNotIn("PRIVATE_TOKEN", json.dumps(receipt))
+
+        # A direct HTTP error response uses the same receipt sanitizer.
+        with patch.object(probe, "safe_door_open",
+                          side_effect=HTTPError(target, 404, "Not Found", {}, None)):
+            error_receipt = probe.probe_door(station)
+        self.assertEqual(error_receipt["http_status"], 404)
+        self.assertEqual(error_receipt["final_url"],
+                         "https://unreviewed.example.org/other")
+        self.assertNotIn("PRIVATE_PASSWORD", json.dumps(error_receipt))
+
     def test_redirected_door_identity_is_blocked_before_followup(self):
         # Real loopback 302: the old urllib opener followed /door to /wrong
         # and reported 200. The corrected probe rejects the destination.
