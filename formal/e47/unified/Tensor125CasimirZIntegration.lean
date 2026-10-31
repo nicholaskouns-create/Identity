@@ -1,3 +1,4 @@
+import Lean
 /- Concrete 125-state triple tensor generator entries, in a weight basis. -/
 set_option maxRecDepth 8192
 set_option maxHeartbeats 0
@@ -39,7 +40,13 @@ def concreteCasimirEntry (i j : Fin 125) : Int :=
 theorem concreteCasimirZ_column_partition :
     ∀ j : Fin 125, ∃ block : Fin 25, ∃ offset : Fin 5,
       idx (5 * block.val + offset.val) = j := by
-  decide
+  intro j
+  -- Construct witnesses rather than asking the kernel to infer a finite
+  -- quantified Decidable instance. The division algorithm is exact.
+  refine ⟨⟨j.val / 5, by omega⟩, ⟨j.val % 5, by omega⟩, ?_⟩
+  apply Fin.ext
+  dsimp [idx]
+  omega
 
 theorem concreteCasimirZ_full_from_block_hypotheses
     (h : ∀ block : Fin 25, ∀ offset : Fin 5, ∀ i : Fin 125,
