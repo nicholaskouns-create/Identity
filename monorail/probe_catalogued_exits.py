@@ -161,7 +161,12 @@ class SameExitRedirect(HTTPRedirectHandler):
         target_path = target.path.rstrip("/") or "/"
         if (target.scheme != self.original.scheme
                 or target.netloc.lower() != self.original.netloc.lower()
-                or target_path != original_path):
+                or target_path != original_path
+                # Pinned query parameters select the requested exit's view.
+                # A same-path 302 must not turn ?view=atlas into ?view=learn
+                # or ?module=eidolon into another instrument.
+                # Unpinned exits retain canonical query redirects.
+                or (self.original.query and target.query != self.original.query)):
             raise ExitIdentityRedirectBlocked(
                 safe_url, code, "exit_identity_redirect_blocked", headers, fp
             )
