@@ -3,9 +3,9 @@
 
 Separate from the 17-door entry probe and the historical 177-link census.
 Never request the two restricted Drive originals or the known-broken
-historical Tower highlighter URL. Stop 30x redirects into Google Drive/Docs or a different public exit
-before urllib sends a second request; record blocked redirects as failures. Public HTTP outcomes are evidence, not
-compiler certificates. No response bodies are stored.
+historical Tower highlighter URL. Block unreviewed 30x destinations before
+urllib follows them. Preserve one source-backed external app redirect.
+Public HTTP outcomes are not compiler certificates. No response bodies are stored.
 """
 from __future__ import annotations
 
@@ -47,6 +47,15 @@ EXPECTED_REPAIR_URLS = {
 # catches public exit URL swaps, query/fragment loss and relabeling without
 # creating or merging any Mathematical City citizen identity.
 EXPECTED_EXIT_IDENTITIES_PATH = Path(__file__).with_name("expected_exit_identities.json")
+
+# Source-backed exception, not a wildcard host allowlist. Supabase's deployed
+# city-app-host Edge Function v10 explicitly returns this 302 for slug=spectra
+# (verified 2026-10-31). Preserve the original host link and its target as
+# distinct identities. Any other cross-host/path redirect remains a failure.
+REVIEWED_EXTERNAL_REDIRECTS = {
+    "https://gpkjvihkyectnenvnbng.supabase.co/functions/v1/city-app-host/spectra/":
+        "https://dune-orchid-berry-mountain.grok.me/?lab=operator#operator",
+}
 
 
 def verify_catalogued_exit_identities(data: dict) -> None:
@@ -145,6 +154,9 @@ class SameExitRedirect(HTTPRedirectHandler):
             raise RestrictedDriveRedirect(
                 safe_url, code, "restricted_drive_redirect_blocked", headers, fp
             )
+        if (req.full_url in REVIEWED_EXTERNAL_REDIRECTS
+                and newurl == REVIEWED_EXTERNAL_REDIRECTS[req.full_url]):
+            return super().redirect_request(req, fp, code, msg, headers, newurl)
         original_path = self.original.path.rstrip("/") or "/"
         target_path = target.path.rstrip("/") or "/"
         if (target.scheme != self.original.scheme
@@ -178,6 +190,11 @@ def probe_exit(row: dict, timeout: float = 15) -> dict:
             response.read(1)
             result["outcome"] = ("http_ok" if 200 <= response.status < 400
                                  else "http_error")
+            reviewed = REVIEWED_EXTERNAL_REDIRECTS.get(row["url"])
+            if (reviewed and result["final_url"]
+                    and urlsplit(result["final_url"])._replace(fragment="").geturl()
+                    == urlsplit(reviewed)._replace(fragment="").geturl()):
+                result["reviewed_redirect"] = reviewed
     except RestrictedDriveRedirect as error:
         result["http_status"] = error.code
         result["final_url"] = error.geturl()
@@ -215,6 +232,9 @@ def audit(data: dict, workers: int = 6) -> dict:
         "exit_identity_redirect_blocked": sum(
             r["outcome"] == "exit_identity_redirect_blocked" for r in results
         ),
+        "reviewed_external_redirects": sum(
+            "reviewed_redirect" in r for r in results
+        ),
         "restricted_redirect_blocked": sum(
             r["outcome"] == "restricted_redirect_blocked" for r in results
         ),
@@ -242,7 +262,9 @@ def main() -> int:
           + "; Drive redirects blocked: "
           + str(result["restricted_redirect_blocked"])
           + "; wrong-exit redirects blocked: "
-          + str(result["exit_identity_redirect_blocked"]))
+          + str(result["exit_identity_redirect_blocked"])
+          + "; reviewed external redirects: "
+          + str(result["reviewed_external_redirects"]))
     for row in result["results"]:
         print(str(row["http_status"] or "NETWORK") + " "
               + row["station"] + "/" + row["label"] + ": " + row["url"])
