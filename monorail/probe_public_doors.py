@@ -115,9 +115,23 @@ def audit(data: dict, workers: int = 4) -> dict:
     }
 
 
+def exit_status(result: dict, allow_undeployed_source: bool = False) -> int:
+    """Keep live status failures strict; only permit expected PR source divergence."""
+    entry = result["monorail_entry"]
+    if result["http_error"] or entry["outcome"] == "http_error":
+        return 1
+    if entry["outcome"] == "source_mismatch" and not allow_undeployed_source:
+        return 1
+    if result["network_error"] or entry["outcome"] == "network_error":
+        return 2
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", default="monorail/live-door-evidence.json")
+    parser.add_argument("--allow-undeployed-source", action="store_true",
+                        help="PR only: record expected served-vs-feature-source mismatch without failing")
     args = parser.parse_args(argv)
     result = audit(read_corpus())
     out = Path(args.output)
@@ -132,11 +146,9 @@ def main(argv: list[str] | None = None) -> int:
     for door in result["doors"]:
         print(f"  {door['http_status'] or 'NETWORK'} {door['slug']}: {door['url']}")
     print("Evidence:", out)
-    if result["http_error"] or entry["outcome"] in ("http_error", "source_mismatch"):
-        return 1
-    if result["network_error"] or entry["outcome"] == "network_error":
-        return 2
-    return 0
+    if args.allow_undeployed_source and entry["outcome"] == "source_mismatch":
+        print("PR source differs from currently deployed main; mismatch retained in evidence.")
+    return exit_status(result, allow_undeployed_source=args.allow_undeployed_source)
 
 
 if __name__ == "__main__":

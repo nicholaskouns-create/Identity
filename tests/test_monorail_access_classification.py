@@ -108,13 +108,13 @@ class MonorailRestrictedAccessTest(unittest.TestCase):
         self.assertEqual(og.group(1), twitter.group(1))
         self.assertIn("two 404s and two restricted 401s", meta.group(1))
         self.assertIn("Restricted originals remain distinct", og.group(1))
-        self.assertIn("the Tower highlighter source fix has merged (public deployment unverified)", HTML)
+        self.assertIn("the Tower highlighter and immutable paper were browser-verified on 31 October 2026", HTML)
         self.assertIn("Public alternatives do not replace private sources", HTML)
         self.assertNotIn("four broken links replaced locally", HTML)
         self.assertNotIn("Only what failed is replaced", HTML)
 
     def test_merged_highlighter_station_discloses_historical_404_and_source(self):
-        """Actual station renderer must preserve the failed source without implying public deployment."""
+        """Historical 404 persists even after dated browser confirmation."""
         import subprocess
 
         esc_js = next(line for line in HTML.splitlines() if line.startswith("function esc(s)"))
@@ -132,13 +132,13 @@ class MonorailRestrictedAccessTest(unittest.TestCase):
         highlighter = next(r for r in DATA["repairs"] if r["id"] == "highlight")
         self.assertIn("Historical 404: " + highlighter["failed"], rendered)
         self.assertIn('href="' + highlighter["redirects"][0]["href"] + '"', rendered)
-        self.assertIn("Merged source fix · public deployment unverified", rendered)
+        self.assertIn("Merged source fix · browser-verified 31 Oct 2026", rendered)
         self.assertIn("Merged source fix", rendered)
         self.assertIn('href="#/repair/highlight"', rendered)
         self.assertNotIn('href="' + highlighter["failed"] + '"', rendered)
 
     def test_highlighter_merge_evidence_is_source_scoped(self):
-        """The source repair is merged; this is not an anonymous deployment test."""
+        """Merged source and dated browser evidence have distinct scopes."""
         repairs = {r["id"]: r for r in DATA["repairs"]}
         tower = next(s for s in DATA["stations"] if s["slug"] == "tower")
         highlighter = repairs["highlight"]
@@ -148,10 +148,10 @@ class MonorailRestrictedAccessTest(unittest.TestCase):
         self.assertEqual(highlighter["sourceEvidence"]["merge_commit"],
                          "1e1306c984cb5b290371d815ca9853e6c2b3eb5e")
         self.assertEqual(highlighter["sourceEvidence"]["ci_result"], "success")
-        self.assertIn("deployment unverified", highlighter["sourceEvidence"]["scope"])
+        self.assertIn("deployment commit remains unverified", highlighter["sourceEvidence"]["scope"])
         self.assertEqual(next(l for l in tower["links"] if l.get("repair") == "highlight")["state"],
                          "repaired")
-        self.assertIn("public deployment unverified", HTML)
+        self.assertIn("Live Chromium evidence · 31 Oct 2026", HTML)
         self.assertNotIn("one highlighter repair is pending merge", HTML)
 
     def test_original_404_repair_path_remains(self):
