@@ -10,7 +10,7 @@ import unittest
 from pathlib import Path
 
 HTML = (Path(__file__).resolve().parents[1] / "index.html").read_text(encoding="utf-8")
-MATCH = re.search(r'<script id="data" type="application/json">([\\s\\S]*?)</script>', HTML)
+MATCH = re.search(r'<script id="data" type="application/json">([\s\S]*?)</script>', HTML)
 if MATCH is None:
     raise RuntimeError("Monorail embedded data missing")
 DATA = json.loads(MATCH.group(1))
