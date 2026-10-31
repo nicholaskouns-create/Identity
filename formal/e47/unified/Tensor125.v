@@ -689,3 +689,15 @@ Theorem concreteCasimirZ_columns_fiftyfive_through_fiftynine :
 Proof. vm_compute. reflexivity. Qed.
 
 Print Assumptions concreteCasimirZ_columns_fiftyfive_through_fiftynine.
+
+(* Concrete [C,Z], all 125 rows and columns 60..64.
+   The 625 entries evaluate the exact 125-term D*U product and diagonal Z;
+   no spectrum, kernel rank or centrality lemma is assumed. *)
+Theorem concreteCasimirZ_columns_sixty_through_sixtyfour :
+  List.forallb
+    (fun j => List.forallb
+      (fun i => concreteCasimirZEntryOK i j) (List.seq 0 125))
+    (List.seq 60 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions concreteCasimirZ_columns_sixty_through_sixtyfour.
