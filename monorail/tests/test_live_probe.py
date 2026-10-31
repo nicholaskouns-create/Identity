@@ -68,35 +68,35 @@ class PublicDoorProbeTests(unittest.TestCase):
 
     def test_success_is_http_evidence_not_browser_certification(self):
         station = self.data["stations"][0]
-        with patch.object(probe, "urlopen", side_effect=lambda req, timeout: FakeResponse(req.full_url)):
+        with patch.object(probe, "safe_door_open", side_effect=lambda req, timeout: FakeResponse(req.full_url)):
             result = probe.probe_door(station)
         self.assertEqual(result["http_status"], 200)
         self.assertEqual(result["outcome"], "http_ok")
 
     def test_http_404_remains_distinct_from_network_error(self):
         station = self.data["stations"][0]
-        with patch.object(probe, "urlopen", side_effect=HTTPError(station["href"], 404, "Not Found", {}, None)):
+        with patch.object(probe, "safe_door_open", side_effect=HTTPError(station["href"], 404, "Not Found", {}, None)):
             result = probe.probe_door(station)
         self.assertEqual(result["http_status"], 404)
         self.assertEqual(result["outcome"], "http_error")
 
     def test_transport_error_is_unverified_not_404(self):
         station = self.data["stations"][0]
-        with patch.object(probe, "urlopen", side_effect=URLError("DNS unavailable")):
+        with patch.object(probe, "safe_door_open", side_effect=URLError("DNS unavailable")):
             result = probe.probe_door(station)
         self.assertIsNone(result["http_status"])
         self.assertEqual(result["outcome"], "network_error")
 
     def test_public_monorail_bytes_match_checkout(self):
         payload = probe.CORPUS.read_bytes()
-        with patch.object(probe, "urlopen", return_value=FakeSourceResponse(payload)):
+        with patch.object(probe, "safe_door_open", return_value=FakeSourceResponse(payload)):
             result = probe.probe_monorail_source()
         self.assertEqual(result["http_status"], 200)
         self.assertTrue(result["matches_source"])
         self.assertEqual(result["outcome"], "http_ok")
 
     def test_public_monorail_source_mismatch_is_not_success(self):
-        with patch.object(probe, "urlopen", return_value=FakeSourceResponse(b"stale deployment")):
+        with patch.object(probe, "safe_door_open", return_value=FakeSourceResponse(b"stale deployment")):
             result = probe.probe_monorail_source()
         self.assertEqual(result["http_status"], 200)
         self.assertFalse(result["matches_source"])
@@ -129,6 +129,82 @@ class PublicDoorProbeTests(unittest.TestCase):
         result["network_error"] = 0
         result["monorail_entry"]["outcome"] = "http_error"
         self.assertEqual(probe.exit_status(result, allow_undeployed_source=True), 1)
+
+
+    def test_redirected_door_identity_is_blocked_before_followup(self):
+        # Real loopback 302: the old urllib opener followed /door to /wrong
+        # and reported 200. The corrected probe rejects the destination.
+        from http.server import BaseHTTPRequestHandler, HTTPServer
+        from threading import Thread
+
+        class Redirects(BaseHTTPRequestHandler):
+            def do_GET(self):
+                if self.path == "/door":
+                    target = "/wrong-application"
+                elif self.path == "/private":
+                    target = ("https://docs.google.com/document/d/"
+                              "1wCmn5J4Tjo0qVV5AOoHUxD1tXComhPf7lU1ntzKtaMs/edit"
+                              "?token=never-log")
+                elif self.path == "/source":
+                    target = "/other"
+                elif self.path == "/same":
+                    target = "/same/?view=learn"
+                else:
+                    self.send_response(200)
+                    self.end_headers()
+                    self.wfile.write(b"ok")
+                    return
+                self.send_response(302)
+                self.send_header("Location", target)
+                self.end_headers()
+
+            def log_message(self, *_):
+                pass
+
+        server = HTTPServer(("127.0.0.1", 0), Redirects)
+        thread = Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        base = f"http://127.0.0.1:{server.server_port}"
+        try:
+            for path in ("/door", "/private"):
+                with self.subTest(path=path):
+                    station = {"slug": "test", "name": "Test",
+                               "href": base + path}
+                    result = probe.probe_door(station, timeout=3)
+                    self.assertEqual(result["http_status"], 302)
+                    self.assertEqual(result["outcome"],
+                                     "door_identity_redirect_blocked")
+                    self.assertNotIn("token=", str(result))
+            # A same-door trailing-slash/query redirect remains navigable.
+            same = probe.probe_door({"slug": "test", "name": "Test",
+                                    "href": base + "/same"}, timeout=3)
+            self.assertEqual((same["http_status"], same["outcome"]),
+                             (200, "http_ok"))
+            with patch.object(probe, "SOURCE_URL", base + "/source"):
+                source = probe.probe_monorail_source(timeout=3)
+            self.assertEqual((source["http_status"], source["outcome"]),
+                             (302, "door_identity_redirect_blocked"))
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=3)
+
+    def test_blocked_door_counts_as_failure_even_with_16_http_200(self):
+        def simulated(station):
+            blocked = station["slug"] == "tower"
+            return {"slug": station["slug"], "title": station["name"],
+                    "url": station["href"], "http_status": 302 if blocked else 200,
+                    "final_url": station["href"],
+                    "outcome": ("door_identity_redirect_blocked" if blocked
+                                else "http_ok")}
+        with patch.object(probe, "probe_door", side_effect=simulated), \
+             patch.object(probe, "probe_monorail_source",
+                          return_value={"outcome": "http_ok"}):
+            receipt = probe.audit(self.data, workers=1)
+        self.assertEqual((receipt["http_ok"], receipt["http_error"]), (16, 1))
+        self.assertEqual(receipt["door_identity_redirect_blocked"], 1)
+        self.assertEqual(probe.exit_status(receipt), 1)
+        self.assertEqual(receipt["historical_census"]["failures"], 4)
 
 
 if __name__ == "__main__":
