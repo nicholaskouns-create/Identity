@@ -109,6 +109,22 @@ class PaperPinTests(unittest.TestCase):
             self.assertIn("restricted source, not replaced", html)
             self.assertNotIn("Replaced locally", html)
 
+    def test_dated_live_tower_evidence_without_erasing_historical_failures(self):
+        """Current browser evidence is linked, while 404/401 originals stay intact."""
+        run = "https://github.com/nicholaskouns-create/tower/actions/runs/41153476308"
+        for repair_id in ("highlight", "paper"):
+            repair = next(r for r in DATA["repairs"] if r["id"] == repair_id)
+            self.assertEqual(repair["status"], "404")
+            self.assertEqual(repair["sourceEvidence"]["browser_ci"], run)
+            self.assertIn("2026-10-31", repair["sourceEvidence"]["scope"])
+        for repair_id in ("mirror", "modsync"):
+            repair = next(r for r in DATA["repairs"] if r["id"] == repair_id)
+            self.assertEqual(repair["status"], "401")
+            self.assertNotIn("browser_ci", repair.get("sourceEvidence", {}))
+        self.assertIn("Live Chromium evidence · 31 Oct 2026", HTML)
+        self.assertNotIn("public deployment unverified", HTML)
+        self.assertEqual(sum(len(s["links"]) for s in DATA["stations"]), 54)
+
 
 if __name__ == "__main__":
     unittest.main()
