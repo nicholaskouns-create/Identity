@@ -1,0 +1,89 @@
+name: E47 paired 125-state third Lie bracket sparse bridge
+on:
+  pull_request:
+    paths:
+      - 'formal/e47/unified/ThirdBracketBridge.lean'
+      - 'formal/e47/unified/ThirdBracketBridge.v'
+      - 'validation/e47_third_bracket_bridge.py'
+      - '.github/workflows/e47-third-bracket-bridge.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lean-third-bracket:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean 4.19.0
+        run: |
+          set -euo pipefail
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile, audit axioms and preserve provenance
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee e47-third-lean-checkout.txt
+          sha256sum formal/e47/unified/ThirdBracketBridge.lean | tee e47-third-lean-sha256.txt
+          lean --version | tee e47-third-lean-version.txt
+          grep -Fq 'Lean (version 4.19.0' e47-third-lean-version.txt
+          lean formal/e47/unified/ThirdBracketBridge.lean 2>&1 | tee e47-third-lean-log.txt
+          for theorem in sparse_third_bracket_all_15625 genuine_125_term_row_zero sparse_dense_row_zero_parity mutated_raising_generator_rejected; do
+            grep -Fq "E47ThirdBracketBridge.$theorem" e47-third-lean-log.txt
+          done
+          ! grep -Eq 'sorryAx|admit|unsafe' e47-third-lean-log.txt
+          ! grep -Eq '^[[:space:]]*(sorry|axiom)\b' formal/e47/unified/ThirdBracketBridge.lean
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-third-bracket-lean-unsigned
+          path: e47-third-lean-*.txt
+  coq-third-bracket:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq 8.18.0
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y coq
+      - name: Compile, audit assumptions and preserve provenance
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee e47-third-coq-checkout.txt
+          sha256sum formal/e47/unified/ThirdBracketBridge.v | tee e47-third-coq-sha256.txt
+          coqc --version | tee e47-third-coq-version.txt
+          grep -Fq 'version 8.18.0' e47-third-coq-version.txt
+          coqc formal/e47/unified/ThirdBracketBridge.v 2>&1 | tee e47-third-coq-log.txt
+          test "$(grep -Fxc 'Closed under the global context' e47-third-coq-log.txt)" -eq 4
+          ! grep -Eq 'Admitted\.|Axiom ' formal/e47/unified/ThirdBracketBridge.v
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-third-bracket-coq-unsigned
+          path: e47-third-coq-*.txt
+  python-third-bracket:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Independent dense/sparse exact integer comparison
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee e47-third-python-checkout.txt
+          sha256sum validation/e47_third_bracket_bridge.py | tee e47-third-python-sha256.txt
+          test "$(git hash-object formal/e47/unified/Tensor125.lean)" = 79e01628560f729fb06e993b430ac1e920d047b3
+          test "$(git hash-object formal/e47/unified/Tensor125.v)" = 54d2d851f177a815d69e4c37d520494be1c1bd13
+          python --version | tee e47-third-python-version.txt
+          python -I validation/e47_third_bracket_bridge.py 2>&1 | tee e47-third-python-log.txt
+          grep -Fq 'E47_THIRD_BRACKET_BRIDGE_PASS' e47-third-python-log.txt
+          grep -Fq '"negative_control_rejected": true' e47-third-python-log.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-third-bracket-python-unsigned
+          path: e47-third-python-*.txt
