@@ -1,0 +1,37 @@
+name: E47 CD0 cross-run source and arithmetic audit
+on:
+  pull_request:
+    paths:
+      - 'evidence/routes/KX-E47-KERNEL/casimir_d_column0_crossrun.json'
+      - 'tools/check_e47_cd0_crossrun.py'
+      - '.github/workflows/e47-cd0-crossrun-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  crossrun-source-parity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Record exact source and checkout provenance
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee e47-cd0-checkout.txt
+          python3 --version 2>&1 | tee e47-cd0-python.txt
+          sha256sum evidence/routes/KX-E47-KERNEL/casimir_d_column0_crossrun.json tools/check_e47_cd0_crossrun.py | tee e47-cd0-inputs.txt
+      - name: Verify historical source parity and independent integer arithmetic
+        run: |
+          set -euo pipefail
+          python3 -m py_compile tools/check_e47_cd0_crossrun.py
+          python3 tools/check_e47_cd0_crossrun.py 2>&1 | tee e47-cd0-audit.txt
+          grep -Fxq 'E47_CD0_CROSSRUN_SOURCE_BYTES_MATCH' e47-cd0-audit.txt
+          grep -Fxq 'E47_CD0_EXACT_INTEGER_125_ROWS_PASS' e47-cd0-audit.txt
+          grep -Fxq 'E47_CD_EXACT_INTEGER_15625_ENTRIES_PASS' e47-cd0-audit.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-cd0-crossrun-unsigned-audit
+          path: e47-cd0-*.txt
