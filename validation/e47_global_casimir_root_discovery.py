@@ -110,7 +110,39 @@ def exact_rank(A):
             break
     return row
 
+def exact_commutator(A, B):
+    AB = matmul(A, B)
+    BA = matmul(B, A)
+    return [[a - b for a, b in zip(ar, br)] for ar, br in zip(AB, BA)]
+
+
+def check_global_lie_and_casimir():
+    """Check every entry of all six 125x125 commutator identities.
+
+    Uses full integer matrix multiplication, not only weight-block identities
+    or a symbolic syzygy. A one-entry Casimir mutation must break centrality.
+    """
+    U = [[up(i, j) for j in range(N)] for i in range(N)]
+    D = [[down(i, j) for j in range(N)] for i in range(N)]
+    Z = [[z(i) if i == j else 0 for j in range(N)] for i in range(N)]
+    C = [[casimir(i, j) for j in range(N)] for i in range(N)]
+    zero = [[0] * N for _ in range(N)]
+    assert exact_commutator(Z, U) == U
+    assert exact_commutator(Z, D) == [[-x for x in row] for row in D]
+    assert exact_commutator(U, D) == [[2 * x for x in row] for row in Z]
+    print('E47_GLOBAL_LIE_RELATIONS_EXACT_PASS')
+    assert exact_commutator(C, Z) == zero
+    assert exact_commutator(C, U) == zero
+    assert exact_commutator(C, D) == zero
+    print('E47_GLOBAL_CASIMIR_CENTRALITY_EXACT_PASS')
+    mutant = [row[:] for row in C]
+    mutant[0][0] += 1
+    assert exact_commutator(mutant, U) != zero
+    print('E47_GLOBAL_CENTRALITY_MUTANT_REJECTED')
+
+
 def main():
+    check_global_lie_and_casimir()
     multiplicities = Counter()
     total_dim = total_rank = 0
     central = None
