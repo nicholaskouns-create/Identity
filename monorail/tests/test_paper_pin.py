@@ -117,7 +117,7 @@ class PaperPinTests(unittest.TestCase):
             self.assertEqual(repair["status"], "404")
             self.assertEqual(repair["sourceEvidence"]["browser_ci"], run)
             self.assertIn("2026-10-31", repair["sourceEvidence"]["scope"])
-            self.assertEqual(repair["sourceEvidence"]["deployed_commit"], "3f277ddf3a84f9f10e804196b6d2668c94e805b")
+            self.assertEqual(repair["sourceEvidence"]["deployed_commit"], "3f277ddf3a84f9f10e804196b6d2668c94e805b5")
             self.assertEqual(repair["sourceEvidence"]["deployment_ci"], run)
             self.assertNotIn("deployment commit remains unverified", repair["sourceEvidence"]["scope"])
         for repair_id in ("mirror", "modsync"):
@@ -125,7 +125,7 @@ class PaperPinTests(unittest.TestCase):
             self.assertEqual(repair["status"], "401")
             self.assertNotIn("browser_ci", repair.get("sourceEvidence", {}))
         self.assertIn("Live Chromium evidence · 31 Oct 2026", HTML)
-        self.assertIn("Public Pages build.json was read back at deployed tower@3f277ddf3a84f9f10e804196b6d2668c94e805b", HTML)
+        self.assertIn("Public Pages build.json was read back at deployed tower@3f277ddf3a84f9f10e804196b6d2668c94e805b5", HTML)
         self.assertNotIn("public deployment unverified", HTML)
         self.assertEqual(sum(len(s["links"]) for s in DATA["stations"]), 54)
 
