@@ -1,0 +1,89 @@
+name: E47 concrete top-weight Casimir paired audit
+on:
+  pull_request:
+    paths:
+      - 'formal/e47/unified/ConcreteTopWeightCasimir.lean'
+      - 'formal/e47/unified/ConcreteTopWeightCasimir.v'
+      - 'validation/e47_top_weight_casimir.py'
+      - '.github/workflows/e47-top-weight-casimir.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lean-top-weight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean 4.19.0
+        run: |
+          set -euo pipefail
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile imported concrete generator and top-weight proof
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee top-lean-commit.txt
+          sha256sum formal/e47/unified/Tensor125.lean formal/e47/unified/ConcreteTopWeightCasimir.lean | tee top-lean-sha256.txt
+          lean --version | tee top-lean-version.txt
+          grep -Fq 'Lean (version 4.19.0' top-lean-version.txt
+          lean -o "$RUNNER_TEMP/Tensor125.olean" formal/e47/unified/Tensor125.lean 2>&1 | tee top-lean-import-log.txt
+          LEAN_PATH="$RUNNER_TEMP" lean formal/e47/unified/ConcreteTopWeightCasimir.lean 2>&1 | tee top-lean-log.txt
+          grep -Fq 'E47ConcreteTopWeight.concrete_quadratic_annihilator' top-lean-log.txt
+          ! grep -Eq 'sorryAx|Lean.ofReduceBool|native_decide.ax|admit' top-lean-log.txt
+          ! grep -Eq '^[[:space:]]*(sorry|axiom)\b' formal/e47/unified/ConcreteTopWeightCasimir.lean
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-top-weight-lean-unsigned
+          path: top-lean-*.txt
+  coq-top-weight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq 8.18.0
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq coq
+      - name: Compile imported concrete generator and top-weight proof
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee top-coq-commit.txt
+          sha256sum formal/e47/unified/Tensor125.v formal/e47/unified/ConcreteTopWeightCasimir.v | tee top-coq-sha256.txt
+          coqc --version | tee top-coq-version.txt
+          grep -Fq 'version 8.18.0' top-coq-version.txt
+          coqc -q -Q formal/e47/unified E47 formal/e47/unified/Tensor125.v 2>&1 | tee top-coq-import-log.txt
+          coqc -q -Q formal/e47/unified E47 formal/e47/unified/ConcreteTopWeightCasimir.v 2>&1 | tee top-coq-log.txt
+          test "$(grep -c 'Closed under the global context' top-coq-log.txt)" -eq 7
+          ! grep -Eq 'Admitted\.|Axiom ' formal/e47/unified/ConcreteTopWeightCasimir.v
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-top-weight-coq-unsigned
+          path: top-coq-*.txt
+  python-top-weight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Independent exact characteristic polynomial and mutant
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee top-python-commit.txt
+          sha256sum validation/e47_top_weight_casimir.py | tee top-python-sha256.txt
+          python --version | tee top-python-version.txt
+          python -I validation/e47_top_weight_casimir.py 2>&1 | tee top-python-log.txt
+          grep -Fq 'E47_TOP_WEIGHT_CHARPOLY_EXACT_PASS' top-python-log.txt
+          grep -Fq 'E47_TOP_WEIGHT_DIAGONALIZATION_PASS' top-python-log.txt
+          grep -Fq 'E47_TOP_WEIGHT_MUTANT_REJECTED' top-python-log.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-top-weight-python-unsigned
+          path: top-python-*.txt
