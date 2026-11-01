@@ -105,7 +105,7 @@ Proof.
   apply (proj1 (@forallb_forall _ _ _)) in H.
   assert (HinJ : In j (seq 0 10)) by (apply in_seq; lia).
   specialize (H j HinJ).
-  apply Z.eqb_eq in H.
+  apply (proj1 (Z.eqb_eq _ _)) in H.
   exact H.
 Qed.
 
