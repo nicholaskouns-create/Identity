@@ -1,0 +1,87 @@
+name: E47 paired local spin2 Lie and Casimir
+on:
+  pull_request:
+    paths:
+      - 'formal/e47/unified/LocalSpin2Lie.lean'
+      - 'formal/e47/unified/LocalSpin2Lie.v'
+      - 'validation/e47_local_spin2_lie.py'
+      - '.github/workflows/e47-local-spin2-lie.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lean-local-spin2:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean 4.19.0
+        run: |
+          set -euo pipefail
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile and audit five local theorems
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee e47-local-lean-commit.txt
+          sha256sum formal/e47/unified/LocalSpin2Lie.lean | tee e47-local-lean-sha256.txt
+          lean --version | tee e47-local-lean-version.txt
+          grep -Fq 'Lean (version 4.19.0' e47-local-lean-version.txt
+          lean formal/e47/unified/LocalSpin2Lie.lean 2>&1 | tee e47-local-lean-log.txt
+          for theorem in z_up_all_entries z_down_all_entries up_down_all_entries local_casimir_is_six negative_control_rejected; do
+            grep -Fq "E47LocalSpin2.$theorem" e47-local-lean-log.txt
+          done
+          ! grep -Eq 'sorryAx|admit|unsafe' e47-local-lean-log.txt
+          ! grep -Eq '^[[:space:]]*(sorry|axiom)\b' formal/e47/unified/LocalSpin2Lie.lean
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-local-spin2-lean-unsigned
+          path: e47-local-lean-*.txt
+  coq-local-spin2:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y coq
+      - name: Compile and audit five local theorems
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee e47-local-coq-commit.txt
+          sha256sum formal/e47/unified/LocalSpin2Lie.v | tee e47-local-coq-sha256.txt
+          coqc --version | tee e47-local-coq-version.txt
+          grep -Fq 'version 8.18.0' e47-local-coq-version.txt
+          coqc formal/e47/unified/LocalSpin2Lie.v 2>&1 | tee e47-local-coq-log.txt
+          test "$(grep -Fxc 'Closed under the global context' e47-local-coq-log.txt)" -eq 5
+          ! grep -Eq 'Admitted\.|Axiom ' formal/e47/unified/LocalSpin2Lie.v
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-local-spin2-coq-unsigned
+          path: e47-local-coq-*.txt
+  exact-integer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Independent 5x5 arithmetic and negative control
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee e47-local-python-commit.txt
+          sha256sum validation/e47_local_spin2_lie.py | tee e47-local-python-sha256.txt
+          python --version | tee e47-local-python-version.txt
+          python -I validation/e47_local_spin2_lie.py 2>&1 | tee e47-local-python-log.txt
+          grep -Fq 'E47_LOCAL_SPIN2_PASS' e47-local-python-log.txt
+          grep -Fq '"negative_control_rejected": true' e47-local-python-log.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-local-spin2-python-unsigned
+          path: e47-local-python-*.txt
