@@ -1,3 +1,7 @@
+(* STATUS: PLACEHOLDER, NOT PROVED. omega_log_eq_omegaE and omega2_eq_omegaE end in
+   Admitted, so einstein_spectral_closure depends on two unproved lemmas. This file is
+   not compiled by any CI workflow and is not part of any E47 certificate. *)
+
 From Coq Require Import Reals.
 From Coq Require Import RIneq.
 From Coq Require Import Rfunctions.
@@ -29,10 +33,9 @@ Proof.
   unfold omega_log, alpha2F.
   rewrite (Req_EM_T_correct omegaE omegaE); [| reflexivity].
   field_simplify; try lra.
-  (* The integral collapses to the single support point;
-     full measure-theoretic reduction is in the repository.
-     Certificate records the completed proof with 0 axioms. *)
-Admitted.  (* placeholder; certificate reports 0 admitted *)
+  (* PLACEHOLDER: not proved. No completed proof of this lemma exists in the
+     repository, and no certificate covers it. *)
+Admitted.  (* PLACEHOLDER: not proved (Admitted); not part of any certificate *)
 
 Lemma omega2_eq_omegaE :
   forall lam omegaE,
@@ -43,7 +46,7 @@ Proof.
   unfold omega2, alpha2F.
   rewrite (Req_EM_T_correct omegaE omegaE); [| reflexivity].
   field_simplify; try lra.
-Admitted.  (* placeholder; certificate reports 0 admitted *)
+Admitted.  (* PLACEHOLDER: not proved (Admitted); not part of any certificate *)
 
 Lemma f2_eq_one :
   forall lam omegaE,
@@ -72,7 +75,6 @@ Definition lam_plate : R := 27/10.
 Definition omegaE_plate : R := 15/100.
 Definition mu_star_plate : R := 1/10.
 
-(* The identities above are the content certified by Coq 8.18.0
-   with 0 errors and 0 admitted theorems. The subsequent
-   Allen–Dynes evaluation of these identities yields
-   Tc = 356.579 K. *)
+(* Not certified: two of the identities above are Admitted, so this file does not
+   establish them. The Allen–Dynes value Tc = 356.579 K is a numerical model
+   evaluation with the inputs above (lam, omegaE, mu*); it is not proved here. *)

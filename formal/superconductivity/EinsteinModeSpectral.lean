@@ -2,6 +2,10 @@ import Mathlib.Analysis.SpecialFunctions.Integrals
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
+/-! STATUS: PLACEHOLDER, NOT PROVED. `omega_log_eq_omegaE` and `omega2_eq_omegaE` are
+`sorry`, so `einstein_spectral_closure` depends on two unproved lemmas. This file is not
+compiled by any CI workflow and is not part of any E47 certificate. -/
+
 noncomputable section
 open Real MeasureTheory intervalIntegral
 
@@ -22,14 +26,14 @@ theorem omega_log_eq_omegaE
     omega_log λ ωE = ωE := by
   -- The support of alpha2F is a single point ω = ωE.
   -- The integral collapses to the value at that point.
-  -- (Full measure-theoretic reduction is in the repository;
-  --  the identity is the content of the Lean 4.19.0 certificate.)
-  sorry  -- placeholder; certificate reports the completed proof with 0 axioms
+  -- PLACEHOLDER: no completed proof of this identity exists in the repository,
+  -- and no certificate covers it.
+  sorry  -- PLACEHOLDER: not proved (sorry); not part of any certificate
 
 theorem omega2_eq_omegaE
     (λ ωE : ℝ) (hλ : 0 < λ) (hωE : 0 < ωE) :
     omega2 λ ωE = ωE := by
-  sorry  -- placeholder; certificate reports the completed proof with 0 axioms
+  sorry  -- PLACEHOLDER: not proved (sorry); not part of any certificate
 
 /-- Allen–Dynes f₂ factor for Einstein mode -/
 def f2 (λ ωE : ℝ) : ℝ := 1
