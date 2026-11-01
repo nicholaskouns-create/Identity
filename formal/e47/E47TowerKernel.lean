@@ -8,8 +8,8 @@
   facts (n = 5 values, kernel blocks, multiplicities, rank, bounded
   uniqueness). The general-n theorems (tower_spin_identity, fib_luc_shift_odd,
   tower_identity_n5, shift_identity_m3) use Lean's three built-in axioms
-  propext, Classical.choice and Quot.sound, through core `grind`/`omega`. No
-  axiom is declared here.
+  propext, Classical.choice and Quot.sound, through core `grind`/`omega`.
+  No axiom is declared here.
 
   WHAT IS FORMALIZED HERE
   * fib, luc as in TowerIdentity.v, and the general induction theorem
