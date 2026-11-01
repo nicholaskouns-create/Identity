@@ -1,0 +1,135 @@
+{
+  "all_checks_pass": true,
+  "checks": {
+    "Omega_c": true,
+    "basis_size_125": true,
+    "casimir_spectrum": true,
+    "constants_hash_stable": true,
+    "denominator_99144": true,
+    "denominator_from_top_spin": true,
+    "dimension_identity": true,
+    "eigenspace_dims": true,
+    "epsilon": true,
+    "gamma_contraction_extremes": true,
+    "gamma_contracts_off_kernel": true,
+    "gamma_gap_integer_bound": true,
+    "gamma_is_one_on_kernel": true,
+    "k_squared_by_node": true,
+    "k_squared_set": true,
+    "kernel_rank_47": true,
+    "kernel_rank_from_weights": true,
+    "kernel_spins": true,
+    "lam_zero_iff_spin_2_or_5": true,
+    "lucas_fibonacci_odd": true,
+    "multiplicities": true,
+    "multiplicities_reproduce_weights": true,
+    "pr_coefficients": true,
+    "pr_normalizer_1814400": true,
+    "pr_on_nodes": true,
+    "projector_trace_47": true,
+    "rho_15_17": true,
+    "tower_kernel_link": true,
+    "tower_spin_identity": true,
+    "tower_values": true,
+    "weight_counts": true,
+    "weight_symmetric": true,
+    "weight_total_125": true,
+    "weight_vanishes_outside": true
+  },
+  "constants": {
+    "Omega_c": "47/125",
+    "Omega_c_decimal": "0.376",
+    "basis_size": 125,
+    "casimir_eigenspace_dims": [
+      1,
+      9,
+      25,
+      28,
+      27,
+      22,
+      13
+    ],
+    "casimir_spectrum": [
+      0,
+      2,
+      6,
+      12,
+      20,
+      30,
+      42
+    ],
+    "denominator": 99144,
+    "epsilon": "1/99144",
+    "gamma_by_node": [
+      "103/153",
+      "10825/12393",
+      "1/1",
+      "15/17",
+      "9943/12393",
+      "1/1",
+      "-15/17"
+    ],
+    "k_squared_off_kernel": [
+      11664,
+      12544,
+      19600,
+      32400,
+      186624
+    ],
+    "kernel_rank": 47,
+    "kernel_spins": [
+      2,
+      5
+    ],
+    "lam_by_node": [
+      180,
+      112,
+      0,
+      -108,
+      -140,
+      0,
+      432
+    ],
+    "multiplicities": [
+      1,
+      3,
+      5,
+      4,
+      3,
+      2,
+      1
+    ],
+    "pr_coefficients": [
+      1,
+      -107,
+      4088,
+      -66940,
+      430848,
+      -624960,
+      0
+    ],
+    "pr_normalizer": 1814400,
+    "rho": "15/17",
+    "schema": "e47-core-constants/1",
+    "tower": {
+      "D": 47,
+      "F3": 2,
+      "F5": 5,
+      "J": 5,
+      "L5": 11,
+      "j": 2
+    },
+    "weight_counts": [
+      19,
+      18,
+      15,
+      10,
+      6,
+      3,
+      1
+    ]
+  },
+  "constants_sha256": "a393ec7c3d53933795d5f4a41b93ca35f43beec8d88de8429f21c27017bbf624",
+  "hash_method": "constants_sha256 = SHA-256 of the UTF-8 bytes of json.dumps(constants, sort_keys=True, separators=(',', ':'), ensure_ascii=True), where constants is the 'constants' object of this file (Fractions are strings 'p/q'). Recompute with e47_core.constants_sha256() or with any JSON library using that exact serialization.",
+  "schema": "e47-core-certificate/1"
+}

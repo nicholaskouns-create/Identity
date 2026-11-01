@@ -1,0 +1,27 @@
+name: E47 core (exact constants)
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  e47-core:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit tests (stdlib only)
+        run: python -m unittest -v test_e47_core
+        working-directory: simulation/e47_core
+      - name: Certificate is up to date
+        run: python make_certificate.py --check
+        working-directory: simulation/e47_core
+      - name: Drift check over this repo
+        run: python simulation/e47_core/e47_core_check.py
