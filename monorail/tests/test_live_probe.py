@@ -285,7 +285,10 @@ class PublicDoorProbeTests(unittest.TestCase):
         from threading import Thread
 
         class Redirects(BaseHTTPRequestHandler):
+            paths = []
+
             def do_GET(self):
+                self.paths.append(self.path)
                 if self.path == "/door":
                     target = "/wrong-application"
                 elif self.path == "/private":
@@ -331,6 +334,9 @@ class PublicDoorProbeTests(unittest.TestCase):
                              (302, "door_identity_redirect_blocked"))
             self.assertEqual(same["final_url"], base + "/same/")
             self.assertNotIn("PRIVATE_VALUE", str(same))
+            self.assertEqual(Redirects.paths.count("/same"), 1)
+            self.assertFalse(any("access_token=" in path
+                                 for path in Redirects.paths))
             # Benign trailing-slash/query canonicalization remains navigable.
             canonical = probe.probe_door({"slug": "test", "name": "Test",
                                          "href": base + "/canonical"}, timeout=3)
