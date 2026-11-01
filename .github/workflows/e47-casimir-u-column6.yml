@@ -1,0 +1,96 @@
+name: E47 Casimir-U column 6 paired exact matrix audit
+on:
+  pull_request:
+    paths:
+      - 'formal/e47/unified/Tensor125CasimirUColumn6Native.lean'
+      - 'formal/e47/unified/Tensor125CasimirUColumn6.v'
+      - 'validation/e47_casimir_u_column6.py'
+      - '.github/workflows/e47-casimir-u-column6.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lean-cu6:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check canonical concrete generator parity
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('formal/e47/unified')
+          canonical = (root/'Tensor125.lean').read_text().split('theorem highest_weight',1)[0]
+          native = (root/'Tensor125CasimirUColumn6Native.lean').read_text().removeprefix('import Lean\n').split('/-! ## Concrete',1)[0]
+          assert native == canonical, 'Generator definitions differ'
+          print('CU6_NATIVE_GENERATOR_PARITY_PASS')
+          PY
+      - name: Install pinned Lean 4.19.0
+        run: |
+          set -euo pipefail
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile, audit and record evidence
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee lean-cu6-commit.txt
+          sha256sum formal/e47/unified/Tensor125CasimirUColumn6Native.lean | tee lean-cu6-sha256.txt
+          lean --version | tee lean-cu6-version.txt
+          grep -Fq 'Lean (version 4.19.0' lean-cu6-version.txt
+          lean formal/e47/unified/Tensor125CasimirUColumn6Native.lean 2>&1 | tee lean-cu6-log.txt
+          grep -Fq 'E47Tensor125.concreteCasimirU_column_six_native' lean-cu6-log.txt
+          grep -Fq '[propext, Lean.ofReduceBool]' lean-cu6-log.txt
+          ! grep -Eq 'sorryAx|admit|unsafe' lean-cu6-log.txt
+          ! grep -Eq '^[[:space:]]*(sorry|axiom)\b' formal/e47/unified/Tensor125CasimirUColumn6Native.lean
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-cu6-lean-unsigned
+          path: lean-cu6-*.txt
+  coq-cu6:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Coq 8.18.0
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y coq
+      - name: Compile, audit and record evidence
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee coq-cu6-commit.txt
+          sha256sum formal/e47/unified/Tensor125CasimirUColumn6.v | tee coq-cu6-sha256.txt
+          coqc --version | tee coq-cu6-version.txt
+          grep -Fq 'version 8.18.0' coq-cu6-version.txt
+          coqc -Q formal/e47/unified E47Tensor formal/e47/unified/Tensor125.v > coq-cu6-base.txt 2>&1
+          coqc -Q formal/e47/unified E47Tensor formal/e47/unified/Tensor125CasimirUColumn6.v 2>&1 | tee coq-cu6-log.txt
+          grep -Fxq 'Closed under the global context' coq-cu6-log.txt
+          ! grep -Eq 'Admitted\.|Axiom ' formal/e47/unified/Tensor125CasimirUColumn6.v
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-cu6-coq-unsigned
+          path: coq-cu6-*.txt
+  python-cu6:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Exact independent integer reconstruction
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee python-cu6-commit.txt
+          sha256sum validation/e47_casimir_u_column6.py | tee python-cu6-sha256.txt
+          python --version | tee python-cu6-version.txt
+          python -I validation/e47_casimir_u_column6.py 2>&1 | tee python-cu6-log.txt
+          grep -Fq 'E47_CASIMIR_U_COLUMN6_EXACT_INTEGER_PASS' python-cu6-log.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-cu6-python-unsigned
+          path: python-cu6-*.txt
