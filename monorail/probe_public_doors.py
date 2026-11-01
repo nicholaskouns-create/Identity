@@ -113,7 +113,13 @@ class SameDoorRedirect(HTTPRedirectHandler):
                 # A pinned view is part of the door identity. A 302 to
                 # ?view=atlas must not pass the ?view=learn Observatory door.
                 # Unpinned doors may still use canonical query redirects.
-                or (self.original.query and target.query != self.original.query)):
+                or (self.original.query and target.query != self.original.query)
+                # Tower is a hash-routed SPA: an explicit Location fragment
+                # changing #/explore to #/compare is a different door view.
+                # A fragment-free HTTP Location is allowed: browsers inherit
+                # the original fragment under HTTP redirect semantics.
+                or (self.original.fragment and target.fragment
+                    and target.fragment != self.original.fragment)):
             # Never follow an unreviewed destination. Do not log query tokens.
             safe_url = target._replace(query="", fragment="").geturl()
             raise DoorIdentityRedirectBlocked(
