@@ -1,0 +1,48 @@
+name: E47 exact concrete weight-block spectral census
+on:
+  pull_request:
+    paths:
+      - 'validation/e47_weightblock_charpoly_exact.py'
+      - '.github/workflows/e47-weightblock-charpoly.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  exact-weightblock:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Record source and runtime provenance
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee exact-weightblock-commit.txt
+          python --version 2>&1 | tee exact-weightblock-version.txt
+          sha256sum validation/e47_weightblock_charpoly_exact.py | tee exact-weightblock-source-sha256.txt
+      - name: Execute exact characteristic-polynomial census
+        run: |
+          set -euo pipefail
+          python -I validation/e47_weightblock_charpoly_exact.py 2>&1 | tee exact-weightblock-positive.log
+          grep -Fq 'E47_WEIGHTBLOCK_CHARPOLY_PASS SHA256=' exact-weightblock-positive.log
+      - name: Negative control must fail
+        run: |
+          set -euo pipefail
+          if python -I validation/e47_weightblock_charpoly_exact.py --negative-control > exact-weightblock-negative.log 2>&1; then
+            echo 'FAIL: corrupted Casimir was accepted'
+            exit 1
+          fi
+          grep -Fq 'AssertionError' exact-weightblock-negative.log
+          echo 'NEGATIVE_CONTROL_REJECTED'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-weightblock-exact-unsigned
+          path: exact-weightblock-*.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-weightblock-logs-unsigned
+          path: exact-weightblock-*.log
