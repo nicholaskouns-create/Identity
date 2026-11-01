@@ -15,6 +15,7 @@ trap 'rm -rf "$workdir"' EXIT
 cp formal/e47/E47Spectral.lean formal/e47/E47Spectral.v formal/e47/TowerIdentity.v "$workdir/"
 cp formal/e47/E47WeightAlgebra.lean formal/e47/E47WeightAlgebra.v "$workdir/"
 cp formal/e47/E47TowerKernel.lean formal/e47/E47TowerKernel.v "$workdir/"
+cp formal/e47/E47OddsContraction.lean formal/e47/E47OddsContraction.v "$workdir/"
 (
   cd "$workdir"
   lean E47Spectral.lean
@@ -24,6 +25,19 @@ cp formal/e47/E47TowerKernel.lean formal/e47/E47TowerKernel.v "$workdir/"
   coqc -q E47WeightAlgebra.v
   lean E47TowerKernel.lean
   coqc -q E47TowerKernel.v
+  lean E47OddsContraction.lean
+  coqc -q E47OddsContraction.v
 )
 python3 simulation/validate_e47.py
-echo "PASS: Lean spectral, Coq spectral, Coq tower, Lean weight algebra, Coq weight algebra, Lean tower-kernel link, Coq tower-kernel link, Python 125x125 validation"
+# Matrix projector: Coq (about 1 minute) and the exact-integer Python cross-check.
+# The Lean companion needs about 4-5 minutes and 7 GB, so it has its own workflow
+# (.github/workflows/e47-matrix-projector.yml); to run it here: lean formal/e47/E47MatrixProjector.lean
+# Odds link (about 1 more minute): the odds contraction for every integer vector of the 125x125 model;
+# it imports E47MatrixProjector and E47OddsContraction, so all three are compiled in one directory.
+mpdir="$(mktemp -d)"
+cp formal/e47/E47MatrixProjector.v formal/e47/E47OddsContraction.v formal/e47/E47OddsLink.v "$mpdir/"
+( cd "$mpdir" && coqc -q E47MatrixProjector.v && coqc -q E47OddsContraction.v && coqc -q E47OddsLink.v )
+rm -rf "$mpdir"
+python3 simulation/e47_tqgnn/matrix_projector_check.py
+python3 simulation/e47_tqgnn/odds_link_check.py
+echo "PASS: Lean spectral, Coq spectral, Coq tower, Lean weight algebra, Coq weight algebra, Lean tower-kernel link, Coq tower-kernel link, Lean odds contraction, Coq odds contraction, Python 125x125 validation, Coq matrix projector, Coq odds link, Python matrix projector check, Python odds link check"
