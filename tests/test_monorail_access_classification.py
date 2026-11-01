@@ -148,7 +148,12 @@ class MonorailRestrictedAccessTest(unittest.TestCase):
         self.assertEqual(highlighter["sourceEvidence"]["merge_commit"],
                          "1e1306c984cb5b290371d815ca9853e6c2b3eb5e")
         self.assertEqual(highlighter["sourceEvidence"]["ci_result"], "success")
-        self.assertIn("deployment commit remains unverified", highlighter["sourceEvidence"]["scope"])
+        self.assertIn("public Pages build.json readback commit", highlighter["sourceEvidence"]["scope"])
+        self.assertEqual(highlighter["sourceEvidence"]["deployed_commit"],
+                         "3f277ddf3a84f9f10e804196b6d2668c94e805b5")
+        self.assertEqual(highlighter["sourceEvidence"]["deployment_ci"],
+                         "https://github.com/nicholaskouns-create/tower/actions/runs/41222214187")
+        self.assertNotIn("deployment commit remains unverified", highlighter["sourceEvidence"]["scope"])
         self.assertEqual(next(l for l in tower["links"] if l.get("repair") == "highlight")["state"],
                          "repaired")
         self.assertIn("Live Chromium evidence · 31 Oct 2026", HTML)
