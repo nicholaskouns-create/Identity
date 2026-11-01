@@ -17,7 +17,7 @@ from pathlib import Path
 import re
 import sys
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlsplit
+from urllib.parse import unquote, urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 CORPUS = Path(__file__).with_name("index.html")
@@ -126,6 +126,27 @@ def safe_door_open(req: Request, timeout: float):
     return build_opener(SameDoorRedirect(req.full_url)).open(req, timeout=timeout)
 
 
+# A blocked redirect may embed a credential in its URL path, not just
+# its query or userinfo. Public evidence must not archive that value.
+# Network redirect policy and the original door identities are unchanged.
+CREDENTIAL_PATH_KEYS = frozenset({
+    "token", "access_token", "id_token", "refresh_token",
+    "api_key", "authorization", "client_secret", "password",
+})
+
+
+def redact_credential_path(path: str) -> str:
+    segments = path.split("/")
+    for i, segment in enumerate(segments):
+        decoded = unquote(segment)
+        key, sep, _ = decoded.partition("=")
+        if sep and key.casefold() in CREDENTIAL_PATH_KEYS:
+            segments[i] = key + "=REDACTED"
+        if decoded.casefold() in CREDENTIAL_PATH_KEYS and i + 1 < len(segments):
+            segments[i + 1] = "REDACTED"
+    return "/".join(segments)
+
+
 def receipt_door_url(observed_url: str, source_url: str) -> str:
     """Redact unreviewed redirect queries from public door HTTP receipts.
 
@@ -136,7 +157,8 @@ def receipt_door_url(observed_url: str, source_url: str) -> str:
     observed, source = urlsplit(observed_url), urlsplit(source_url)
     # Blocked 30x targets may contain user:password@host. Never persist
     # unreviewed URL userinfo in the public door navigation receipt.
-    observed = observed._replace(netloc=observed.netloc.rsplit("@", 1)[-1])
+    observed = observed._replace(netloc=observed.netloc.rsplit("@", 1)[-1],
+                                 path=redact_credential_path(observed.path))
     same_door = (
         observed.scheme == source.scheme
         and observed.netloc.lower() == source.netloc.lower()
