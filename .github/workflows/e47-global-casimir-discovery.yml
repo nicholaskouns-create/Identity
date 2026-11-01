@@ -24,6 +24,9 @@ jobs:
           sha256sum validation/e47_global_casimir_root_discovery.py | tee e47-global-source-sha256.txt
           python --version | tee e47-global-python-version.txt
           python -I validation/e47_global_casimir_root_discovery.py 2>&1 | tee e47-global-execution.log
+          grep -Fq 'E47_GLOBAL_LIE_RELATIONS_EXACT_PASS' e47-global-execution.log
+          grep -Fq 'E47_GLOBAL_CASIMIR_CENTRALITY_EXACT_PASS' e47-global-execution.log
+          grep -Fq 'E47_GLOBAL_CENTRALITY_MUTANT_REJECTED' e47-global-execution.log
           grep -Fq 'E47_GLOBAL_ROOT_DISCOVERY_PASS [0, 2, 6, 12, 20, 30, 42]' e47-global-execution.log
           grep -Fq 'E47_GLOBAL_ANNIHILATOR_EXACT_PASS' e47-global-execution.log
           grep -Fq 'E47_GLOBAL_MULTIPLICITIES_EXACT_PASS' e47-global-execution.log
