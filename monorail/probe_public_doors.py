@@ -17,7 +17,7 @@ from pathlib import Path
 import re
 import sys
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlsplit
+from urllib.parse import parse_qsl, urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 CORPUS = Path(__file__).with_name("index.html")
@@ -92,6 +92,25 @@ def read_corpus(path: Path = CORPUS) -> dict:
     return data
 
 
+# An anonymous door probe must not follow a redirect that introduces a
+# credential-bearing query. Redacting its receipt after following is too late.
+# The fixed 17-door source URLs contain no credential query parameters.
+CREDENTIAL_QUERY_KEYS = frozenset({
+    "access_token", "id_token", "refresh_token", "api_key",
+    "authorization", "client_secret", "password",
+    "x-amz-signature", "x-goog-signature",
+})
+
+
+def has_unreviewed_credential_query(original_query: str, target_query: str) -> bool:
+    if target_query == original_query:
+        return False
+    return any(
+        key.casefold() in CREDENTIAL_QUERY_KEYS
+        for key, _ in parse_qsl(target_query, keep_blank_values=True)
+    )
+
+
 class DoorIdentityRedirectBlocked(HTTPError):
     """A redirect away from the requested door; destination not fetched."""
 
@@ -105,6 +124,14 @@ class SameDoorRedirect(HTTPRedirectHandler):
 
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         target = urlsplit(newurl)
+        # Stop unreviewed credentials before urllib issues a second GET.
+        # Keep the target's query and userinfo out of the exception receipt.
+        if has_unreviewed_credential_query(self.original.query, target.query):
+            safe_url = target._replace(query="", fragment="",
+                                       netloc=target.netloc.rsplit("@", 1)[-1]).geturl()
+            raise DoorIdentityRedirectBlocked(
+                safe_url, code, "credential_query_redirect_blocked", headers, fp
+            )
         original_path = self.original.path.rstrip("/") or "/"
         target_path = target.path.rstrip("/") or "/"
         if (target.scheme != self.original.scheme
