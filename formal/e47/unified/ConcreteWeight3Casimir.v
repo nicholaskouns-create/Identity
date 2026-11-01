@@ -99,10 +99,10 @@ Proof.
   intros i j Hi Hj.
   pose proof concrete_entries as H.
   unfold all10 in H.
-  apply (proj1 (@forallb_forall _ _ _)) in H.
+  apply forallb_forall in H.
   assert (HinI : In i (seq 0 10)) by (apply in_seq; lia).
   specialize (H i HinI).
-  apply (proj1 (@forallb_forall _ _ _)) in H.
+  apply forallb_forall in H.
   assert (HinJ : In j (seq 0 10)) by (apply in_seq; lia).
   specialize (H j HinJ).
   apply (proj1 (Z.eqb_eq _ _)) in H.
@@ -156,15 +156,15 @@ Theorem concrete_quartic_annihilator :
   all10 (fun i j => Z.eqb (quarticResidual concrete i j) 0) = true.
 Proof.
   unfold all10.
-  apply (proj2 (@forallb_forall _ _ _)).
+  apply forallb_forall.
   intros i Hi.
-  apply (proj2 (@forallb_forall _ _ _)).
+  apply forallb_forall.
   intros j Hj.
   pose proof model_quartic_annihilator as Hmodel.
   unfold all10 in Hmodel.
-  apply (proj1 (@forallb_forall _ _ _)) in Hmodel.
+  apply forallb_forall in Hmodel.
   specialize (Hmodel i Hi).
-  apply (proj1 (@forallb_forall _ _ _)) in Hmodel.
+  apply forallb_forall in Hmodel.
   specialize (Hmodel j Hj).
   assert (Hi10 : (i < 10)%nat) by (apply in_seq in Hi; lia).
   assert (Hj10 : (j < 10)%nat) by (apply in_seq in Hj; lia).
