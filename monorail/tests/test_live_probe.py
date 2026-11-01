@@ -155,6 +155,47 @@ class PublicDoorProbeTests(unittest.TestCase):
         self.assertEqual(result["http_status"], 200)
         self.assertEqual(result["outcome"], "http_ok")
 
+    def test_empty_200_and_204_are_not_navigable_doors(self):
+        # Real loopback HTTP evidence: the previous status-only classifier
+        # accepted both empty 200 and 204 No Content as a working door.
+        from http.server import BaseHTTPRequestHandler, HTTPServer
+        from threading import Thread
+
+        class DoorBodies(BaseHTTPRequestHandler):
+            def do_GET(self):
+                status = 204 if self.path == "/no-content" else 200
+                self.send_response(status)
+                self.end_headers()
+                if self.path == "/healthy":
+                    self.wfile.write(b"<html>Station</html>")
+
+            def log_message(self, *_):
+                pass
+
+        server = HTTPServer(("127.0.0.1", 0), DoorBodies)
+        thread = Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        base = f"http://127.0.0.1:{server.server_port}"
+        try:
+            for path, status in (("/empty", 200), ("/no-content", 204)):
+                with self.subTest(path=path):
+                    station = {"slug": "test", "name": "Test",
+                               "href": base + path}
+                    receipt = probe.probe_door(station, timeout=3)
+                    self.assertEqual(receipt["http_status"], status)
+                    self.assertEqual(receipt["outcome"], "http_error")
+                    self.assertEqual(receipt["error_type"], "empty_response_body")
+            healthy = probe.probe_door(
+                {"slug": "test", "name": "Test", "href": base + "/healthy"},
+                timeout=3,
+            )
+            self.assertEqual((healthy["http_status"], healthy["outcome"]),
+                             (200, "http_ok"))
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=3)
+
     def test_http_404_remains_distinct_from_network_error(self):
         station = self.data["stations"][0]
         with patch.object(probe, "safe_door_open", side_effect=HTTPError(station["href"], 404, "Not Found", {}, None)):
