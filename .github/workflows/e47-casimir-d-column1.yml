@@ -1,0 +1,73 @@
+name: E47 Casimir-D column one paired compiler audit
+on:
+  pull_request:
+    paths:
+      - 'formal/e47/unified/Tensor125CasimirDColumn1Native.lean'
+      - 'formal/e47/unified/Tensor125CasimirDColumn1.v'
+      - '.github/workflows/e47-casimir-d-column1.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lean-cd1:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check generator source parity
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('formal/e47/unified')
+          original=(p/'Tensor125.lean').read_text().split('theorem highest_weight',1)[0]
+          new=(p/'Tensor125CasimirDColumn1Native.lean').read_text().removeprefix('import Lean\n').split('/-! ## Concrete',1)[0]
+          assert original==new, 'concrete generator bytes differ'
+          print('CD1_GENERATOR_PARITY_PASS')
+          PY
+      - name: Install Lean 4.19.0
+        run: |
+          set -euo pipefail
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile and audit assumptions
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee cd1-lean-commit.txt
+          sha256sum formal/e47/unified/Tensor125CasimirDColumn1Native.lean | tee cd1-lean-sha256.txt
+          lean --version | tee cd1-lean-version.txt
+          grep -Fq 'Lean (version 4.19.0' cd1-lean-version.txt
+          lean formal/e47/unified/Tensor125CasimirDColumn1Native.lean 2>&1 | tee cd1-lean-log.txt
+          grep -Fq 'E47Tensor125.concreteCasimirD_column_one_native' cd1-lean-log.txt
+          grep -Fq '[propext, Lean.ofReduceBool]' cd1-lean-log.txt
+          ! grep -Eq 'sorryAx|admit|unsafe' cd1-lean-log.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-cd1-lean-unsigned
+          path: cd1-lean-*.txt
+  coq-cd1:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq 8.18.0
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y coq
+      - name: Compile and audit assumptions
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee cd1-coq-commit.txt
+          sha256sum formal/e47/unified/Tensor125.v formal/e47/unified/Tensor125CasimirDColumn1.v | tee cd1-coq-sha256.txt
+          coqc --version | tee cd1-coq-version.txt
+          grep -Fq 'version 8.18.0' cd1-coq-version.txt
+          coqc -Q formal/e47/unified E47Tensor formal/e47/unified/Tensor125.v > cd1-coq-base-log.txt 2>&1
+          coqc -Q formal/e47/unified E47Tensor formal/e47/unified/Tensor125CasimirDColumn1.v 2>&1 | tee cd1-coq-log.txt
+          grep -Fxq 'Closed under the global context' cd1-coq-log.txt
+          ! grep -Eq 'Admitted|Axiom ' formal/e47/unified/Tensor125CasimirDColumn1.v
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-cd1-coq-unsigned
+          path: cd1-coq-*.txt
