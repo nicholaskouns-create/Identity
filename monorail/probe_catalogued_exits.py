@@ -166,17 +166,23 @@ class SameExitRedirect(HTTPRedirectHandler):
                 # A same-path 302 must not turn ?view=atlas into ?view=learn
                 # or ?module=eidolon into another instrument.
                 # Unpinned exits retain canonical query redirects.
-                or (self.original.query and target.query != self.original.query)):
+                or (self.original.query and target.query != self.original.query)
+                # An explicitly changed SPA fragment changes the requested
+                # instrument/view. Fragment-free Location inherits the source
+                # fragment in browsers and remains valid canonicalization.
+                or (self.original.fragment and target.fragment
+                    and target.fragment != self.original.fragment)):
             raise ExitIdentityRedirectBlocked(
                 safe_url, code, "exit_identity_redirect_blocked", headers, fp
             )
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
-def safe_urlopen(req: Request, timeout: float):
-    # urllib follows 30x before probe_exit can inspect final_url. Constrain
-    # redirects to the original exit identity before the follow-up request.
-    return build_opener(SameExitRedirect(req.full_url)).open(req, timeout=timeout)
+def safe_urlopen(req: Request, timeout: float, source_url: str | None = None):
+    # The HTTP request correctly omits browser-local #fragments, but the
+    # redirect policy must retain the catalogued SPA view's full identity.
+    # urllib follows 30x before probe_exit can inspect final_url.
+    return build_opener(SameExitRedirect(source_url or req.full_url)).open(req, timeout=timeout)
 
 
 def receipt_url(observed_url: str, source_url: str) -> str:
@@ -220,7 +226,7 @@ def probe_exit(row: dict, timeout: float = 15) -> dict:
         "Accept": "*/*",
     })
     try:
-        with safe_urlopen(req, timeout=timeout) as response:
+        with safe_urlopen(req, timeout=timeout, source_url=row["url"]) as response:
             result["http_status"] = response.status
             observed_final_url = response.geturl()
             result["final_url"] = receipt_url(observed_final_url, row["url"])
