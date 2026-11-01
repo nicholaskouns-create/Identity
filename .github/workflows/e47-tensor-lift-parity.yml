@@ -78,6 +78,10 @@ jobs:
           set -euo pipefail
           git rev-parse HEAD | tee e47-lift-python-checkout.txt
           sha256sum validation/e47_tensor_lift_parity.py | tee e47-lift-python-sha256.txt
+          # Pin the exact concrete Tensor125 source blobs being bridged.
+          # A changed generator definition must trigger a fresh parity review.
+          test "$(git hash-object formal/e47/unified/Tensor125.lean)" = 79e01628560f729fb06e993b430ac1e920d047b3
+          test "$(git hash-object formal/e47/unified/Tensor125.v)" = 54d2d851f177a815d69e4c37d520494be1c1bd13
           python --version | tee e47-lift-python-version.txt
           python -I validation/e47_tensor_lift_parity.py 2>&1 | tee e47-lift-python-log.txt
           grep -Fq 'E47_TENSOR_LIFT_PARITY_PASS' e47-lift-python-log.txt
