@@ -157,7 +157,7 @@ def run():
         'dimension': N,
         'casimir_dense_sha256': hashlib.sha256(canonical.encode()).hexdigest(),
         'annihilating_roots': list(ROOTS),
-        'minimal_polynomial_zero_matrix': True,
+        'square_free_annihilator_zero_matrix': True,
         'projector_numerator_factors': list(POLY_FACTORS),
         'projector_denominator': DENO,
         'projector_numerator_squared_equals_denominator_times_numerator': True,
