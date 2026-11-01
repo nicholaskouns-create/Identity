@@ -6,6 +6,13 @@ From E47Tensor Require Import Tensor125.
 Import ListNotations.
 Open Scope Z_scope.
 
+(* Tensor125.v exports mulEntry and the generators but not this full
+   off-diagonal Casimir definition. Construct it explicitly here rather
+   than assuming a symbol from a different, unmerged proof branch. *)
+Definition concreteCasimirEntry (i j : nat) : Z :=
+  mulEntry totalDown totalUp i j +
+  (if Nat.eqb i j then totalZ i i * (totalZ i i + 1) else 0).
+
 Definition concreteCasimirUColumnSixOK (i : nat) : bool :=
   Z.eqb
     (mulEntry concreteCasimirEntry totalUp i 6%nat -
