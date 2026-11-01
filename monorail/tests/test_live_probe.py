@@ -296,6 +296,8 @@ class PublicDoorProbeTests(unittest.TestCase):
                     target = "/other"
                 elif self.path == "/same":
                     target = "/same/?access_token=PRIVATE_VALUE"
+                elif self.path == "/canonical":
+                    target = "/canonical/?canonical=1"
                 else:
                     self.send_response(200)
                     self.end_headers()
@@ -322,13 +324,19 @@ class PublicDoorProbeTests(unittest.TestCase):
                     self.assertEqual(result["outcome"],
                                      "door_identity_redirect_blocked")
                     self.assertNotIn("token=", str(result))
-            # A same-door trailing-slash/query redirect remains navigable.
+            # A same-door credential redirect is blocked *before* a second GET.
             same = probe.probe_door({"slug": "test", "name": "Test",
                                     "href": base + "/same"}, timeout=3)
             self.assertEqual((same["http_status"], same["outcome"]),
-                             (200, "http_ok"))
+                             (302, "door_identity_redirect_blocked"))
             self.assertEqual(same["final_url"], base + "/same/")
             self.assertNotIn("PRIVATE_VALUE", str(same))
+            # Benign trailing-slash/query canonicalization remains navigable.
+            canonical = probe.probe_door({"slug": "test", "name": "Test",
+                                         "href": base + "/canonical"}, timeout=3)
+            self.assertEqual((canonical["http_status"], canonical["outcome"]),
+                             (200, "http_ok"))
+            self.assertEqual(canonical["final_url"], base + "/canonical/")
             with patch.object(probe, "SOURCE_URL", base + "/source"):
                 source = probe.probe_monorail_source(timeout=3)
             self.assertEqual((source["http_status"], source["outcome"]),
@@ -337,6 +345,26 @@ class PublicDoorProbeTests(unittest.TestCase):
             server.shutdown()
             server.server_close()
             thread.join(timeout=3)
+
+    def test_unreviewed_door_credential_queries_blocked_before_followup(self):
+        # This is the independent 17-door lane; PR #194 addresses exits.
+        # Percent-encoded and mixed-case keys must not evade the guard.
+        from urllib.request import Request
+        source = "https://example.org/door/"
+        handler = probe.SameDoorRedirect(source)
+        for query in ("?Access_Token=PRIVATE_VALUE",
+                      "?%61ccess_token=PRIVATE_VALUE",
+                      "?canonical=1&client_secret=PRIVATE_VALUE",
+                      "?X-Amz-Signature=PRIVATE_VALUE"):
+            with self.subTest(query=query):
+                with self.assertRaises(probe.DoorIdentityRedirectBlocked) as blocked:
+                    handler.redirect_request(Request(source), None, 302,
+                                             "Found", {}, source + query)
+                self.assertEqual(blocked.exception.code, 302)
+                self.assertEqual(blocked.exception.geturl(), source)
+        allowed = handler.redirect_request(Request(source), None, 302,
+                                           "Found", {}, source + "?canonical=1")
+        self.assertEqual(allowed.full_url, source + "?canonical=1")
 
     def test_blocked_door_counts_as_failure_even_with_16_http_200(self):
         def simulated(station):
