@@ -1,6 +1,6 @@
 (* Exact weight-3 Casimir block imported from canonical Tensor125.v.
    All concrete entries use the full 125-term integer matrix product. *)
-From Coq Require Import List Arith ZArith Bool.
+From Coq Require Import List Arith ZArith Bool Lia.
 From E47 Require Import Tensor125.
 Import ListNotations.
 Open Scope Z_scope.
@@ -88,9 +88,90 @@ Theorem right_inverse_scaled :
   all10 (fun i j => Z.eqb (mul10 S B i j)
     (if Nat.eqb i j then 1320 else 0)) = true.
 Proof. vm_compute. reflexivity. Qed.
+(* Bounded 10-state transport avoids repeatedly expanding 125-term
+   Casimir products inside a quartic matrix polynomial. The exact concrete
+   entry certificate above is retained and used, not replaced by a model
+   assumption. *)
+Lemma concrete_equals_model_in_block :
+  forall i j, (i < 10)%nat -> (j < 10)%nat ->
+    concrete i j = model i j.
+Proof.
+  intros i j Hi Hj.
+  pose proof concrete_entries as H.
+  unfold all10 in H.
+  apply forallb_forall in H.
+  assert (HinI : In i (seq 0 10)) by (apply in_seq; lia).
+  specialize (H i HinI).
+  apply forallb_forall in H.
+  assert (HinJ : In j (seq 0 10)) by (apply in_seq; lia).
+  specialize (H j HinJ).
+  apply Z.eqb_eq in H.
+  exact H.
+Qed.
+
+Lemma mul10_ext :
+  forall X Y X' Y' i j,
+    (forall a b, (a < 10)%nat -> (b < 10)%nat -> X a b = X' a b) ->
+    (forall a b, (a < 10)%nat -> (b < 10)%nat -> Y a b = Y' a b) ->
+    (i < 10)%nat -> (j < 10)%nat ->
+    mul10 X Y i j = mul10 X' Y' i j.
+Proof.
+  intros X Y X' Y' i j HX HY Hi Hj.
+  unfold mul10.
+  apply f_equal.
+  apply map_ext_in.
+  intros k Hk.
+  assert (Hk10 : (k < 10)%nat) by (apply in_seq in Hk; lia).
+  now rewrite (HX i k Hi Hk10), (HY k j Hk10 Hj).
+Qed.
+
+Lemma quarticResidual_ext :
+  forall X Y i j,
+    (forall a b, (a < 10)%nat -> (b < 10)%nat -> X a b = Y a b) ->
+    (i < 10)%nat -> (j < 10)%nat ->
+    quarticResidual X i j = quarticResidual Y i j.
+Proof.
+  intros X Y i j H Hi Hj.
+  assert (H2 : forall a b, (a < 10)%nat -> (b < 10)%nat ->
+    mul10 X X a b = mul10 Y Y a b).
+  { intros a b Ha Hb. eapply mul10_ext; eauto. }
+  assert (H3 : forall a b, (a < 10)%nat -> (b < 10)%nat ->
+    mul10 (mul10 X X) X a b = mul10 (mul10 Y Y) Y a b).
+  { intros a b Ha Hb. eapply mul10_ext; eauto. }
+  assert (H4 : forall a b, (a < 10)%nat -> (b < 10)%nat ->
+    mul10 (mul10 (mul10 X X) X) X a b =
+    mul10 (mul10 (mul10 Y Y) Y) Y a b).
+  { intros a b Ha Hb. eapply mul10_ext; eauto. }
+  unfold quarticResidual.
+  rewrite (H4 i j Hi Hj), (H3 i j Hi Hj).
+  rewrite (H2 i j Hi Hj), (H i j Hi Hj).
+  reflexivity.
+Qed.
+
+Lemma model_quartic_annihilator :
+  all10 (fun i j => Z.eqb (quarticResidual model i j) 0) = true.
+Proof. vm_compute. reflexivity. Qed.
+
 Theorem concrete_quartic_annihilator :
   all10 (fun i j => Z.eqb (quarticResidual concrete i j) 0) = true.
-Proof. vm_compute. reflexivity. Qed.
+Proof.
+  unfold all10.
+  apply forallb_forall.
+  intros i Hi.
+  apply forallb_forall.
+  intros j Hj.
+  pose proof model_quartic_annihilator as Hmodel.
+  unfold all10 in Hmodel.
+  apply forallb_forall in Hmodel.
+  specialize (Hmodel i Hi).
+  apply forallb_forall in Hmodel.
+  specialize (Hmodel j Hj).
+  assert (Hi10 : (i < 10)%nat) by (apply in_seq in Hi; lia).
+  assert (Hj10 : (j < 10)%nat) by (apply in_seq in Hj; lia).
+  rewrite (quarticResidual_ext concrete model i j
+    concrete_equals_model_in_block Hi10 Hj10).
+  exact Hmodel.
+Qed.
 Definition mutant (i j : nat) : Z :=
   model i j + (if (Nat.eqb i 1%nat && Nat.eqb j 1%nat)%bool then 1 else 0).
 Theorem mutant_rejected :
