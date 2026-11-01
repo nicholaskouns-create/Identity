@@ -1,0 +1,44 @@
+name: E47 exact global Casimir root discovery
+on:
+  pull_request:
+    paths:
+      - 'validation/e47_global_casimir_root_discovery.py'
+      - '.github/workflows/e47-global-casimir-discovery.yml'
+      - 'validation/E47-GLOBAL-CASIMIR-DISCOVERY.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  exact-global-casimir:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Record source provenance and run independent exact audit
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee e47-global-commit.txt
+          sha256sum validation/e47_global_casimir_root_discovery.py | tee e47-global-source-sha256.txt
+          python --version | tee e47-global-python-version.txt
+          python -I validation/e47_global_casimir_root_discovery.py 2>&1 | tee e47-global-execution.log
+          grep -Fq 'E47_GLOBAL_ROOT_DISCOVERY_PASS [0, 2, 6, 12, 20, 30, 42]' e47-global-execution.log
+          grep -Fq 'E47_GLOBAL_ANNIHILATOR_EXACT_PASS' e47-global-execution.log
+          grep -Fq 'E47_GLOBAL_MULTIPLICITIES_EXACT_PASS' e47-global-execution.log
+          grep -Fq 'E47_GLOBAL_RANK_NULLITY_EXACT_PASS 78 47' e47-global-execution.log
+          grep -Fq 'E47_GLOBAL_MUTANT_REJECTED' e47-global-execution.log
+          sha256sum e47-global-execution.log | tee e47-global-log-sha256.txt
+      - name: Preserve unsigned evidence, including failures
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-global-casimir-discovery-unsigned
+          path: |
+            e47-global-commit.txt
+            e47-global-source-sha256.txt
+            e47-global-python-version.txt
+            e47-global-execution.log
+            e47-global-log-sha256.txt
+          if-no-files-found: warn
