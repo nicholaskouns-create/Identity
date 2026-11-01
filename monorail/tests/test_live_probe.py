@@ -395,5 +395,57 @@ class PublicDoorProbeTests(unittest.TestCase):
         self.assertEqual(canonical.full_url, unpinned + "?canonical=1")
 
 
+    def test_non_html_http_200_is_not_a_renderable_door(self):
+        # An HTML station serving a JSON or plain-text payload with 200 OK
+        # cannot be counted as a successfully rendered application door.
+        # Real HTTP responses, not mocked MIME strings, exercise the probe.
+        from http.server import BaseHTTPRequestHandler, HTTPServer
+        from threading import Thread
+
+        class ContentTypes(BaseHTTPRequestHandler):
+            def do_GET(self):
+                if self.path == "/json":
+                    mime, body = "application/json; charset=utf-8", b'{"ok":true}'
+                elif self.path == "/plain":
+                    mime, body = "text/plain", b"not an HTML application"
+                else:
+                    mime, body = "text/html; charset=utf-8", b"<html>OK</html>"
+                self.send_response(200)
+                self.send_header("Content-Type", mime)
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+            def log_message(self, *_):
+                pass
+
+        server = HTTPServer(("127.0.0.1", 0), ContentTypes)
+        thread = Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        base = f"http://127.0.0.1:{server.server_port}"
+        try:
+            for path, mime in (("/json", "application/json"),
+                               ("/plain", "text/plain")):
+                with self.subTest(path=path):
+                    receipt = probe.probe_door(
+                        {"slug": "test", "name": "Test", "href": base + path},
+                        timeout=3,
+                    )
+                    self.assertEqual(receipt["http_status"], 200)
+                    self.assertEqual(receipt["outcome"], "http_error")
+                    self.assertEqual(receipt["error_type"], "unexpected_content_type")
+                    self.assertEqual(receipt["content_type"], mime)
+            healthy = probe.probe_door(
+                {"slug": "test", "name": "Test", "href": base + "/html"},
+                timeout=3,
+            )
+            self.assertEqual((healthy["http_status"], healthy["outcome"]),
+                             (200, "http_ok"))
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=3)
+
+
 if __name__ == "__main__":
     unittest.main()
