@@ -111,17 +111,21 @@ class PaperPinTests(unittest.TestCase):
 
     def test_dated_live_tower_evidence_without_erasing_historical_failures(self):
         """Current browser evidence is linked, while 404/401 originals stay intact."""
-        run = "https://github.com/nicholaskouns-create/tower/actions/runs/41153476308"
+        run = "https://github.com/nicholaskouns-create/tower/actions/runs/41222214187"
         for repair_id in ("highlight", "paper"):
             repair = next(r for r in DATA["repairs"] if r["id"] == repair_id)
             self.assertEqual(repair["status"], "404")
             self.assertEqual(repair["sourceEvidence"]["browser_ci"], run)
             self.assertIn("2026-10-31", repair["sourceEvidence"]["scope"])
+            self.assertEqual(repair["sourceEvidence"]["deployed_commit"], "3f277ddf3a84f9f10e804196b6d2668c94e805b")
+            self.assertEqual(repair["sourceEvidence"]["deployment_ci"], run)
+            self.assertNotIn("deployment commit remains unverified", repair["sourceEvidence"]["scope"])
         for repair_id in ("mirror", "modsync"):
             repair = next(r for r in DATA["repairs"] if r["id"] == repair_id)
             self.assertEqual(repair["status"], "401")
             self.assertNotIn("browser_ci", repair.get("sourceEvidence", {}))
         self.assertIn("Live Chromium evidence · 31 Oct 2026", HTML)
+        self.assertIn("Public Pages build.json was read back at deployed tower@3f277ddf3a84f9f10e804196b6d2668c94e805b", HTML)
         self.assertNotIn("public deployment unverified", HTML)
         self.assertEqual(sum(len(s["links"]) for s in DATA["stations"]), 54)
 
