@@ -18,7 +18,7 @@ run.onclick=async()=>{exportReceipt.hidden=true;latestReceipt=null;runStatus.tex
     exportReceipt.hidden=false;
   }catch(e){out.textContent='Error: '+e.message;runStatus.textContent='Reference check failed: '+e.message}};
 const matrix=section('02 · Quantum Matrix Studio','Explore the exact diagonal Jtot_z spectrum on the spin-2 triple tensor carrier. This view is not the full Casimir matrix.');
-const v=matrixView();const summary=el('p','Dimension '+v.dimension+' · Tr(Jtot_z)='+v.trace+' · Tr(Jtot_z²)='+v.traceSquared);matrix.append(summary);
+const p27link=el('p');const a27=el('a','P27 observer extension: proofs, Python and PyTorch');a27.href='https://github.com/nicholaskouns-create/Identity/tree/main/simulation/p27_observer';a27.target='_blank';a27.rel='noopener noreferrer';p27link.append(a27);matrix.append(p27link);const v=matrixView();const summary=el('p','Dimension '+v.dimension+' · Tr(Jtot_z)='+v.trace+' · Tr(Jtot_z²)='+v.traceSquared);matrix.append(summary);
 const chart=el('div',undefined,'matrix-bars');const max=Math.max(...Object.values(v.histogram));for(const [k,n] of Object.entries(v.histogram)){const col=el('div',undefined,'matrix-bar-col');const bar=el('div',undefined,'matrix-bar');bar.style.height=(n/max*125)+'px';bar.title='m='+k+' · multiplicity '+n;col.append(el('small',String(n)),bar,el('small',k));chart.append(col)}matrix.append(chart);
 const atlas=section('03 · Contradiction Atlas','Try to falsify the universal claim a·x²+b·x+c=0 over integers from −12 to 12. Bounded search never proves universal truth.');
 const fields=[];for(const [label,value] of [['a',1],['b',0],['c',-1]]){const l=el('label',label);const inp=el('input');inp.type='number';inp.step='1';inp.value=String(value);l.append(inp);atlas.append(l);fields.push(inp)}
