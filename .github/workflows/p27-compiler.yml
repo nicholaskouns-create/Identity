@@ -1,0 +1,45 @@
+name: P27 compiler-backed Lean Coq and Python
+on:
+  push:
+    paths:
+      - 'formal/p27/**'
+      - 'simulation/p27_observer/**'
+      - '.github/workflows/p27-compiler.yml'
+  pull_request:
+    paths:
+      - 'formal/p27/**'
+      - 'simulation/p27_observer/**'
+      - '.github/workflows/p27-compiler.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  coq:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update -qq && sudo apt-get install -y coq
+      - run: coqc -q formal/p27/P27Concrete.v
+      - run: coqc -q formal/p27/P27.v
+  lean:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Lean 4
+        run: |
+          curl --fail --location --silent --show-error https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.35.0 --no-modify-path
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - run: lean formal/p27/P27Concrete.lean
+      - run: lean formal/p27/P27.lean
+  python:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy torch
+      - run: python simulation/p27_observer/validate.py
+      - run: python simulation/p27_observer/validate_torch.py
