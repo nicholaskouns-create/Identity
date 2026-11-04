@@ -18,11 +18,7 @@ Theorem projector_extension : forall p e,
 Proof.
  intros p e hp he hpe hep.
  rewrite mul_add_r, !mul_add_l, hp, he, hpe, hep.
- rewrite add_assoc, (add_comm zero (e*p)).
- rewrite <- add_assoc.
- rewrite add_zero.
- rewrite add_assoc.
- rewrite add_zero.
+ rewrite add_zero, zero_add.
  reflexivity.
 Qed.
 End Operator.
