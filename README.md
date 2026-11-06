@@ -42,3 +42,5 @@ Lean and Rocq sources for the E47 linear-algebra certificate are pinned in [form
 ## Socorro reflection and stochastic leakage (2026-10-24)
 
 [Proof, exact second-moment recurrence, Monte Carlo code and independent validation instruments](research/socorro/README.md) · [Identity public result page](https://nicholaskouns-create.github.io/Identity/site/socorro-stochastic.html). This is a mathematical construction from the idealized glyph; Lean/Coq compilation and hardware simulation are not asserted.
+
+[The E₄₇ spectral kernel · formalism and verification](e47-spectral-kernel/README.md)

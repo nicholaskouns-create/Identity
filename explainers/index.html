@@ -9,4 +9,5 @@
 const dots=(id,n,out)=>{const e=document.getElementById(id);for(let i=0;i<n;i++){const d=document.createElement('i');d.className='dot';d.style.setProperty('--h',out?'198':String((i*137)%360));e.append(d)} };dots('injar',125,false);dots('outjar',47,true);
 const steps=document.getElementById('steps'),shrink=document.getElementById('shrinking'),bound=document.getElementById('bound'),stepval=document.getElementById('stepval');function update(){const n=Number(steps.value),v=Math.pow(15/17,n);stepval.textContent=n;bound.textContent='Worst-case residual factor: '+v.toExponential(3);shrink.style.width=(100*v)+'%';shrink.textContent=n<12?'Unwanted component':''}steps.addEventListener('input',update);update();
 const dims=[1,9,25,28,27,22,13];document.getElementById('sectors').innerHTML=dims.map((d,i)=>'<span class="'+(i===2||i===5?'keep':'')+'" style="flex:'+d+'" title="Spin '+i+': '+d+' dimensions">'+i+'</span>').join('');
-</script></body></html>
+</script><p><a href="../e47-spectral-kernel/E47-spectral-kernel.svg">The E₄₇ spectral kernel · publication plate</a></p>
+</body></html>
