@@ -1,0 +1,290 @@
+{
+  "statement": "Scalar certificate: three spin-2 angular momenta give multiplicities [1,3,5,4,3,2,1], carrier dimension 125, and rank of ker (C-6I)(C-30I) equal to 47. The 125-by-125 matrices are checked numerically in Python, not inside Lean or Coq. One synthetic link-prediction run is recorded; it is not a claim that the clock improves AUC.",
+  "exact": {
+    "multiplicities": [
+      1,
+      3,
+      5,
+      4,
+      3,
+      2,
+      1
+    ],
+    "eigenspace_dimensions": [
+      1,
+      9,
+      25,
+      28,
+      27,
+      22,
+      13
+    ],
+    "dimension": 125,
+    "casimir_nodes": [
+      0,
+      2,
+      6,
+      12,
+      20,
+      30,
+      42
+    ],
+    "kernel_rank": 47,
+    "gamma_12": "15/17",
+    "gamma_42": "-15/17",
+    "rational_sl2": true
+  },
+  "numerical": {
+    "eigenspace_counts": [
+      1,
+      9,
+      25,
+      28,
+      27,
+      22,
+      13
+    ],
+    "residuals": {
+      "projector": 5.541372953883602e-15,
+      "kernel": 4.996015056480397e-12,
+      "fixed": 7.716332888859022e-15
+    },
+    "contraction": {
+      "1": {
+        "got": 0.882352941176471,
+        "expect": 0.8823529411764706
+      },
+      "2": {
+        "got": 0.7785467128027683,
+        "expect": 0.7785467128027681
+      },
+      "10": {
+        "got": 0.2860377655391563,
+        "expect": 0.2860377655391561
+      }
+    },
+    "code_shape": [
+      125,
+      47
+    ]
+  },
+  "gru_gradient": true,
+  "auc": {
+    "nodes": 16,
+    "steps": 8,
+    "epochs": 8,
+    "seed": 47,
+    "baseline": 0.5546875,
+    "e47_clock": 0.5364583333333334,
+    "delta": -0.01822916666666663
+  },
+  "paired_runs": [
+    {
+      "nodes": 16,
+      "steps": 8,
+      "epochs": 8,
+      "seed": 47,
+      "baseline": 0.5546875,
+      "e47_clock": 0.5364583333333334,
+      "delta": -0.01822916666666663
+    },
+    {
+      "nodes": 16,
+      "steps": 8,
+      "epochs": 8,
+      "seed": 0,
+      "baseline": 0.5008680555555556,
+      "e47_clock": 0.5021701388888888,
+      "delta": 0.0013020833333332593
+    },
+    {
+      "nodes": 16,
+      "steps": 8,
+      "epochs": 8,
+      "seed": 1,
+      "baseline": 0.5091145833333334,
+      "e47_clock": 0.5121527777777778,
+      "delta": 0.0030381944444444198
+    },
+    {
+      "nodes": 16,
+      "steps": 8,
+      "epochs": 8,
+      "seed": 2,
+      "baseline": 0.4544270833333333,
+      "e47_clock": 0.4678819444444444,
+      "delta": 0.013454861111111105
+    },
+    {
+      "nodes": 16,
+      "steps": 8,
+      "epochs": 8,
+      "seed": 3,
+      "baseline": 0.5154079861111112,
+      "e47_clock": 0.4958767361111111,
+      "delta": -0.019531250000000056
+    },
+    {
+      "nodes": 16,
+      "steps": 8,
+      "epochs": 8,
+      "seed": 4,
+      "baseline": 0.4359809027777778,
+      "e47_clock": 0.4503038194444444,
+      "delta": 0.01432291666666663
+    },
+    {
+      "nodes": 16,
+      "steps": 8,
+      "epochs": 8,
+      "seed": 5,
+      "baseline": 0.5182291666666666,
+      "e47_clock": 0.4995659722222222,
+      "delta": -0.01866319444444442
+    },
+    {
+      "nodes": 16,
+      "steps": 8,
+      "epochs": 8,
+      "seed": 6,
+      "baseline": 0.6213107638888888,
+      "e47_clock": 0.5779079861111112,
+      "delta": -0.04340277777777768
+    },
+    {
+      "nodes": 16,
+      "steps": 8,
+      "epochs": 8,
+      "seed": 7,
+      "baseline": 0.58984375,
+      "e47_clock": 0.5164930555555556,
+      "delta": -0.07335069444444442
+    },
+    {
+      "nodes": 16,
+      "steps": 8,
+      "epochs": 8,
+      "seed": 8,
+      "baseline": 0.5568576388888888,
+      "e47_clock": 0.5707465277777778,
+      "delta": 0.01388888888888895
+    },
+    {
+      "nodes": 16,
+      "steps": 8,
+      "epochs": 8,
+      "seed": 9,
+      "baseline": 0.541015625,
+      "e47_clock": 0.5631510416666666,
+      "delta": 0.02213541666666663
+    },
+    {
+      "nodes": 16,
+      "steps": 8,
+      "epochs": 8,
+      "seed": 10,
+      "baseline": 0.4917534722222222,
+      "e47_clock": 0.4505208333333333,
+      "delta": -0.041232638888888895
+    },
+    {
+      "nodes": 16,
+      "steps": 8,
+      "epochs": 8,
+      "seed": 11,
+      "baseline": 0.509765625,
+      "e47_clock": 0.4819878472222222,
+      "delta": -0.02777777777777779
+    },
+    {
+      "nodes": 16,
+      "steps": 8,
+      "epochs": 8,
+      "seed": 12,
+      "baseline": 0.4806857638888889,
+      "e47_clock": 0.4568142361111111,
+      "delta": -0.02387152777777779
+    },
+    {
+      "nodes": 16,
+      "steps": 8,
+      "epochs": 8,
+      "seed": 13,
+      "baseline": 0.5464409722222222,
+      "e47_clock": 0.5308159722222222,
+      "delta": -0.015625
+    },
+    {
+      "nodes": 16,
+      "steps": 8,
+      "epochs": 8,
+      "seed": 14,
+      "baseline": 0.4943576388888889,
+      "e47_clock": 0.55859375,
+      "delta": 0.0642361111111111
+    },
+    {
+      "nodes": 16,
+      "steps": 8,
+      "epochs": 8,
+      "seed": 15,
+      "baseline": 0.4789496527777778,
+      "e47_clock": 0.4689670138888889,
+      "delta": -0.009982638888888895
+    },
+    {
+      "nodes": 16,
+      "steps": 8,
+      "epochs": 8,
+      "seed": 16,
+      "baseline": 0.5030381944444444,
+      "e47_clock": 0.5134548611111112,
+      "delta": 0.01041666666666674
+    },
+    {
+      "nodes": 16,
+      "steps": 8,
+      "epochs": 8,
+      "seed": 17,
+      "baseline": 0.5256076388888888,
+      "e47_clock": 0.5186631944444444,
+      "delta": -0.00694444444444442
+    },
+    {
+      "nodes": 16,
+      "steps": 8,
+      "epochs": 8,
+      "seed": 18,
+      "baseline": 0.5379774305555556,
+      "e47_clock": 0.4867621527777778,
+      "delta": -0.05121527777777779
+    },
+    {
+      "nodes": 16,
+      "steps": 8,
+      "epochs": 8,
+      "seed": 19,
+      "baseline": 0.3502604166666667,
+      "e47_clock": 0.3758680555555556,
+      "delta": 0.025607638888888895
+    }
+  ],
+  "auc_summary": {
+    "metric": "Mann\u2013Whitney ROC AUC with average ranks for ties",
+    "pairs": 21,
+    "mean_baseline": 0.5103133267195767,
+    "mean_e47_clock": 0.5016741071428571,
+    "mean_delta": -0.008639219576719573,
+    "sample_std_delta": 0.030647987205904646,
+    "clock_wins": 9,
+    "scope": "Independent random temporal graphs; implementation/null benchmark, not evidence of prediction gains."
+  },
+  "proofs": {
+    "lean": {
+      "status": "skipped"
+    },
+    "coq": {
+      "status": "skipped"
+    }
+  }
+}

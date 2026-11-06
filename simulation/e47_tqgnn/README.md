@@ -31,20 +31,39 @@ The network state is 47-dimensional, the dimension of `ker K`. With the clock on
 
 ## One synthetic run
 
-16 nodes, 8 time steps, 3 random outgoing edges per node, width 47, 8 Adam epochs, seed 47. Loss is on the last observed step. AUC is on a later holdout step that was not used as a message. Negatives are random non-edges, scored with a Mann–Whitney rank AUC.
+16 nodes, 8 time steps, 3 random outgoing edges per node, width 47, 8 Adam epochs, seed 47. Loss is on the last observed step. AUC is on a later holdout step that was not used as a message. Negatives are random non-edges, scored with a Mann–Whitney rank AUC that gives half credit to tied scores.
 
 | run | ROC AUC |
 | --- | ---: |
-| baseline, no clock | 0.5520833333333334 |
-| period-47 clock | 0.5338541666666666 |
-| delta | −0.01822916666666674 |
+| baseline, no clock | 0.5546875 |
+| period-47 clock | 0.5364583333333334 |
+| delta | −0.01822916666666663 |
 
-This is one run. It does not show that the clock improves link prediction. It is not a reproduction of the earlier TGBL-wiki or Cora reports.
+These numbers use average ranks for tied scores. Before that correction, the baseline was 0.5520833333333334 and the clock was 0.5338541666666666; the delta was effectively unchanged. Symmetric dot-product scores produce ties, so their order in the input must not affect AUC.
+
+This is one run. It does not show that the clock improves link prediction. It is not a reproduction of the earlier TGBL-wiki or Cora reports. Each time step's graph is generated independently, so this is a null/plumbing benchmark without a planted temporal prediction signal. The dot-product decoder is symmetric even though edges are directed; this limits what it can distinguish.
+
+## Paired robustness run
+
+`paired_results.json` records the fixed seeds `47, 0, 1, …, 19`, with identical graphs, parameter initialization and random samples for each baseline/clock pair. No seed is selected by its outcome.
+
+| Measure | Result |
+| --- | ---: |
+| Paired runs | 21 |
+| Mean baseline AUC | 0.5103133267 |
+| Mean clock AUC | 0.5016741071 |
+| Mean delta | −0.0086392196 |
+| Sample standard deviation of deltas | 0.0306479872 |
+| Clock wins | 9 / 21 |
+
+These are descriptive results on random synthetic graphs, not a significance test or an improvement claim. The numerical reconstruction and gradient checks can pass while task performance fails to improve.
 
 ## Run
 
 ```sh
 python simulation/e47_tqgnn/run.py
+python simulation/e47_tqgnn/run.py --seeds 47 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 --output simulation/e47_tqgnn/paired_results.json
+python -m pytest tests/test_tqgnn_auc.py -q
 ```
 
 Needs NumPy. If `lean` or `coqc` is missing, that proof is marked `skipped` and the Python checks still have to pass. A local Coq prefix can be selected with `COQ_PREFIX` and `MICROMAMBA`. `results.json` records the run in which both proof assistants passed.

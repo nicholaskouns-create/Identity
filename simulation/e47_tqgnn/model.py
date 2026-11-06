@@ -104,15 +104,23 @@ def scores_for(state, pairs):
 
 
 def roc_auc(scores, labels):
-    labels = np.asarray(labels)
-    order = np.argsort(scores, kind='mergesort')
-    ranks = np.empty(len(scores))
-    ranks[order] = np.arange(1, len(scores) + 1)
+    """Mann–Whitney AUC with half credit for ties, independent of row order."""
+    scores, labels = np.asarray(scores, dtype=float), np.asarray(labels)
+    if scores.ndim != 1 or labels.shape != scores.shape or not np.isfinite(scores).all():
+        raise ValueError('scores and labels must be matching finite vectors')
+    if not np.isin(labels, [0, 1]).all():
+        raise ValueError('labels must be binary')
     positive = labels == 1
-    n_pos = int(positive.sum())
-    n_neg = len(labels) - n_pos
-    if n_pos == 0 or n_neg == 0:
-        raise AssertionError('auc needs both classes')
+    n_pos, n_neg = int(positive.sum()), int((~positive).sum())
+    if not n_pos or not n_neg:
+        raise ValueError('auc needs both classes')
+    order = np.argsort(scores, kind='mergesort')
+    sorted_scores = scores[order]
+    ranks = np.empty(len(scores))
+    starts = np.r_[0, np.flatnonzero(np.diff(sorted_scores)) + 1]
+    ends = np.r_[starts[1:], len(scores)]
+    for start, end in zip(starts, ends):
+        ranks[order[start:end]] = (start + 1 + end) / 2
     return float((ranks[positive].sum() - n_pos * (n_pos + 1) / 2) / (n_pos * n_neg))
 
 
