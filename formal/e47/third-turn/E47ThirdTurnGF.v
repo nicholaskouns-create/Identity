@@ -49,7 +49,8 @@ Definition chi (J : nat) : Z :=
 Theorem chi_period_three (J : nat) : chi (J+3)%nat = chi J.
 Proof.
   unfold chi.
-  replace ((J+3) mod 3)%nat with (J mod 3)%nat by lia.
+  replace (J+3)%nat with (J+1*3)%nat by lia.
+  rewrite Nat.mod_add by lia.
   reflexivity.
 Qed.
 
