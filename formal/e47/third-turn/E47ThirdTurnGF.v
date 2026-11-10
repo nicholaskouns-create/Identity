@@ -29,7 +29,7 @@ Proof.
     - exact (conj H0 H1).
     - destruct IH as [Hn Hn1].
       split.
-      + exact Hn1.
+      + replace (S n) with (n+1)%nat by lia. exact Hn1.
       + specialize (Hd n).
         specialize (He n).
         replace (S n + 1)%nat with (n+2)%nat by lia.
