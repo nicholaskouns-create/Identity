@@ -26,9 +26,11 @@ where A₂=((1−t)A₀−1)/(2t)−A₁. Inserting u=ζ,ζ² and W(ζ)=−1 int
 
 ## Theorem 2: exact middle sector
 
-For every n≥1, d₁(n)=[5ⁿ+(−1)ⁿ(6n−1)]/3. Its generating function is
+For every n≥1, d₁(n)=[5ⁿ+(−1)ⁿ(6n−1)]/3. Its exact rational generating function, including the zero n=0 coefficient, is
 
-Σ_{n≥1}d₁(n)tⁿ = (1/3)(5t/(1−5t)−6t/(1+t)²−t/(1+t)).
+**Σ_{n≥0}d₁(n)tⁿ = 12t²/((1+t)²(1−5t)).**
+
+Indeed, setting M(t,u)=(1−u⁻¹)F(t,u)+A₀(t)/u and T=(1+2u∂ᵤ)M, the finite cube-root filter gives ζ⁻¹T(t,ζ)+ζ⁻²T(t,ζ²)=−(7t+1)/(1+t)². Adding T(t,1)=1/(1−5t) and dividing by three yields the rational GF above; its coefficients give the exact dimension formula. This also corrects the earlier sign error in the n≥1 expression: its last summand must be **+t/(1+t)**, not −t/(1+t). The incorrect expression produces an impossible n=1 coefficient −2/3.
 
 ## Theorem 3: asymptotic result
 
