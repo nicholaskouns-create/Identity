@@ -1,0 +1,35 @@
+name: E47 projector equality Lean and Coq
+on:
+  push:
+    paths:
+      - 'formal/e47/projector-equality/**'
+      - '.github/workflows/e47-projector-equality.yml'
+  pull_request:
+    paths:
+      - 'formal/e47/projector-equality/**'
+      - '.github/workflows/e47-projector-equality.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  projector-proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq
+        run: sudo apt-get update -qq && sudo apt-get install -y coq curl ca-certificates
+      - name: Install Lean 4.35.0
+        run: |
+          curl --fail --location --silent --show-error https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.35.0 --no-modify-path
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Lean kernel
+        run: lean formal/e47/projector-equality/E47ProjectorEquality.lean
+      - name: Coq kernel and assumptions
+        run: |
+          mkdir -p /tmp/e47-projector
+          cp formal/e47/projector-equality/E47ProjectorEquality.v /tmp/e47-projector/
+          cd /tmp/e47-projector
+          coqc -q E47ProjectorEquality.v | tee assumptions.txt
+          grep -qi 'Closed under the global context' assumptions.txt
