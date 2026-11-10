@@ -1,0 +1,40 @@
+name: E47 third-turn exact generating function
+on:
+  push:
+    paths:
+      - 'formal/e47/third-turn/**'
+      - '.github/workflows/e47-third-turn.yml'
+  pull_request:
+    paths:
+      - 'formal/e47/third-turn/**'
+      - '.github/workflows/e47-third-turn.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  coq-lean-symbolic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq and SymPy
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y coq python3-sympy curl ca-certificates
+      - name: Install pinned Lean 4.35.0
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.35.0 --no-modify-path
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Lean proof kernel
+        run: lean formal/e47/third-turn/E47ThirdTurnGF.lean
+      - name: Coq proof kernel and assumptions
+        run: |
+          mkdir -p /tmp/e47-third-turn
+          cp formal/e47/third-turn/E47ThirdTurnGF.v /tmp/e47-third-turn/
+          cd /tmp/e47-third-turn
+          coqc -q E47ThirdTurnGF.v | tee assumptions.txt
+          grep -qi 'Closed under the global context' assumptions.txt
+      - name: Exact symbolic and 120-step CG arithmetic
+        run: python3 formal/e47/third-turn/verify.py
