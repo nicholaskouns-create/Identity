@@ -7,7 +7,7 @@ import json
 import sympy as s
 
 N=120
-t,u,a,b=s.symbols("t u a b")
+t,u,a,b=s.symbols("t u a b",real=True)
 S=u**2+u+1+u**-1+u**-2
 a2=((1-t)*a-1)/(2*t)-b
 numerator=1+t*(b+a2+b*u-a/u-a/u**2-b/u)
@@ -18,6 +18,12 @@ expression=-a-2*(z*s.diff(F,u).subs(u,z)+s.conjugate(z)*s.diff(F,u).subs(u,s.con
 gf=(5*t-1)*((1+t)*a-2*t*b)/(1+t)**2
 assert s.simplify(s.expand_complex(expression-gf))==0
 assert s.factor((1+t)**2*gf-(5*t-1)*((1+t)*a-2*t*b))==0
+M=(1-1/u)*F+a/u
+T=M+2*u*s.diff(M,u)
+third_turn_middle=(z**-1*T.subs(u,z)+z**-2*T.subs(u,z**2))
+assert s.factor(s.simplify(s.expand_complex(third_turn_middle))+(7*t+1)/(1+t)**2)==0
+middle_gf=s.factor((1/(1-5*t)-(7*t+1)/(1+t)**2)/3)
+assert s.factor(middle_gf-12*t**2/((1+t)**2*(1-5*t)))==0
 
 multiplicities={0:1}
 weights={0:1}
@@ -52,8 +58,9 @@ C=5/(72*sqrt(pi))
 ratios={str(n):(D[n]/5**n)*n**1.5/(2*C) for n in [10,20,40,80,120]}
 result=dict(checks={"modular_dimensions":N,"d_zero_closed_form":N,
                     "generating_function_coefficients":N+1,
-                    "sympy_rational_identity":True},
+                    "sympy_rational_identity":True, "middle_gf_symbolic":True},
             gf="D(t)=(5t-1)*((1+t)*A0(t)-2*t*A1(t))/(1+t)^2",
+            middle_gf="12*t^2/((1+t)^2*(1-5*t))",
             singular_coefficient="-5/18 * sqrt(1-5t)",
             D_asymptotic_coefficient="5/(36*sqrt(pi))",
             d_minus_excess_coefficient="5/(72*sqrt(pi))",
