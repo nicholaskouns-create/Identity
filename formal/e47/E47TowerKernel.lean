@@ -75,6 +75,21 @@ theorem sgn_parity (n : Nat) :
     obtain ⟨h0, h1⟩ := ih
     constructor <;> intro h <;> omega
 
+theorem sq_add (a b : Int) : (a + b) * (a + b) = a*a + 2*(a*b) + b*b := by
+  simp [Int.add_mul, Int.mul_add, Int.mul_comm]
+  omega
+
+theorem four_sq (a : Int) : (2*a) * (2*a) = 4 * (a*a) := by
+  calc (2*a)*(2*a) = 2*(a*(2*a)) := Int.mul_assoc 2 a (2*a)
+    _ = 2*((a*2)*a) := by rw [Int.mul_assoc]
+    _ = 2*((2*a)*a) := by rw [Int.mul_comm a 2]
+    _ = 2*(2*(a*a)) := by rw [Int.mul_assoc]
+    _ = 4*(a*a)     := by rw [← Int.mul_assoc]; simp
+
+theorem sq2 (a : Int) : (2*a + 1) * (2*a + 1) = 4 * (a * (a + 1)) + 1 := by
+  rw [Int.add_mul, Int.mul_add, Int.mul_add, four_sq, Int.mul_add]
+  omega
+
 theorem invariants (n : Nat) :
     luc n * luc n - 5 * (fib n * fib n) = 4 * sgn n ∧
     luc (n + 1) * luc (n + 1) - 5 * (fib (n + 1) * fib (n + 1)) = -4 * sgn n ∧
@@ -85,7 +100,14 @@ theorem invariants (n : Nat) :
     obtain ⟨h0, h1, h2⟩ := ih
     have hs : sgn (n + 1) = - sgn n := rfl
     rw [hs, luc_succ_succ, fib_succ_succ]
-    refine ⟨?_, ?_, ?_⟩ <;> grind
+    refine ⟨?_, ?_, ?_⟩
+    · omega
+    · rw [sq_add (luc (n+1)) (luc n), sq_add (fib (n+1)) (fib n),
+          Int.mul_comm (luc (n+1)) (luc n), Int.mul_comm (fib (n+1)) (fib n)]
+      omega
+    · rw [Int.mul_add, Int.mul_add,
+          Int.mul_comm (luc (n+1)) (luc n), Int.mul_comm (fib (n+1)) (fib n)]
+      omega
 
 theorem lucas_fibonacci_odd (n : Nat) (hodd : n % 2 = 1) :
     luc n * luc n - 5 * (fib n * fib n) = -4 := by
@@ -98,8 +120,8 @@ theorem tower_spin_identity (n : Nat) (j J : Int) (hodd : n % 2 = 1)
     (hj : 2 * j + 1 = fib n) (hJ : 2 * J + 1 = luc n) :
     J * (J + 1) = 5 * (j * (j + 1)) := by
   have h := lucas_fibonacci_odd n hodd
-  rw [← hj, ← hJ] at h
-  grind
+  rw [← hj, ← hJ, sq2 J, sq2 j] at h
+  omega
 
 /-- F_{m+1} L_{m+1} - F_m L_{m+2} = (-1)^m, for every m. -/
 theorem pair_defect (m : Nat) :
@@ -109,7 +131,9 @@ theorem pair_defect (m : Nat) :
   | succ m ih =>
     have hs : sgn (m + 1) = - sgn m := rfl
     rw [hs, luc_succ_succ (m + 1), fib_succ_succ m, luc_succ_succ m] at *
-    grind
+    simp only [Int.mul_add, Int.add_mul, Int.mul_comm (fib m) (luc (m+1)),
+               Int.mul_comm (fib m) (luc m), Int.mul_comm (fib (m+1)) (luc m)] at *
+    omega
 
 /-- For odd m: F_m * L_{m+2} = F_{m+1} * L_{m+1} + 1. -/
 theorem fib_luc_shift_odd (m : Nat) (hodd : m % 2 = 1) :
