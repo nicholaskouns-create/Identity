@@ -569,5 +569,93 @@ class CataloguedExitTests(unittest.TestCase):
         self.assertEqual(same.full_url, unpinned + "?canonical=1")
 
 
+    def test_pinned_spa_exit_redirect_cannot_change_browser_view(self):
+        # Source-level counterexample: a 302 from Tower #/explore to
+        # #/compare previously passed the 51-exit audit as HTTP OK because
+        # the HTTP Request had correctly stripped the browser-only fragment.
+        from urllib.request import Request
+
+        public, _ = probe.partition_exits(self.data)
+        cases = (
+            ("work", "Tower", "#/compare"),
+            ("instruments", "Eidolon flight", "#other"),
+        )
+        for station, label, changed_fragment in cases:
+            with self.subTest(station=station, label=label):
+                row = next(r for r in public
+                           if r["station"] == station and r["label"] == label)
+                source = row["url"]
+                http_source = source.split("#", 1)[0]
+                changed = http_source + changed_fragment
+                handler = probe.SameExitRedirect(source)
+                with self.assertRaises(
+                    probe.ExitIdentityRedirectBlocked
+                ) as blocked:
+                    handler.redirect_request(
+                        Request(http_source), None, 302, "Found", {}, changed
+                    )
+                with patch.object(probe, "safe_urlopen",
+                                  side_effect=blocked.exception) as opened:
+                    receipt = probe.probe_exit(row)
+                self.assertEqual(opened.call_args.kwargs["source_url"], source)
+                self.assertEqual(opened.call_args.args[0].full_url, http_source)
+                self.assertEqual(
+                    (receipt["http_status"], receipt["outcome"]),
+                    (302, "exit_identity_redirect_blocked"),
+                )
+                self.assertNotIn(changed_fragment, json.dumps(receipt))
+
+                # Explicitly unchanged fragments and fragment-free HTTP
+                # canonicalization do not change the pinned browser view.
+                unchanged = handler.redirect_request(
+                    Request(http_source), None, 302, "Found", {}, source
+                )
+                self.assertEqual(unchanged.full_url, source)
+                canonical = handler.redirect_request(
+                    Request(http_source), None, 302, "Found", {}, http_source
+                )
+                self.assertEqual(canonical.full_url, http_source)
+
+    def test_loopback_exit_redirect_preserves_pinned_spa_identity(self):
+        # Real HTTP 302, not a mocked redirect handler. No external or
+        # restricted URL is contacted by this regression.
+        from http.server import BaseHTTPRequestHandler, HTTPServer
+        from threading import Thread
+
+        class Redirect(BaseHTTPRequestHandler):
+            paths = []
+
+            def do_GET(self):
+                self.paths.append(self.path)
+                self.send_response(302)
+                self.send_header("Location", "/tower/#/compare")
+                self.end_headers()
+
+            def log_message(self, *_):
+                pass
+
+        server = HTTPServer(("127.0.0.1", 0), Redirect)
+        thread = Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            source = f"http://127.0.0.1:{server.server_port}/tower/#/explore"
+            row = {"station": "test", "label": "Tower",
+                   "url": source, "state": "live"}
+            receipt = probe.probe_exit(row, timeout=3)
+            self.assertEqual(
+                (receipt["http_status"], receipt["outcome"]),
+                (302, "exit_identity_redirect_blocked"),
+            )
+            self.assertEqual(Redirect.paths, ["/tower/"])
+            self.assertEqual(
+                receipt["final_url"],
+                f"http://127.0.0.1:{server.server_port}/tower/",
+            )
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=3)
+
+
 if __name__ == "__main__":
     unittest.main()
