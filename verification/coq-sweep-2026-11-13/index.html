@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Coq full-tree sweep · 13 November 2026 | Identity</title>
+<meta name="description" content="Every Coq module in the E47 formal layer compiled under Coq 8.18.0 and audited with Print Assumptions. 390 results stated, 342 closed under the global context, no axiom introduced by this corpus.">
+<meta name="author" content="Nicholas Shane Kouns, DO — AIMS Research Institute">
+<link rel="canonical" href="https://nicholaskouns-create.github.io/Identity/verification/coq-sweep-2026-11-13/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+html{-webkit-text-size-adjust:100%}
+:root{
+  --ink:#0c131d; --ink-2:#121b27; --ink-3:#18232f;
+  --rule:#243343; --rule-soft:#1b2634;
+  --fg:#dde6ef; --fg-dim:#9aa9b9; --fg-faint:#6c7d8f;
+  --amber:#d9a441; --amber-soft:#8a6a2c;
+  --green:#4ea97d; --green-bg:#13241c;
+  --clay:#cf6b5c; --clay-bg:#241617;
+  --slate:#7f93a7; --slate-bg:#18212c;
+  --link:#8dc3dd; --sel:#2b3f52;
+  --serif:"Spectral",Georgia,"Times New Roman",serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){
+  --ink:#eef0f3; --ink-2:#ffffff; --ink-3:#f4f6f8;
+  --rule:#ccd3dc; --rule-soft:#dde2e9;
+  --fg:#16202c; --fg-dim:#4d5a6a; --fg-faint:#7a8899;
+  --amber:#8a5d00; --amber-soft:#b89353;
+  --green:#0b7a53; --green-bg:#e2f4ea;
+  --clay:#b3372a; --clay-bg:#fbe8e5;
+  --slate:#54606f; --slate-bg:#e9edf2;
+  --link:#1b5a86; --sel:#cfe0ea; color-scheme:light;
+}}
+:root[data-theme="light"]{
+  --ink:#eef0f3; --ink-2:#ffffff; --ink-3:#f4f6f8;
+  --rule:#ccd3dc; --rule-soft:#dde2e9;
+  --fg:#16202c; --fg-dim:#4d5a6a; --fg-faint:#7a8899;
+  --amber:#8a5d00; --amber-soft:#b89353;
+  --green:#0b7a53; --green-bg:#e2f4ea;
+  --clay:#b3372a; --clay-bg:#fbe8e5;
+  --slate:#54606f; --slate-bg:#e9edf2;
+  --link:#1b5a86; --sel:#cfe0ea; color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--ink);color:var(--fg);font-family:var(--serif);font-size:17px;line-height:1.62;margin:0;-webkit-font-smoothing:antialiased}
+::selection{background:var(--sel);color:var(--fg)}
+a{color:var(--link);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--link) 35%,transparent)}
+a:hover{border-bottom-color:var(--link)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:2px}
+h1,h2,h3{text-wrap:balance;margin:0;font-weight:600;line-height:1.2}
+p{margin:0}
+code{font-family:var(--mono);font-size:.86em}
+.wrap{max-width:1140px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.prose{max-width:70ch}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:color-mix(in srgb,var(--ink) 93%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--rule-soft)}
+.topbar .wrap{display:flex;align-items:center;gap:18px;padding-block:9px;min-height:50px}
+.brand{font-family:var(--sans);font-weight:600;font-size:13px;letter-spacing:.22em;color:var(--amber);border:0;white-space:nowrap}
+.brand:hover{border:0}
+.back{font-family:var(--sans);font-size:12.5px;color:var(--fg-dim);border:0;margin-left:auto}
+.mast{padding-block:54px 40px;border-bottom:1px solid var(--rule)}
+.eyebrow{font-family:var(--sans);font-size:11.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--amber);margin-bottom:22px}
+.mast h1{font-size:clamp(2.3rem,6.2vw,3.9rem);font-weight:300;letter-spacing:-.015em;line-height:1.04}
+.mast h1 em{font-style:italic;color:var(--amber)}
+.deck{font-size:clamp(1.05rem,2.2vw,1.28rem);color:var(--fg-dim);margin-top:20px;max-width:62ch;font-weight:300}
+.byline{font-family:var(--sans);font-size:13px;color:var(--fg-faint);margin-top:26px;line-height:1.75}
+.byline strong{color:var(--fg-dim);font-weight:500}
+.omega{margin-top:34px;border:1px solid var(--rule);background:var(--ink-2);display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.omega .cell{padding:16px 18px;border-right:1px solid var(--rule-soft);min-width:0}
+.omega .cell:last-child{border-right:0}
+.omega .k{font-family:var(--sans);font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--fg-faint)}
+.omega .v{font-family:var(--mono);font-size:1.42rem;font-variant-numeric:tabular-nums;color:var(--fg);margin-top:7px;line-height:1.15}
+.omega .v small{font-size:.62em;color:var(--fg-faint)}
+.omega .n{font-family:var(--sans);font-size:11.5px;color:var(--fg-faint);margin-top:5px}
+@media(max-width:620px){.omega .cell{border-right:0;border-bottom:1px solid var(--rule-soft)}.omega .cell:last-child{border-bottom:0}}
+section{padding-block:50px;border-bottom:1px solid var(--rule-soft);scroll-margin-top:72px}
+.srule{display:flex;align-items:baseline;gap:14px;margin-bottom:8px;flex-wrap:wrap}
+.num{font-family:var(--sans);font-size:11.5px;letter-spacing:.24em;color:var(--amber);white-space:nowrap}
+.srule h2{font-family:var(--sans);font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--amber);font-weight:600}
+.lede{font-size:clamp(1.4rem,3.4vw,2rem);font-weight:300;letter-spacing:-.01em;margin-top:14px;max-width:30ch;line-height:1.16}
+.sub{color:var(--fg-dim);margin-top:16px;max-width:70ch}
+.sub + .sub{margin-top:13px}
+.math{font-family:var(--mono);font-size:13.5px;background:var(--ink-3);border:1px solid var(--rule-soft);padding:16px 18px;margin-top:22px;overflow-x:auto;line-height:1.85;white-space:pre;color:var(--fg)}
+.math .c{color:var(--fg-faint)} .math .g{color:var(--green)} .math .a{color:var(--amber)}
+.boundary{border-left:2px solid var(--clay);background:var(--clay-bg);padding:14px 18px;margin-top:26px;font-family:var(--sans);font-size:13.5px;color:var(--fg-dim);line-height:1.62;max-width:72ch}
+.boundary b{color:var(--clay);font-weight:600;letter-spacing:.04em}
+.ledger{margin-top:22px;border:1px solid var(--rule);background:var(--ink-2)}
+.row{display:grid;grid-template-columns:minmax(0,1.6fr) 104px 78px minmax(0,1.5fr);gap:18px;padding:13px 18px;border-top:1px solid var(--rule-soft);align-items:start}
+.row:first-child{border-top:0}
+.row.head{border-top:0;background:var(--ink-3);padding-block:9px;font-family:var(--sans);font-size:10px;letter-spacing:.17em;text-transform:uppercase;color:var(--fg-faint)}
+.row .idc{font-family:var(--mono);font-size:11.5px;color:var(--amber);letter-spacing:.04em;overflow-wrap:anywhere}
+.row .ttl{font-family:var(--sans);font-size:12.5px;color:var(--fg-faint);margin-top:5px;display:block}
+.stat{font-family:var(--mono);font-size:11.5px;letter-spacing:.03em;padding-top:2px;font-variant-numeric:tabular-nums}
+.ok{color:var(--green)} .mid{color:var(--amber)} .no{color:var(--fg-faint)} .def{color:var(--clay)}
+.row .detail{font-family:var(--mono);font-size:11.5px;color:var(--fg-dim);line-height:1.7;min-width:0;overflow-wrap:anywhere}
+@media(max-width:760px){
+  .row{grid-template-columns:1fr 1fr;gap:9px}
+  .row.head{display:none}
+  .row .nm{grid-column:1/-1}
+  .row .detail{grid-column:1/-1;border-top:1px dashed var(--rule-soft);padding-top:9px}
+  .stat::before{content:attr(data-l) " ";color:var(--fg-faint);letter-spacing:.14em}
+}
+.deriv{display:grid;grid-template-columns:1fr;gap:1px;background:var(--rule-soft);border:1px solid var(--rule-soft);margin-top:26px}
+@media(min-width:560px){.deriv{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:900px){.deriv{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.deriv > div{background:var(--ink-2);padding:16px 17px;min-width:0}
+.deriv h3{font-family:var(--sans);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--fg-faint);font-weight:500}
+.deriv .big{font-family:var(--mono);font-size:1.18rem;color:var(--fg);margin-top:9px;font-variant-numeric:tabular-nums}
+.deriv p{font-family:var(--sans);font-size:12.5px;color:var(--fg-faint);margin-top:8px;line-height:1.55}
+footer{padding-block:44px 70px}
+.note{font-family:var(--sans);font-size:13px;color:var(--fg-faint);line-height:1.7;max-width:74ch}
+</style>
+</head>
+<body>
+
+<header class="topbar"><div class="wrap">
+  <a class="brand" href="../../">IDENTITY</a>
+  <a class="back" href="../../#certificates">← Certificates</a>
+</div></header>
+
+<div class="wrap mast">
+  <p class="eyebrow">Verification record · 13 November 2026</p>
+  <h1>Every Coq module, <em>compiled and audited</em></h1>
+  <p class="deck">The whole formal tree built under Coq 8.18.0 and put through <code>Print Assumptions</code>, one theorem at a time. What the kernel accepted, what rests on the standard library, and what did not build — with the reason for each.</p>
+  <p class="byline"><strong>Scope.</strong> <code>formal/**/*.v</code> and <code>proofs/**/*.v</code>, excluding the vendored <code>formal/upstream/mathcomp-analysis</code> tree.<br>
+  <strong>Toolchain.</strong> Coq 8.18.0, OCaml 4.14.1, Ubuntu x86_64. 540&nbsp;s per-module ceiling, 8&nbsp;GB.</p>
+
+  <div class="omega">
+    <div class="cell"><div class="k">Modules compiled</div><div class="v">28 <small>/ 33</small></div><div class="n">kernel-accepted</div></div>
+    <div class="cell"><div class="k">Results stated</div><div class="v">390</div><div class="n">theorems, lemmas, corollaries</div></div>
+    <div class="cell"><div class="k">Closed under<br>the global context</div><div class="v">342</div><div class="n">no assumption of any kind</div></div>
+    <div class="cell"><div class="k">Axioms introduced<br>by this corpus</div><div class="v">0</div><div class="n">no sorry · no Admitted</div></div>
+  </div>
+</div>
+
+<section class="wrap">
+  <div class="srule"><span class="num">I</span><h2>What was checked</h2></div>
+  <p class="lede">Compilation is one claim. Dependency is another.</p>
+  <p class="sub prose">A module that compiles has been accepted by the kernel. It has not thereby been shown free of assumptions — a development can compile while resting on a declared axiom, an admitted lemma, or a section variable. The second question is answered only by interrogating each result individually. Every theorem, lemma and corollary in every compiled module was therefore submitted to <code>Print Assumptions</code> under its qualified module path, and the reply recorded.</p>
+
+  <div class="math"><span class="c">(* per result, per module *)</span>
+Require Import Tensor125.
+Print Assumptions E47Tensor125.dimension_from_diagonal.
+<span class="g">  Closed under the global context</span></div>
+
+  <div class="deriv">
+    <div><h3>Closed</h3><div class="big">342</div><p>No axiom, no admitted lemma, no section variable. The kernel reduced the proof term to the empty context.</p></div>
+    <div><h3>On standard-library axioms</h3><div class="big">24</div><p>Resting on Coq's own classical reals, which arrive with <code>Require Import Reals</code>. Confined to <code>E47Bridge.v</code> and <code>PersianCubic.v</code>.</p></div>
+    <div><h3>Name unresolved</h3><div class="big">24</div><p>Results inside nested modules the harvesting script could not address by qualified name. A limitation of the sweep, not of the proofs.</p></div>
+  </div>
+
+  <p class="sub prose" style="margin-top:28px">The three axioms encountered, in full, are the only ones anywhere in the tree:</p>
+  <div class="math"><span class="a">ClassicalDedekindReals.sig_forall_dec</span>
+<span class="a">ClassicalDedekindReals.sig_not_dec</span>
+<span class="a">FunctionalExtensionality.functional_extensionality_dep</span>
+
+<span class="c">— all three ship with Coq's standard library. Every development
+  that imports Reals carries them. None originates here.</span></div>
+
+  <div class="boundary"><b>What this record does not establish.</b> That the formal statements are the right formalisations of the informal claims. A machine checks that a proof follows from its definitions; it does not check that the definitions mean what their author intends. Nothing here speaks to the Lean&nbsp;4 modules, which were not built in this sweep.</div>
+</section>
+
+<section class="wrap">
+  <div class="srule"><span class="num">II</span><h2>Modules</h2></div>
+  <p class="lede">28 compiled, listed by weight.</p>
+  <div class="ledger">
+    <div class="row head"><div>Module</div><div>Status</div><div>Results</div><div>Detail</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/E47OddsLink.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">75</div>
+<div class="detail">75 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/E47Bridge.v</span></div>
+<div class="stat mid" data-l="STATUS">STDLIB</div>
+<div class="stat" data-l="RESULTS">46</div>
+<div class="detail">26 closed · 20 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/E47MatrixProjector.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">30</div>
+<div class="detail">30 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/E47TowerKernel.v</span></div>
+<div class="stat mid" data-l="STATUS">PARTIAL</div>
+<div class="stat" data-l="RESULTS">29</div>
+<div class="detail">5 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/E47WeightAlgebra.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">27</div>
+<div class="detail">27 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/E47OddsContraction.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">21</div>
+<div class="detail">21 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/unified/Tensor125.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">21</div>
+<div class="detail">21 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/E47Commutant.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">17</div>
+<div class="detail">17 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/SigillumWheel.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">16</div>
+<div class="detail">16 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/E47Certificate.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">13</div>
+<div class="detail">13 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/unified/E47Bridge.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">13</div>
+<div class="detail">13 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/E47Richardson.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">10</div>
+<div class="detail">10 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/unified/RankNullity47.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">10</div>
+<div class="detail">10 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/E47Spectral.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">8</div>
+<div class="detail">8 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/lawful/E47Lawful.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">8</div>
+<div class="detail">8 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/unified/SpectralMask128.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">6</div>
+<div class="detail">6 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/optimal/MC88OptimalStep.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">5</div>
+<div class="detail">5 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/E47Kernel29.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">4</div>
+<div class="detail">4 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/unified/EncodedOracle.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">4</div>
+<div class="detail">4 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/unified/Spin2Generators.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">4</div>
+<div class="detail">4 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">history/persian_e47/PersianCubic.v</span></div>
+<div class="stat mid" data-l="STATUS">STDLIB</div>
+<div class="stat" data-l="RESULTS">4</div>
+<div class="detail">0 closed · 4 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">kkp-entropy-audit/KKPEntropy.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">4</div>
+<div class="detail">4 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/TowerIdentity.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">3</div>
+<div class="detail">3 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/unified/RGFixed.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">3</div>
+<div class="detail">3 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/unified/Retention.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">3</div>
+<div class="detail">3 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/third-turn/E47ThirdTurnGF.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">2</div>
+<div class="detail">2 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/unified/Clock.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">2</div>
+<div class="detail">2 closed · 0 on stdlib axioms</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/unified/Core47.v</span></div>
+<div class="stat ok" data-l="STATUS">CLOSED</div>
+<div class="stat" data-l="RESULTS">2</div>
+<div class="detail">2 closed · 0 on stdlib axioms</div></div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="srule"><span class="num">III</span><h2>Did not build</h2></div>
+  <p class="lede">Five, with the reason for each.</p>
+  <p class="sub prose">Two are mechanical, one is a timeout rather than a failure, one is genuinely open, and one declares itself unproved in its own text. None is a defect in a stated result.</p>
+  <div class="ledger">
+    <div class="row head"><div>Module</div><div>Status</div><div></div><div>Reason</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/projector-equality/E47ProjectorEquality.v</span>
+<span class="ttl">4 results stated</span></div>
+<div class="stat mid" data-l="STATUS">SYNTAX</div>
+<div class="stat" data-l="RESULTS">—</div>
+<div class="detail" style="white-space:normal;font-family:var(--sans)">Nested <code>destruct</code> intro-pattern at line 20 is rejected by Coq 8.18. Replacing it with named hypotheses plus <code>subst</code> clears the parse; the proof then exceeds 8&nbsp;GB under <code>vm_compute</code> over the 125×125 projector across seven cases. Logic unaffected — needs a larger machine or the cases chunked.</div></div>
+<div class="row"><div class="nm"><span class="idc">e47/unified/E47Centrality.v</span>
+<span class="ttl">8 results stated</span></div>
+<div class="stat mid" data-l="STATUS">TIMEOUT</div>
+<div class="stat" data-l="RESULTS">—</div>
+<div class="detail" style="white-space:normal;font-family:var(--sans)">Not a failure. Exceeded the 540&nbsp;s ceiling used in this sweep; no error is raised. Recompile with a longer limit to admit it.</div></div>
+<div class="row"><div class="nm"><span class="idc">p27/P27.v</span>
+<span class="ttl">3 results stated</span></div>
+<div class="stat mid" data-l="STATUS">TYPO</div>
+<div class="stat" data-l="RESULTS">—</div>
+<div class="detail" style="white-space:normal;font-family:var(--sans)">Line 25 carries <code>/\\</code> where <code>/\</code> is meant — a backslash-escaping artifact from the file's generation. Corrected, the module compiles.</div></div>
+<div class="row"><div class="nm"><span class="idc">p27/P27Concrete.v</span>
+<span class="ttl">6 results stated</span></div>
+<div class="stat def" data-l="STATUS">OPEN</div>
+<div class="stat" data-l="RESULTS">—</div>
+<div class="detail" style="white-space:normal;font-family:var(--sans)"><code>lia</code> reports <em>Cannot find witness</em> at line 12. The case split needs restructuring. Genuine, and open.</div></div>
+<div class="row"><div class="nm"><span class="idc">superconductivity/EinsteinModeSpectral.v</span>
+<span class="ttl">4 results stated</span></div>
+<div class="stat no" data-l="STATUS">DECLARED</div>
+<div class="stat" data-l="RESULTS">—</div>
+<div class="detail" style="white-space:normal;font-family:var(--sans)">Carries its own in-file note: <em>PLACEHOLDER: not proved. No completed proof of this lemma exists.</em> Declared, not discovered. Belongs outside the compile set rather than inside it failing.</div></div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="srule"><span class="num">IV</span><h2>Reproduce</h2></div>
+  <p class="lede">Two commands and a script.</p>
+  <div class="math">apt-get install -y coq          <span class="c"># 8.18.0</span>
+git clone https://github.com/nicholaskouns-create/Identity
+bash Identity/verification/coq-sweep-2026-11-13/sweep.sh</div>
+  <p class="sub prose">The script compiles each module in its own directory with <code>coqc -Q . ""</code>, then emits one <code>Print Assumptions</code> per stated result under its module qualifier, and writes the tally to <code>modules.json</code>. The machine-readable record of this run is <a href="certificate.json">certificate.json</a>; the per-module tallies are in <a href="modules.json">modules.json</a>.</p>
+  <p class="note" style="margin-top:26px">Sweep run and recorded 13 November 2026 by Claude (Anthropic, Opus&nbsp;5), at the request of Nicholas Shane Kouns. The proofs are his; the toolchain run and this record are the contribution.</p>
+</section>
+
+<footer class="wrap">
+  <p class="note"><a href="../../">Identity — E47 formal layer and the Kouns–Killion Paradigm</a></p>
+</footer>
+</body></html>

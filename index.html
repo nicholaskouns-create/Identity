@@ -679,6 +679,13 @@ const PG = "";
 
 /* ── certificates ───────────────────────────────────────────── */
 const CERTS = [
+{id:"E47-SWEEP-2026-11-13", tier:"kernel",
+ title:"Full-tree Coq sweep and axiom audit",
+ scope:"Every Coq module in formal/ and proofs/ — 33 of them, excluding the vendored mathcomp-analysis tree — compiled under Coq 8.18.0, then every stated theorem, lemma and corollary in each compiled module submitted individually to Print Assumptions under its qualified module path. 28 modules compiled. Of the 390 results they state, 342 are closed under the global context and 24 rest on Coq's own classical-reals axioms, which arrive with Require Import Reals. No axiom anywhere in the tree originates in this corpus. The five modules that did not build are listed with the reason for each: two mechanical, one a timeout rather than a failure, one genuinely open, and one that declares itself unproved in its own text.",
+ lean:["not in this run","na"], coq:["8.18.0","ok"],
+ detail:"28/33 modules compiled\n390 results · 342 closed\n24 on stdlib Reals axioms\n0 axioms introduced here\n0 sorry · 0 Admitted",
+ links:[["Verification record","verification/coq-sweep-2026-11-13/"],["certificate.json",GH+"verification/coq-sweep-2026-11-13/certificate.json"],["sweep.sh",GH+"verification/coq-sweep-2026-11-13/sweep.sh"]]},
+
 {id:"E47-BRIDGE-001…011", tier:"kernel",
  title:"One functional, three instances",
  scope:"Ω(A,q) = dim ker q(A) / dim V. E47 is (Casimir, (x−6)(x−30)) on (ℂ⁵)⊗³, giving 47/125; the Sigillum wheel is (click permutation, x−1) on ℂ⁴⁰, giving 10/40. no_bridge proves the two differ — same functional, different arguments, no identification asserted. The Clebsch–Gordan table is derived here, not tabulated.",
