@@ -395,5 +395,64 @@ class PublicDoorProbeTests(unittest.TestCase):
         self.assertEqual(canonical.full_url, unpinned + "?canonical=1")
 
 
+    def test_blocked_door_path_credentials_not_archived(self):
+        # A blocked 302 could archive /token/PRIVATE_PATH in final_url
+        # despite already stripping query credentials and URL userinfo.
+        # These tests are entirely offline and never request the target.
+        from urllib.request import Request
+
+        station = next(s for s in self.data["stations"]
+                       if s["slug"] == "tower")
+        source = station["href"]
+        cases = (
+            ("https://unreviewed.example.org/token/PRIVATE_PATH"
+             "?access_token=PRIVATE_QUERY",
+             "https://unreviewed.example.org/token/REDACTED"),
+            ("https://unreviewed.example.org/%61ccess_token/PRIVATE_ENCODED",
+             "https://unreviewed.example.org/%61ccess_token/REDACTED"),
+            ("https://unreviewed.example.org/api_key=PRIVATE_INLINE",
+             "https://unreviewed.example.org/api_key=REDACTED"),
+        )
+        for target, expected in cases:
+            with self.subTest(expected=expected):
+                handler = probe.SameDoorRedirect(source)
+                with self.assertRaises(probe.DoorIdentityRedirectBlocked) as blocked:
+                    handler.redirect_request(
+                        Request(source), None, 302, "Found", {}, target
+                    )
+                with patch.object(probe, "safe_door_open",
+                                  side_effect=blocked.exception):
+                    receipt = probe.probe_door(station)
+                self.assertEqual(receipt["http_status"], 302)
+                self.assertEqual(receipt["outcome"],
+                                 "door_identity_redirect_blocked")
+                self.assertEqual(receipt["final_url"], expected)
+                self.assertNotIn("PRIVATE_", json.dumps(receipt))
+
+        # The same sanitizer is used for direct HTTP errors. Ordinary
+        # paths and the two historical restricted identities are unchanged.
+        error_target = ("https://auditor:PRIVATE_USERINFO@unreviewed.example.org/"
+                        "password/PRIVATE_HTTP?token=PRIVATE_QUERY")
+        with patch.object(probe, "safe_door_open",
+                          side_effect=HTTPError(error_target, 404,
+                                                "Not Found", {}, None)):
+            receipt = probe.probe_door(station)
+        self.assertEqual(receipt["http_status"], 404)
+        self.assertEqual(receipt["final_url"],
+                         "https://unreviewed.example.org/password/REDACTED")
+        self.assertNotIn("PRIVATE_", json.dumps(receipt))
+        self.assertEqual(
+            probe.receipt_door_url(
+                "https://unreviewed.example.org/ordinary/path", source
+            ),
+            "https://unreviewed.example.org/ordinary/path",
+        )
+        for _, original in (
+            probe.EXPECTED_HISTORICAL_REPAIRS["mirror"],
+            probe.EXPECTED_HISTORICAL_REPAIRS["modsync"],
+        ):
+            self.assertEqual(probe.receipt_door_url(original, source), original)
+
+
 if __name__ == "__main__":
     unittest.main()
