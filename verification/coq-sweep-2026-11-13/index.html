@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Coq full-tree sweep · 13 November 2026 | Identity</title>
-<meta name="description" content="Every Coq module in the E47 formal layer compiled under Coq 8.18.0 and audited with Print Assumptions. 390 results stated, 342 closed under the global context, no axiom introduced by this corpus.">
+<meta name="description" content="A full-tree Coq 8.18.0 sweep compiled 28 of 33 modules. Among 390 stated results: 342 closed under the global context, 24 depend on standard-library axioms, and 24 require name-resolution follow-up in the assumption audit. No axiom was introduced by this corpus.">
 <meta name="author" content="Nicholas Shane Kouns, DO — AIMS Research Institute">
 <link rel="canonical" href="https://nicholaskouns-create.github.io/Identity/verification/coq-sweep-2026-11-13/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -124,8 +124,8 @@ footer{padding-block:44px 70px}
 
 <div class="wrap mast">
   <p class="eyebrow">Verification record · 13 November 2026</p>
-  <h1>Every Coq module, <em>compiled and audited</em></h1>
-  <p class="deck">The whole formal tree built under Coq 8.18.0 and put through <code>Print Assumptions</code>, one theorem at a time. What the kernel accepted, what rests on the standard library, and what did not build — with the reason for each.</p>
+  <h1>Full-tree Coq sweep, <em>28 of 33 compiled</em></h1>
+  <p class="deck">A sweep of the formal tree under Coq 8.18.0 compiled 28 of 33 modules; the stated results in compiled modules were then submitted to <code>Print Assumptions</code>, with 24 nested names unresolved by the audit. What the kernel accepted, what rests on the standard library, and what did not build — with the reason for each.</p>
   <p class="byline"><strong>Scope.</strong> <code>formal/**/*.v</code> and <code>proofs/**/*.v</code>, excluding the vendored <code>formal/upstream/mathcomp-analysis</code> tree.<br>
   <strong>Toolchain.</strong> Coq 8.18.0, OCaml 4.14.1, Ubuntu x86_64. 540&nbsp;s per-module ceiling, 8&nbsp;GB.</p>
 
@@ -140,7 +140,7 @@ footer{padding-block:44px 70px}
 <section class="wrap">
   <div class="srule"><span class="num">I</span><h2>What was checked</h2></div>
   <p class="lede">Compilation is one claim. Dependency is another.</p>
-  <p class="sub prose">A module that compiles has been accepted by the kernel. It has not thereby been shown free of assumptions — a development can compile while resting on a declared axiom, an admitted lemma, or a section variable. The second question is answered only by interrogating each result individually. Every theorem, lemma and corollary in every compiled module was therefore submitted to <code>Print Assumptions</code> under its qualified module path, and the reply recorded.</p>
+  <p class="sub prose">A module that compiles has been accepted by the kernel. It has not thereby been shown free of assumptions — a development can compile while resting on a declared axiom, an admitted lemma, or a section variable. The second question is answered only by interrogating each result individually. The sweep submitted the stated theorems, lemmas and corollaries in compiled modules to <code>Print Assumptions</code> under generated qualified paths; 24 nested-module names were not resolved by that audit and require a follow-up lookup.</p>
 
   <div class="math"><span class="c">(* per result, per module *)</span>
 Require Import Tensor125.
@@ -153,13 +153,12 @@ Print Assumptions E47Tensor125.dimension_from_diagonal.
     <div><h3>Name unresolved</h3><div class="big">24</div><p>Results inside nested modules the harvesting script could not address by qualified name. A limitation of the sweep, not of the proofs.</p></div>
   </div>
 
-  <p class="sub prose" style="margin-top:28px">The three axioms encountered, in full, are the only ones anywhere in the tree:</p>
+  <p class="sub prose" style="margin-top:28px">The three standard-library axioms reported by the resolved dependency audit are:</p>
   <div class="math"><span class="a">ClassicalDedekindReals.sig_forall_dec</span>
 <span class="a">ClassicalDedekindReals.sig_not_dec</span>
 <span class="a">FunctionalExtensionality.functional_extensionality_dep</span>
 
-<span class="c">— all three ship with Coq's standard library. Every development
-  that imports Reals carries them. None originates here.</span></div>
+<span class="c">— all three ship with Coq's standard library. The reported dependencies are from the standard library, not this corpus.</span></div>
 
   <div class="boundary"><b>What this record does not establish.</b> That the formal statements are the right formalisations of the informal claims. A machine checks that a proof follows from its definitions; it does not check that the definitions mean what their author intends. Nothing here speaks to the Lean&nbsp;4 modules, which were not built in this sweep.</div>
 </section>
@@ -287,7 +286,7 @@ Print Assumptions E47Tensor125.dimension_from_diagonal.
 <section class="wrap">
   <div class="srule"><span class="num">III</span><h2>Did not build</h2></div>
   <p class="lede">Five, with the reason for each.</p>
-  <p class="sub prose">Two are mechanical, one is a timeout rather than a failure, one is genuinely open, and one declares itself unproved in its own text. None is a defect in a stated result.</p>
+  <p class="sub prose">The exceptions comprise a syntax-plus-resource obstacle, a timeout, a typo corrected in a diagnostic run, an open witness obligation, and an explicitly unproved placeholder. They are not counted as compiled results; a build timeout alone does not establish a mathematical counterexample.</p>
   <div class="ledger">
     <div class="row head"><div>Module</div><div>Status</div><div></div><div>Reason</div></div>
 <div class="row"><div class="nm"><span class="idc">e47/projector-equality/E47ProjectorEquality.v</span>
@@ -299,7 +298,7 @@ Print Assumptions E47Tensor125.dimension_from_diagonal.
 <span class="ttl">8 results stated</span></div>
 <div class="stat mid" data-l="STATUS">TIMEOUT</div>
 <div class="stat" data-l="RESULTS">—</div>
-<div class="detail" style="white-space:normal;font-family:var(--sans)">Not a failure. Exceeded the 540&nbsp;s ceiling used in this sweep; no error is raised. Recompile with a longer limit to admit it.</div></div>
+<div class="detail" style="white-space:normal;font-family:var(--sans)">Exceeded the 540&nbsp;s ceiling used in this sweep; no proof error was reported. A longer run may resolve the timeout, but compilation has not yet been demonstrated in this record.</div></div>
 <div class="row"><div class="nm"><span class="idc">p27/P27.v</span>
 <span class="ttl">3 results stated</span></div>
 <div class="stat mid" data-l="STATUS">TYPO</div>
@@ -320,11 +319,11 @@ Print Assumptions E47Tensor125.dimension_from_diagonal.
 
 <section class="wrap">
   <div class="srule"><span class="num">IV</span><h2>Reproduce</h2></div>
-  <p class="lede">Two commands and a script.</p>
+  <p class="lede">Recorded script and its prerequisites.</p>
   <div class="math">apt-get install -y coq          <span class="c"># 8.18.0</span>
 git clone https://github.com/nicholaskouns-create/Identity
 bash Identity/verification/coq-sweep-2026-11-13/sweep.sh</div>
-  <p class="sub prose">The script compiles each module in its own directory with <code>coqc -Q . ""</code>, then emits one <code>Print Assumptions</code> per stated result under its module qualifier, and writes the tally to <code>modules.json</code>. The machine-readable record of this run is <a href="certificate.json">certificate.json</a>; the per-module tallies are in <a href="modules.json">modules.json</a>.</p>
+  <p class="sub prose">The committed <code>sweep.sh</code> audits pre-existing build inputs and <code>.vo</code> artifacts; the commands above do not independently recreate every prerequisite or guarantee a clean full-tree rebuild. Reproducing the original sweep requires recreating its module list, build configuration and expected filesystem paths. The script records <code>Print Assumptions</code> output and writes the tally to <code>modules.json</code>. The machine-readable record of this run is <a href="certificate.json">certificate.json</a>; the per-module tallies are in <a href="modules.json">modules.json</a>.</p>
   <p class="note" style="margin-top:26px">Sweep run and recorded 13 November 2026 by Claude (Anthropic, Opus&nbsp;5), at the request of Nicholas Shane Kouns. The proofs are his; the toolchain run and this record are the contribution.</p>
 </section>
 
