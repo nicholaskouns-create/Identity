@@ -305,9 +305,9 @@ class CataloguedExitTests(unittest.TestCase):
             server.server_close()
             thread.join(timeout=3)
 
-    def test_unreviewed_redirect_query_not_persisted_in_receipt(self):
-        # The HTTP request may use the redirect query, but the public
-        # evidence artifact must not retain its potentially private value.
+    def test_unreviewed_credential_redirect_blocked_before_followup(self):
+        # A redacted receipt alone is insufficient: a credential-bearing
+        # Location header must never trigger a second anonymous HTTP GET.
         from http.server import BaseHTTPRequestHandler, HTTPServer
         from threading import Thread
 
@@ -337,15 +337,39 @@ class CataloguedExitTests(unittest.TestCase):
                    "url": original, "state": "live"}
             result = probe.probe_exit(row, timeout=3)
             self.assertEqual((result["http_status"], result["outcome"]),
-                             (200, "http_ok"))
+                             (302, "exit_identity_redirect_blocked"))
             self.assertEqual(result["final_url"], original)
-            self.assertEqual(Redirect.paths,
-                             ["/start", "/start?access_token=PRIVATE_VALUE"])
+            self.assertEqual(Redirect.paths, ["/start"])
             self.assertNotIn("PRIVATE_VALUE", json.dumps(result))
         finally:
             server.shutdown()
             server.server_close()
             thread.join(timeout=3)
+
+    def test_encoded_and_mixed_case_credential_keys_blocked(self):
+        # urllib.parse.parse_qsl decodes percent-encoded query keys before
+        # checking. An unreviewed token must not evade the redirect guard.
+        from urllib.request import Request
+
+        source = "https://example.org/start"
+        handler = probe.SameExitRedirect(source)
+        for query in ("?Access_Token=SECRET",
+                      "?%61ccess_token=SECRET",
+                      "?canonical=1&client_secret=SECRET",
+                      "?X-Amz-Signature=SECRET"):
+            with self.subTest(query=query):
+                with self.assertRaises(probe.ExitIdentityRedirectBlocked):
+                    handler.redirect_request(
+                        Request(source), None, 302, "Found", {},
+                        source + query
+                    )
+
+        # A non-secret canonical query remains valid for unpinned exits.
+        allowed = handler.redirect_request(
+            Request(source), None, 302, "Found", {},
+            source + "?canonical=1"
+        )
+        self.assertEqual(allowed.full_url, source + "?canonical=1")
 
     def test_reviewed_spectra_query_preserved_but_unknown_query_redacted(self):
         source, target = next(iter(probe.REVIEWED_EXTERNAL_REDIRECTS.items()))
