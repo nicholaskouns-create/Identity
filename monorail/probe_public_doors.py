@@ -159,7 +159,19 @@ def probe_door(station: dict, timeout: float = 12) -> dict:
             record["http_status"] = response.status
             record["final_url"] = receipt_door_url(response.geturl(), url)
             response.read(1)
-            record["outcome"] = "http_ok" if 200 <= response.status < 400 else "http_error"
+            # These 17 doors are HTML applications. A JSON/plain-text 200
+            # is an HTTP success but not a navigable HTML station. A missing
+            # Content-Type remains unverified rather than a new hard failure.
+            content_type = getattr(response, "headers", {}).get("Content-Type", "")
+            media_type = content_type.split(";", 1)[0].strip().lower()
+            if (200 <= response.status < 400 and media_type
+                    and media_type not in {"text/html", "application/xhtml+xml"}):
+                record["outcome"] = "http_error"
+                record["error_type"] = "unexpected_content_type"
+                record["content_type"] = media_type
+            else:
+                record["outcome"] = ("http_ok" if 200 <= response.status < 400
+                                     else "http_error")
     except DoorIdentityRedirectBlocked as error:
         record["http_status"] = error.code
         record["final_url"] = receipt_door_url(error.geturl(), url)
