@@ -1,0 +1,90 @@
+name: E47 concrete weight-4 Casimir paired audit
+on:
+  pull_request:
+    paths:
+      - 'formal/e47/unified/ConcreteWeight4Casimir.lean'
+      - 'formal/e47/unified/ConcreteWeight4Casimir.v'
+      - 'validation/e47_weight4_casimir.py'
+      - '.github/workflows/e47-weight4-casimir.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lean-weight4:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean 4.19.0
+        run: |
+          set -euo pipefail
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile concrete 125-state import and weight-4 proof
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee weight4-lean-commit.txt
+          sha256sum formal/e47/unified/Tensor125.lean formal/e47/unified/ConcreteWeight4Casimir.lean | tee weight4-lean-sha256.txt
+          lean --version | tee weight4-lean-version.txt
+          grep -Fq 'Lean (version 4.19.0' weight4-lean-version.txt
+          lean -o "$RUNNER_TEMP/Tensor125.olean" formal/e47/unified/Tensor125.lean 2>&1 | tee weight4-lean-import-log.txt
+          LEAN_PATH="$RUNNER_TEMP" lean formal/e47/unified/ConcreteWeight4Casimir.lean 2>&1 | tee weight4-lean-log.txt
+          grep -Fq 'E47ConcreteWeight4.concrete_cubic_annihilator' weight4-lean-log.txt
+          ! grep -Eq 'sorryAx|Lean.ofReduceBool|native_decide.ax' weight4-lean-log.txt
+          ! grep -Eq '^[[:space:]]*(sorry|axiom)\b' formal/e47/unified/ConcreteWeight4Casimir.lean
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-weight4-lean-unsigned
+          path: weight4-lean-*.txt
+  coq-weight4:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq 8.18.0
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq coq
+      - name: Compile concrete 125-state import and weight-4 proof
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee weight4-coq-commit.txt
+          sha256sum formal/e47/unified/Tensor125.v formal/e47/unified/ConcreteWeight4Casimir.v | tee weight4-coq-sha256.txt
+          coqc --version | tee weight4-coq-version.txt
+          grep -Fq 'version 8.18.0' weight4-coq-version.txt
+          coqc -q -Q formal/e47/unified E47 formal/e47/unified/Tensor125.v 2>&1 | tee weight4-coq-import-log.txt
+          coqc -q -Q formal/e47/unified E47 formal/e47/unified/ConcreteWeight4Casimir.v 2>&1 | tee weight4-coq-log.txt
+          test "$(grep -c 'Closed under the global context' weight4-coq-log.txt)" -eq 8
+          ! grep -Eq 'Admitted\.|Axiom ' formal/e47/unified/ConcreteWeight4Casimir.v
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-weight4-coq-unsigned
+          path: weight4-coq-*.txt
+  python-weight4:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Independent exact characteristic polynomial and negative control
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee weight4-python-commit.txt
+          sha256sum validation/e47_weight4_casimir.py | tee weight4-python-sha256.txt
+          python --version | tee weight4-python-version.txt
+          python -I validation/e47_weight4_casimir.py 2>&1 | tee weight4-python-log.txt
+          grep -Fq 'E47_WEIGHT4_BIDIRECTIONAL_INVARIANCE_PASS' weight4-python-log.txt
+          grep -Fq 'E47_WEIGHT4_CHARPOLY_EXACT_PASS' weight4-python-log.txt
+          grep -Fq 'E47_WEIGHT4_DIAGONALIZATION_PASS' weight4-python-log.txt
+          grep -Fq 'E47_WEIGHT4_MUTANT_REJECTED' weight4-python-log.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-weight4-python-unsigned
+          path: weight4-python-*.txt
