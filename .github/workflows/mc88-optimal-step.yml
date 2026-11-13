@@ -50,7 +50,7 @@ jobs:
           git -c safe.directory="$PWD" rev-parse HEAD | tee evidence/mc88/commit.txt
           sha256sum formal/e47/optimal/MC88OptimalStep.v | tee evidence/mc88/coq-source.sha256
           coqc formal/e47/optimal/MC88OptimalStep.v 2>&1 | tee evidence/mc88/coq-audit.txt
-          test "$(grep -c 'Closed under the global context' evidence/mc88/coq-audit.txt)" -eq 5
+          test "$(grep -c 'Closed under the global context' evidence/mc88/coq-audit.txt)" -eq 8
       - uses: actions/upload-artifact@v4
         if: always()
         with:

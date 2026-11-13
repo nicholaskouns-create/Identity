@@ -47,6 +47,46 @@ Proof.
   lia.
 Qed.
 
+
+(* Exact uniqueness of the rational minimax Richardson step.
+   The hypotheses are signed endpoint bounds after multiplying by
+   17*q. No concrete Casimir eigenspace is assumed or proved here. *)
+Theorem rational_sharp_step_unique :
+  forall p q : Z,
+    17 * (q - gamma * p) <= 15 * q ->
+    17 * (lambdaMax * p - q) <= 15 * q ->
+    q = qStar * p.
+Proof.
+  intros p q hleft hright.
+  unfold gamma, lambdaMax, qStar in *.
+  lia.
+Qed.
+
+Theorem rational_no_strict_endpoint_improvement :
+  forall p q : Z,
+    ~ (17 * (q - gamma * p) < 15 * q /\
+       17 * (lambdaMax * p - q) < 15 * q).
+Proof.
+  intros p q [hleft hright].
+  unfold gamma, lambdaMax in *.
+  lia.
+Qed.
+
+(* Both endpoint absolute residuals are within the optimal bound
+   exactly when p/q = 1/99144, for q > 0. *)
+Theorem rational_sharp_endpoints_iff :
+  forall p q : Z, 0 < q ->
+    ((-15 * q <= 17 * (q - gamma * p) /\
+       17 * (q - gamma * p) <= 15 * q) /\
+     (-15 * q <= 17 * (q - lambdaMax * p) /\
+       17 * (q - lambdaMax * p) <= 15 * q))
+    <-> q = qStar * p.
+Proof.
+  intros p q hq.
+  unfold gamma, lambdaMax, qStar.
+  split; intro h; lia.
+Qed.
+
 End MC88OptimalStep.
 
 Print Assumptions MC88OptimalStep.denominator_identity.
@@ -54,3 +94,6 @@ Print Assumptions MC88OptimalStep.admissible_step.
 Print Assumptions MC88OptimalStep.endpoint_equioscillation.
 Print Assumptions MC88OptimalStep.five_modes_within_sharp_bound.
 Print Assumptions MC88OptimalStep.rational_minimax_lower_bound.
+Print Assumptions MC88OptimalStep.rational_sharp_step_unique.
+Print Assumptions MC88OptimalStep.rational_no_strict_endpoint_improvement.
+Print Assumptions MC88OptimalStep.rational_sharp_endpoints_iff.
