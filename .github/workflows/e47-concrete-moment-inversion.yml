@@ -1,0 +1,88 @@
+name: E47 concrete moment inversion paired audit
+on:
+  pull_request:
+    paths:
+      - 'formal/e47/unified/ConcreteMomentInversion.lean'
+      - 'formal/e47/unified/ConcreteMomentInversion.v'
+      - 'validation/e47_concrete_moment_inversion.py'
+      - '.github/workflows/e47-concrete-moment-inversion.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lean-moment-inversion:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Lean 4.19.0
+        run: |
+          set -euo pipefail
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile, audit axioms and preserve provenance
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee moment-lean-commit.txt
+          sha256sum formal/e47/unified/ConcreteMomentInversion.lean | tee moment-lean-sha256.txt
+          lean --version | tee moment-lean-version.txt
+          grep -Fq 'Lean (version 4.19.0' moment-lean-version.txt
+          lean formal/e47/unified/ConcreteMomentInversion.lean 2>&1 | tee moment-lean-log.txt
+          grep -Fq 'E47ConcreteMomentInversion.lagrange_left_inverse' moment-lean-log.txt
+          ! grep -Eq 'sorryAx|Lean.ofReduceBool|native_decide.ax|admit' moment-lean-log.txt
+          ! grep -Eq '^[[:space:]]*(sorry|axiom)\b' formal/e47/unified/ConcreteMomentInversion.lean
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-moment-lean-unsigned
+          path: moment-lean-*.txt
+  coq-moment-inversion:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Coq 8.18.0
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq coq
+      - name: Compile, audit assumptions and preserve provenance
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee moment-coq-commit.txt
+          sha256sum formal/e47/unified/ConcreteMomentInversion.v | tee moment-coq-sha256.txt
+          coqc --version | tee moment-coq-version.txt
+          grep -Fq 'version 8.18.0' moment-coq-version.txt
+          coqc -q formal/e47/unified/ConcreteMomentInversion.v 2>&1 | tee moment-coq-log.txt
+          test "$(grep -c 'Closed under the global context' moment-coq-log.txt)" -eq 4
+          ! grep -Eq 'Admitted\.|Axiom ' formal/e47/unified/ConcreteMomentInversion.v
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-moment-coq-unsigned
+          path: moment-coq-*.txt
+  python-concrete-moments:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Exact 125-state sparse Casimir power traces and mutant
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee moment-python-commit.txt
+          sha256sum validation/e47_concrete_moment_inversion.py | tee moment-python-sha256.txt
+          python --version | tee moment-python-version.txt
+          python -I validation/e47_concrete_moment_inversion.py 2>&1 | tee moment-python-log.txt
+          grep -Fq 'E47_CONCRETE_MOMENTS_EXACT_PASS' moment-python-log.txt
+          grep -Fq 'E47_LAGRANGE_LEFT_INVERSE_EXACT_PASS' moment-python-log.txt
+          grep -Fq 'E47_MULTIPLICITY_MOMENT_RECOVERY_PASS' moment-python-log.txt
+          grep -Fq 'E47_CONCRETE_CASIMIR_MUTANT_REJECTED' moment-python-log.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-moment-python-unsigned
+          path: moment-python-*.txt
