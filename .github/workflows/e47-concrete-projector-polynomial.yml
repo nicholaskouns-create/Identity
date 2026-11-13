@@ -1,0 +1,87 @@
+name: E47 paired concrete projector polynomial and rank sandwich
+on:
+  pull_request:
+    paths:
+      - 'formal/e47/unified/ConcreteProjectorPolynomial.lean'
+      - 'formal/e47/unified/ConcreteProjectorPolynomial.v'
+      - 'validation/e47_concrete_projector_polynomial.py'
+      - '.github/workflows/e47-concrete-projector-polynomial.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lean-selector:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean 4.19.0
+        run: |
+          set -euo pipefail
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile paired scalar selector and audit axioms
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee e47-proj-lean-commit.txt
+          sha256sum formal/e47/unified/ConcreteProjectorPolynomial.lean | tee e47-proj-lean-sha256.txt
+          lean --version | tee e47-proj-lean-version.txt
+          grep -Fq 'Lean (version 4.19.0' e47-proj-lean-version.txt
+          lean formal/e47/unified/ConcreteProjectorPolynomial.lean 2>&1 | tee e47-proj-lean-log.txt
+          grep -Fq 'E47ConcreteSelector.idempotent_values' e47-proj-lean-log.txt
+          grep -Fq 'E47ConcreteSelector.annihilation_values' e47-proj-lean-log.txt
+          ! grep -Eq 'sorryAx|admit|unsafe' e47-proj-lean-log.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-concrete-projector-lean-unsigned
+          path: e47-proj-lean-*.txt
+
+  coq-selector:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq 8.18.0
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y coq
+      - name: Compile paired scalar selector and audit assumptions
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee e47-proj-coq-commit.txt
+          sha256sum formal/e47/unified/ConcreteProjectorPolynomial.v | tee e47-proj-coq-sha256.txt
+          coqc --version | tee e47-proj-coq-version.txt
+          grep -Fq 'version 8.18.0' e47-proj-coq-version.txt
+          coqc formal/e47/unified/ConcreteProjectorPolynomial.v 2>&1 | tee e47-proj-coq-log.txt
+          test "$(grep -Fxc 'Closed under the global context' e47-proj-coq-log.txt)" -eq 3
+          ! grep -Eq 'Admitted|Axiom ' formal/e47/unified/ConcreteProjectorPolynomial.v
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-concrete-projector-coq-unsigned
+          path: e47-proj-coq-*.txt
+
+  concrete-integer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run exact 125-state matrix and negative control
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee e47-proj-python-commit.txt
+          sha256sum validation/e47_concrete_projector_polynomial.py | tee e47-proj-python-sha256.txt
+          python --version | tee e47-proj-python-version.txt
+          python -I validation/e47_concrete_projector_polynomial.py 2>&1 | tee e47-proj-python-log.txt
+          grep -Fq '"status": "EXACT_CONCRETE_PROJECTOR_POLYNOMIAL_PASS"' e47-proj-python-log.txt
+          grep -Fq '"negative_control_corrupted_matrix_rejected": true' e47-proj-python-log.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-concrete-projector-integer-unsigned
+          path: e47-proj-python-*.txt
