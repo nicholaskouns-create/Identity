@@ -15,7 +15,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.error import HTTPError, URLError
-from urllib.parse import urldefrag, urlsplit
+from urllib.parse import unquote, urldefrag, urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 from probe_public_doors import read_corpus
@@ -179,6 +179,29 @@ def safe_urlopen(req: Request, timeout: float):
     return build_opener(SameExitRedirect(req.full_url)).open(req, timeout=timeout)
 
 
+# Public navigation receipts must not persist credentials embedded in a
+# blocked redirect's *path*, even after query and userinfo are removed.
+# This is separate from the pre-network credential-query guard in PR #194.
+# Only recognizable key/value path components are redacted; URL identity
+# checks and outbound network decisions are unchanged.
+CREDENTIAL_PATH_KEYS = frozenset({
+    "token", "access_token", "id_token", "refresh_token",
+    "api_key", "authorization", "client_secret", "password",
+})
+
+
+def redact_credential_path(path: str) -> str:
+    segments = path.split("/")
+    for i, segment in enumerate(segments):
+        decoded = unquote(segment)
+        key, sep, _ = decoded.partition("=")
+        if sep and key.casefold() in CREDENTIAL_PATH_KEYS:
+            segments[i] = key + "=REDACTED"
+        if decoded.casefold() in CREDENTIAL_PATH_KEYS and i + 1 < len(segments):
+            segments[i + 1] = "REDACTED"
+    return "/".join(segments)
+
+
 def receipt_url(observed_url: str, source_url: str) -> str:
     """Keep only reviewed query parameters in durable HTTP evidence.
 
@@ -190,7 +213,8 @@ def receipt_url(observed_url: str, source_url: str) -> str:
     # A blocked 30x target can carry URL userinfo (user:password@host).
     # It is not part of any reviewed exit identity and must never enter the
     # public CI artifact, even when the redirect query has been removed.
-    observed = observed._replace(netloc=observed.netloc.rsplit("@", 1)[-1])
+    observed = observed._replace(netloc=observed.netloc.rsplit("@", 1)[-1],
+                                 path=redact_credential_path(observed.path))
     reviewed = REVIEWED_EXTERNAL_REDIRECTS.get(source_url)
     # Browser SPA fragments are never sent over HTTP. Compare the served URL
     # against the fragment-free source so a pinned query (e.g. Eidolon

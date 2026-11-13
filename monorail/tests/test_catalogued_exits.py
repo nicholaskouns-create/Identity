@@ -569,5 +569,46 @@ class CataloguedExitTests(unittest.TestCase):
         self.assertEqual(same.full_url, unpinned + "?canonical=1")
 
 
+    def test_blocked_redirect_path_credentials_not_archived(self):
+        # Source-level counterexample: query/userinfo redaction alone left
+        # /token/PRIVATE_VALUE in the durable public final_url.
+        # No external or restricted resource is requested by this test.
+        row = {"station": "test", "label": "public exit",
+               "url": "https://nicholaskouns-create.github.io/Identity/",
+               "state": "live"}
+        cases = (
+            ("https://unreviewed.example.org/token/PRIVATE_PATH"
+             "?access_token=PRIVATE_QUERY",
+             "https://unreviewed.example.org/token/REDACTED"),
+            ("https://unreviewed.example.org/%61ccess_token/PRIVATE_ENCODED",
+             "https://unreviewed.example.org/%61ccess_token/REDACTED"),
+            ("https://unreviewed.example.org/api_key=PRIVATE_INLINE",
+             "https://unreviewed.example.org/api_key=REDACTED"),
+        )
+        for target, expected in cases:
+            with self.subTest(target=expected):
+                error = probe.ExitIdentityRedirectBlocked(
+                    target, 302, "exit_identity_redirect_blocked", {}, None
+                )
+                with patch.object(probe, "safe_urlopen", side_effect=error):
+                    receipt = probe.probe_exit(row)
+                self.assertEqual(receipt["outcome"],
+                                 "exit_identity_redirect_blocked")
+                self.assertEqual(receipt["http_status"], 302)
+                self.assertEqual(receipt["final_url"], expected)
+                self.assertNotIn("PRIVATE_", json.dumps(receipt))
+
+        # Unrelated public paths and known restricted Drive identities remain
+        # distinguishable; the change does not rewrite existing destinations.
+        source = row["url"]
+        self.assertEqual(
+            probe.receipt_url("https://unreviewed.example.org/other", source),
+            "https://unreviewed.example.org/other",
+        )
+        known = next(url for url in probe.EXPECTED_EXCLUDED
+                     if "docs.google.com/document/d/" in url)
+        self.assertEqual(probe.receipt_url(known, source), known)
+
+
 if __name__ == "__main__":
     unittest.main()
