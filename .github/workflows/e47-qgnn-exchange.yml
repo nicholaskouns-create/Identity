@@ -1,0 +1,35 @@
+name: E47 QGNN exchange Lean and Coq certificates
+on:
+  push:
+    paths:
+      - 'formal/e47/E47QGNNExchange.lean'
+      - 'formal/e47/E47QGNNExchange.v'
+      - '.github/workflows/e47-qgnn-exchange.yml'
+  pull_request:
+    paths:
+      - 'formal/e47/E47QGNNExchange.lean'
+      - 'formal/e47/E47QGNNExchange.v'
+      - '.github/workflows/e47-qgnn-exchange.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq
+        run: sudo apt-get update -qq && sudo apt-get install -y coq
+      - name: Install Lean 4.35.0
+        run: |
+          curl --fail --location --silent --show-error https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.35.0 --no-modify-path
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Lean kernel
+        run: lean formal/e47/E47QGNNExchange.lean
+      - name: Coq kernel
+        run: |
+          mkdir -p /tmp/e47-qgnn
+          cp formal/e47/E47QGNNExchange.v /tmp/e47-qgnn/
+          cd /tmp/e47-qgnn
+          coqc -q E47QGNNExchange.v
