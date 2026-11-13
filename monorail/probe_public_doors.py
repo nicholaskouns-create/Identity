@@ -158,8 +158,15 @@ def probe_door(station: dict, timeout: float = 12) -> dict:
         with safe_door_open(req, timeout=timeout) as response:
             record["http_status"] = response.status
             record["final_url"] = receipt_door_url(response.geturl(), url)
-            response.read(1)
-            record["outcome"] = "http_ok" if 200 <= response.status < 400 else "http_error"
+            first_byte = response.read(1)
+            # A 200 with no body (or a 204 No Content) is reachable but
+            # cannot render any of the 17 public HTML station doors.
+            if 200 <= response.status < 400 and first_byte:
+                record["outcome"] = "http_ok"
+            else:
+                record["outcome"] = "http_error"
+                if 200 <= response.status < 400 and not first_byte:
+                    record["error_type"] = "empty_response_body"
     except DoorIdentityRedirectBlocked as error:
         record["http_status"] = error.code
         record["final_url"] = receipt_door_url(error.geturl(), url)
