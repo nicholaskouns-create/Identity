@@ -1,0 +1,26 @@
+name: Lean-Coq source browser navigation
+
+on:
+  push:
+    paths:
+      - 'site/proof/lean-coq/browser.html'
+      - 'tests/test_lean_coq_browser.py'
+      - '.github/workflows/lean-coq-browser.yml'
+  pull_request:
+    paths:
+      - 'site/proof/lean-coq/browser.html'
+      - 'tests/test_lean_coq_browser.py'
+      - '.github/workflows/lean-coq-browser.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-links:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify local source navigation and evidence boundaries
+        run: python3 -m unittest discover -s tests -p 'test_lean_coq_browser.py' -v
