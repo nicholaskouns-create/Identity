@@ -395,5 +395,43 @@ class PublicDoorProbeTests(unittest.TestCase):
         self.assertEqual(canonical.full_url, unpinned + "?canonical=1")
 
 
+    def test_tower_pinned_spa_fragment_redirect_cannot_change_view(self):
+        # Reproduce the source-level counterexample: the previous redirect
+        # guard accepted a same-path 302 from #/explore to #/compare.
+        from urllib.request import Request
+
+        station = next(s for s in self.data["stations"]
+                       if s["slug"] == "tower")
+        source = station["href"]
+        self.assertTrue(source.endswith("#/explore"))
+        changed = source.replace("#/explore", "#/compare")
+        handler = probe.SameDoorRedirect(source)
+        with self.assertRaises(probe.DoorIdentityRedirectBlocked) as blocked:
+            handler.redirect_request(
+                Request(source), None, 302, "Found", {}, changed
+            )
+        with patch.object(probe, "safe_door_open",
+                          side_effect=blocked.exception):
+            receipt = probe.probe_door(station)
+        self.assertEqual((receipt["http_status"], receipt["outcome"]),
+                         (302, "door_identity_redirect_blocked"))
+        self.assertEqual(receipt["final_url"], source.split("#")[0])
+        self.assertNotIn("#/compare", json.dumps(receipt))
+
+        # An unchanged explicit SPA fragment is allowed.
+        same = handler.redirect_request(
+            Request(source), None, 302, "Found", {}, source
+        )
+        self.assertEqual(same.full_url, source)
+
+        # A Location with no explicit fragment remains a legal HTTP
+        # canonicalization; browsers inherit the source fragment.
+        without_fragment = source.split("#")[0]
+        canonical = handler.redirect_request(
+            Request(source), None, 302, "Found", {}, without_fragment
+        )
+        self.assertEqual(canonical.full_url, without_fragment)
+
+
 if __name__ == "__main__":
     unittest.main()
