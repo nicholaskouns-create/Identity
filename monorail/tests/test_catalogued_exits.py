@@ -86,6 +86,51 @@ class CataloguedExitTests(unittest.TestCase):
         self.assertEqual(result["outcome"], "network_error")
         self.assertEqual(result["error_type"], "URLError")
 
+    def test_empty_success_responses_are_not_working_public_exits(self):
+        # Real HTTP regression: 200 with no bytes and 204 No Content
+        # previously passed the 51-public-exit census as navigable.
+        # A nonempty 200 is the positive control.
+        from http.server import BaseHTTPRequestHandler, HTTPServer
+        from threading import Thread
+
+        class Responses(BaseHTTPRequestHandler):
+            def do_GET(self):
+                status = 204 if self.path == "/no-content" else 200
+                self.send_response(status)
+                self.end_headers()
+                if self.path == "/healthy":
+                    self.wfile.write(b"<html>public exit</html>")
+
+            def log_message(self, *_):
+                pass
+
+        server = HTTPServer(("127.0.0.1", 0), Responses)
+        thread = Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            for path, expected_status, expected_outcome in (
+                ("/empty", 200, "http_error"),
+                ("/no-content", 204, "http_error"),
+                ("/healthy", 200, "http_ok"),
+            ):
+                with self.subTest(path=path):
+                    url = f"http://127.0.0.1:{server.server_port}{path}"
+                    row = {"station": "test", "label": "loopback exit",
+                           "url": url, "state": "live"}
+                    result = probe.probe_exit(row, timeout=3)
+                    self.assertEqual(result["http_status"], expected_status)
+                    self.assertEqual(result["outcome"], expected_outcome)
+                    self.assertEqual(result["final_url"], url)
+                    if expected_outcome == "http_error":
+                        self.assertEqual(result["error_type"],
+                                         "empty_response_body")
+                    else:
+                        self.assertNotIn("error_type", result)
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=3)
+
     def test_fragment_not_sent_in_http_request(self):
         row = {"station": "tower", "label": "Tower",
                "url": "https://example.org/tower/#/explore", "state": "live"}

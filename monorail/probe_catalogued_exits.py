@@ -224,9 +224,15 @@ def probe_exit(row: dict, timeout: float = 15) -> dict:
             result["http_status"] = response.status
             observed_final_url = response.geturl()
             result["final_url"] = receipt_url(observed_final_url, row["url"])
-            response.read(1)
-            result["outcome"] = ("http_ok" if 200 <= response.status < 400
-                                 else "http_error")
+            # A 200 with no body (or 204 No Content) cannot render a
+            # navigable public exit. Keep its real HTTP status in evidence.
+            has_body = bool(response.read(1))
+            if 200 <= response.status < 400 and not has_body:
+                result["outcome"] = "http_error"
+                result["error_type"] = "empty_response_body"
+            else:
+                result["outcome"] = ("http_ok" if 200 <= response.status < 400
+                                     else "http_error")
             reviewed = REVIEWED_EXTERNAL_REDIRECTS.get(row["url"])
             if (reviewed and observed_final_url
                     and urlsplit(observed_final_url)._replace(fragment="").geturl()
