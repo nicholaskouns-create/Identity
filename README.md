@@ -47,3 +47,8 @@ Lean and Rocq sources for the E47 linear-algebra certificate are pinned in [form
 [Proof, exact second-moment recurrence, Monte Carlo code and independent validation instruments](research/socorro/README.md) · [Identity public result page](https://nicholaskouns-create.github.io/Identity/site/socorro-stochastic.html). This is a mathematical construction from the idealized glyph; Lean/Coq compilation and hardware simulation are not asserted.
 
 [The E₄₇ spectral kernel · formalism and verification](e47-spectral-kernel/README.md)
+
+
+## E47 deterministic AI governance (2026-11-14)
+
+[Publication and control matrix](docs/governance/E47_DETERMINISTIC_AI_GOVERNANCE_COMPLETE.md) · [Public landing page](https://nicholaskouns-create.github.io/Identity/site/governance/e47-deterministic-ai-governance.html) · [Lean 4 appendix](docs/governance/E47UnverifiedSuite.lean) · [Coq appendix](docs/governance/E47UnverifiedSuite.v). The author's Gemini-stipulated validation and reported historical compiler results are identified separately from any fresh compilation.
