@@ -33,8 +33,8 @@ export function runExactChecks() {
     ['Complement dimension',complement === 78,'125 − 47 = 78'],
     ['Spectral zero set',SPECTRUM.filter((_,i)=>K2[i]===0).join(',') === '6,30','ker K = E₆ ⊕ E₃₀'],
     ['Positive semidefinite K²',K2.every(v=>Number.isInteger(v)&&v>=0),'K² eigenvalues ≥ 0'],
-    ['Exact contraction endpoint',Math.abs(1-11664/EPSILON_DENOMINATOR-15/17)<1e-14,'gain at C=12 equals 15/17'],
-    ['Exact contraction endpoint',Math.abs(1-186624/EPSILON_DENOMINATOR+15/17)<1e-14,'gain at C=42 equals −15/17'],
+    ['Exact contraction endpoint',17*(EPSILON_DENOMINATOR-11664) === 15*EPSILON_DENOMINATOR,'gain at C=12 equals 15/17'],
+    ['Exact contraction endpoint',17*(EPSILON_DENOMINATOR-186624) === -15*EPSILON_DENOMINATOR,'gain at C=42 equals −15/17'],
     ['Kernel fixed point',GAINS.every((g,i)=>K2[i]!==0||g===1),'Γ acts as identity on ker K']
   ].map(([name,passed,detail])=>({name,passed,detail}));
 }
