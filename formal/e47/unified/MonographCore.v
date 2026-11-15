@@ -37,8 +37,9 @@ Theorem off_kernel_bound :
     17 * Z.abs (99144 - k (casimir j)*k (casimir j)) <= 15*99144.
 Proof.
   intros j Hj Hk. unfold sectors in Hj.
-  repeat (destruct Hj as [Hj|Hj]; [subst j; vm_compute in *; lia|]).
-  contradiction.
+  simpl in Hj.
+  destruct Hj as [Hj|[Hj|[Hj|[Hj|[Hj|[Hj|[Hj|[]]]]]]]];
+    subst j; vm_compute in *; lia.
 Qed.
 Theorem matched_syndrome :
   forall f6 f12 f30 f42 omega : Z,
