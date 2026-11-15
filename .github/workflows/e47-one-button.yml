@@ -1,0 +1,39 @@
+name: E47 Proof Runner (One Button)
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'validation/e47_one_button_runner.py'
+      - '.github/workflows/e47-one-button.yml'
+jobs:
+  prove:
+    name: Lean + Coq + exact checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean 4.19.0
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Install Coq and Python matrix dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y coq
+          python -m pip install numpy==2.2.6
+      - name: Record compiler versions
+        run: |
+          lean --version
+          coqc --version
+          python --version
+      - name: Execute all E47 certificates and produce report
+        run: python validation/e47_one_button_runner.py
+      - name: Downloadable proof receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e47-proof-receipts
+          path: proof-results/
+          if-no-files-found: warn
+          retention-days: 30
