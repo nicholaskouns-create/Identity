@@ -24,6 +24,7 @@ jobs:
           for f in formal/e47/unified/{Core47,RGFixed,Retention,Clock,EncodedOracle,Spin2Generators,Tensor125,SpectralMask128}.lean; do
             lean "$f"
           done
+          lean formal/e47/unified/MonographCore.lean
   coq:
     runs-on: ubuntu-latest
     steps:
@@ -39,6 +40,7 @@ jobs:
           for f in formal/e47/unified/{Core47,RGFixed,Retention,Clock,EncodedOracle,Spin2Generators,Tensor125,SpectralMask128}.v; do
             coqc "$f"
           done
+          coqc formal/e47/unified/MonographCore.v
 
   integer-matrix:
     runs-on: ubuntu-latest
