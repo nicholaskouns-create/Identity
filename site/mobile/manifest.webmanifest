@@ -1,0 +1,11 @@
+{
+ "name":"E47 Proof Observatory",
+ "short_name":"E47 Proofs",
+ "description":"Mobile-first E47 spectral observatory, exact checks and GitHub proof-run receipts",
+ "start_url":"./",
+ "scope":"./",
+ "display":"standalone",
+ "background_color":"#07131b",
+ "theme_color":"#07131b",
+ "icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
