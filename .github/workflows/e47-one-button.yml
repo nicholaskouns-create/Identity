@@ -3,6 +3,7 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
+      - 'formal/e47/unified/**'
       - 'validation/e47_one_button_runner.py'
       - '.github/workflows/e47-one-button.yml'
 jobs:

@@ -39,7 +39,7 @@ Proof.
   intros j Hj Hk. unfold sectors in Hj.
   simpl in Hj.
   destruct Hj as [Hj|[Hj|[Hj|[Hj|[Hj|[Hj|[Hj|[]]]]]]]];
-    subst j; vm_compute in *; lia.
+    subst j; vm_compute in *; try contradiction; try lia; easy.
 Qed.
 Theorem matched_syndrome :
   forall f6 f12 f30 f42 omega : Z,
