@@ -1,0 +1,23 @@
+name: E47 Mobile Observatory Checks
+on:
+  pull_request:
+    paths:
+      - 'site/mobile/**'
+      - 'tests/mobile-math.test.mjs'
+      - '.github/workflows/e47-mobile-checks.yml'
+  workflow_dispatch:
+jobs:
+  mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate E47 mathematical model
+        run: node --test tests/mobile-math.test.mjs
+      - name: Check module syntax
+        run: |
+          node --check site/mobile/math.mjs
+          node --check site/mobile/sw.js

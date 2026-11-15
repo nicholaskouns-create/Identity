@@ -1,0 +1,11 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {SPECTRUM,MULTIPLICITIES,K2,GAINS,dimension,rank,complement,maxComplementGain,contraction,runExactChecks} from '../site/mobile/math.mjs';
+test('spectrum and multiplicities are 125 and rank 47',()=>{assert.equal(dimension,125);assert.equal(rank,47);assert.equal(complement,78);assert.deepEqual(SPECTRUM,[0,2,6,12,20,30,42]);assert.deepEqual(MULTIPLICITIES,[1,9,25,28,27,22,13]);});
+test('squared K spectrum exact',()=>assert.deepEqual(K2,[32400,12544,0,11664,19600,0,186624]));
+test('complement spectral radius exact',()=>assert.ok(Math.abs(maxComplementGain - 15/17)<1e-14));
+test('initial isotropic mass partition',()=>{const c=contraction(0);assert.ok(Math.abs(c.fractionKernel-47/125)<1e-15);assert.ok(Math.abs(c.fractionComplement-78/125)<1e-15);assert.ok(Math.abs(c.norm2-1)<1e-15)});
+test('nonincreasing complement energy and mass conservation',()=>{let prior=Infinity;for(let i=0;i<=220;i++){const c=contraction(i);assert.ok(c.complement<=prior+1e-14);assert.ok(Math.abs(c.kept+c.complement-c.norm2)<1e-13);assert.ok(Math.abs(c.fractionKernel+c.fractionComplement-1)<1e-13);prior=c.complement;}});
+test('late iteration converges',()=>{const c=contraction(220);assert.ok(c.bound<1.2e-12);assert.ok(c.fractionKernel>1-1e-12)});
+test('input bounds enforced',()=>{assert.throws(()=>contraction(-1),RangeError);assert.throws(()=>contraction(3.2),RangeError);assert.throws(()=>contraction(10001),RangeError)});
+test('all stated arithmetic checks pass',()=>{const c=runExactChecks();assert.equal(c.length,8);assert.ok(c.every(x=>x.passed));});
