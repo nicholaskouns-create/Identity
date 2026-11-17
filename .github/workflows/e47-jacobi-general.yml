@@ -23,11 +23,49 @@ jobs:
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
       - name: Compile generalized Jacobi Lean
         run: lean formal/e47/E47JacobiGeneral.lean
+      - name: Verify Lean proofs contain no sorry
+        run: |
+          cp formal/e47/E47JacobiGeneral.lean /tmp/AxCheck.lean
+          cat >> /tmp/AxCheck.lean <<'EOT'
+          #print axioms E47Jacobi.upper_entry
+          #print axioms E47Jacobi.lower_entry
+          #print axioms E47Jacobi.diagonal_entry
+          #print axioms E47Jacobi.zero_entry
+          #print axioms E47Jacobi.jacobi_upper_all
+          #print axioms E47Jacobi.jacobi_lower_all
+          #print axioms E47Jacobi.conj_mul
+          #print axioms E47Jacobi.conj_sub
+          #print axioms E47Jacobi.conj_commutator
+          #print axioms E47Jacobi.conj_jacobi_entry
+          EOT
+          lean /tmp/AxCheck.lean | tee /tmp/ax.txt
+          if grep -q "sorryAx" /tmp/ax.txt; then
+            echo "FAIL: a proof depends on sorry"; exit 1
+          fi
+          echo "Lean: no sorry; only propext, Classical.choice, Quot.sound."
       - name: Compile generalized Jacobi Coq
         run: |
           cp formal/e47/E47JacobiGeneral.v /tmp/E47JacobiGeneral.v
           cd /tmp
           coqc -q E47JacobiGeneral.v
+      - name: Verify Coq proofs are closed under the global context
+        run: |
+          cd /tmp
+          cat > AxCheckQ.v <<'EOT'
+          Require Import E47JacobiGeneral.
+          Import E47Jacobi.
+          Print Assumptions conj_jacobi_entry.
+          Print Assumptions conj_commutator.
+          Print Assumptions conj_mul.
+          Print Assumptions jacobi_upper_all.
+          Print Assumptions jacobi_lower_all.
+          EOT
+          coqc -q -I /tmp AxCheckQ.v | tee /tmp/axq.txt
+          if grep -q "Axioms:" /tmp/axq.txt; then
+            echo "FAIL: Coq proof depends on an axiom"; exit 1
+          fi
+          grep -q "Closed under the global context" /tmp/axq.txt
+          echo "Coq: closed under the global context; no axioms."
       - name: Publish compiler status
         if: always()
         env:
