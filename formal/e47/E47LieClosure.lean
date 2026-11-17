@@ -1,7 +1,10 @@
 /- E47 exchange Lie closure: finite-field inverse witness.
    Compile with Lean 4; no mathlib required.
    The identity M*W=I over F_101 proves the 25 nested commutators independent.
-   This file has NOT been compiler-tested in this environment. -/
+   CI compiled this finite-field certificate on 2026-11-17 (run 44105482423).
+   Scope: the theorem verifies the supplied 25x25 inverse mod 101.
+   A full Lie-closure theorem additionally needs a formal bridge from
+   the 25 commutator words to this matrix and from independence to u(5). -/
 namespace E47Lie
 def prime : Nat := 101
 def mat : List (List Nat) :=
