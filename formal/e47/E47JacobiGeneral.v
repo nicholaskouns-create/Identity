@@ -10,21 +10,21 @@ Theorem upper_entry : forall s t r c : Q,
   t*s == 1 -> r*r == c -> t*r*(s*r) == c.
 Proof.
   intros s t r c ht hr.
-  replace (t*r*(s*r)) with ((t*s)*(r*r)) by ring.
+  setoid_replace (t*r*(s*r)) with ((t*s)*(r*r)) by ring.
   rewrite ht, hr. ring.
 Qed.
 Theorem lower_entry : forall sNext tNext s r : Q,
   sNext == s*r -> tNext*sNext == 1 -> tNext*r*s == 1.
 Proof.
   intros sNext tNext s r hs ht.
-  replace (tNext*r*s) with (tNext*(s*r)) by ring.
+  setoid_replace (tNext*r*s) with (tNext*(s*r)) by ring.
   rewrite <- hs. exact ht.
 Qed.
 Theorem diagonal_entry : forall s t a : Q,
   t*s == 1 -> t*a*s == a.
 Proof.
   intros s t a ht.
-  replace (t*a*s) with ((t*s)*a) by ring.
+  setoid_replace (t*a*s) with ((t*s)*a) by ring.
   rewrite ht. ring.
 Qed.
 Theorem zero_entry : forall s t : Q, t*0*s == 0.
