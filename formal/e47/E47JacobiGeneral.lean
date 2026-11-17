@@ -9,7 +9,7 @@ theorem upper_entry (s t r c : Rat)
     t * r * (s * r) = c := by
   calc
     t * r * (s * r) = (t * s) * (r * r) := by
-      simp only [Rat.mul_assoc, Rat.mul_left_comm, Rat.mul_comm]
+      simp only [Rat.mul_assoc, Rat.mul_comm]
     _ = c := by rw [ht, hr]; simp
 
 theorem lower_entry (sNext tNext s r : Rat)
@@ -18,14 +18,14 @@ theorem lower_entry (sNext tNext s r : Rat)
   calc
     tNext * r * s = tNext * sNext := by
       rw [hs]
-      simp only [Rat.mul_assoc, Rat.mul_left_comm, Rat.mul_comm]
+      simp only [Rat.mul_assoc, Rat.mul_comm]
     _ = 1 := ht
 
 theorem diagonal_entry (s t a : Rat) (ht : t * s = 1) :
     t * a * s = a := by
   calc
     t * a * s = (t * s) * a := by
-      simp only [Rat.mul_assoc, Rat.mul_left_comm, Rat.mul_comm]
+      simp only [Rat.mul_assoc, Rat.mul_comm]
     _ = a := by rw [ht]; simp
 
 theorem zero_entry (s t : Rat) : t * 0 * s = 0 := by simp
