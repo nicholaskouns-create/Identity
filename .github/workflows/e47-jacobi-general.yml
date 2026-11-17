@@ -8,6 +8,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  statuses: write
 jobs:
   generalized-jacobi:
     runs-on: ubuntu-24.04
@@ -27,3 +28,15 @@ jobs:
           cp formal/e47/E47JacobiGeneral.v /tmp/E47JacobiGeneral.v
           cd /tmp
           coqc -q E47JacobiGeneral.v
+      - name: Publish compiler status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JOB_RESULT: ${{ job.status }}
+        run: |
+          if [ "$JOB_RESULT" = "success" ]; then state=success; else state=failure; fi
+          curl --fail --silent --show-error -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+            -d "{\"state\":\"$state\",\"context\":\"E47 generalized Jacobi Lean Coq\",\"description\":\"Both compilers must succeed\"}"
