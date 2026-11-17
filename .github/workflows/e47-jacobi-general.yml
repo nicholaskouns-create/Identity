@@ -6,6 +6,8 @@ on:
       - 'formal/e47/E47JacobiGeneral.v'
       - 'formal/e47/E47RealForm.lean'
       - 'formal/e47/E47RealForm.v'
+      - 'formal/e47/E47LieWords.lean'
+      - 'formal/e47/E47LieWords.v'
       - '.github/workflows/e47-jacobi-general.yml'
   workflow_dispatch:
 permissions:
@@ -104,6 +106,43 @@ jobs:
           fi
           grep -q "Closed under the global context" /tmp/rfq.txt
           echo "Coq real form: closed under the global context."
+      - name: Compile Lie-words Lean
+        run: lean formal/e47/E47LieWords.lean
+      - name: Verify Lie-words Lean contains no sorry
+        run: |
+          cp formal/e47/E47LieWords.lean /tmp/LWAx.lean
+          cat >> /tmp/LWAx.lean <<'EOT'
+          #print axioms E47LieWords.conj_eval
+          #print axioms E47LieWords.spanning_from_inverse
+          #print axioms E47LieWords.sum_swap
+          #print axioms E47LieWords.sum_delta
+          #print axioms E47LieWords.delta_row
+          EOT
+          lean /tmp/LWAx.lean | tee /tmp/lwax.txt
+          if grep -q "sorryAx" /tmp/lwax.txt; then
+            echo "FAIL: a Lie-words proof depends on sorry"; exit 1
+          fi
+          echo "Lean Lie words: no sorry."
+      - name: Compile Lie-words Coq and verify assumptions
+        run: |
+          cp formal/e47/E47LieWords.v /tmp/E47LieWords.v
+          cd /tmp
+          coqc -q /tmp/E47LieWords.v
+          sed '/^End E47LieWords\.$/d' /tmp/E47LieWords.v > /tmp/LWInline.v
+          cat >> /tmp/LWInline.v <<'EOT'
+          Print Assumptions conj_eval.
+          Print Assumptions spanning_from_inverse.
+          Print Assumptions qsum_swap.
+          Print Assumptions qsum_delta.
+          End E47LieWords.
+          EOT
+          coqc -q /tmp/LWInline.v > /tmp/lwq.txt 2>&1
+          cat /tmp/lwq.txt
+          if grep -q "Axioms:" /tmp/lwq.txt; then
+            echo "FAIL: Lie-words Coq proof depends on an axiom"; exit 1
+          fi
+          grep -q "Closed under the global context" /tmp/lwq.txt
+          echo "Coq Lie words: closed under the global context."
       - name: Publish compiler status
         if: always()
         env:
