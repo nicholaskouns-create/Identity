@@ -90,7 +90,14 @@ jobs:
           cp formal/e47/E47RealForm.v /tmp/E47RealForm.v
           cd /tmp
           coqc -q E47RealForm.v
-          sed 's/^End E47RealForm\.$/Print Assumptions self_neg_zero.\\nPrint Assumptions smulI_skew_isHerm.\\nPrint Assumptions herm_skew_zero.\\nPrint Assumptions real_form_inter_trivial.\\nEnd E47RealForm./' /tmp/E47RealForm.v > /tmp/RFInline.v
+          sed '/^End E47RealForm\.$/d' /tmp/E47RealForm.v > /tmp/RFInline.v
+          cat >> /tmp/RFInline.v <<'EOT'
+          Print Assumptions self_neg_zero.
+          Print Assumptions smulI_skew_isHerm.
+          Print Assumptions herm_skew_zero.
+          Print Assumptions real_form_inter_trivial.
+          End E47RealForm.
+          EOT
           coqc -q /tmp/RFInline.v | tee /tmp/rfq.txt
           if grep -q "Axioms:" /tmp/rfq.txt; then
             echo "FAIL: real-form Coq proof depends on an axiom"; exit 1
