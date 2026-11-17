@@ -4,6 +4,8 @@ on:
     paths:
       - 'formal/e47/E47JacobiGeneral.lean'
       - 'formal/e47/E47JacobiGeneral.v'
+      - 'formal/e47/E47RealForm.lean'
+      - 'formal/e47/E47RealForm.v'
       - '.github/workflows/e47-jacobi-general.yml'
   workflow_dispatch:
 permissions:
@@ -66,6 +68,35 @@ jobs:
           fi
           grep -q "Closed under the global context" /tmp/axq.txt
           echo "Coq: closed under the global context; no axioms."
+      - name: Compile real-form Lean
+        run: lean formal/e47/E47RealForm.lean
+      - name: Verify real-form Lean contains no sorry
+        run: |
+          cp formal/e47/E47RealForm.lean /tmp/RFAx.lean
+          cat >> /tmp/RFAx.lean <<'EOT'
+          #print axioms E47RealForm.self_neg_zero
+          #print axioms E47RealForm.GQ.self_neg_zero
+          #print axioms E47RealForm.smulI_skew_isHerm
+          #print axioms E47RealForm.herm_skew_zero
+          #print axioms E47RealForm.real_form_inter_trivial
+          EOT
+          lean /tmp/RFAx.lean | tee /tmp/rfax.txt
+          if grep -q "sorryAx" /tmp/rfax.txt; then
+            echo "FAIL: a real-form proof depends on sorry"; exit 1
+          fi
+          echo "Lean real form: no sorry."
+      - name: Compile real-form Coq and verify assumptions
+        run: |
+          cp formal/e47/E47RealForm.v /tmp/E47RealForm.v
+          cd /tmp
+          coqc -q E47RealForm.v
+          sed 's/^End E47RealForm\.$/Print Assumptions self_neg_zero.\\nPrint Assumptions smulI_skew_isHerm.\\nPrint Assumptions herm_skew_zero.\\nPrint Assumptions real_form_inter_trivial.\\nEnd E47RealForm./' /tmp/E47RealForm.v > /tmp/RFInline.v
+          coqc -q /tmp/RFInline.v | tee /tmp/rfq.txt
+          if grep -q "Axioms:" /tmp/rfq.txt; then
+            echo "FAIL: real-form Coq proof depends on an axiom"; exit 1
+          fi
+          grep -q "Closed under the global context" /tmp/rfq.txt
+          echo "Coq real form: closed under the global context."
       - name: Publish compiler status
         if: always()
         env:
