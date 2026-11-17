@@ -1,0 +1,29 @@
+name: E47 generalized Jacobi exact similarity (Lean + Coq)
+on:
+  push:
+    paths:
+      - 'formal/e47/E47JacobiGeneral.lean'
+      - 'formal/e47/E47JacobiGeneral.v'
+      - '.github/workflows/e47-jacobi-general.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  generalized-jacobi:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq
+        run: sudo apt-get update -qq && sudo apt-get install -y coq
+      - name: Install Lean 4.35.0
+        run: |
+          curl --fail --location --silent --show-error https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.35.0 --no-modify-path
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile generalized Jacobi Lean
+        run: lean formal/e47/E47JacobiGeneral.lean
+      - name: Compile generalized Jacobi Coq
+        run: |
+          cp formal/e47/E47JacobiGeneral.v /tmp/E47JacobiGeneral.v
+          cd /tmp
+          coqc -q E47JacobiGeneral.v
