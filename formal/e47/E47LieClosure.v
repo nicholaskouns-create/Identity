@@ -1,5 +1,9 @@
 (* E47 exchange Lie closure: finite-field inverse witness.
-   Coq standard library; no Admitted. Not yet compiled in this environment. *)
+   Coq standard library; no Admitted.
+   CI compiled this finite-field certificate on 2026-11-17 (run 44105482423).
+   Scope: the theorem verifies the supplied 25x25 inverse mod 101.
+   A full Lie-closure theorem additionally needs a formal bridge from
+   the 25 commutator words to this matrix and from independence to u(5). *)
 From Coq Require Import List Arith Bool.
 Import ListNotations.
 Module E47Lie.
