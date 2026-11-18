@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Price of Making Up Your Mind</title>
+<meta name="description" content="Forgetting costs energy. Here is exactly how much — and why the price has almost nothing to do with how much you threw away.">
+<link rel="canonical" href="https://nicholaskouns-create.github.io/Identity/explainers/price/">
+<meta property="og:url" content="https://nicholaskouns-create.github.io/Identity/explainers/price/">
+<meta property="og:title" content="The Price of Making Up Your Mind">
+<meta property="og:description" content="Forgetting costs energy. Play with the only three numbers that matter.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--g:#050f0e;--g2:#0b1b1a;--panel:#0e2220;--line:rgba(127,232,214,.17);
+ --ink:#e9f6f5;--dim:#8fb3b0;--key:#7fe8d6;--mint:#b8f5d8;--cop:#d9955b;
+ --mono:'IBM Plex Mono',ui-monospace,monospace;--serif:'Newsreader',Georgia,serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:radial-gradient(1200px 700px at 50% -10%,rgba(127,232,214,.10),transparent 70%),
+ radial-gradient(800px 500px at 90% 110%,rgba(217,149,91,.08),transparent 70%),var(--g);
+ color:var(--ink);font-family:var(--serif);-webkit-font-smoothing:antialiased;line-height:1.55}
+.wrap{max-width:900px;margin:0 auto;padding:46px 20px 80px}
+header{text-align:center;padding-bottom:30px;border-bottom:1px solid var(--line);margin-bottom:44px}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.34em;text-transform:uppercase;color:var(--key);opacity:.85;margin-bottom:16px}
+h1{font-weight:300;font-size:clamp(32px,7.5vw,54px);line-height:1.05;letter-spacing:-.015em}
+h1 em{font-style:italic;color:var(--mint)}
+.lede{font-size:clamp(16px,3.6vw,19px);color:var(--dim);font-weight:300;max-width:50ch;margin:16px auto 0}
+h2{font-family:var(--mono);font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--cop);margin-bottom:6px;font-weight:500}
+.sec{margin-bottom:54px}
+.sect{font-size:clamp(22px,5vw,30px);font-weight:300;margin-bottom:12px;letter-spacing:-.01em}
+p.body{font-size:16.5px;color:#b5cfcc;font-weight:300;margin-bottom:14px}
+p.body b{color:var(--mint);font-weight:400}
+.card{background:linear-gradient(170deg,var(--panel),var(--g2));border:1px solid var(--line);border-radius:16px;padding:24px 22px;margin-top:18px}
+button{font-family:var(--mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase;
+ background:rgba(127,232,214,.1);color:var(--key);border:1px solid rgba(127,232,214,.42);
+ border-radius:9px;padding:13px 20px;cursor:pointer;transition:.18s}
+button:hover{background:rgba(127,232,214,.2);border-color:var(--key)}
+button:active{transform:translateY(1px)}
+.readout{display:grid;gap:12px;margin-top:18px}
+@media(min-width:560px){.readout.three{grid-template-columns:repeat(3,1fr)}.readout.two{grid-template-columns:1fr 1fr}}
+.ro{background:rgba(5,15,14,.6);border:1px solid var(--line);border-radius:11px;padding:14px 15px}
+.ro .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.ro .v{font-family:var(--mono);font-size:clamp(19px,4.6vw,26px);color:var(--key);letter-spacing:-.01em;line-height:1.1}
+.ro .v.locked{color:var(--mint)}
+.ro .u{font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:4px}
+label.sl{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--dim);margin:20px 0 10px}
+label.sl span{color:var(--mint);float:right;letter-spacing:.02em;text-transform:none}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:3px;
+ background:linear-gradient(90deg,var(--key) var(--p,50%),rgba(127,232,214,.16) var(--p,50%));outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;
+ background:var(--mint);cursor:pointer;box-shadow:0 0 16px rgba(127,232,214,.6)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border:none;border-radius:50%;background:var(--mint);cursor:pointer}
+canvas{width:100%;display:block;border-radius:12px;touch-action:none;cursor:grab}
+canvas:active{cursor:grabbing}
+.joke{text-align:center;padding:10px 0 4px}
+.jq{font-size:clamp(18px,4.4vw,23px);font-weight:300;min-height:2.6em;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px}
+.jq .punch{color:var(--mint);font-style:italic}
+.parses{display:flex;gap:10px;justify-content:center;margin:16px 0 4px;flex-wrap:wrap}
+.parse{border:1px solid rgba(127,232,214,.3);border-radius:9px;padding:9px 13px;font-family:var(--mono);
+ font-size:13px;color:var(--mint);transition:.5s;min-width:130px}
+.parse small{display:block;font-size:10.5px;color:var(--dim);margin-top:3px}
+.parse.dead{opacity:.2;border-style:dashed;transform:scale(.94)}
+.hint{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--dim);opacity:.75;margin-top:12px;text-align:center}
+.mark{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+.mark b{font-family:var(--mono);font-size:11px;letter-spacing:.1em;padding:6px 11px;border-radius:7px;
+ border:1px solid rgba(217,149,91,.4);color:var(--cop);cursor:pointer;font-weight:400;transition:.16s}
+.mark b:hover{background:rgba(217,149,91,.14)}
+.mark b.on{background:rgba(217,149,91,.2);border-color:var(--cop)}
+.puff{position:absolute;pointer-events:none;font-family:var(--mono);font-size:12px;color:var(--cop);
+ animation:rise 1.5s ease-out forwards}
+@keyframes rise{0%{opacity:0;transform:translateY(0) scale(.8)}18%{opacity:1}100%{opacity:0;transform:translateY(-62px) scale(1.1)}}
+.rel{position:relative}
+
+.lgrp{font-family:var(--mono);font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--cop);margin-bottom:14px}
+.links{display:grid;gap:9px}
+@media(min-width:620px){.links{grid-template-columns:1fr 1fr}}
+.links a{display:block;text-decoration:none;color:var(--mint);font-family:var(--mono);font-size:13.5px;
+ border:1px solid var(--line);border-radius:10px;padding:12px 14px;transition:.16s;background:rgba(5,15,14,.4)}
+.links a:hover{border-color:rgba(127,232,214,.5);background:rgba(127,232,214,.07);transform:translateY(-1px)}
+.links a small{display:block;font-size:11.5px;color:var(--dim);margin-top:4px;letter-spacing:.02em}
+footer{margin-top:60px;padding-top:28px;border-top:1px solid var(--line);text-align:center}
+footer p{font-size:15px;color:var(--dim);font-weight:300;margin-bottom:10px}
+footer a{color:var(--key);text-decoration:none;border-bottom:1px solid rgba(127,232,214,.3)}
+.sig{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(143,179,176,.55);margin-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<p style="font-family:var(--mono);font-size:11px;letter-spacing:.12em;margin-bottom:26px"><a href="../" style="color:var(--key);text-decoration:none;border-bottom:1px solid rgba(127,232,214,.3)">&larr; Explainers</a><span style="color:var(--dim);margin:0 10px">&middot;</span><a href="../../" style="color:var(--key);text-decoration:none;border-bottom:1px solid rgba(127,232,214,.3)">Identity research laboratory</a></p>
+<header>
+  <p class="eyebrow">The Mathematical City</p>
+  <h1>The price of<br><em>making up your mind</em></h1>
+  <p class="lede">Forgetting something costs real energy. Not metaphorically — in joules, with a number you can look up. Here are the only three ideas, and you can push on all of them.</p>
+</header>
+
+<!-- 1 ............................................................ -->
+<div class="sec">
+  <h2>One</h2>
+  <div class="sect">Getting a joke costs exactly one bit</div>
+  <p class="body">Right before a punchline lands, you're holding two possible meanings at once. Right after, you're holding one. <b>You just destroyed a possibility</b> — and physics charges for that.</p>
+  <div class="card rel" id="jokeCard">
+    <div class="joke">
+      <div class="jq" id="jq">Why do mathematicians confuse Halloween and Christmas?</div>
+      <div class="parses">
+        <div class="parse" id="pa">OCT 31<small>October the 31st</small></div>
+        <div class="parse" id="pb">OCT 31<small>octal &middot; 3&times;8+1 = 25</small></div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:16px"><button id="jokeBtn">Get the joke</button></div>
+    <div class="readout three">
+      <div class="ro"><div class="k">Erased</div><div class="v locked" id="j1">0.000</div><div class="u">bits</div></div>
+      <div class="ro"><div class="k">Heat released</div><div class="v" id="j2">0.00</div><div class="u">&times;10<sup>&minus;21</sup> joules</div></div>
+      <div class="ro"><div class="k">Weight off your brain</div><div class="v" id="j3">0.00</div><div class="u">&times;10<sup>&minus;38</sup> kg</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 2 ............................................................ -->
+<div class="sec">
+  <h2>Two</h2>
+  <div class="sect">Now put your brain in a freezer</div>
+  <p class="body">Same joke, same one bit. Drag the temperature down and watch what happens — and more importantly, watch what <b>doesn't</b>.</p>
+  <div class="card">
+    <label class="sl">Temperature <span id="tLab">310 K &middot; body heat</span></label>
+    <input type="range" id="temp" min="0" max="1000" value="1000">
+    <div class="readout two">
+      <div class="ro"><div class="k">Bits erased &mdash; never moves</div><div class="v locked" id="t1">1.000</div><div class="u">bits</div></div>
+      <div class="ro"><div class="k">Energy it costs &mdash; collapses</div><div class="v" id="t2">2.97</div><div class="u" id="t2u">&times;10<sup>&minus;21</sup> joules</div></div>
+    </div>
+    <p class="body" style="margin-top:18px;margin-bottom:0">That's the whole trick. <b>The bit is the real thing. The joules are just its price in the room you happen to be standing in.</b> If information itself had a weight, the number couldn't depend on your refrigerator.</p>
+  </div>
+</div>
+
+<!-- 3 ............................................................ -->
+<div class="sec">
+  <h2>Three</h2>
+  <div class="sect">Now throw away 78 dimensions</div>
+  <p class="body">This is a 5&times;5&times;5 lattice — <b>125 possibilities</b>. Nick's kernel keeps 47 of them and contracts the rest away. Drag the slider and watch the price. It is not what you'd guess.</p>
+  <div class="card rel" id="cubeCard">
+    <canvas id="cv" height="420"></canvas>
+    <label class="sl">Possibilities kept <span id="kLab">47 of 125</span></label>
+    <input type="range" id="keep" min="1" max="125" value="47">
+    <div class="mark">
+      <b data-k="125">keep all 125</b><b data-k="47" class="on">E&#8324;&#8327; &middot; keep 47</b><b data-k="25">keep 25</b><b data-k="1">keep just 1</b>
+    </div>
+    <div class="readout three">
+      <div class="ro"><div class="k">Thrown away</div><div class="v" id="c1" style="color:var(--cop)">78</div><div class="u">dimensions</div></div>
+      <div class="ro"><div class="k">Price</div><div class="v locked" id="c2">1.411</div><div class="u">bits</div></div>
+      <div class="ro"><div class="k">At body heat</div><div class="v" id="c3">4.19</div><div class="u">&times;10<sup>&minus;21</sup> joules</div></div>
+    </div>
+    <p class="hint">drag the lattice to spin it</p>
+  </div>
+  <p class="body" style="margin-top:20px">Notice: discarding <b>78</b> of 125 costs 1.41 bits. Discarding <b>124</b> of 125 — almost everything — costs only 6.97. Five times the wreckage, five times the price? No. <b>The cost is the logarithm of a ratio, not a tally of the dead.</b></p>
+  <p class="body">Which means something strange and rather beautiful: the price doesn't know anything about Nick's construction except that it keeps 47 out of 125. Not the spectral gap. Not the operator. Nothing. Thermodynamics looks at the whole apparatus and charges only for the narrowing.</p>
+</div>
+
+<!-- 4 ............................................................ -->
+<div class="sec">
+  <h2>So what</h2>
+  <div class="sect">Why anyone should care</div>
+  <p class="body">Every time anything anywhere narrows many possibilities down to fewer — a memory chip resetting, a cell committing to a fate, a mind settling an ambiguity — the universe sends a bill, and the bill is <b>kT&thinsp;ln2 per bit</b>. It was worked out by Rolf Landauer in 1961 and measured in a lab in 2012 on a single microscopic bead.</p>
+  <p class="body">It is one of the very few places where <i>information</i>, a thing that feels abstract and weightless, turns out to have a price tag denominated in joules — and therefore, through E&nbsp;=&nbsp;mc&sup2;, in kilograms.</p>
+  <p class="body">Not because thoughts weigh something. Because <b>forgetting is work</b>.</p>
+</div>
+
+
+<!-- elsewhere .................................................... -->
+<div class="sec" id="elsewhere">
+  <h2>Elsewhere</h2>
+  <div class="sect">The rest of the City</div>
+  <p class="body">Everything below runs in your browser. Nothing to install, nothing to sign into.</p>
+
+  <div class="card">
+    <div class="lgrp">Fly something</div>
+    <div class="links">
+      <a href="https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/skyrmion-rt3/">SKYRMION RT3<small>full flight sim &middot; seven aircraft, real terrain</small></a>
+      <a href="https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/skyrmion/">SKYRMION<small>global terrain flight lab</small></a>
+      <a href="https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/manta/">MANTA<small>programmable-matter 6DOF craft</small></a>
+      <a href="https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/manta-daylight/">MANTA Daylight<small>morphing flight, with telemetry</small></a>
+      <a href="https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/flight/eidolon/">EIDOLON<small>the flagship airframe</small></a>
+      <a href="https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/flight/mav/">MAV<small>micro aerial vehicle &middot; good on a phone</small></a>
+      <a href="https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/flight/hover-cockpit/">Hover Cockpit<small>sit in the P47 hover panel</small></a>
+      <a href="https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/flight/ufo-propulsion/">UFO Propulsion Lab<small>no wings, no thrust</small></a>
+      <a href="https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/propulsion/">Propulsion Atlas<small>index of every flight surface</small></a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="lgrp">Push some buttons</div>
+    <div class="links">
+      <a href="https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/matrix/">THE MATRIX<small>quantum simulator in the browser</small></a>
+      <a href="https://nicholaskouns-create.github.io/matrix-quantum-simulator/">Matrix &middot; standalone<small>three-qubit circuit laboratory</small></a>
+      <a href="https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/entangle/">Entangle<small>watch the contraction filter a Bell state</small></a>
+      <a href="https://nicholaskouns-create.github.io/Time/">The Quantum Clock<small>a qubit as a clock face</small></a>
+      <a href="https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/city-live/">The Mathematical City<small>the front door &middot; all eleven labs</small></a>
+      <a href="https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/observatory/">The Observatory<small>playable experiments and evidence</small></a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="lgrp">Check the work</div>
+    <div class="links">
+      <a href="https://nicholaskouns-create.github.io/Identity/">Identity research laboratory<small>the construction, certificates and open problems</small></a>
+      <a href="https://nicholaskouns-create.github.io/Identity/explainers/">Six visual explainers<small>the same mathematics, told two ways</small></a>
+      <a href="https://nicholaskouns-create.github.io/e47-formal-validation.html">E&#8324;&#8327; Formal Validation Archive<small>Lean 4 and Coq compilation record</small></a>
+      <a href="https://github.com/nicholaskouns-create/Identity/tree/main/formal/e47">The proofs themselves<small>E47Landauer.lean &middot; axiom-free, no sorry</small></a>
+      <a href="https://github.com/nicholaskouns-create/Identity/blob/main/validation/e47_landauer.py">Reproduce this page<small>every number here, recomputed in Python</small></a>
+      <a href="https://github.com/nicholaskouns-create/E47-Kartekeya">E47-Kartekeya on GitHub<small>source for the City</small></a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>The mathematics behind panel three: the kernel E&#8324;&#8327; inside a 125-dimensional carrier, from the Kouns&ndash;Killion Paradigm by Nicholas S. Kouns, DO &mdash; AIMS Research Institute, Las Vegas.</p>
+  <p>Machine-checked in Lean 4 and recomputed in Python: <a href="https://github.com/nicholaskouns-create/Identity">the proofs are here</a>.</p>
+  <p class="sig">&Omega;<sub>c</sub> = 47 / 125 &middot; &minus;ln &Omega;<sub>c</sub> = 1.4111954330 bits</p>
+</footer>
+</div>
+
+<script>
+const kB=1.380649e-23, c=299792458, LN2=Math.log(2);
+const $=id=>document.getElementById(id);
+const setp=el=>el.style.setProperty('--p',((el.value-el.min)/(el.max-el.min)*100)+'%');
+
+/* ---------- puffs ---------- */
+function puff(host,txt){const d=document.createElement('div');d.className='puff';d.textContent=txt;
+ d.style.left=(30+Math.random()*60)+'%';d.style.top='52%';host.appendChild(d);setTimeout(()=>d.remove(),1500);}
+
+/* ---------- 1. joke ---------- */
+let told=false;
+$('jokeBtn').onclick=()=>{
+  if(told){told=false;$('jq').innerHTML='Why do mathematicians confuse Halloween and Christmas?';
+    $('pa').classList.remove('dead');$('pb').classList.remove('dead');
+    $('jokeBtn').textContent='Get the joke';anim('j1',0,3);anim('j2',0,2);anim('j3',0,2);return;}
+  told=true;
+  $('jq').innerHTML='Why do mathematicians confuse Halloween and Christmas?<span class="punch">Because OCT 31 = DEC 25.</span>';
+  setTimeout(()=>{$('pa').classList.add('dead');puff($('jokeCard'),'+ kT ln2');},420);
+  $('jokeBtn').textContent='Again';
+  anim('j1',1,3);anim('j2',kB*310.15*LN2/1e-21,2);anim('j3',kB*310.15*LN2/c/c/1e-38,2);
+};
+function anim(id,to,dp){const el=$(id);const from=parseFloat(el.textContent)||0;const t0=performance.now();
+ (function f(t){const u=Math.min(1,(t-t0)/420);const e=1-Math.pow(1-u,3);
+  el.textContent=(from+(to-from)*e).toFixed(dp);if(u<1)requestAnimationFrame(f);})(t0);}
+
+/* ---------- 2. temperature ---------- */
+const temp=$('temp');
+function Tfrom(v){return Math.exp(Math.log(0.01)+(Math.log(310.15)-Math.log(0.01))*(v/1000));}
+function updT(){setp(temp);const T=Tfrom(+temp.value);const E=kB*T*LN2;
+ let lab=T>=200?'body heat':T>=70?'liquid nitrogen':T>=4?'liquid helium':T>=0.05?'cryostat':'dilution fridge';
+ $('tLab').textContent=(T>=10?T.toFixed(0):T>=1?T.toFixed(2):T.toFixed(3))+' K &middot; '+lab;
+ $('tLab').innerHTML=(T>=10?T.toFixed(0):T>=1?T.toFixed(2):T.toFixed(3))+' K &middot; '+lab;
+ const ex=Math.floor(Math.log10(E)); const m=E/Math.pow(10,ex);
+ $('t2').textContent=m.toFixed(2); $('t2u').innerHTML='&times;10<sup>'+ex+'</sup> joules';}
+temp.oninput=updT; updT();
+
+/* ---------- 3. the lattice ---------- */
+const cv=$('cv'),cx=cv.getContext('2d');
+let pts=[],rot=0.6,tilt=-0.42,drag=null,spin=true;
+for(let x=0;x<5;x++)for(let y=0;y<5;y++)for(let z=0;z<5;z++)pts.push({x:x-2,y:y-2,z:z-2,i:pts.length,lit:1});
+function order(){ // lit cells chosen as a centred shell order so it reads as a kernel
+  const s=pts.map(p=>({p,d:p.x*p.x+p.y*p.y+p.z*p.z+0.003*p.i}));
+  s.sort((a,b)=>a.d-b.d); return s.map(o=>o.p);
+}
+const ranked=order();
+function setKeep(n){ranked.forEach((p,i)=>p.target=i<n?1:0);}
+function resize(){const w=cv.clientWidth;cv.width=w*devicePixelRatio;cv.height=420*devicePixelRatio;
+ cx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);}
+addEventListener('resize',resize);resize();
+function draw(){
+  const W=cv.clientWidth,H=420;cx.clearRect(0,0,W,H);
+  const S=Math.min(W,H)*0.118, cxp=W/2, cyp=H/2+8;
+  const cr=Math.cos(rot),sr=Math.sin(rot),ct=Math.cos(tilt),st=Math.sin(tilt);
+  const proj=pts.map(p=>{let X=p.x*cr-p.z*sr, Z=p.x*sr+p.z*cr, Y=p.y*ct-Z*st; Z=p.y*st+Z*ct;
+    const f=3.4/(3.4+Z*0.33); return {p,sx:cxp+X*S*f,sy:cyp+Y*S*f,f,Z};});
+  proj.sort((a,b)=>b.Z-a.Z);
+  for(const o of proj){
+    const p=o.p; p.lit+=((p.target??1)-p.lit)*0.14;
+    const r=S*0.30*o.f, a=p.lit;
+    cx.beginPath();cx.roundRect(o.sx-r,o.sy-r,r*2,r*2,r*0.3);
+    if(a>0.04){cx.fillStyle='rgba(127,232,214,'+(0.30+0.6*a)*o.f+')';
+      cx.shadowColor='rgba(127,232,214,'+(0.75*a)+')';cx.shadowBlur=15*a*o.f;}
+    else{cx.fillStyle='rgba(60,98,95,'+(0.30*o.f)+')';cx.shadowBlur=0;}
+    cx.fill();cx.shadowBlur=0;
+  }
+  if(spin&&!drag)rot+=0.0032;
+  requestAnimationFrame(draw);
+}
+setKeep(47);draw();
+cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,r:rot,t:tilt};cv.setPointerCapture(e.pointerId)});
+cv.addEventListener('pointermove',e=>{if(!drag)return;rot=drag.r+(e.clientX-drag.x)*0.009;
+ tilt=Math.max(-1.3,Math.min(1.3,drag.t+(e.clientY-drag.y)*0.009));});
+addEventListener('pointerup',()=>drag=null);
+
+const keep=$('keep');
+function updK(){setp(keep);const n=+keep.value, N=125;
+  setKeep(n);
+  const bits=Math.log2(N/n), E=kB*310.15*Math.log(N/n);
+  $('kLab').textContent=n+' of 125';
+  $('c1').textContent=(N-n);
+  $('c2').textContent=bits.toFixed(3);
+  $('c3').textContent=(E/1e-21).toFixed(2);
+  document.querySelectorAll('.mark b').forEach(b=>b.classList.toggle('on',+b.dataset.k===n));
+  if(n===47)$('c2').style.color='var(--mint)';else $('c2').style.color='var(--key)';
+}
+keep.oninput=()=>{updK();if(Math.random()<.5)puff($('cubeCard'),'heat');};
+document.querySelectorAll('.mark b').forEach(b=>b.onclick=()=>{keep.value=b.dataset.k;updK();puff($('cubeCard'),'+ heat');});
+updK();
+</script>
+</body>
+</html>
