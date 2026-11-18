@@ -164,7 +164,70 @@ K_mom  =  (C − μI)² − σ²I  =  (C − (μ−σ)I)(C − (μ+σ)I)
 
                                                    <span class="g">3/φ  =  1.854101966…</span></div>
 
-  <div class="good"><b>What this settles.</b> The question "why spin 2 and spin 5" has an answer, and the answer is that they were never selected. Given the coupling, the moments determine the operator; given the operator, two Pell equations determine every carrier on which it has a non-trivial kernel; and 47 inside 125 is the first rung of the resulting tower. The construction has no free parameter left in it.</div>
+  <div class="good"><b>What this settles.</b> The question "why spin 2 and spin 5" has an answer, and the answer is that they were never selected. Given the coupling, the moments determine the operator; given the operator, two Pell equations determine every carrier on which it has a non-trivial kernel; and 47 inside 125 is the first rung of the resulting tower. No adjustable quantity remains between the inputs and the number — see the ledger below, which names the inputs rather than absorbing them.</div>
+</section>
+
+
+<section class="wrap">
+  <div class="srule"><span class="num">I&nbsp;b</span><h2>The ledger of choices</h2></div>
+  <p class="lede">No free parameter is not the same as no input.</p>
+  <p class="sub prose">A free parameter is a quantity that can be dialled toward a target. There is none here: nothing in the construction can be tuned to make 47 appear. But the construction does have inputs, and they are choices. They are category choices, made before any number enters, and they are listed here rather than absorbed into the word &ldquo;forced&rdquo;.</p>
+
+  <div class="deriv" style="grid-template-columns:1fr">
+    <div>
+      <h3>Forced — no choice once the line above it is fixed</h3>
+      <div class="math" style="margin-top:12px"><span class="a">the measure</span>    E[X] = tr X / dim H is the unique tracial state on a matrix
+                algebra. Once a basis-free expectation is wanted, it is not a choice.
+
+<span class="a">the scaling</span>    E[K_t] = σ²(1 − t²), so t² = 1 is the unique traceless member.
+
+<span class="a">the degree</span>     swept on the 125 × 125 matrix for this record:
+                  d = 2   roots <span class="g">6, 30</span>              both on the spectrum
+                  d = 3   root  28.0266            not on the spectrum
+                  d = 4   roots 3.1865, 32.8135    not on the spectrum
+                  d = 5   root  32.8813            not on the spectrum
+
+<span class="a">the order</span>      (2n−1)² − 6m² = 1, with the lower root an eigenvalue at
+                every spin. σ = 4√3 at n = 2, 12√2 at n = 4. Only n = 3.
+
+<span class="a">the spin</span>       second Pell equation in √5 → (2J+1, 2j+1) = (L_k, F_k), k odd.
+
+<span class="a">the rung</span>       k = 3 has F, L even, so j and J are not genuine spins, and its
+                kernel is the entire carrier (8 of 8) — degenerate. k = 5 is the
+                <span class="g">first rung with a proper kernel</span>. Not picked. First.
+
+<span class="a">the count</span>      47 = 25 + 22 by Clebsch–Gordan. Nothing to choose.</div>
+    </div>
+  </div>
+
+  <div class="deriv" style="grid-template-columns:1fr;margin-top:1px">
+    <div>
+      <h3>Chosen — named here rather than absorbed</h3>
+      <div class="math" style="margin-top:12px"><span class="r">the algebra</span>    su(2), not derived. It is the smallest non-abelian compact
+                simple Lie algebra, which is a reason and not a derivation.
+
+<span class="r">the carrier</span>    a single irrep tensored with itself, V_j<sup>⊗n</sup>, rather than a
+                mixed product. The moment computation depends on every factor
+                carrying the same j.
+
+<span class="r">the operator</span>   the total Casimir, rather than another invariant. C generates the
+                centre of U(su(2)), so it is the canonical choice — but the
+                pairwise J⁽ⁱ⁾·J⁽ᵏ⁾ are also su(2)-invariant and are not
+                polynomials in C. Taking C is choosing to look only at the total.
+
+<span class="r">the shape</span>      a centred power of C with its own expectation removed. Forced
+                <i>within</i> that family, as above. The family itself is a choice —
+                and one natural competitor is recorded as failing. Recomputed
+                here: the unique monic quadratic with tr P = tr(CP) = 0 is
+                  P = C² − 43C + 306,   roots <span class="r">9 and 34</span>,
+                neither a Casimir eigenvalue, so that prescription has
+                trivial kernel.</div>
+    </div>
+  </div>
+
+  <div class="good"><b>What the distinction buys.</b> The claim worth making is not that the construction came from nowhere. It is that between the inputs above and the number 47 there is no adjustable quantity — no coefficient fitted, no threshold set, no exponent tuned. Fix the four choices and everything downstream is determined. That is a stronger statement than &ldquo;no parameters&rdquo;, because it can be checked, and it is what the sweep above checks.</div>
+
+  <div class="boundary"><b>No circularity.</b> The moments depend on n and j, which are also what the chain determines. There is no loop: for each pair (n, j) the question &ldquo;are μ ∓ σ Casimir eigenvalues?&rdquo; is well posed and independent, and the set of pairs answering yes is thin. The chain tests candidates; it does not assume its conclusion.</div>
 </section>
 
 <section class="wrap">
