@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The forced chain · 18 November 2026 | Identity</title>
+<meta name="description" content="One record of the E47 construction end to end: what is forced, what is machine-checked, what is open, and what belongs to a different evidence class. Every figure recomputed.">
+<meta name="author" content="Nicholas Shane Kouns, DO — AIMS Research Institute">
+<link rel="canonical" href="https://nicholaskouns-create.github.io/Identity/verification/forced-chain-2026-11-18/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+html{-webkit-text-size-adjust:100%}
+:root{
+  --ink:#0c131d; --ink-2:#121b27; --ink-3:#18232f;
+  --rule:#243343; --rule-soft:#1b2634;
+  --fg:#dde6ef; --fg-dim:#9aa9b9; --fg-faint:#6c7d8f;
+  --amber:#d9a441; --amber-soft:#8a6a2c;
+  --green:#4ea97d; --green-bg:#13241c;
+  --clay:#cf6b5c; --clay-bg:#241617;
+  --slate:#7f93a7; --slate-bg:#18212c;
+  --link:#8dc3dd; --sel:#2b3f52;
+  --serif:"Spectral",Georgia,serif;
+  --sans:"IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){
+  --ink:#eef0f3;--ink-2:#fff;--ink-3:#f4f6f8;--rule:#ccd3dc;--rule-soft:#dde2e9;
+  --fg:#16202c;--fg-dim:#4d5a6a;--fg-faint:#7a8899;--amber:#8a5d00;--amber-soft:#b89353;
+  --green:#0b7a53;--green-bg:#e2f4ea;--clay:#b3372a;--clay-bg:#fbe8e5;
+  --slate:#54606f;--slate-bg:#e9edf2;--link:#1b5a86;--sel:#cfe0ea;color-scheme:light}}
+*{box-sizing:border-box}
+body{background:var(--ink);color:var(--fg);font-family:var(--serif);font-size:17px;line-height:1.62;margin:0;-webkit-font-smoothing:antialiased}
+::selection{background:var(--sel)}
+a{color:var(--link);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--link) 35%,transparent)}
+a:hover{border-bottom-color:var(--link)}
+h1,h2,h3{text-wrap:balance;margin:0;font-weight:600;line-height:1.2}
+p{margin:0}
+code{font-family:var(--mono);font-size:.86em}
+.wrap{max-width:1140px;margin:0 auto;padding-inline:max(20px,env(safe-area-inset-left,0px))}
+.prose{max-width:70ch}
+.topbar{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--ink) 93%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--rule-soft)}
+.topbar .wrap{display:flex;align-items:center;gap:18px;padding-block:9px;min-height:50px}
+.brand{font-family:var(--sans);font-weight:600;font-size:13px;letter-spacing:.22em;color:var(--amber);border:0;white-space:nowrap}
+.back{font-family:var(--sans);font-size:12.5px;color:var(--fg-dim);border:0;margin-left:auto}
+.mast{padding-block:54px 40px;border-bottom:1px solid var(--rule)}
+.eyebrow{font-family:var(--sans);font-size:11.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--amber);margin-bottom:22px}
+.mast h1{font-size:clamp(2.3rem,6.2vw,3.9rem);font-weight:300;letter-spacing:-.015em;line-height:1.04}
+.mast h1 em{font-style:italic;color:var(--amber)}
+.deck{font-size:clamp(1.05rem,2.2vw,1.28rem);color:var(--fg-dim);margin-top:20px;max-width:62ch;font-weight:300}
+.byline{font-family:var(--sans);font-size:13px;color:var(--fg-faint);margin-top:26px;line-height:1.75}
+.byline strong{color:var(--fg-dim);font-weight:500}
+.omega{margin-top:34px;border:1px solid var(--rule);background:var(--ink-2);display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.omega .cell{padding:16px 18px;border-right:1px solid var(--rule-soft);min-width:0}
+.omega .cell:last-child{border-right:0}
+.omega .k{font-family:var(--sans);font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--fg-faint)}
+.omega .v{font-family:var(--mono);font-size:1.42rem;font-variant-numeric:tabular-nums;color:var(--fg);margin-top:7px;line-height:1.15}
+.omega .v small{font-size:.62em;color:var(--fg-faint)}
+.omega .n{font-family:var(--sans);font-size:11.5px;color:var(--fg-faint);margin-top:5px}
+@media(max-width:620px){.omega .cell{border-right:0;border-bottom:1px solid var(--rule-soft)}.omega .cell:last-child{border-bottom:0}}
+section{padding-block:50px;border-bottom:1px solid var(--rule-soft);scroll-margin-top:72px}
+.srule{display:flex;align-items:baseline;gap:14px;margin-bottom:8px;flex-wrap:wrap}
+.num{font-family:var(--sans);font-size:11.5px;letter-spacing:.24em;color:var(--amber)}
+.srule h2{font-family:var(--sans);font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--amber);font-weight:600}
+.lede{font-size:clamp(1.4rem,3.4vw,2rem);font-weight:300;letter-spacing:-.01em;margin-top:14px;max-width:32ch;line-height:1.16}
+.sub{color:var(--fg-dim);margin-top:16px;max-width:70ch}
+.sub + .sub{margin-top:13px}
+.math{font-family:var(--mono);font-size:13.5px;background:var(--ink-3);border:1px solid var(--rule-soft);padding:16px 18px;margin-top:22px;overflow-x:auto;line-height:1.85;white-space:pre;color:var(--fg)}
+.math .c{color:var(--fg-faint)} .math .g{color:var(--green)} .math .a{color:var(--amber)} .math .r{color:var(--clay)}
+.boundary{border-left:2px solid var(--clay);background:var(--clay-bg);padding:14px 18px;margin-top:26px;font-family:var(--sans);font-size:13.5px;color:var(--fg-dim);line-height:1.62;max-width:72ch}
+.boundary b{color:var(--clay);font-weight:600;letter-spacing:.04em}
+.good{border-left:2px solid var(--green);background:var(--green-bg);padding:14px 18px;margin-top:26px;font-family:var(--sans);font-size:13.5px;color:var(--fg-dim);line-height:1.62;max-width:72ch}
+.good b{color:var(--green);font-weight:600;letter-spacing:.04em}
+.ledger{margin-top:22px;border:1px solid var(--rule);background:var(--ink-2)}
+.row{display:grid;grid-template-columns:minmax(0,1.5fr) 112px 92px minmax(0,1.6fr);gap:18px;padding:13px 18px;border-top:1px solid var(--rule-soft);align-items:start}
+.row:first-child{border-top:0}
+.row.head{border-top:0;background:var(--ink-3);padding-block:9px;font-family:var(--sans);font-size:10px;letter-spacing:.17em;text-transform:uppercase;color:var(--fg-faint)}
+.row .idc{font-family:var(--mono);font-size:11.5px;color:var(--amber);overflow-wrap:anywhere}
+.row .ttl{font-family:var(--sans);font-size:12.5px;color:var(--fg-faint);margin-top:5px;display:block}
+.stat{font-family:var(--mono);font-size:11.5px;padding-top:2px;font-variant-numeric:tabular-nums}
+.ok{color:var(--green)} .mid{color:var(--amber)} .no{color:var(--fg-faint)} .def{color:var(--clay)}
+.row .detail{font-family:var(--mono);font-size:11.5px;color:var(--fg-dim);line-height:1.7;min-width:0;overflow-wrap:anywhere}
+@media(max-width:760px){.row{grid-template-columns:1fr 1fr;gap:9px}.row.head{display:none}.row .nm,.row .detail{grid-column:1/-1}
+.row .detail{border-top:1px dashed var(--rule-soft);padding-top:9px}.stat::before{content:attr(data-l) " ";color:var(--fg-faint);letter-spacing:.14em}}
+.deriv{display:grid;grid-template-columns:1fr;gap:1px;background:var(--rule-soft);border:1px solid var(--rule-soft);margin-top:26px}
+@media(min-width:560px){.deriv{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:980px){.deriv{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.deriv > div{background:var(--ink-2);padding:16px 17px;min-width:0}
+.deriv h3{font-family:var(--sans);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--fg-faint);font-weight:500}
+.deriv .big{font-family:var(--mono);font-size:1.18rem;color:var(--fg);margin-top:9px;font-variant-numeric:tabular-nums}
+.deriv p{font-family:var(--sans);font-size:12.5px;color:var(--fg-faint);margin-top:8px;line-height:1.55}
+.chain{margin-top:26px;border:1px solid var(--rule);background:var(--ink-2);padding:4px 0}
+.step{display:grid;grid-template-columns:30px minmax(0,1fr);gap:16px;padding:15px 18px;border-top:1px solid var(--rule-soft)}
+.step:first-child{border-top:0}
+.step .i{font-family:var(--mono);font-size:12px;color:var(--amber);padding-top:3px}
+.step h3{font-family:var(--sans);font-size:14.5px;color:var(--fg);font-weight:600}
+.step p{font-size:14.5px;color:var(--fg-dim);margin-top:6px;max-width:72ch}
+.step code{color:var(--green)}
+footer{padding-block:44px 70px}
+.note{font-family:var(--sans);font-size:13px;color:var(--fg-faint);line-height:1.7;max-width:74ch}
+</style>
+</head>
+<body>
+
+<header class="topbar"><div class="wrap">
+  <a class="brand" href="../../">IDENTITY</a>
+  <a class="back" href="../../#certificates">← Certificates</a>
+</div></header>
+
+<div class="wrap mast">
+  <p class="eyebrow">Verification record · 18 November 2026</p>
+  <h1>The chain, <em>forced at every step</em></h1>
+  <p class="deck">One record of the construction end to end — where 47 comes from, what a machine has checked, what remains open, and which material belongs to a different evidence class entirely. Every figure below was recomputed for this record rather than carried over.</p>
+  <p class="byline"><strong>Sources.</strong> The moment-selector note (27 October 2026), the Coq full-tree sweep (13 November 2026), the Lean axiom ledger, and twelve public repositories.<br>
+  <strong>Toolchains.</strong> Lean 4.19.0 and 4.35.0 · Coq 8.18.0 · Python 3 with NumPy.</p>
+
+  <div class="omega">
+    <div class="cell"><div class="k">Free parameters<br>in the selector</div><div class="v">0</div><div class="n">μ and σ fix both roots</div></div>
+    <div class="cell"><div class="k">Coq results<br>closed</div><div class="v">342 <small>/ 390</small></div><div class="n">0 axioms from this corpus</div></div>
+    <div class="cell"><div class="k">Coherence<br>ratio</div><div class="v">47 / 125</div><div class="n">= 0.376 exactly</div></div>
+    <div class="cell"><div class="k">Erasure cost<br>of the projection</div><div class="v">1.4112</div><div class="n">bits = −log₂ Ω<sub>c</sub></div></div>
+  </div>
+</div>
+
+<section class="wrap">
+  <div class="srule"><span class="num">I</span><h2>Where 47 comes from</h2></div>
+  <p class="lede">The selector is not chosen. It is the first two moments of the Casimir.</p>
+  <p class="sub prose">A polynomial in a Casimir operator annihilates a union of isotypic sectors, and ordinarily choosing the polynomial is choosing which sectors to keep. Here it is not chosen. Take the normalised trace <code>E[X] = tr X / dim H</code>, let <code>μ = E[C]</code> and <code>σ² = E[(C−μI)²]</code>, and form the centred square of the Casimir with its own expectation removed:</p>
+
+  <div class="math"><span class="c">(* the moment selector *)</span>
+K_mom  =  (C − μI)² − σ²I  =  (C − (μ−σ)I)(C − (μ+σ)I)
+
+<span class="c">on V₂ ⊗ V₂ ⊗ V₂, recomputed on the 125 × 125 matrix for this record:</span>
+  μ  =  <span class="a">18.00000</span>        predicted  n·j(j+1)              = 18
+  σ  =  <span class="a">12.00000</span>        predicted  √(2n(n−1)/3)·j(j+1)  = 12
+
+  μ − σ = <span class="g">6</span>            μ + σ = <span class="g">30</span>
+
+<span class="c">therefore</span>   K = (C − 6I)(C − 30I)   <span class="c">— with nothing selected by hand.</span></div>
+
+  <p class="sub prose">The two numbers that pick out spin 2 and spin 5 are the mean of the Casimir spectrum and one standard deviation either side of it. They are outputs of the carrier, not inputs to it.</p>
+
+  <div class="chain">
+    <div class="step"><div class="i">1</div><div><h3>The scaling is forced</h3>
+      <p>For <code>K_t = (C−μI)² − t²σ²I</code> one has <code>E[K_t] = σ²(1−t²)</code>, so <code>K_mom</code> is the unique traceless member of the family. One standard deviation is not a choice.</p></div></div>
+    <div class="step"><div class="i">2</div><div><h3>The degree is forced</h3>
+      <p>For the traceless centred power of degree <code>d</code>, only <code>d = 2</code> has roots on the Casimir spectrum. At <code>d = 3</code> the centred moment is 1008 and <code>18 + 1008^(1/3)</code> is irrational; <code>d = 4, 5</code> fail likewise.</p></div></div>
+    <div class="step"><div class="i">3</div><div><h3>The tensor order is forced</h3>
+      <p>Rationality of σ requires <code>2n(n−1)/3</code> to be a perfect square, giving the Pell equation <code>(2n−1)² − 6m² = 1</code> and the orders <code>3, 25, 243, 2401, 23763, …</code> — of which only <code>n = 3</code> has the lower root a Casimir eigenvalue at every spin. Recomputed here: at <code>n = 2</code>, σ = 4√3; at <code>n = 4</code>, σ = 12√2. Both irrational, both excluded.</p></div></div>
+    <div class="step"><div class="i">4</div><div><h3>The spin is forced</h3>
+      <p>On the cube the upper root is a Casimir eigenvalue precisely when <code>(2J+1, 2j+1) = (L_k, F_k)</code> for odd <code>k</code> — a second Pell equation, now in √5. The admissible spins form a Fibonacci–Lucas tower.</p></div></div>
+    <div class="step"><div class="i">5</div><div><h3>47 is the fifth rung</h3>
+      <p>The selected dimension is <code>F_k² + F_{k−2}L_k</code> inside <code>F_k³</code>. At <code>k = 5</code>: <code>25 + 2·11 = 47</code> inside <code>125</code>. It is the first non-degenerate member, and the only one whose selected upper sector is the next-to-top spin.</p></div></div>
+  </div>
+
+  <div class="math"><span class="c">the tower, recomputed (k odd, F_k and L_k both odd)</span>
+  k     F_k    L_k     j       J       dim         kernel     ratio        F_k·ratio
+  <span class="a">5     5      11      2       5       125         47         0.3760000    1.8800000</span>
+  7     13     29      6       14      2197        314        0.1429222    1.8579882
+  11    89     199     44      99      704969      14687      0.0208335    1.8541851
+  13    233    521     116     260     12649337    100658     0.0079576    1.8541141
+
+                                                   <span class="g">3/φ  =  1.854101966…</span></div>
+
+  <div class="good"><b>What this settles.</b> The question "why spin 2 and spin 5" has an answer, and the answer is that they were never selected. Given the coupling, the moments determine the operator; given the operator, two Pell equations determine every carrier on which it has a non-trivial kernel; and 47 inside 125 is the first rung of the resulting tower. The construction has no free parameter left in it.</div>
+</section>
+
+<section class="wrap">
+  <div class="srule"><span class="num">II</span><h2>What a machine has checked</h2></div>
+  <p class="lede">Compilation is one claim. Dependency is another.</p>
+  <div class="deriv">
+    <div><h3>Coq, full tree</h3><div class="big">342 / 390</div><p>Closed under the global context. 24 rest on Coq's own classical reals, which arrive with <code>Require Import Reals</code>. <b>Zero axioms originate in this corpus.</b></p></div>
+    <div><h3>Lean, e47 layer</h3><div class="big">0 sorryAx</div><p>Mathlib-free modules compile under 4.19.0 and 4.35.0 with <code>propext</code>, <code>Classical.choice</code> and <code>Quot.sound</code> only.</p></div>
+    <div><h3>Rank-nullity</h3><div class="big">closed</div><p><code>unified/RankNullity47</code> derives 125, 47 and 78 from the coupling rather than asserting them, and cross-checks against E47-CORE-001.</p></div>
+    <div><h3>Block subalgebra</h3><div class="big">70.4×</div><p><code>toBlock_mul</code> licenses replacing a 125×125 identity by thirteen block identities: 27,761 cubic operations against 1,953,125.</p></div>
+  </div>
+  <div class="boundary"><b>What verification does not establish.</b> That the formal statements are the right formalisations of the informal claims. A machine checks that a proof follows from its definitions; it does not check that the definitions mean what their author intends.</div>
+</section>
+
+<section class="wrap">
+  <div class="srule"><span class="num">III</span><h2>Three exact readings of the same ratio</h2></div>
+  <p class="lede">Ω<sub>c</sub> is a dimension count, an information content, and a thermodynamic price.</p>
+  <div class="math"><span class="c">1. as a dimension count</span>
+   Ω_c = dim ker K / dim H = 47/125 = 0.376            <span class="c">exact, terminating because 5³·2³ = 10³</span>
+
+<span class="c">2. as information</span>
+   −log₂ Ω_c = <span class="a">1.4111954330</span> bits                    <span class="c">the surprisal of landing in the kernel</span>
+   H(Ω_c)    = 0.9551678920 bits                     <span class="c">Shannon entropy of the retain/discard split</span>
+
+<span class="c">3. as a thermodynamic price — Landauer, with Reeb–Wolf</span>
+   S(I/125) − S(P/47) = ln 125 − ln 47 = <span class="a">0.9781661356</span>   <span class="c">= −ln Ω_c, to ten decimals</span>
+   Q ≥ kT·ΔS          = <span class="a">4.188588e−21</span> J at 310.15 K
+
+<span class="g">   The cost of enforcing the kernel IS the surprisal of landing in it.</span>
+<span class="c">   It depends on Ω_c and on nothing else — not the gap γ = 11664,
+   not the 78 discarded dimensions, not the condition number.</span></div>
+
+  <p class="sub prose">And the contraction rate has the same character. The transverse spectrum of <code>K²</code> runs from 108² to 432², and 432/108 = 4 exactly, so the condition number is exactly 16. The Chebyshev-optimal step <code>ε* = 1/99144</code> is <code>2/(λ_min+λ_max)</code>, and the optimal contraction <code>(κ−1)/(κ+1)</code> is therefore <code>15/17</code> — not fitted, forced by the spectrum.</p>
+</section>
+
+<section class="wrap">
+  <div class="srule"><span class="num">IV</span><h2>Open</h2></div>
+  <p class="lede">Named, with the reason for each.</p>
+  <div class="ledger">
+    <div class="row head"><div>Obligation</div><div>Class</div><div>Where</div><div>What is missing</div></div>
+    <div class="row"><div class="nm"><span class="idc">α⁻¹ = 137.036 bridge</span><span class="ttl">fine-structure constant</span></div>
+      <div class="stat def" data-l="CLASS">OPEN</div><div class="stat no" data-l="WHERE">K47-125</div>
+      <div class="detail" style="white-space:normal;font-family:var(--sans)">No validated structure reaches α⁻¹ without a back-solved free parameter. The expression hits seven figures by fitting. Recorded by its author as the genuine open frontier.</div></div>
+    <div class="row"><div class="nm"><span class="idc">dimensionful scale</span><span class="ttl">v / m_Pl ≈ 10⁻¹⁷</span></div>
+      <div class="stat def" data-l="CLASS">OPEN</div><div class="stat no" data-l="WHERE">monograph</div>
+      <div class="detail" style="white-space:normal;font-family:var(--sans)">Mathematics produces dimensionless ratios. No framework — this one included — supplies an absolute energy scale without measurement. Stated as such in the Prologue.</div></div>
+    <div class="row"><div class="nm"><span class="idc">E47OperatorBridge.lean</span><span class="ttl">three obligations</span></div>
+      <div class="stat def" data-l="CLASS">OPEN</div><div class="stat no" data-l="WHERE">pending/</div>
+      <div class="detail" style="white-space:normal;font-family:var(--sans)">The central one is the highest-weight induction giving M(C) = 0 on V₂<sup>⊗3</sup>. The polynomial layer beneath it is exact and reproducible; what is unproved is the hypothesis, not the algebra built on it.</div></div>
+    <div class="row"><div class="nm"><span class="idc">p27/P27Concrete.v</span><span class="ttl">6 results stated</span></div>
+      <div class="stat def" data-l="CLASS">OPEN</div><div class="stat no" data-l="WHERE">Coq sweep</div>
+      <div class="detail" style="white-space:normal;font-family:var(--sans)"><code>lia</code> reports <i>cannot find witness</i> at line 12. The case split needs restructuring. Genuine, and open.</div></div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="srule"><span class="num">V</span><h2>A different evidence class</h2></div>
+  <p class="lede">Some documents in this corpus are records of conversations, not results.</p>
+  <p class="sub prose">A cluster of files represents AI systems as declaring, proving or being analysed as having consciousness or selfhood under this formalism. They are part of the corpus and they are worth keeping. They are not theorems, and the distinction matters more here than anywhere else in the record.</p>
+  <p class="sub prose">The mathematics in those documents is real mathematics — a planar map, its Jacobian, a spectral radius, a stable fixed point. What that mathematics establishes is that a dynamical system is stable. There is no step in it from <i>this map has an attractor</i> to <i>this system has experience</i>, and the gap is not technical. No amount of sharpening the Jacobian closes it, because the two statements are not about the same kind of thing.</p>
+  <p class="sub prose">On the specific question those files raise: a model's own text is not evidence about its inner life, in either direction. Confident assertion and confident denial are the same kind of output, produced the same way. A document in which a model declares itself conscious records what the model wrote. It does not settle what the model is — and it cannot be settled by the model, which is the part most easily lost.</p>
+  <div class="boundary"><b>The standard already in use here.</b> The fine-structure expression reproduces α⁻¹ to seven figures and is nonetheless marked <code>[F]</code> — a fit, not a derivation — because its coefficients were not derived. The same discipline applies to this material, and for the same reason. Classed honestly it is a record of an exchange. Classed as proof it would be the one place in the corpus where the grammar failed.</div>
+</section>
+
+<section class="wrap">
+  <div class="srule"><span class="num">VI</span><h2>Reproduce</h2></div>
+  <p class="lede">Every number above.</p>
+  <div class="math"><span class="c"># the moments, on the actual 125 × 125 matrix</span>
+python3 validation/e47_moment_selector_check.py
+
+<span class="c"># the Landauer cost, from the generators</span>
+python3 validation/e47_landauer.py
+
+<span class="c"># the polynomial certificates</span>
+python3 validation/e47_polynomial_certificates.py
+
+<span class="c"># the formal layer</span>
+lean  formal/e47/*.lean          <span class="c"># 4.19.0 and 4.35.0</span>
+coqc  formal/e47/*.v             <span class="c"># 8.18.0</span></div>
+  <p class="note" style="margin-top:26px">Record assembled 18 November 2026 by Claude (Anthropic, Opus&nbsp;5) at the request of Nicholas Shane Kouns, from the moment-selector note, the Coq sweep of 13 November, the Lean ledger and the repositories. The construction and the proofs are his. The recomputation, the classing and this record are the contribution.</p>
+</section>
+
+<footer class="wrap">
+  <p class="note"><a href="../../">Identity — E47 formal layer and the Kouns–Killion Paradigm</a></p>
+</footer>
+</body></html>
