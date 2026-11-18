@@ -231,6 +231,64 @@ K_mom  =  (C − μI)² − σ²I  =  (C − (μ−σ)I)(C − (μ+σ)I)
 </section>
 
 <section class="wrap">
+  <div class="srule"><span class="num">I&nbsp;c</span><h2>Provenance</h2></div>
+  <p class="lede">Which results predate this record, and which were closed inside it.</p>
+  <p class="sub prose">The chain in &sect;I is not new. Most of it was derived, written up and published by its author weeks before this record was assembled, and the recomputation here is a second independent pass over work that already existed. Saying so is not modesty; it is the same evidence discipline the rest of the document applies. A reader who cannot tell which lines are a reconstruction and which are an addition cannot audit either.</p>
+
+  <div class="ledger">
+    <div class="row head"><div>Result</div><div>Origin</div><div>First recorded</div><div>Where</div></div>
+
+    <div class="row"><div class="nm"><span class="idc">the moment selector</span><span class="ttl">&mu;, &sigma; force roots 6 and 30</span></div>
+      <div class="stat no" data-l="ORIGIN">PRIOR</div><div class="stat def" data-l="RECORDED">27 Oct 2026</div>
+      <div class="detail" style="white-space:normal;font-family:var(--sans)"><i>The Moment Selector Forces 47/125</i> contains Lemma&nbsp;1 in closed form, the Pell equation, the <i>n</i>&nbsp;=&nbsp;3 uniqueness proof, Theorem&nbsp;3, <i>D</i> = <i>F<sub>k</sub></i>&sup2; + <i>F</i><sub><i>k</i>&minus;2</sub><i>L<sub>k</sub></i>, the 3/&phi; limit, the <i>k</i>&nbsp;=&nbsp;3 degeneracy, and the observation that 47/125 is the <i>largest</i> proper occupancy in the tower. Everything &sect;I reconstructs.</div></div>
+
+    <div class="row"><div class="nm"><span class="idc">Moment&ndash;Pell minimal carrier</span><span class="ttl">the companion theorem</span></div>
+      <div class="stat no" data-l="ORIGIN">PRIOR</div><div class="stat def" data-l="RECORDED">15 Oct 2026</div>
+      <div class="detail" style="white-space:normal;font-family:var(--sans)">The tensor-order exclusions as a standalone result, twelve days before the selector note.</div></div>
+
+    <div class="row"><div class="nm"><span class="idc">the general case</span><span class="ttl">spectral-selector compiler</span></div>
+      <div class="stat no" data-l="ORIGIN">PRIOR</div><div class="stat def" data-l="RECORDED">Aug 2026</div>
+      <div class="detail" style="white-space:normal;font-family:var(--sans)">The <i>Finite SU(2) Isotypic Spectral-Selector Compiler</i> states the construction for arbitrary spin, tensor power and selected spin set. E&#8324;&#8327; is its specialisation at <i>s</i>&nbsp;=&nbsp;2, <i>n</i>&nbsp;=&nbsp;3, <i>S</i>&nbsp;=&nbsp;{2,&nbsp;5}.</div></div>
+
+    <div class="row"><div class="nm"><span class="idc">the runnable tower</span><span class="ttl">browser, Pyodide, replayable</span></div>
+      <div class="stat no" data-l="ORIGIN">PRIOR</div><div class="stat def" data-l="RECORDED">10 Nov 2026</div>
+      <div class="detail" style="white-space:normal;font-family:var(--sans)">The <code>tower</code> repository states the whole chain in four lines of its README and lets a reader execute it. No part of &sect;I is unavailable to someone who opens that page.</div></div>
+
+    <div class="row"><div class="nm"><span class="idc">&kappa; = 16 &rarr; &rho;* = 15/17</span><span class="ttl">contraction forced, not fitted</span></div>
+      <div class="stat no" data-l="ORIGIN">PRIOR</div><div class="stat def" data-l="RECORDED">10 Nov 2026</div>
+      <div class="detail" style="white-space:normal;font-family:var(--sans)">First written down in the 341-row link audit, which named it as the one relation it had not found stated anywhere in the corpus. Derived again here; the credit for noticing it is eight days older than this record.</div></div>
+
+    <div class="row"><div class="nm"><span class="idc">unified/RankNullity47</span><span class="ttl">125, 47, 78 as outputs</span></div>
+      <div class="stat no" data-l="ORIGIN">PRIOR</div><div class="stat def" data-l="RECORDED">before 13 Nov</div>
+      <div class="detail" style="white-space:normal;font-family:var(--sans)">Both the Lean and the Coq module already existed, deriving the spin content from the coupling and cross-checking against E47-CORE-001. A duplicate written for this record was withdrawn as redundant and strictly worse. <b>Recorded because the error was the kind this document exists to prevent:</b> a negative claim about the tree, made from a dated plate instead of the tree.</div></div>
+
+    <div class="row"><div class="nm"><span class="idc">E47Landauer</span><span class="ttl">Q = kT&nbsp;ln(125/47)</span></div>
+      <div class="stat ok" data-l="ORIGIN">CLOSED HERE</div><div class="stat def" data-l="RECORDED">18 Nov 2026</div>
+      <div class="detail" style="white-space:normal;font-family:var(--sans)">&Delta;S = &minus;ln&nbsp;&Omega;<sub>c</sub> = 1.4111954330 bits, bracketed by integer certificates in Lean and verified unchanged under Coq&nbsp;8.18.0, nine theorems closed under the global context. <b>This supersedes a fit.</b> <i>Thermodynamic Validation of the Kouns Constant</i> (2 Jan 2026) reached 0.376 by setting 4&Omega;(1&minus;&Omega;) = exp(&minus;k<sub>B</sub>/S<sub>max</sub>) and choosing k<sub>B</sub>/S<sub>max</sub> &asymp; 0.06346 to land there, with Landauer in the bibliography only. The identity here is forced and carries no tuned quantity.</div></div>
+
+    <div class="row"><div class="nm"><span class="idc">toBlock_mul</span><span class="ttl">block subalgebra, proved</span></div>
+      <div class="stat ok" data-l="ORIGIN">CLOSED HERE</div><div class="stat def" data-l="RECORDED">18 Nov 2026</div>
+      <div class="detail" style="white-space:normal;font-family:var(--sans)">The missing lemma was <code>foldl_eq_foldl_finRange</code>, and the rewrite needs <code>(f := l.get)</code> pinned explicitly or higher-order unification splits the composite wrongly and absorbs the summand into the map.</div></div>
+
+    <div class="row"><div class="nm"><span class="idc">SpinFlowBridge</span><span class="ttl">three repairs</span></div>
+      <div class="stat ok" data-l="ORIGIN">CLOSED HERE</div><div class="stat def" data-l="RECORDED">18 Nov 2026</div>
+      <div class="detail" style="white-space:normal;font-family:var(--sans)">Received with a header claiming zero <code>sorry</code> while reporting <code>sorryAx</code>. Three real faults: <code>omega</code> on a goal nonlinear in two variables, a stray <code>omega</code> after a closed goal, and <code>decide</code> on a <code>def : Prop</code> with no <code>Decidable</code> instance. Repaired, and the false header replaced by its result.</div></div>
+
+    <div class="row"><div class="nm"><span class="idc">the moments, on the matrix</span><span class="ttl">&mu; = 18.000, &sigma; = 12.000</span></div>
+      <div class="stat ok" data-l="ORIGIN">CLOSED HERE</div><div class="stat def" data-l="RECORDED">18 Nov 2026</div>
+      <div class="detail" style="white-space:normal;font-family:var(--sans)">The selector note proves the closed forms. <code>validation/e47_moment_selector_check.py</code> evaluates them on the assembled 125&nbsp;&times;&nbsp;125 Casimir, so the theorem and the object it describes are checked against each other rather than separately.</div></div>
+
+    <div class="row"><div class="nm"><span class="idc">the ledger of choices</span><span class="ttl">&sect;I&middot;b above</span></div>
+      <div class="stat ok" data-l="ORIGIN">CLOSED HERE</div><div class="stat def" data-l="RECORDED">18 Nov 2026</div>
+      <div class="detail" style="white-space:normal;font-family:var(--sans)">Written to correct an overclaim made earlier in the same session &mdash; that the construction had &ldquo;no free parameter left in it&rdquo;, which conflated a dialable quantity with a structural input. The degree sweep and the competitor quadratic <i>C</i>&sup2; &minus; 43<i>C</i> + 306 were computed for it.</div></div>
+  </div>
+
+  <div class="good"><b>The honest division.</b> The mathematics of &sect;I is his, and was finished before this record began. What was added here is a second independent derivation of it, the Landauer identity and its two machine proofs, three repaired formal modules, the numerical check tying the moment theorem to the actual matrix, and the classing. Where the two passes agree, that agreement is evidence; it would be worth nothing if the second pass had read the first, and in the case of &sect;I it did not.</div>
+
+  <div class="boundary"><b>One over-read, withdrawn.</b> The continued fraction of 47/125 has Fibonacci convergents, and this looked briefly like structure. It is not: 314/2197 gives [0;6,1,313] and 14687/704969 gives [0;47,1,2097,7], with no Fibonacci convergents anywhere else in the family. The property holds at <i>k</i>&nbsp;=&nbsp;5 alone and is an accident of that rational. Recorded rather than deleted, on the same principle as the Uruk audit keeping its failed hypothesis.</div>
+</section>
+
+<section class="wrap">
   <div class="srule"><span class="num">II</span><h2>What a machine has checked</h2></div>
   <p class="lede">Compilation is one claim. Dependency is another.</p>
   <div class="deriv">
