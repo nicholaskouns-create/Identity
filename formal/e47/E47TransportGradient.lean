@@ -11,5 +11,5 @@ theorem complementary_dimension : 125 - 47 = 78 := by decide
 theorem contraction_bound_fraction : 15 * 17 < 17 * 17 := by decide
 theorem skew_integer_witness : (3 : Int) * (-4) + 4 * 3 = 0 := by decide
 theorem dissipative_integer_witness :
-    (2 : Int) * 3 * (-4 - 2 * 3) + 2 * 4 * (3 - 2 * 4) = -104 := by decide
+    (2 : Int) * 3 * (-4 - 2 * 3) + 2 * 4 * (3 - 2 * 4) = -100 := by decide
 end E47Transport
