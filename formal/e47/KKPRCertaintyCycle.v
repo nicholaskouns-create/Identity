@@ -42,7 +42,10 @@ Qed.
 Theorem cycle_invariant : forall
   (P : Carrier -> Carrier) (q : Protected -> Carrier),
   (forall y, P (q y) = q y) ->
-  forall sigma gamma lambda psi score threshold baseline x,
+  forall (sigma gamma : Carrier -> Carrier)
+         (lambda : Carrier -> Protected) (psi : Protected -> Protected)
+         (score : Protected -> nat) (threshold : nat)
+         (baseline : Protected) (x : Carrier),
   P (cycle sigma gamma lambda psi q score threshold baseline x) =
     cycle sigma gamma lambda psi q score threshold baseline x.
 Proof.
@@ -50,7 +53,10 @@ Proof.
   unfold cycle, alpha.
   apply Hq.
 Qed.
-Theorem cycle_certified : forall sigma gamma lambda psi score threshold baseline x,
+Theorem cycle_certified : forall (sigma gamma : Carrier -> Carrier)
+  (lambda : Carrier -> Protected) (psi : Protected -> Protected)
+  (score : Protected -> nat) (threshold : nat)
+  (baseline : Protected) (x : Carrier),
   score baseline <= threshold ->
   score (selected score threshold baseline
     (psi (lambda (gamma (sigma x))))) <= threshold.
@@ -71,7 +77,10 @@ Qed.
 Theorem full_cycle_repeated_invariant : forall
   (P : Carrier -> Carrier) (q : Protected -> Carrier),
   (forall y, P (q y) = q y) ->
-  forall sigma gamma lambda psi score threshold baseline n x,
+  forall (sigma gamma : Carrier -> Carrier)
+         (lambda : Carrier -> Protected) (psi : Protected -> Protected)
+         (score : Protected -> nat) (threshold : nat)
+         (baseline : Protected) (n : nat) (x : Carrier),
   P (iterate (cycle sigma gamma lambda psi q score threshold baseline) (S n) x) =
     iterate (cycle sigma gamma lambda psi q score threshold baseline) (S n) x.
 Proof.
