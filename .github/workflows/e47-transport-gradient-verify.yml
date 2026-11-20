@@ -1,0 +1,56 @@
+name: E47 transport-gradient Lean Coq Python verification
+on:
+  push:
+    paths:
+      - 'formal/e47/E47TransportGradient.lean'
+      - 'formal/e47/E47TransportGradient.v'
+      - 'research/e47_transport_gradient.py'
+      - '.github/workflows/e47-transport-gradient-verify.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y coq
+      - name: Install Lean 4.35
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.35.0 --no-modify-path
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Install numerical requirements
+        run: python -m pip install numpy scipy matplotlib
+      - name: Compiler versions
+        run: |
+          mkdir -p proof-results/e47-transport-gradient
+          lean --version | tee proof-results/e47-transport-gradient/lean-version.txt
+          coqc --version | tee proof-results/e47-transport-gradient/coq-version.txt
+      - name: Lean compile
+        run: |
+          set -o pipefail
+          lean formal/e47/E47TransportGradient.lean 2>&1 | tee proof-results/e47-transport-gradient/lean-compile.log
+      - name: Coq compile and assumptions
+        run: |
+          set -o pipefail
+          coqc -q formal/e47/E47TransportGradient.v 2>&1 | tee proof-results/e47-transport-gradient/coq-compile.log
+      - name: Python operator checks
+        env:
+          OPENBLAS_NUM_THREADS: "1"
+        run: |
+          set -o pipefail
+          python research/e47_transport_gradient.py 2>&1 | tee proof-results/e47-transport-gradient/python-run.log
+          cp research/e47_transport_gradient_results.json proof-results/e47-transport-gradient/ 2>/dev/null || true
+          cp research/e47_transport_gradient_timeseries.csv proof-results/e47-transport-gradient/ 2>/dev/null || true
+      - name: Proof receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e47-transport-gradient-proof-receipts
+          path: proof-results/e47-transport-gradient/
+          if-no-files-found: warn
