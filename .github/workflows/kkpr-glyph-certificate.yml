@@ -1,0 +1,40 @@
+name: KKP-R six glyph arithmetic and typed pipeline certificate
+on:
+  push:
+    paths:
+      - 'formal/e47/KKPRGlyphs.lean'
+      - 'formal/e47/KKPRGlyphs.v'
+      - '.github/workflows/kkpr-glyph-certificate.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y coq
+      - name: Install Lean 4.35
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.35.0 --no-modify-path
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile Lean
+        run: |
+          mkdir -p proof-results/kkpr-glyphs
+          lean --version > proof-results/kkpr-glyphs/lean-version.txt
+          lean formal/e47/KKPRGlyphs.lean 2>&1 | tee proof-results/kkpr-glyphs/lean.log
+      - name: Compile Coq
+        run: |
+          coqc --version > proof-results/kkpr-glyphs/coq-version.txt
+          coqc -q formal/e47/KKPRGlyphs.v 2>&1 | tee proof-results/kkpr-glyphs/coq.log
+      - name: Upload receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kkpr-glyph-proof-receipts
+          path: proof-results/kkpr-glyphs/
+          if-no-files-found: warn
