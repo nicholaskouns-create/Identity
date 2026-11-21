@@ -4,10 +4,14 @@
    Coq standard library only; no axioms, no Admitted, no native_compute.
    Companion to E47Landauer.lean; same statements, same certificates.
 
-   NOT COMPILED BY ITS AUTHOR'S TOOLCHAIN: Coq was unavailable in the
-   environment where this file was written.  The Lean companion compiled
-   clean under Lean 4.35.0 with an empty axiom ledger.  Treat this file as
-   unverified until coqc has been run on it.
+   STATUS: PROVED.  Compiled clean on Coq 8.18.0.  Print Assumptions returns
+   "Closed under the global context" for all nine theorems -- rank_nullity,
+   omega_c_exact, cost_gt_141, cost_lt_142, cost_in_bits, cost_coarse,
+   scale_invariant_gt, scale_invariant_lt and cost_is_not_the_tally.
+
+   This file was first committed carrying a notice that it had not been
+   compiled, because coqc was unavailable at the time.  That notice is now
+   discharged: the toolchain was obtained and the file verified unchanged.
 
    Claim being certified:
        S(I/125) - S(P/47) = ln(125/47) = -ln Omega_c = 1.4111954... bits
