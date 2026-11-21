@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#101b25"><title>Spectral Terraces · E₄₇</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#101b25;color:#e6efed;font:16px/1.5 system-ui,sans-serif}main,header{max-width:1440px;margin:auto;padding:18px clamp(16px,4vw,72px)}header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #31444e}header span,.mono,small,button,summary{font-family:ui-monospace,monospace}header span{letter-spacing:.12em;color:#a9dbd1}header b{color:#f9aa72}a{color:#aee9dc}h1{font:normal clamp(2.7rem,6vw,6rem)/1 Georgia,serif;letter-spacing:-.06em;margin:.3em 0 .12em}h2{font:normal 2rem/1.1 Georgia,serif;margin:10px 0}p{margin:8px 0 16px}.sub,small{color:#b0c4cb}.layout{display:grid;grid-template-columns:minmax(0,2.6fr) minmax(235px,1fr);gap:16px}.map,aside,details{border:1px solid #354c57;border-radius:12px;overflow:hidden}.map{background:radial-gradient(ellipse at 50% 54%,#25424d,#122530 65%,#0c1721);align-self:start}.bar{padding:10px 16px;display:flex;justify-content:space-between;gap:8px;font:12px ui-monospace,monospace;color:#b6d4d4;border-bottom:1px solid #354c57}.legend{border:0;border-top:1px solid #354c57;flex-wrap:wrap}svg{width:100%;display:block}aside{background:#182832;padding:20px}button{border:1px solid #57717d;border-radius:6px;background:#213744;color:#d9ebe9;min-height:40px;padding:6px 10px;cursor:pointer}button:hover,button:focus-visible{border-color:#faba86;outline:2px solid #faba86}button[aria-pressed=true]{color:#101b25;background:#afdccc}button:disabled{opacity:.45;cursor:default}#sectorControls{display:flex;gap:5px;flex-wrap:wrap;margin:12px 0}#sectorControls button{min-width:37px}.action{background:#ffb683;color:#241910;border:0;font-weight:bold;margin:5px 5px 5px 0}.readout{padding:12px 0;border-block:1px solid #39515a;color:#c5dfdb;margin:14px 0;font:14px/1.6 ui-monospace,monospace}.status{min-height:1.6em;color:#ffd2ab}details{margin:16px 0;padding:12px 18px;background:#15232c}summary{cursor:pointer;color:#c6dcd8}.sector{cursor:pointer}.sector:hover .tag{fill:#fff}.tag{font:bold 14px ui-monospace,monospace;fill:#cbe7e1;paint-order:stroke;stroke:#10202a;stroke-width:4px}#levels{margin-top:14px;display:flex;gap:5px}.level{padding:4px 8px;border:1px solid #667f86;border-radius:5px}.active{color:#142628;background:#a9e2cc}@media(max-width:760px){.layout{grid-template-columns:1fr}aside{padding:15px}.bar{font-size:11px}main{padding-top:8px}h1{margin-top:.3em}}
+</style></head><body><header><span><b>◇</b> MATHEMATICAL CITY</span><small>E₄₇ / Field games</small></header><main><h1>Spectral Terraces</h1><p class="sub">Read the terrain. Recover the kernel. Route the signal.</p>
+<div class="layout"><section class="map" aria-label="Interactive map"><div class="bar"><span>COUPLED-BASIS ATLAS</span><span>125 modes · 7 sectors</span></div><svg id="atlas" viewBox="0 0 840 490" role="img" aria-label="Seven selectable isometric terraces. Each pillar is one coupled basis mode. Sector buttons offer the same controls."></svg><div class="bar legend"><span>◇ One pillar per |J, j₁₂, M⟩</span><span>Amber rim · selected sector</span></div></section>
+<aside><small id="chapter"></small><h2 id="title"></h2><p id="objective"></p><div id="sectorControls" aria-label="Select spin sector"></div><div class="readout" id="readout"></div><div id="levels" hidden></div><button class="action" id="action"></button><button id="reset">Restart</button><p class="status" id="status" role="status"></p></aside></div>
+<details><summary>Field notes &amp; controls</summary><p>Select a terrace on the map or use the numbered J buttons. Each row is one allowed intermediate spin j₁₂. Its 2J+1 pillars run through M from +J to −J. The landscape arranges coupled basis labels for play. Distances between islands have no physical units.</p><p>The six-face manuscript places Ωc = 47/125 at its center. This game follows its algebraic and dynamical faces into the five-level subsystem. Its uniform initial amplitude is 1/√125. At pulse n each pillar’s amplitude is multiplied by (1 − K²/99144)ⁿ. Pillar height above its pedestal and cap brightness encode the magnitude. The retention meter divides surviving kernel weight by total surviving weight.</p><p>The routing stage prepares a fresh |J=2, j₁₂=0, M=0⟩ signal. Shift applies the five-cycle X to j₁₂ and preserves M. The target is a game objective. The J=5 terrace contains the other 22 kernel modes.</p></details></main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const sectors=Array.from({length:7},(_,J)=>{
+  const rows=[0,1,2,3,4].filter(j=>Math.abs(j-2)<=J && J<=j+2);
+  const C=J*(J+1), K=(C-6)*(C-30);
+  return {J,rows,C,K,size:rows.length*(2*J+1),rate:1-K*K/99144};
+});
+const locations=[[150,116],[392,83],[641,106],[236,222],[526,216],[219,348],[547,346]];
+const colors=['#93bdd5','#a99edb','#78d9bf','#e0b883','#8dabe1','#a2d9a2','#da9aa6'];
+const svgNS='http://www.w3.org/2000/svg';
+function node(parent,type,attrs,label){
+  const n=document.createElementNS(svgNS,type);
+  for(const [k,v] of Object.entries(attrs)) n.setAttribute(k,v);
+  if(label!==undefined)n.textContent=label;
+  parent.append(n);return n;
+}
+function polygon(g,points,fill,stroke){
+  return node(g,'polygon',{points:points.map(p=>p.join(',')).join(' '),fill,stroke:stroke||fill,'stroke-width':1,'stroke-linejoin':'round'});
+}
+const atlas=$('atlas'), terrain=node(atlas,'g',{});
+for(let i=0;i<36;i++){
+  const x=i*44-750;
+  for(const slope of [-.4,.4])node(terrain,'path',{d:'M'+x+' 0 l'+(490/slope)+' 490',stroke:'#6fa5af','stroke-opacity':.09,fill:'none'});
+}
+for(let i=0;i<210;i++)node(terrain,'circle',{cx:(i*347+27)%840,cy:(i*i*17+31)%490,r:i%4===0?1.3:.65,fill:'#bad8d6',opacity:.27});
+const scene=node(atlas,'g',{});
+let selected=0,stage=0,pulses=0,logical=0,target=3,found=new Set();
+function amplitude(s){return Math.abs(s.rate)**pulses}
+function draw(){
+  scene.replaceChildren();
+  for(const s of sectors){
+    const [cx,cy]=locations[s.J],cols=2*s.J+1,rows=s.rows.length;
+    const step=11, ink=colors[s.J], a=amplitude(s);
+    const project=(u,v,z=0)=>[cx+(u-v)*step,cy+(u+v)*step*.47-z];
+    const x=cols/2+.8,y=rows/2+.8;
+    const corners=z=>[[-x,-y],[x,-y],[x,y],[-x,y]].map(([u,v])=>project(u,v,z));
+    const g=node(scene,'g',{class:'sector','data-sector':s.J});
+    g.onclick=()=>select(s.J);
+    for(let depth=15;depth>=0;depth-=3)polygon(g,corners(-depth),depth%6?'#1e3745':'#294957');
+    polygon(g,corners(1),'#304650',selected===s.J?'#ffba7c':ink);
+    for(let col=0;col<cols;col++)for(let row=0;row<rows;row++){
+      const u=col-(cols-1)/2,v=row-(rows-1)/2;
+      const [px,py]=project(u,v,2),h=3+18*a;
+      const isSignal=stage>=2 && s.J===2 && row===logical && col===2;
+      const w=8.3,d=3.9,top=py-h;
+      polygon(g,[[px-w,top],[px,top+d],[px,py+d],[px-w,py]],'#36505c');
+      polygon(g,[[px,top+d],[px+w,top],[px+w,py],[px,py+d]],'#172e3a');
+      const cap=polygon(g,[[px-w,top],[px,top-d],[px+w,top],[px,top+d]],isSignal?'#fff1ae':ink);
+      cap.setAttribute('opacity',isSignal?1:.18+.82*a);
+      if(isSignal){node(g,'path',{d:'M'+px+' '+(top-4)+'v-23',stroke:'#ffe4a3','stroke-width':2});node(g,'circle',{cx:px,cy:top-28,r:5,fill:'#ffce83'});}
+    }
+    node(g,'text',{x:cx,y:cy+(x+y)*step*.47+33,'text-anchor':'middle',class:'tag'},'J '+s.J+(found.has(s.J)?' ✓':''));
+  }
+}
+const buttons=sectors.map(s=>{
+  const b=document.createElement('button');b.textContent=s.J;b.setAttribute('aria-label','Select J '+s.J);
+  b.onclick=()=>select(s.J);$('sectorControls').append(b);return b;
+});
+function select(j){selected=j;render('')}
+function render(message){
+  const s=sectors[selected];
+  $('chapter').textContent=['01 / 03 · SURVEY','02 / 03 · FILTER','03 / 03 · TRANSPORT','03 / 03 · COMPLETE'][stage];
+  $('title').textContent=['Find the quiet sectors','Pulse the carrier','Route the signal','Signal delivered'][stage];
+  $('objective').textContent=['Inspect J, then mark both terraces where K = (C − 6)(C − 30) vanishes.','Apply eight iterations per pulse until normalized kernel retention reaches 99.9%.','Shift the signal to j₁₂ = '+target+' while keeping its magnetic label M = 0.','The logical signal reached j₁₂ = '+target+' with M = 0.'][stage];
+  const retention=47/sectors.reduce((sum,v)=>sum+v.size*amplitude(v)**2,0);
+  $('readout').textContent=stage===0?'J = '+selected+' · C = '+s.C+' · K = '+s.K+' · '+s.size+' modes · '+found.size+'/2 found':stage===1?'n = '+pulses+' · retention '+(100*retention).toFixed(4)+'% · |Γⁿ| at J '+selected+' = '+amplitude(s).toFixed(4):'J = 2 · j₁₂ = '+logical+' · M = 0';
+  $('levels').replaceChildren();
+  if(stage>=2)for(let j=0;j<5;j++){const l=document.createElement('span');l.className='level'+(j===logical?' active':'');l.textContent=j;$('levels').append(l);}
+  $('action').textContent=['Mark sector','Pulse ×8','Shift +1','Play again'][stage];
+  $('status').textContent=message;buttons.forEach((b,j)=>b.setAttribute('aria-pressed',selected===j));draw();
+}
+function restart(){stage=0;selected=0;pulses=0;logical=0;found.clear();render('')}
+$('reset').onclick=restart;
+$('action').onclick=()=>{
+  let msg='';
+  if(stage===0){
+    if(sectors[selected].K!==0)msg='This terrace has nonzero K. Inspect another sector.';
+    else if(found.has(selected))msg='Already marked. Find its partner.';
+    else{found.add(selected);msg='Kernel terrace marked.';if(found.size===2){stage=1;msg='25 + 22 = 47 protected modes.'}}
+  }else if(stage===1){
+    pulses+=8;
+    const total=sectors.reduce((sum,v)=>sum+v.size*amplitude(v)**2,0);
+    if(47/total>=.999){stage=2;selected=2;msg='Retention '+(4700/total).toFixed(4)+'% at n = '+pulses+'. Logical signal prepared.'}
+  }else if(stage===2){selected=2;logical=(logical+1)%5;if(logical===target){stage=3;msg='Target reached.'}}
+  else {restart();return}
+  render(msg);
+};
+restart();
+</script></body></html>
