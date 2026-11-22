@@ -1,0 +1,33 @@
+name: Einstein Recovery — paired Lean and Coq certificate
+on:
+  push:
+    paths:
+      - 'formal/e47/EinsteinRecovery.lean'
+      - 'formal/e47/EinsteinRecovery.v'
+      - '.github/workflows/einstein-recovery.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  paired-proofs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean 4.35.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan.sh
+          sh /tmp/elan.sh -y --default-toolchain leanprover/lean4:v4.35.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile Lean
+        run: lean formal/e47/EinsteinRecovery.lean
+      - name: Install Coq 8.18.0
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y coq
+          coqc --version
+          test "$(coqc --print-version | awk '{print $1}')" = "8.18.0"
+      - name: Compile Coq
+        run: coqc -q formal/e47/EinsteinRecovery.v
