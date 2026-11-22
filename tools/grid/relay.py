@@ -14,6 +14,7 @@ import concurrent.futures as cf
 import json
 import math
 import os
+import re
 import platform
 import sys
 import time
@@ -31,6 +32,26 @@ ISOS = [
 HISTORY_HOURS = 24
 CALL_TIMEOUT = 75
 
+
+
+SECRET_NAMES = ("EIA_API_KEY", "PJM_API_KEY")
+for _name in SECRET_NAMES:  # a pasted secret often carries a trailing newline
+    if _name in os.environ:
+        os.environ[_name] = os.environ[_name].strip()
+
+
+def scrub(text):
+    """Remove API keys from any text that ends up in the public snapshot."""
+    text = str(text)
+    for name in SECRET_NAMES:
+        val = os.environ.get(name, "")
+        if len(val) >= 8:
+            text = text.replace(val, "•••")
+    return re.sub(r"(?i)(api_key|apikey|subscription-key|key)=[^&\s'\"]+", r"\1=•••", text)
+
+
+def err(e):
+    return scrub(f"{type(e).__name__}: {e}")[:200]
 
 def now_utc():
     return datetime.now(timezone.utc)
@@ -78,7 +99,7 @@ def fetch_iso(code, cls_name):
         if math.isfinite(v):
             out["load_mw"], out["time"] = round(v, 1), iso_time(t)
     except Exception as e:  # noqa: BLE001
-        out["errors"]["load"] = f"{type(e).__name__}: {str(e)[:200]}"
+        out["errors"]["load"] = err(e)
     try:
         df = call_with_timeout(iso.get_fuel_mix, "today")
         row, t = latest_row(df)
@@ -95,14 +116,14 @@ def fetch_iso(code, cls_name):
                 mix[str(c)] = round(v, 1)
         out["fuel_mix"], out["fuel_time"] = mix, iso_time(t)
     except Exception as e:  # noqa: BLE001
-        out["errors"]["fuel_mix"] = f"{type(e).__name__}: {str(e)[:200]}"
+        out["errors"]["fuel_mix"] = err(e)
     if code == "ERCOT":
         try:
             st = call_with_timeout(iso.get_status, "latest")
             out["status"] = getattr(st, "status", None)
             out["reserves_mw"] = getattr(st, "reserves", None)
         except Exception as e:  # noqa: BLE001
-            out["errors"]["status"] = f"{type(e).__name__}: {str(e)[:200]}"
+            out["errors"]["status"] = err(e)
     return out
 
 
@@ -171,7 +192,7 @@ def main():
             try:
                 isos[code] = {"name": name, **fut.result(timeout=CALL_TIMEOUT * 3)}
             except Exception as e:  # noqa: BLE001
-                isos[code] = {"name": name, "errors": {"fetch": f"{type(e).__name__}: {str(e)[:200]}"}}
+                isos[code] = {"name": name, "errors": {"fetch": err(e)}}
     cutoff = now_utc() - timedelta(hours=HISTORY_HOURS)
     for code, d in isos.items():
         hist = list(((prev.get("isos") or {}).get(code) or {}).get("history") or [])
@@ -192,7 +213,7 @@ def main():
         try:
             eia = fetch_eia(os.environ["EIA_API_KEY"])
         except Exception as e:  # noqa: BLE001
-            eia_error = f"{type(e).__name__}: {str(e)[:200]}"
+            eia_error = err(e)
     else:
         eia_error = "set the EIA_API_KEY repository secret to enable"
     try:
