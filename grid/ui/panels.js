@@ -131,13 +131,22 @@ export function renderAuditorMini(el, au) {
     <p class="note">τ = s(ε₀) + ρ = ${au.tol.toFixed(5)} · input ${esc(au.inputLabel)} · fault: ${esc(au.faultLabel)} · <button class="link-btn" data-tab="auditor">open auditor</button></p>`;
 }
 
-export function renderLocal(el, st, local) {
+// The body redraws with every GPS fix; the alerts button below it is a separate element that only changes when
+// its own label does, so a tap on it is never lost to a redraw. al: { on, n }
+export function renderLocal(el, st, local, al) {
+  let body = el.querySelector(':scope > .local-body'), cta = el.querySelector(':scope > .local-alert');
+  if (!body || !cta) { el.innerHTML = '<div class="local-body"></div><div class="local-alert"></div>'; body = el.firstChild; cta = el.lastChild; }
+  const c = local?.county, bell = '<span class="bell" aria-hidden="true">🔔</span>';
+  const html = !al ? '' : al.on
+    ? `<button class="btn alert-cta on" id="btn-alert-here">${bell}<span>Alerts on for ${al.n} ${al.n === 1 ? 'county' : 'counties'}<small>Manage, or send a test</small></span></button>`
+    : `<button class="btn alert-cta" id="btn-alert-here">${bell}<span>${c ? `Alert me about outages in ${esc(c.properties.label)}` : 'Get outage alerts on this phone'}<small>Power out, power back, severe weather · even with Grid closed</small></span></button>`;
+  if (cta._html !== html) { cta.innerHTML = html; cta._html = html; }
   const g = st.gps;
   if (!g || g.source !== 'device') {
-    el.innerHTML = `<div class="sub"><span>Around you</span>${ev('LIVE', 'GPS on device')}</div><p class="note">${g && g.error ? esc(g.error) + '. ' : ''}Allow location to see the lines, substations and plants near you, and any warnings over your position. The position never leaves this device except as the bounding box of an OpenStreetMap query.</p><button class="btn small" id="btn-locate-2">◎ Use my location</button>`;
+    body.innerHTML = `<div class="sub"><span>Around you</span>${ev('LIVE', 'GPS on device')}</div><p class="note">${g && g.error ? esc(g.error) + '. ' : ''}Allow location to see the lines, substations and plants near you, and any warnings over your position. The position never leaves this device except as the bounding box of an OpenStreetMap query.</p><button class="btn small" id="btn-locate-2">◎ Use my location</button>`;
     return;
   }
-  el.innerHTML = `<div class="sub"><span>Around you</span>${ev('LIVE', `±${Math.round(g.accuracy_m || 0)} m`)}</div>
+  body.innerHTML = `<div class="sub"><span>Around you</span>${ev('LIVE', `±${Math.round(g.accuracy_m || 0)} m`)}</div>
     <div class="kv"><span>Position</span><b>${g.lat.toFixed(4)}°, ${g.lon.toFixed(4)}°</b>
     ${local?.plant ? `<span>Nearest plant</span><b>${esc(local.plant.name)} · ${fmt(local.plant.mw, 0)} MW ${esc((FUEL[local.plant.fuel] || {}).label || '')} · ${local.plant.km.toFixed(1)} km</b>` : ''}
     ${local?.osm ? `<span>OSM within 12 km</span><b>${local.osm.lines} lines · ${local.osm.subs} substations · ${local.osm.towers} towers</b>` : `<span>OSM</span><b>${local?.osmStatus || 'not loaded'}</b>`}

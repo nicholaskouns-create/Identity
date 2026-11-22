@@ -63,6 +63,7 @@ document.addEventListener('click', (e) => {
   const f = e.target.closest('[data-fly]'); if (f && f.dataset.fly) { const [lon, lat] = f.dataset.fly.split(',').map(Number); if (Number.isFinite(lon)) { showTab('map'); gm.map.flyTo({ center: [lon, lat], zoom: 8, pitch: 50, duration: 2200 }); } return; }
   const a = e.target.closest('[data-act="fly-here"]'); if (a) { showTab('fly'); return; }
   if (e.target.id === 'btn-locate-2') locate();
+  if (e.target.closest('#btn-alert-here')) alertHere();
   if (e.target.id === 'btn-osm') loadLocalGrid(true);
 });
 window.addEventListener('hashchange', () => showTab(location.hash.slice(1)));
@@ -451,13 +452,13 @@ async function bootGps() {
   const onUpdate = (d) => {
     st.gps = { lat: d.lat, lon: d.lon, altitude_m: d.altitude_m, accuracy_m: d.accuracy_m, source: d.source, t: d.timestamp };
     if (d.source === 'device') { setStatus('gps', 'ok', `±${Math.round(d.accuracy_m || 0)} m`); if (gm && gm.ready) gm.setGps(st.gps); if (!local.firstFix) { local.firstFix = true; loadLocalGrid(false); } }
-    computeLocal(); P.renderLocal($('#p-local'), st, local);
+    computeLocal(); renderLocalPanel();
   };
   const mod = await cityModule('/E47-Kartekeya/interfaces/shared/city-gps-runtime.js');
   if (mod && mod.installCityGps) {
     gpsRuntime = mod.installCityGps({ chip, watch: false, label: 'GPS', onUpdate });
   }
-  P.renderLocal($('#p-local'), st, local);
+  renderLocalPanel();
   if (navigator.permissions) {
     try { const p = await navigator.permissions.query({ name: 'geolocation' }); if (p.state === 'granted') locate(true); else chip.textContent = 'GPS · tap to locate'; } catch { chip.textContent = 'GPS · tap to locate'; }
   }
@@ -472,20 +473,20 @@ function locate(quiet) {
     if (gpsRuntime && gpsRuntime.publish) gpsRuntime.publish(d); else { chip.textContent = `GPS · ${d.lat.toFixed(4)}°, ${d.lon.toFixed(4)}° · ±${Math.round(d.accuracy_m)} m`; window.__gridGpsUpdate(d); }
     chip.classList.add('live');
     if (!local.flown && gm && gm.ready && !quiet) { local.flown = true; gm.map.flyTo({ center: [d.lon, d.lat], zoom: 11.5, pitch: 55, duration: 2600 }); }
-  }, (err) => { st.gps = { ...(st.gps || {}), error: err.message, source: 'seed' }; setStatus('gps', 'error', err.message); P.renderLocal($('#p-local'), st, local); if (!quiet) toast('Location unavailable: ' + err.message); }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 });
+  }, (err) => { st.gps = { ...(st.gps || {}), error: err.message, source: 'seed' }; setStatus('gps', 'error', err.message); renderLocalPanel(); if (!quiet) toast('Location unavailable: ' + err.message); }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 });
 }
 
 async function loadLocalGrid(force) {
   if (!st.gps || st.gps.source !== 'device' || !layerState.osm) return;
   if (st.osm?.data && !force && st.osm.center && haversine(st.osm.center, [st.gps.lon, st.gps.lat]) < 3) return;
-  setStatus('overpass', 'loading'); local.osmStatus = 'loading…'; P.renderLocal($('#p-local'), st, local);
+  setStatus('overpass', 'loading'); local.osmStatus = 'loading…'; renderLocalPanel();
   try {
     const d = await SRC.fetchLocalPower(st.gps.lat, st.gps.lon, 12);
     st.osm = { data: d, center: [st.gps.lon, st.gps.lat], at: new Date() };
     setStatus('overpass', 'ok', `${d.features.length} features · OSM base ${d.osmBase || ''}`);
     pushMapData(); computeLocal();
   } catch (e) { st.osm = { ...(st.osm || {}), error: String(e.message || e) }; local.osmStatus = 'unavailable: ' + (e.message || e); setStatus('overpass', 'error', String(e.message || e)); }
-  P.renderLocal($('#p-local'), st, local);
+  renderLocalPanel();
 }
 
 function computeLocal() {
@@ -500,7 +501,10 @@ function computeLocal() {
   local.alerts = st.nws?.data ? st.nws.data.geo.features.filter((a) => pointInGeom(here, a.geometry)).map((a) => a.properties) : [];
   const before = local.county?.id;
   if (counties) local.county = countyAt(counties, g.lon, g.lat);
-  if (local.county?.id !== before) { renderAlertsPanel(); renderOutagePanel(); }
+  if (local.county?.id !== before) {
+    renderAlertsPanel(); renderOutagePanel();
+    if (!before && local.county && !alerts.prefs.on) { try { if (!sessionStorage.getItem('kkp-grid-alert-tip')) { sessionStorage.setItem('kkp-grid-alert-tip', '1'); toast(`Tap 🔔 Alerts at the top for outage alerts in ${local.county.properties.label}.`); } } catch { /* private mode */ } }
+  }
   if (statesGeo) { const sf = statesGeo.features.find((f) => pointInGeom(here, f.geometry)); local.state = sf ? sf.properties.name : null; local.ic = interconnectionFor(local.state, g.lon, g.lat); enf.ic = local.ic; }
 }
 
@@ -545,7 +549,7 @@ function recomputeExposure() {
   let tmw = 0; for (const i of exposed) tmw += rows[i][2];
   exposure = { nws: { polys, byEvent: [...byEvent.values()].filter((e) => e.mw > 0).sort((a, b) => b.mw - a.mw) }, fires: { near }, quakes: { near: qnear }, aurora: { mw: amw }, totals: { mw: tmw, plants: exposed.size } };
   P.renderHazard($('#p-hazard'), st, exposure);
-  computeLocal(); P.renderLocal($('#p-local'), st, local);
+  computeLocal(); renderLocalPanel();
 }
 
 // ----------------------------------------------------------------- live loops
@@ -665,7 +669,25 @@ function startFlight() {
 }
 
 // ----------------------------------------------------------------- background alerts (Web Push through grid-alerts)
-function renderAlertsPanel() { alerts.plat = AL.platform(); P.renderAlerts($('#p-alerts'), alerts, local); scheduleNow(); }
+function renderAlertsPanel() {
+  alerts.plat = AL.platform(); P.renderAlerts($('#p-alerts'), alerts, local); scheduleNow();
+  const b = $('#alerts-btn'), n = alerts.prefs.places.length;
+  b.dataset.on = String(!!alerts.prefs.on);
+  b.setAttribute('aria-label', alerts.prefs.on ? `Alerts: on for ${n} ${n === 1 ? 'county' : 'counties'}` : 'Alerts: off');
+  renderLocalPanel();
+}
+function renderLocalPanel() { P.renderLocal($('#p-local'), st, local, { on: alerts.prefs.on, n: alerts.prefs.places.length }); }
+// One tap from the GPS panel: watch the county you are in and turn alerts on (the permission prompt needs this tap).
+function alertHere() {
+  if (alerts.prefs.on) { goPanel('p-alerts'); return; }
+  const h = hereAsPlace();
+  if (h && !alerts.prefs.places.some((x) => x.fips === h.fips) && alerts.prefs.places.length < AL.MAX_PLACES) alerts.prefs = { ...alerts.prefs, places: [...alerts.prefs.places, h] };
+  if (!alerts.plat.push || !alerts.prefs.places.length) { AL.savePrefs(alerts.prefs); renderAlertsPanel(); goPanel('p-alerts'); return; }
+  const go = AL.turnOn(alerts.prefs, alerts.key);
+  goPanel('p-alerts');
+  busy(async () => { alerts.prefs = await go; done('Alerts are on. A confirmation notification is on its way.'); });
+}
+$('#alerts-btn').addEventListener('click', () => goPanel('p-alerts'));
 function alertMsg(msg, err = false) { alerts.msg = msg; alerts.err = err; renderAlertsPanel(); }
 async function busy(fn) {
   alerts.busy = true; alerts.msg = ''; renderAlertsPanel();
@@ -846,7 +868,7 @@ async function tickLoop() {
       if (o.auditor !== 'refuse') au.lastCertified = { time: new Date().toISOString(), y: o.delivered };
       await appendLedger(o);
       const d = o.auditor === 'deliver' ? 'deliver' : o.auditor === 'refuse' ? 'refuse' : 'select';
-      const pill = $('#audit-pill'); pill.dataset.state = d; pill.textContent = `AUDITOR · ${d === 'deliver' ? 'certified' : d === 'refuse' ? 'refused' : 'selected ' + o.auditor.slice(7)}`;
+      const pill = $('#audit-pill'); pill.dataset.state = d; pill.innerHTML = `<span class="ap-k">AUDITOR · </span>${d === 'deliver' ? 'certified' : d === 'refuse' ? 'refused' : 'selected ' + P.esc(o.auditor.slice(7))}`;
       if (d !== lastDecision) { pushTicker(Date.now(), `<b>Auditor</b> ${d === 'deliver' ? 'DELIVER CERTIFIED' : d === 'refuse' ? 'REFUSE · topology reprocessing alarm' : 'SELECT CERTIFIED ' + o.auditor.slice(7)} · ${SYS[au.key].label}`); if (d === 'refuse') notify('refuse-' + Date.now(), 'Auditor refused', 'No replica within tolerance; last certified state held.'); lastDecision = d; }
     }
     P.renderAuditorMini($('#p-auditor-mini'), auditorView());
