@@ -1,0 +1,1501 @@
+{
+ "schema": "KKP-GRID-SURFACES-1.0",
+ "grid": "https://nicholaskouns-create.github.io/Identity/grid/",
+ "count": 184,
+ "templates": [
+  "e47-kartekeya/scripts/templates/city-portal.html"
+ ],
+ "by_repo": {
+  "identity": 24,
+  "nicholaskouns-create.github.io": 58,
+  "e47-kartekeya": 85,
+  "tower": 4,
+  "time": 3,
+  "bi-a7-semimetal-proofs": 1,
+  "auth-kernel": 2,
+  "e47-electroweak-identities": 1,
+  "kiliani": 6
+ },
+ "surfaces": [
+  {
+   "repo": "identity",
+   "path": "evidence/routes/KX-E47-KERNEL/proof_browser.html",
+   "url": "https://nicholaskouns-create.github.io/Identity/evidence/routes/KX-E47-KERNEL/proof_browser.html",
+   "title": "Monorail route KX-E47-KERNEL",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "identity",
+   "path": "explainers/index.html",
+   "url": "https://nicholaskouns-create.github.io/Identity/explainers/",
+   "title": "Identity | Mathematical explainers",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "identity",
+   "path": "explainers/price/index.html",
+   "url": "https://nicholaskouns-create.github.io/Identity/explainers/price/",
+   "title": "The Price of Making Up Your Mind",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "identity",
+   "path": "index.html",
+   "url": "https://nicholaskouns-create.github.io/Identity/",
+   "title": "Identity | E47 formal layer and the Kouns–Killion Paradigm",
+   "door": "door",
+   "lead": true
+  },
+  {
+   "repo": "identity",
+   "path": "monorail/index.html",
+   "url": "https://nicholaskouns-create.github.io/Identity/monorail/",
+   "title": "Monorail Corpus",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "identity",
+   "path": "site/ablation.html",
+   "url": "https://nicholaskouns-create.github.io/Identity/site/ablation.html",
+   "title": "E47 QGNN Ablation Explorer | Identity",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "identity",
+   "path": "site/e47-spectral-advantages.html",
+   "url": "https://nicholaskouns-create.github.io/Identity/site/e47-spectral-advantages.html",
+   "title": "E47 | Spectral Advantages Certificate",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "identity",
+   "path": "site/governance/e47-deterministic-ai-governance.html",
+   "url": "https://nicholaskouns-create.github.io/Identity/site/governance/e47-deterministic-ai-governance.html",
+   "title": "E47 · Deterministic AI Governance & Capability Isolation",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "identity",
+   "path": "site/hamiltonian-memory.html",
+   "url": "https://nicholaskouns-create.github.io/Identity/site/hamiltonian-memory.html",
+   "title": "E47 | Hamiltonian Contraction and Quantum Memory",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "identity",
+   "path": "site/index.html",
+   "url": "https://nicholaskouns-create.github.io/Identity/site/",
+   "title": "Mnemosyne | GitHub-native Research Archive",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "identity",
+   "path": "site/mobile/index.html",
+   "url": "https://nicholaskouns-create.github.io/Identity/site/mobile/",
+   "title": "E47 Proof Observatory · Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "identity",
+   "path": "site/proof/e47-operator-bridge/index.html",
+   "url": "https://nicholaskouns-create.github.io/Identity/site/proof/e47-operator-bridge/",
+   "title": "E47 | Symbolic Operator Bridge & Sigillum Spectrum",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "identity",
+   "path": "site/proof/kernel-census/index.html",
+   "url": "https://nicholaskouns-create.github.io/Identity/site/proof/kernel-census/",
+   "title": "128 Casimir Spectral Kernels | Identity",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "identity",
+   "path": "site/proof/lean-coq/index.html",
+   "url": "https://nicholaskouns-create.github.io/Identity/site/proof/lean-coq/",
+   "title": "When Mathematics Becomes Machine-Checked Proof — Lean · Coq / Rocq · E47",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "identity",
+   "path": "site/proof/lean-coq/instruments.html",
+   "url": "https://nicholaskouns-create.github.io/Identity/site/proof/lean-coq/instruments.html",
+   "title": "E47 Proof Instruments | Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "identity",
+   "path": "site/proof/lean-coq/validation.html",
+   "url": "https://nicholaskouns-create.github.io/Identity/site/proof/lean-coq/validation.html",
+   "title": "E47 Lean and Coq validation",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "identity",
+   "path": "site/proof/lean-coq/verity-poster.html",
+   "url": "https://nicholaskouns-create.github.io/Identity/site/proof/lean-coq/verity-poster.html",
+   "title": "Verity Companion Poster | When Mathematics Becomes Machine-Checked Proof — Lean · Coq / Rocq · E47",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "identity",
+   "path": "site/proof/monorail/index.html",
+   "url": "https://nicholaskouns-create.github.io/Identity/site/proof/monorail/",
+   "title": "Monorail receipt verification · E47",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "identity",
+   "path": "site/research/e47-transport-gradient/index.html",
+   "url": "https://nicholaskouns-create.github.io/Identity/site/research/e47-transport-gradient/",
+   "title": "E₄₇ · Invariant Transport–Gradient Dynamics",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "identity",
+   "path": "site/socorro-stochastic.html",
+   "url": "https://nicholaskouns-create.github.io/Identity/site/socorro-stochastic.html",
+   "title": "Socorro Glyph | Exact Stochastic Leakage Theorem",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "identity",
+   "path": "site/spectra/index.html",
+   "url": "https://nicholaskouns-create.github.io/Identity/site/spectra/",
+   "title": "SPECTRA | Identity Structure Lab",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "identity",
+   "path": "site/spectral-terraces/index.html",
+   "url": "https://nicholaskouns-create.github.io/Identity/site/spectral-terraces/",
+   "title": "Spectral Terraces · E₄₇",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "identity",
+   "path": "verification/coq-sweep-2026-11-13/index.html",
+   "url": "https://nicholaskouns-create.github.io/Identity/verification/coq-sweep-2026-11-13/",
+   "title": "Coq full-tree sweep · 13 November 2026 | Identity",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "identity",
+   "path": "verification/forced-chain-2026-11-18/index.html",
+   "url": "https://nicholaskouns-create.github.io/Identity/verification/forced-chain-2026-11-18/",
+   "title": "The forced chain · 18 November 2026 | Identity",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "bismuth/index.html",
+   "url": "https://nicholaskouns-create.github.io/bismuth/",
+   "title": "Bismuth — An electron neighborhood",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "citizens/index.html",
+   "url": "https://nicholaskouns-create.github.io/citizens/",
+   "title": "Mathematical City Citizens",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "coherence-runtime/index.html",
+   "url": "https://nicholaskouns-create.github.io/coherence-runtime/",
+   "title": "Coherence Runtime",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "disco-jesus/index.html",
+   "url": "https://nicholaskouns-create.github.io/disco-jesus/",
+   "title": "Disco Jesus · The Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "drive-python/index.html",
+   "url": "https://nicholaskouns-create.github.io/drive-python/",
+   "title": "Drive Python curation · 2026-10-03",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "e47-casimir-filter/index.html",
+   "url": "https://nicholaskouns-create.github.io/e47-casimir-filter/",
+   "title": "E47 Casimir Filter Observatory | Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "e47-casimir-filter/share.html",
+   "url": "https://nicholaskouns-create.github.io/e47-casimir-filter/share.html",
+   "title": "E47 Casimir Filter · Embedded Research Card",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "e47-casimir-filter/unified-pqc.html",
+   "url": "https://nicholaskouns-create.github.io/e47-casimir-filter/unified-pqc.html",
+   "title": "Unified E₄₇ Spectral Kernel · PQC & Formal Verification",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "e47-formal-validation.html",
+   "url": "https://nicholaskouns-create.github.io/e47-formal-validation.html",
+   "title": "E47 • Formal Validation",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "e47-geographic-closure/index.html",
+   "url": "https://nicholaskouns-create.github.io/e47-geographic-closure/",
+   "title": "E47 Geographic Closure",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "e47-graph-evidence.html",
+   "url": "https://nicholaskouns-create.github.io/e47-graph-evidence.html",
+   "title": "E47 • Graph Benchmark Evidence",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "e47-identity/index.html",
+   "url": "https://nicholaskouns-create.github.io/e47-identity/",
+   "title": "E47 Identity | Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "e47-moment-ladder/index.html",
+   "url": "https://nicholaskouns-create.github.io/e47-moment-ladder/",
+   "title": "The Moment Ladder",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "e47-research-portal/index.html",
+   "url": "https://nicholaskouns-create.github.io/e47-research-portal/",
+   "title": "E47 — The Mathematical City / Research Observatory",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "e47-six-claims/index.html",
+   "url": "https://nicholaskouns-create.github.io/e47-six-claims/",
+   "title": "The 47/125 Spin Sector",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "e47-transport-gradient/index.html",
+   "url": "https://nicholaskouns-create.github.io/e47-transport-gradient/",
+   "title": "E₄₇ · Invariant Transport–Gradient Dynamics",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "eigen-explorer/index.html",
+   "url": "https://nicholaskouns-create.github.io/eigen-explorer/",
+   "title": "Eigen Explorer · Interactive 2×2 Linear Map | Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "electron-secret-garden/index.html",
+   "url": "https://nicholaskouns-create.github.io/electron-secret-garden/",
+   "title": "Inside Bismuth | The Electron's Secret Garden",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "electroweak/index.html",
+   "url": "https://nicholaskouns-create.github.io/electroweak/",
+   "title": "E47 Electroweak Identities",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "flowshield-pqc-primer.html",
+   "url": "https://nicholaskouns-create.github.io/flowshield-pqc-primer.html",
+   "title": "Post-Quantum Cryptography Primer | FlowShield",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "flowshield.html",
+   "url": "https://nicholaskouns-create.github.io/flowshield.html",
+   "title": "FlowShield | White Hats",
+   "door": "door",
+   "lead": true
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "formal-proof-atlas/index.html",
+   "url": "https://nicholaskouns-create.github.io/formal-proof-atlas/",
+   "title": "Mathematical City · Lean 4 × Coq Formal Proof Atlas",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "index.html",
+   "url": "https://nicholaskouns-create.github.io/",
+   "title": "The Mathematical City · Nicholas Kouns",
+   "door": "door",
+   "lead": true
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "lucas-companion.html",
+   "url": "https://nicholaskouns-create.github.io/lucas-companion.html",
+   "title": "Lucas Companion E47",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "matrix-quantum-simulator/app.html",
+   "url": "https://nicholaskouns-create.github.io/matrix-quantum-simulator/app.html",
+   "title": "The Matrix · Quantum Simulator",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "matrix-quantum-simulator/index.html",
+   "url": "https://nicholaskouns-create.github.io/matrix-quantum-simulator/",
+   "title": "The Matrix | Quantum Simulator",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "matrix-quantum-simulator/receiver.html",
+   "url": "https://nicholaskouns-create.github.io/matrix-quantum-simulator/receiver.html",
+   "title": "Matrix Receipt · City Handoff",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "melanie/index.html",
+   "url": "https://nicholaskouns-create.github.io/melanie/",
+   "title": "Melanie ∞ | The Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "meta-ai-artifact/index.html",
+   "url": "https://nicholaskouns-create.github.io/meta-ai-artifact/",
+   "title": "KARTEKEYA / E47 Quantum Core · 125D Carrier → 47D Protected",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "mnemosyne/index.html",
+   "url": "https://nicholaskouns-create.github.io/mnemosyne/",
+   "title": "Mnemosyne | Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "noesis/discover.html",
+   "url": "https://nicholaskouns-create.github.io/noesis/discover.html",
+   "title": "NOESIS | Discovery Observatory",
+   "door": "link-only",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "noesis/index.html",
+   "url": "https://nicholaskouns-create.github.io/noesis/",
+   "title": "NOESIS | The Mathematical City",
+   "door": "link-only",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "noesis/ingest.html",
+   "url": "https://nicholaskouns-create.github.io/noesis/ingest.html",
+   "title": "NOESIS | Evidence Intake",
+   "door": "link-only",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "noesis/sentinel.html",
+   "url": "https://nicholaskouns-create.github.io/noesis/sentinel.html",
+   "title": "NOESIS | Integrity Sentinel",
+   "door": "link-only",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "packets/index.html",
+   "url": "https://nicholaskouns-create.github.io/packets/",
+   "title": "Live Route Packets",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "piano_contour.html",
+   "url": "https://nicholaskouns-create.github.io/piano_contour.html",
+   "title": "Piano Contours · Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "qsvt-phi4/index.html",
+   "url": "https://nicholaskouns-create.github.io/qsvt-phi4/",
+   "title": "E₄₇ Φ₄ · Quantum Circuit Theater",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "quantum-clock/index.html",
+   "url": "https://nicholaskouns-create.github.io/quantum-clock/",
+   "title": "The Quantum Clock",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "quantum-clock/phase-retention/index.html",
+   "url": "https://nicholaskouns-create.github.io/quantum-clock/phase-retention/",
+   "title": "E₄₇ · Protected Clock | Phase & Retention Lab",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "readme/index.html",
+   "url": "https://nicholaskouns-create.github.io/readme/",
+   "title": "README Router",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "research/e47-governance.html",
+   "url": "https://nicholaskouns-create.github.io/research/e47-governance.html",
+   "title": "E47 · Deterministic AI Governance & Capability Isolation",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "research/socorro.html",
+   "url": "https://nicholaskouns-create.github.io/research/socorro.html",
+   "title": "Socorro Glyph | Exact Stochastic Leakage Theorem",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "research-engine.html",
+   "url": "https://nicholaskouns-create.github.io/research-engine.html",
+   "title": "Mathematical City | Research Engine",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "scientific-apps/index.html",
+   "url": "https://nicholaskouns-create.github.io/scientific-apps/",
+   "title": "Scientific App Constellation — Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "swarm/index.html",
+   "url": "https://nicholaskouns-create.github.io/swarm/",
+   "title": "Swarm · The Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "unified/index.html",
+   "url": "https://nicholaskouns-create.github.io/unified/",
+   "title": "Mathematical City | Unified Workbench",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "unified/spectral-kernels/index.html",
+   "url": "https://nicholaskouns-create.github.io/unified/spectral-kernels/",
+   "title": "E47 | 128 Casimir Spectral Kernels",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "website/coherence-runtime/index.html",
+   "url": "https://nicholaskouns-create.github.io/website/coherence-runtime/",
+   "title": "Coherence, Runtime 1.0",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "website/electroweak/index.html",
+   "url": "https://nicholaskouns-create.github.io/website/electroweak/",
+   "title": "E47 Electroweak Identities",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "website/index.html",
+   "url": "https://nicholaskouns-create.github.io/website/",
+   "title": "The Mathematical City",
+   "door": "door",
+   "lead": true
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "website/interface.html",
+   "url": "https://nicholaskouns-create.github.io/website/interface.html",
+   "title": "Interface · The Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "website/interfaces/e47-holographic-core/index.html",
+   "url": "https://nicholaskouns-create.github.io/website/interfaces/e47-holographic-core/",
+   "title": "KARTEKEYA / E47 Quantum Core — Live Instrument",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "website/interfaces/e47-holographic-core/intertwiner.html",
+   "url": "https://nicholaskouns-create.github.io/website/interfaces/e47-holographic-core/intertwiner.html",
+   "title": "KARTEKEYA — Intertwiner Lab | SU(2) × E47",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "website/interfaces/e47-holographic-core/qsvt-lab.html",
+   "url": "https://nicholaskouns-create.github.io/website/interfaces/e47-holographic-core/qsvt-lab.html",
+   "title": "KARTEKEYA / E47 — QSVT Spectral Filter Lab",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "website/interfaces/e47-holographic-core/spectral-isolation.html",
+   "url": "https://nicholaskouns-create.github.io/website/interfaces/e47-holographic-core/spectral-isolation.html",
+   "title": "Spectral Isolation of the Rank-47 Kernel — KARTEKEYA / E47",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "website/packets/index.html",
+   "url": "https://nicholaskouns-create.github.io/website/packets/",
+   "title": "Route Packets · Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "website/readme/index.html",
+   "url": "https://nicholaskouns-create.github.io/website/readme/",
+   "title": "The Mathematical City · README Router",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "nicholaskouns-create.github.io",
+   "path": "work/index.html",
+   "url": "https://nicholaskouns-create.github.io/work/",
+   "title": "125 states. 47 kept. · Live Work · Nicholas Kouns",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/cite/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/cite/",
+   "title": "Cite \\u00b7 The Kartekeya Isolation Lock (E47-v1.0)",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/citizens/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/citizens/",
+   "title": "Citizens · Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/fly/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/fly/",
+   "title": "Kouns Flight Simulators — click and fly",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/",
+   "title": "The Mathematical City",
+   "door": "door",
+   "lead": true
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/amnesty/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/amnesty/",
+   "title": "AMNESTY · CIRP",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/city-125/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/city-125/",
+   "title": "CITY 125 · Visual Debugger",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/city-live/app.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/city-live/app.html",
+   "title": "CITY LIVE · App · r4",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/city-live/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/city-live/",
+   "title": "The Mathematical City · Instrument Portal",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/civic-assignment/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/civic-assignment/",
+   "title": "Mathematical City · Shared Evidence Assignment",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/coherence-runtime/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/coherence-runtime/",
+   "title": "Coherence, Runtime 1.0",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/cube-platform/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/cube-platform/",
+   "title": "THE CUBE · Modular Platform Blob",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/density-sensitivity/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/density-sensitivity/",
+   "title": "DENSITY · Sensitivity Tomography",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/e47-47face-crystal/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/e47-47face-crystal/",
+   "title": "E47 Canonical 47-Face Dual Crystal",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/e47-first-principles/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/e47-first-principles/",
+   "title": "E47 First-Principles Proof — Corrected Validation",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/e47-geographic-closure/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/e47-geographic-closure/",
+   "title": "E47 Geographic Closure",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/e47-harness-correction/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/e47-harness-correction/",
+   "title": "E47 · 45-Check Harness Correction",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/e47-identity/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/e47-identity/",
+   "title": "E47 Identity | Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/e47-planetarium/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/e47-planetarium/",
+   "title": "E47 Planetarium · The Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/e47-python-validation-20261002/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/e47-python-validation-20261002/",
+   "title": "E47 Python Validation — 162/162 PASS",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/e47-radar-bridge/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/e47-radar-bridge/",
+   "title": "E47 × KKP-RADAR Spectral Operator Bridge",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/e47-research-workbench/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/e47-research-workbench/",
+   "title": "E47 Research WorkBench",
+   "door": "plain",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/e47-spectral-matrix-proof/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/e47-spectral-matrix-proof/",
+   "title": "E47 Flow as a Single 125 × 125 Spectral Matrix Machine",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/eidolon-flight-lab/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/eidolon-flight-lab/",
+   "title": "EIDOLON Flight Lab · Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/entangle/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/entangle/",
+   "title": "Entangle",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/external-agents/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/external-agents/",
+   "title": "CITY External Agents · Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/flight/eidolon/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/flight/eidolon/",
+   "title": "Level 2 · EIDOLON · Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/flight/eidolon-harmonic/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/flight/eidolon-harmonic/",
+   "title": "Level 2 · Eidolon Harmonic · Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/flight/hover-assembly/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/flight/hover-assembly/",
+   "title": "Level 1 · Hover Assembly · Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/flight/hover-cockpit/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/flight/hover-cockpit/",
+   "title": "Level 3 · Hover Cockpit · Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/flight/mav/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/flight/mav/",
+   "title": "Level 1 · MAV · Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/flight/ufo-propulsion/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/flight/ufo-propulsion/",
+   "title": "UFO Propulsion Lab · Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/formalism-atlas/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/formalism-atlas/",
+   "title": "E47 · Executable Formalism Atlas",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/gaze/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/gaze/",
+   "title": "Gaze — House Observatory",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/geometric-holography/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/geometric-holography/",
+   "title": "Geometric Holography",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/hamiltonian-memory/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/hamiltonian-memory/",
+   "title": "E47 | Hamiltonian Contraction and Quantum Memory",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/hyperbolic-liquid-fractal-buoy/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/hyperbolic-liquid-fractal-buoy/",
+   "title": "Hyperbolic–Liquid Fractal Buoy · Validated Run B",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/instrument-portal/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/instrument-portal/",
+   "title": "E47 Kartekeya · Instrument Portal",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/instruments/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/instruments/",
+   "title": "Instrument Directory · The Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/kartekeya/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/kartekeya/",
+   "title": "Kartekeya · E47 Coprocessor",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/kouns-core/app.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/kouns-core/app.html",
+   "title": "CITY CORE // MATHEMATICAL CITY",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/kouns-core/bridge.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/kouns-core/bridge.html",
+   "title": "E47 FIELD BRIDGE // φ → 125 → P47 → SPECTRUM",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/kouns-core/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/kouns-core/",
+   "title": "CITY CORE // MATHEMATICAL CITY",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/manifold/city.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/manifold/city.html",
+   "title": "MANIFOLD · City console",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/manifold/density.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/manifold/density.html",
+   "title": "MANIFOLD · Density phone",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/manifold/eidolon.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/manifold/eidolon.html",
+   "title": "MANIFOLD · Eidolon HUD",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/manifold/embed.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/manifold/embed.html",
+   "title": "MANIFOLD embed",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/manifold/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/manifold/",
+   "title": "MANIFOLD · Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/manifold/lock.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/manifold/lock.html",
+   "title": "MANIFOLD Lock Card",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/manta/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/manta/",
+   "title": "MANTA // Flight",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/manta-daylight/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/manta-daylight/",
+   "title": "MANTA DAYLIGHT // 6DOF MORPHING FLIGHT",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/mathematical-city/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/mathematical-city/",
+   "title": "The Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/matrix/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/matrix/",
+   "title": "THE MATRIX · Unified Quantum Simulator",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/neutrino-flavor/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/neutrino-flavor/",
+   "title": "NEUTRINO · Flavor snapshot",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/newton-e47-product/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/newton-e47-product/",
+   "title": "Newton–Mean × E47 Product-Kernel Invariant",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/nexus/cinema.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/nexus/cinema.html",
+   "title": "NEXUS · Packet cinema",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/nexus/embed.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/nexus/embed.html",
+   "title": "NEXUS embed",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/nexus/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/nexus/",
+   "title": "NEXUS · Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/nexus/lock.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/nexus/lock.html",
+   "title": "NEXUS Lock Card",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/nexus/mnemosyne/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/nexus/mnemosyne/",
+   "title": "Mnemosyne & Me | Humanities | Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/nexus/operad.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/nexus/operad.html",
+   "title": "NEXUS · Operad",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/nexus/pulse.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/nexus/pulse.html",
+   "title": "NEXUS · Pulse",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/nexus/songs/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/nexus/songs/",
+   "title": "SONGS · NEXUS · Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/nexus/watchtower.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/nexus/watchtower.html",
+   "title": "NEXUS · Watchtower",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/observatory/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/observatory/",
+   "title": "Observatory · The Mathematical City",
+   "door": "plain",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/pip-manta/card.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/pip-manta/card.html",
+   "title": "PiP Manta · Explore E47 Flight",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/pip-manta/embed.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/pip-manta/embed.html",
+   "title": "PIP E47–MANTA · Embed",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/pip-manta/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/pip-manta/",
+   "title": "PIP Explains E47–MANTA",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/propulsion/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/propulsion/",
+   "title": "Propulsion Atlas · Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/q5/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/q5/",
+   "title": "Q5 · 125-word ledger",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/qsvt-phi4-circuit/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/qsvt-phi4-circuit/",
+   "title": "E₄₇ Φ₄ | Quantum Circuit Atlas",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/readme/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/readme/",
+   "title": "The Mathematical City · README Router",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/route-packets/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/route-packets/",
+   "title": "The Mathematical City · Route Packets",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/runtime-e47-bridge/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/runtime-e47-bridge/",
+   "title": "E47 Runtime Instrument Bridge",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/sat-newton-fractal/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/sat-newton-fractal/",
+   "title": "SAT → Newton → Basin Boundary",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/skyrmion/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/skyrmion/",
+   "title": "SKYRMION · WGS84 Global Terrain Flight Lab",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/skyrmion-rt3/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/skyrmion-rt3/",
+   "title": "SKYRMION RT3 · WGS84 Flight Simulator",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/syntax-jacob/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/syntax-jacob/",
+   "title": "Syntax Jacob · Propulsion Lab · 3I/ATLAS",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/udu39-attractor/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/udu39-attractor/",
+   "title": "The UDU39 Attractor Theorem · P325352",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/visualizers/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/visualizers/",
+   "title": "Legacy route retired · The Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/interfaces/webgl/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/webgl/",
+   "title": "WEBGL LAB · Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/notes/e47-grassmann-casimir/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/notes/e47-grassmann-casimir/",
+   "title": "E47 Grassmann–Casimir Proof | The Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/notes/e47-recursive-system/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/notes/e47-recursive-system/",
+   "title": "E47 in Two Pages · The Mathematical City",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/notes/omega-recursive/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/notes/omega-recursive/",
+   "title": "E47 Mass Ladder — Symbolic, Numeric and Quantum Validation",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/research/e47-qgnn/lie-closure/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/research/e47-qgnn/lie-closure/",
+   "title": "E₄₇ QGNN | Exact U(5) Lie-Closure Certificate",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "website/research/e47-transport-gradient/index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Kartekeya/research/e47-transport-gradient/",
+   "title": "E₄₇ · Invariant Transport–Gradient Dynamics",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "tower",
+   "path": "experiments/e47-hamiltonian-memory.html",
+   "url": "https://nicholaskouns-create.github.io/tower/experiments/e47-hamiltonian-memory.html",
+   "title": "E47 | Hamiltonian Contraction and Quantum Memory",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "tower",
+   "path": "hamiltonian-memory.html",
+   "url": "https://nicholaskouns-create.github.io/tower/hamiltonian-memory.html",
+   "title": "E47 | Hamiltonian Contraction and Quantum Memory",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "tower",
+   "path": "index.html",
+   "url": "https://nicholaskouns-create.github.io/tower/",
+   "title": "E47-Tower · a working research environment",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "tower",
+   "path": "noesis/index.html",
+   "url": "https://nicholaskouns-create.github.io/tower/noesis/",
+   "title": "NOESIS · Live Discovery Cycle",
+   "door": "link-only",
+   "lead": false
+  },
+  {
+   "repo": "time",
+   "path": "e47-transport-gradient/index.html",
+   "url": "https://nicholaskouns-create.github.io/Time/e47-transport-gradient/",
+   "title": "E₄₇ · Invariant Transport–Gradient Dynamics",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "time",
+   "path": "hamiltonian-memory.html",
+   "url": "https://nicholaskouns-create.github.io/Time/hamiltonian-memory.html",
+   "title": "E47 | Hamiltonian Contraction and Quantum Memory",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "time",
+   "path": "index.html",
+   "url": "https://nicholaskouns-create.github.io/Time/",
+   "title": "The Quantum Clock",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "bi-a7-semimetal-proofs",
+   "path": "app/index.html",
+   "url": "https://nicholaskouns-create.github.io/bi-a7-semimetal-proofs/",
+   "title": "Bismuth — An electron neighborhood",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "auth-kernel",
+   "path": "docs/index.html",
+   "url": "https://nicholaskouns-create.github.io/auth-kernel/docs/",
+   "title": "FlowShield | White Hats",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "auth-kernel",
+   "path": "index.html",
+   "url": "https://nicholaskouns-create.github.io/auth-kernel/",
+   "title": "FlowShield | White Hats",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-electroweak-identities",
+   "path": "index.html",
+   "url": "https://nicholaskouns-create.github.io/E47-Electroweak-Identities/",
+   "title": "E47 Electroweak Identities",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "kiliani",
+   "path": "docs/collation.html",
+   "url": "https://nicholaskouns-create.github.io/Kiliani/collation.html",
+   "title": "Apparatus criticus — Passio minor Kiliani",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "kiliani",
+   "path": "docs/family.html",
+   "url": "https://nicholaskouns-create.github.io/Kiliani/family.html",
+   "title": "Two lines, iron and gold — the Killion–Kouns family archive",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "kiliani",
+   "path": "docs/index.html",
+   "url": "https://nicholaskouns-create.github.io/Kiliani/",
+   "title": "Kiliani — a critical dossier of the Passiones",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "kiliani",
+   "path": "docs/reader.html",
+   "url": "https://nicholaskouns-create.github.io/Kiliani/reader.html",
+   "title": "Passiones and family chronology · Kiliani",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "kiliani",
+   "path": "docs/verification.html",
+   "url": "https://nicholaskouns-create.github.io/Kiliani/verification.html",
+   "title": "Passio minor Collation",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "kiliani",
+   "path": "docs/witnesses.html",
+   "url": "https://nicholaskouns-create.github.io/Kiliani/witnesses.html",
+   "title": "The Seven Witnesses",
+   "door": "door",
+   "lead": false
+  },
+  {
+   "repo": "e47-kartekeya",
+   "path": "scripts/templates/city-portal.html",
+   "url": null,
+   "title": "The Mathematical City · Instrument Portal (template)",
+   "door": "door",
+   "lead": false
+  }
+ ]
+}

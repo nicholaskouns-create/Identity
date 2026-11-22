@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090b0d">
+<title>Grid · Live U.S. power-grid monitor · The Mathematical City</title>
+<meta name="description" content="Grid watches the U.S. power grid live from public sources (EIA-930, ISO/RTO operators, NOAA, NWS, USGS, NIFC, NASA) on satellite, night-light and 3D terrain maps, and runs a certified spectral auditor that refuses outputs a corrupted topology file would otherwise pass.">
+<link rel="canonical" href="https://nicholaskouns-create.github.io/Identity/grid/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Mathematical City">
+<meta property="og:title" content="Grid">
+<meta property="og:description" content="Live U.S. power-grid monitor with a certified spectral auditor. Public data, real time, in your browser.">
+<meta property="og:url" content="https://nicholaskouns-create.github.io/Identity/grid/">
+<meta property="og:image" content="https://nicholaskouns-create.github.io/Identity/grid/og-grid.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Grid share card: the contiguous United States drawn in light from its 9,581 generating plants, with the certified auditor’s five-replica glyph.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Grid">
+<meta name="twitter:description" content="Live U.S. power-grid monitor with a certified spectral auditor.">
+<meta name="twitter:image" content="https://nicholaskouns-create.github.io/Identity/grid/og-grid.png">
+<link rel="image_src" href="https://nicholaskouns-create.github.io/Identity/grid/og-grid.png">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/grid.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/grid-180.png">
+<link rel="preload" href="fonts/newsreader-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/ibm-plex-mono-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/ibm-plex-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="lib/maplibre/maplibre-gl.css">
+<link rel="stylesheet" href="grid.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Grid","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (browser)","url":"https://nicholaskouns-create.github.io/Identity/grid/","author":{"@type":"Person","name":"Nicholas Shane Kouns"},"isPartOf":{"@type":"WebSite","name":"The Mathematical City","url":"https://nicholaskouns-create.github.io/"},"description":"Live U.S. power-grid monitor with a certified spectral auditor."}</script>
+</head>
+<body>
+<div class="boot" id="boot" aria-hidden="true"><figure><img src="cover-grid.jpg" width="1104" height="684" alt="" decoding="async" fetchpriority="high"><figcaption><span class="boot-dot"></span>Opening the grid · public sources, read live</figcaption></figure></div>
+<script>try{if(sessionStorage.getItem("kkp-grid-boot"))document.getElementById("boot").remove();else sessionStorage.setItem("kkp-grid-boot","1")}catch(e){}</script>
+<a class="skip-link" href="#main">Skip to the monitor</a>
+<div class="app" id="app" data-view="map">
+  <header class="bar">
+    <div class="brand">
+      <a class="kicker" href="https://nicholaskouns-create.github.io/E47-Kartekeya/" title="The Mathematical City">◇ The Mathematical City · Instrument</a>
+      <h1 class="title">Grid</h1>
+      <span class="tagline">Live U.S. power grid · certified spectral auditor</span>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Views">
+      <button role="tab" aria-selected="true" data-tab="map" id="tab-map">Map</button>
+      <button role="tab" aria-selected="false" data-tab="fly" id="tab-fly">Fly</button>
+      <button role="tab" aria-selected="false" data-tab="auditor" id="tab-auditor">Auditor</button>
+      <button role="tab" aria-selected="false" data-tab="formalism" id="tab-formalism">Formalism</button>
+      <button role="tab" aria-selected="false" data-tab="sources" id="tab-sources">Sources</button>
+    </nav>
+    <div class="status">
+      <span class="clock mono" id="clock" aria-live="off">--:--:-- UTC</span>
+      <button class="pill" id="live-pill" data-tab="sources" title="Sources responding now">LIVE <b id="live-count">0/0</b></button>
+      <span class="pill gps" id="gps-chip" title="Your position stays on this device">GPS · locating</span>
+      <span class="pill audit-pill" id="audit-pill" data-state="idle" title="Certified spectral monitor">AUDITOR · starting</span>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <!-- MAP + FLY share one map surface -->
+    <section class="view view-map" id="view-map" aria-label="Map">
+      <div id="map" class="map" role="region" aria-label="Interactive map of the U.S. power grid"></div>
+      <div class="map-vignette" aria-hidden="true"></div>
+
+      <aside class="rail rail-left glass" id="rail-left" aria-label="Scenes and layers">
+        <div class="rail-head"><span class="eyebrow">Scene</span><button class="icon-btn collapse" data-collapse="rail-left" aria-label="Collapse layers">‹</button></div>
+        <div class="scenes" role="radiogroup" aria-label="Scene">
+          <button class="scene" role="radio" aria-checked="true" data-scene="night"><span class="sw sw-night"></span>Night</button>
+          <button class="scene" role="radio" aria-checked="false" data-scene="satellite"><span class="sw sw-sat"></span>Satellite</button>
+          <button class="scene" role="radio" aria-checked="false" data-scene="terrain"><span class="sw sw-terrain"></span>Terrain 3D</button>
+          <button class="scene" role="radio" aria-checked="false" data-scene="schematic"><span class="sw sw-schem"></span>Schematic</button>
+        </div>
+        <label class="toggle"><input type="checkbox" id="globe-toggle"><span>Globe projection</span></label>
+        <div class="eyebrow">Layers</div>
+        <ul class="layers" id="layer-list"></ul>
+        <div class="rail-actions">
+          <button class="btn" id="btn-locate">◎ Locate me</button>
+          <button class="btn" id="btn-conus">⌂ Lower 48</button>
+          <button class="btn accent" id="btn-fly-here">✈ Fly from here</button>
+        </div>
+      </aside>
+
+      <aside class="rail rail-right" id="rail-right" aria-label="Live panels">
+        <div class="panel glass" id="p-demand"></div>
+        <div class="panel glass" id="p-mix"></div>
+        <div class="panel glass" id="p-iso"></div>
+        <div class="panel glass" id="p-hazard"></div>
+        <div class="panel glass" id="p-space"></div>
+        <div class="panel glass" id="p-auditor-mini"></div>
+        <div class="panel glass" id="p-local"></div>
+      </aside>
+
+      <div class="hud" id="hud" hidden>
+        <div class="hud-top mono">
+          <span id="hud-hdg">HDG 000°</span><span id="hud-spd">GS 000 kt</span><span id="hud-alt">ALT 0000 ft</span><span id="hud-agl">AGL 0000 ft</span><span id="hud-pos">--</span>
+        </div>
+        <svg class="hud-horizon" id="hud-horizon" viewBox="-200 -150 400 300" aria-hidden="true"></svg>
+        <div class="hud-near glass mono" id="hud-near">Nearest infrastructure · loading</div>
+        <div class="hud-keys mono">W/S pitch · A/D roll · Q/E yaw · Z/X throttle · P line patrol · Esc exit</div>
+        <div class="stick" id="stick" aria-hidden="true"><div class="knob"></div></div>
+      </div>
+
+      <footer class="ticker glass" aria-label="Event ticker">
+        <div class="evidence-key mono" id="evidence-key"></div>
+        <div class="ticker-track" id="ticker" aria-live="polite"></div>
+      </footer>
+      <button class="sheet-btn btn" id="sheet-layers" aria-controls="rail-left">Layers</button>
+      <button class="sheet-btn btn right" id="sheet-panels" aria-controls="rail-right">Panels</button>
+    </section>
+
+    <section class="view page" id="view-auditor" aria-label="Certified spectral monitor" hidden></section>
+    <section class="view page" id="view-formalism" aria-label="Formalism" hidden></section>
+    <section class="view page" id="view-sources" aria-label="Sources and settings" hidden></section>
+  </main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<noscript><div class="noscript">Grid is a live instrument and needs JavaScript. The data sources it reads are listed in <a href="README.md">README.md</a>.</div></noscript>
+<script type="module" src="app.js"></script>
+</body>
+</html>

@@ -27,4 +27,8 @@ try{const u="https://api.github.com/repos/"+repo+"/actions/runs?head_sha="+sha+"
 $("receipt").replaceChildren(document.createTextNode("GitHub run "+run.id+" · "+run.status+" · "+(run.conclusion||"pending")+" · "));const a=document.createElement("a");a.href=run.html_url;a.textContent="Open immutable run receipt";$("receipt").append(a);
 }catch(e){for(const id of ["lean","coq"]){$(id).textContent="UNVERIFIED · CI status unavailable";$(id).className="status pending";}$("receipt").textContent="GitHub verification unavailable: "+e.message;}}
 load();
-</script></body></html>
+</script><!-- KKP-GRID-DOOR-1 · doorway to Grid, the live U.S. power-grid monitor (Identity/tools/grid/install_door.py) -->
+<a id="kkp-grid-door" href="https://nicholaskouns-create.github.io/Identity/grid/" title="Grid · live U.S. power-grid monitor with a certified spectral auditor" aria-label="Open Grid, the live U.S. power-grid monitor" style="position:fixed;left:12px;bottom:12px;z-index:2147483000;display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:999px;background:rgba(9,11,13,.86);border:1px solid rgba(110,223,212,.38);color:#6edfd4;font:600 10px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.16em;text-decoration:none;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 6px 24px rgba(0,0,0,.35)">GRID</a>
+<script src="https://nicholaskouns-create.github.io/Identity/grid/door.js" defer></script>
+<!-- /KKP-GRID-DOOR-1 -->
+</body></html>
