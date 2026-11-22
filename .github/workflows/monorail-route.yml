@@ -48,6 +48,9 @@ jobs:
           sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.35.0
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
 
+      - name: Concrete Casimir numerical cross-check (E1, not formal proof)
+        run: python3 validation/lane19_casimir_numeric.py
+
       - name: Monorail scenario tests
         run: python3 monorail/tests/test_monorail.py
 
