@@ -1,9 +1,10 @@
 // grid-alerts · Supabase Edge Function: Grid's background alerts.
 //
 // A phone or browser subscribes with standard Web Push and names up to five counties. Every five minutes
-// pg_cron calls ?op=sweep; the sweep reads ODIN (outages by county) and the National Weather Service
-// (active severe and extreme warnings), and sends a notification when the power goes out in one of those
-// counties, when it comes back, or when a warning is issued there. It works with Grid closed.
+// pg_cron calls ?op=sweep; the sweep reads ODIN (outages by county, and each utility feed's status) and the
+// National Weather Service (active severe and extreme warnings). It sends a notification when the power goes
+// out in one of those counties, when reported outages fall or clear, when the outage data for an alerted
+// county cannot be trusted, and when a warning is issued there. It works with Grid closed.
 //
 //   GET  ?op=key           application server public key and the last sweep's summary
 //   POST ?op=subscribe     { subscription, places:[{fips,label}], minOut, weather, restore }
@@ -17,11 +18,12 @@
 // The VAPID key pair is generated here on first use and kept in a table only the service role can read.
 
 import { send, b64u } from './webpush.ts';
-import { GRID, countyTotals, weatherIndex, planSub, cleanSubscribe } from './logic.ts';
+import { GRID, countyTotals, feedStatus, liveStatus, feedCollapsed, weatherIndex, planSub, applyNote, cleanSubscribe } from './logic.ts';
 
 const SB = Deno.env.get('SUPABASE_URL');
 const SRK = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 const ODIN_URL = 'https://odin.ornl.gov/odi';
+const ODIN_STATUS_URL = 'https://odin.ornl.gov/odi/status';
 const NWS_URL = 'https://api.weather.gov/alerts/active?status=actual&message_type=alert,update&severity=Extreme,Severe';
 const UA = 'Grid/1.0 (+https://nicholaskouns-create.github.io/Identity/grid/)';
 const CORS = {
@@ -130,11 +132,14 @@ async function opSweep(req) {
   const c = await config();
   if (!sameToken(req.headers.get('x-grid-sweep') || '', c.sweep_token)) return json({ error: 'forbidden' }, 403);
   const t0 = Date.now(), now = Date.now();
-  const [odin, nws] = await Promise.allSettled([getJson(ODIN_URL, 25000), getJson(NWS_URL, 25000, 'application/geo+json')]);
-  const totals = odin.status === 'fulfilled' ? countyTotals(odin.value) : null;
-  const wx = nws.status === 'fulfilled' ? weatherIndex(nws.value) : null;
+  const [odinR, statusR, nwsR] = await Promise.allSettled([getJson(ODIN_URL, 25000), getJson(ODIN_STATUS_URL, 20000), getJson(NWS_URL, 25000, 'application/geo+json')]);
+  const totals = odinR.status === 'fulfilled' ? countyTotals(odinR.value) : null;
+  const status = statusR.status === 'fulfilled' ? feedStatus(statusR.value) : null;
+  const collapsed = feedCollapsed(totals, (c.last_sweep && c.last_sweep.odinCounties) || 0);
+  const odin = { totals: collapsed ? null : totals, status: liveStatus(status, now) };
+  const wx = nwsR.status === 'fulfilled' ? weatherIndex(nwsR.value) : null;
   const vapid = vapidOf(c);
-  const tally = { subs: 0, sent: 0, failed: 0, removed: 0, written: 0 };
+  const tally = { subs: 0, sent: 0, failed: 0, retrying: 0, removed: 0, written: 0 };
   const cols = 'id,endpoint,p256dh,auth,places,min_out,weather,restore,state,fails';
   for (let last = '', guard = 0; guard < 200; guard++) {
     // Keyset pages (id > last), so rows deleted along the way never shift the next page.
@@ -145,19 +150,22 @@ async function opSweep(req) {
     const worker = async () => {
       while (i < page.length) {
         const s = page[i++];
-        const plan = planSub(s, totals, wx, now);
-        let gone = false, retry = false, okAny = false, hardFail = false;
+        const plan = planSub(s, odin, wx, now);
+        // Delivery is tracked per notice: each accepted notice records itself; one the push service could not
+        // take for now (network, 429, 5xx) is left unrecorded, so the next sweep plans and sends it again while
+        // it still applies. A notice refused outright (other 4xx) is recorded, so it cannot loop.
+        let next = plan.state, gone = false, okAny = false, hardFail = false;
         for (const n of plan.notes) {
-          const r = await send(s, payload(n), vapid, { ttl: n.ttl || (n.kind === 'restore' ? 21600 : 10800), urgency: n.urgency || 'normal' }).catch((e) => ({ ok: false, status: 0, text: String(e) }));
-          if (r.ok) { okAny = true; tally.sent++; continue; }
+          const r = await send(s, payload(n), vapid, { ttl: n.ttl || 10800, urgency: n.urgency || 'normal' }).catch((e) => ({ ok: false, status: 0, text: String(e) }));
+          if (r.ok) { okAny = true; tally.sent++; next = applyNote(next, n); continue; }
           tally.failed++;
           if (r.gone) { gone = true; break; }
-          if (r.status === 0 || r.status === 429 || r.status >= 500) retry = true; else hardFail = true;
+          if (r.status === 0 || r.status === 429 || r.status >= 500) { tally.retrying++; continue; }
+          hardFail = true; next = applyNote(next, n);
         }
         if (gone || (hardFail && (s.fails || 0) >= 4)) { await db('DELETE', `grid_push_subs?id=eq.${s.id}`, undefined, 'return=minimal'); tally.removed++; continue; }
-        if (retry && !okAny) continue; // keep the old state: the same notices go out on the next sweep
         const patch = {};
-        if (plan.changed) patch.state = plan.state;
+        if (JSON.stringify(next) !== JSON.stringify(s.state || {})) patch.state = next;
         if (okAny) { patch.last_push_at = new Date().toISOString(); if (s.fails) patch.fails = 0; }
         else if (hardFail) patch.fails = (s.fails || 0) + 1;
         if (Object.keys(patch).length) { await db('PATCH', `grid_push_subs?id=eq.${s.id}`, patch, 'return=minimal'); tally.written++; }
@@ -166,7 +174,13 @@ async function opSweep(req) {
     await Promise.all(Array.from({ length: Math.min(8, page.length) }, worker));
     if (page.length < 500) break;
   }
-  const summary = { at: new Date().toISOString(), ...tally, odinCounties: totals ? totals.size : null, nwsCounties: wx ? wx.size : null, odinError: odin.status === 'rejected' ? String(odin.reason).slice(0, 120) : null, nwsError: nws.status === 'rejected' ? String(nws.reason).slice(0, 120) : null, ms: Date.now() - t0 };
+  const why = (r, parsed) => (r.status === 'rejected' ? String(r.reason).slice(0, 120) : parsed ? null : 'unexpected response');
+  const summary = {
+    at: new Date().toISOString(), ...tally,
+    odinCounties: odin.totals ? odin.totals.size : null, odinError: collapsed ? `feed fell from ${c.last_sweep.odinCounties} to ${totals.size} counties` : why(odinR, totals),
+    odinFeeds: status ? status.size : null, statusNewest: status && status.newest ? new Date(status.newest).toISOString() : null, statusLive: !!odin.status, statusError: why(statusR, status),
+    nwsCounties: wx ? wx.size : null, nwsError: why(nwsR, wx), ms: Date.now() - t0,
+  };
   await db('PATCH', 'grid_alert_config?id=eq.1', { last_sweep: summary }, 'return=minimal').catch(() => {});
   cfgCache = null;
   console.log(JSON.stringify({ op: 'sweep', ...summary }));
