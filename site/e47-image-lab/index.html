@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>E47 Image Projection Lab · Mathematical City</title>
+<meta name="description" content="Interactive 125 → 47 Casimir spectral projection for image features with numerical retention and reconstruction diagnostics.">
+<style>
+:root{color-scheme:dark;--bg:#09121d;--panel:#112335;--line:#345369;--ink:#f2f7fa;--muted:#b3c9d5;--cyan:#71e2e7;--gold:#ffca81}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% 0,#163d56,transparent 55%),var(--bg);font:16px/1.6 system-ui,sans-serif;color:var(--ink)}main{max-width:1160px;margin:auto;padding:32px 20px 80px}a{color:var(--cyan)}.tag{color:var(--cyan);text-transform:uppercase;letter-spacing:.17em;font-size:.76rem;font-weight:750}h1{font-size:clamp(2.1rem,6vw,4.9rem);line-height:1.09;letter-spacing:-.04em;margin:12px 0}h2{margin:0 0 12px}.lead{font-size:1.15rem;color:var(--muted);max-width:800px}.panel{background:#112335e6;border:1px solid var(--line);border-radius:16px;padding:20px;margin:19px 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}.metric{background:#081923;border:1px solid #345369;border-radius:12px;padding:15px}.metric strong{display:block;font-size:clamp(1.25rem,3vw,2rem);font-variant-numeric:tabular-nums;color:var(--cyan)}.metric small{color:var(--muted)}button,input{font:inherit}button,.upload{display:inline-block;border:1px solid #5cbec6;background:#143542;color:white;padding:9px 15px;border-radius:9px;cursor:pointer;margin:6px 7px 6px 0}.upload input{max-width:230px}.art{width:100%;aspect-ratio:1;image-rendering:pixelated;border-radius:10px;background:#06101a;border:1px solid #46657a}.note{color:var(--muted);font-size:.9rem}.math{font:1.04rem/1.7 ui-monospace,monospace;overflow-wrap:anywhere;color:#ffdcaa}footer{color:var(--muted);margin-top:30px}#status{color:var(--gold)}button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+</style></head><body><main>
+<a href="../../">← Mathematical City / Identity</a>
+<div class="tag">Research instrument · deterministic browser computation</div>
+<h1>Images through the <span style="color:var(--cyan)">E₄₇ spectral kernel</span></h1>
+<p class="lead">A working 125-dimensional image-feature encoding, exact Casimir-sector selector, 47-dimensional retained subspace, and measurable image reconstruction. No backend, no uploaded image transfer, no pretrained encoder.</p>
+<section class="panel">
+<h2>Choose an image</h2><label class="upload">Local image <input id="file" type="file" accept="image/*"></label><button id="sample" type="button">Reset to synthetic test image</button>
+<p id="status" role="status">Preparing spectral projection…</p>
+<div class="metrics"><div class="metric"><small>Retained feature energy η</small><strong id="eta">—</strong></div>
+<div class="metric"><small>Feature residual ‖z−Pz‖ / ‖z‖</small><strong id="residual">—</strong></div>
+<div class="metric"><small>RGB reconstruction RMSE (0–1)</small><strong id="rmse">—</strong></div>
+<div class="metric"><small>Idempotence defect ‖P(Pz)−Pz‖/‖z‖</small><strong id="idem">—</strong></div></div>
+</section>
+<section class="grid">
+<div class="panel"><h2>Input · 5 × 5 RGB grid</h2><canvas class="art" id="before" width="300" height="300" aria-label="Input low-resolution image feature grid"></canvas><p class="note">The browser extracts 25 spatial samples × 5 channels (RGB, luminance, local edge) = 125 scalars.</p></div>
+<div class="panel"><h2>Projected · E₄₇</h2><canvas class="art" id="after" width="300" height="300" aria-label="RGB reconstruction from projected features"></canvas><p class="note">Direct RGB readout from P₄₇z; values clipped to the display range. This is <em>not</em> a trained decoder.</p></div>
+</section>
+<section class="panel"><h2>Authoritative spin-sector construction</h2>
+<p class="math">H = V₂ ⊗ V₂ ⊗ V₂, dim H = 125<br>
+C = (Jₓ¹+Jₓ²+Jₓ³)² + (Jᵧ¹+Jᵧ²+Jᵧ³)² + (J_z¹+J_z²+J_z³)²<br>
+spec C = {0,2,6,12,20,30,42}<br>
+multiplicities = {1,9,25,28,27,22,13}<br>
+K = (C−6I)(C−30I)<br>
+P₄₇ = 1_{&#123;6,30&#125;}(C), rank P₄₇ = 25 + 22 = 47<br>
+z₄₇ = P₄₇ z; η = ‖P₄₇z‖² / ‖z‖²</p>
+<p>Here P₄₇ is evaluated as a degree-six Lagrange interpolation polynomial in C, using the exact seven Casimir eigenvalues. The resulting operator is a mathematical orthogonal projector; browser arithmetic introduces floating-point roundoff.</p>
+<p class="note">Interpretation: 47/125 = 0.376 is the <em>subspace dimension fraction</em>, not a guaranteed retention percentage for a particular image. η is measured separately for each input. RGB error measures the untrained direct readout, not optimized compression performance.</p></section>
+<section class="panel"><h2>Extend into a real learning experiment</h2><p>Connect a learned encoder fθ(image) ∈ ℝ¹²⁵ and decoder gφ(P₄₇ fθ(image)). Train on an explicitly licensed dataset and compare full-latent, fixed E₄₇, matched-rank random-subspace, and learned rank-47 bottlenecks under identical splits and parameter budgets. Record reconstruction metrics and generalization separately from the exact algebraic projector certificate.</p><p class="note">CelebA-HQ images are not packaged with this page. TensorFlow Datasets builder code is only a dataset-loading interface, not model training or proof of image reconstruction.</p></section>
+<footer><a href="https://github.com/nicholaskouns-create/Identity/blob/main/site/e47-image-lab/index.html">View source</a> · Experimental UI, deterministic numeric computation, no dataset download.</footer>
+</main><script>
+"use strict";
+const spins=[-2,-1,0,1,2], N=125, spectrum=[0,2,6,12,20,30,42];
+const coeff=[1,Math.sqrt(6)/2,Math.sqrt(6)/2,1];
+function op(v,kind){const out=new Float64Array(N);for(let k=0;k<N;k++){let ix=[Math.floor(k/25),Math.floor(k/5)%5,k%5],x=v[k];if(kind==="z"){out[k]=(ix[0]+ix[1]+ix[2]-6)*x;continue;}for(const step of [25,5,1]){const d=step===25?0:step===5?1:2,m=ix[d];if(m<4)out[k+step]+=coeff[m]*x;if(m>0)out[k-step]+=(kind==="x"?1:-1)*coeff[m-1]*x;}}return out;}
+function casimir(v){const x=op(op(v,"x"),"x"),a=op(op(v,"a"),"a"),z=op(op(v,"z"),"z");return x.map((q,i)=>q-a[i]+z[i]);}
+function polynomialSector(v,lambda){let q=new Float64Array(v);for(const t of spectrum){if(t===lambda)continue;const c=casimir(q),den=lambda-t;q=c.map((x,i)=>(x-t*q[i])/den);}return q;}
+function project(v){const x=polynomialSector(v,6),y=polynomialSector(v,30);return x.map((n,i)=>n+y[i]);}
+const dot=v=>v.reduce((s,x)=>s+x*x,0);
+function encode(canvas){const ctx=canvas.getContext("2d",{willReadFrequently:true}),im=ctx.getImageData(0,0,5,5).data,z=new Float64Array(125),Y=[];for(let i=0;i<25;i++){const r=im[4*i]/255,g=im[4*i+1]/255,b=im[4*i+2]/255;Y[i]=.2126*r+.7152*g+.0722*b;z[i*5]=r;z[i*5+1]=g;z[i*5+2]=b;z[i*5+3]=Y[i];}for(let i=0;i<25;i++){const row=Math.floor(i/5),col=i%5,right=Y[row*5+Math.min(4,col+1)],down=Y[Math.min(4,row+1)*5+col];z[i*5+4]=Math.hypot(right-Y[i],down-Y[i])/Math.SQRT2;}return z;}
+function render(id,z){const canvas=document.getElementById(id),ctx=canvas.getContext("2d"),img=ctx.createImageData(5,5);for(let i=0;i<25;i++){for(let c=0;c<3;c++)img.data[4*i+c]=Math.round(255*Math.max(0,Math.min(1,z[5*i+c])));img.data[4*i+3]=255;}const tiny=document.createElement("canvas");tiny.width=5;tiny.height=5;tiny.getContext("2d").putImageData(img,0,0);ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,300,300);ctx.drawImage(tiny,0,0,300,300);}
+function show(z){const p=project(z),pp=project(p),norm=dot(z),norm0=Math.max(norm,1e-20),err=p.map((x,i)=>x-z[i]);let rgb=0;for(let i=0;i<25;i++)for(let c=0;c<3;c++){const a=Math.min(1,Math.max(0,p[5*i+c]))-z[5*i+c];rgb+=a*a;}
+document.getElementById("eta").textContent=(100*dot(p)/norm0).toFixed(3)+"%";
+document.getElementById("residual").textContent=Math.sqrt(dot(err)/norm0).toExponential(3);
+document.getElementById("rmse").textContent=Math.sqrt(rgb/75).toFixed(5);
+document.getElementById("idem").textContent=Math.sqrt(dot(pp.map((x,i)=>x-p[i]))/norm0).toExponential(3);
+render("before",z);render("after",p);document.getElementById("status").textContent="Computed locally · Casimir spectral polynomial · rank 47.";}
+const tmp=document.createElement("canvas");tmp.width=5;tmp.height=5;
+function sample(){const ctx=tmp.getContext("2d"),im=ctx.createImageData(5,5);for(let y=0;y<5;y++)for(let x=0;x<5;x++){let i=4*(y*5+x);im.data[i]=30+48*x;im.data[i+1]=30+48*y;im.data[i+2]=180-20*x+8*y;im.data[i+3]=255;}ctx.putImageData(im,0,0);show(encode(tmp));}
+document.getElementById("sample").onclick=sample;
+document.getElementById("file").onchange=e=>{const f=e.target.files?.[0];if(!f)return;const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{const ctx=tmp.getContext("2d");ctx.clearRect(0,0,5,5);ctx.drawImage(im,0,0,5,5);URL.revokeObjectURL(u);show(encode(tmp));};im.onerror=()=>{URL.revokeObjectURL(u);document.getElementById("status").textContent="Image decode failed.";};im.src=u;};
+try{sample();}catch(e){document.getElementById("status").textContent="Computation error: "+e.message;console.error(e);}
+</script></body></html>
