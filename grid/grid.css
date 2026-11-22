@@ -429,3 +429,17 @@ details.home[open] summary::before { content: '▾ '; }
 .plan li label { display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: start; font-size: 12px; line-height: 1.45; color: var(--muted); cursor: pointer; }
 .plan li input { margin-top: 3px; accent-color: var(--mint); }
 .plan li input:checked + span { color: var(--faint); text-decoration: line-through; text-decoration-color: rgba(152, 166, 168, .5); }
+
+/* ---- a clear way to alerts: the bell in the top bar, and one tap under your GPS position */
+.bell-pill { display: inline-flex; align-items: center; gap: 6px; color: var(--fg); border-color: rgba(110, 223, 212, .4); background: linear-gradient(180deg, rgba(110, 223, 212, .14), rgba(110, 223, 212, .05)); }
+.bell-pill svg { width: 13px; height: 13px; flex: none; color: var(--cyan); }
+.bell-pill .on-dot { display: none; width: 6px; height: 6px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 6px rgba(193, 232, 206, .8); }
+.bell-pill[data-on="true"] { border-color: rgba(193, 232, 206, .55); background: var(--surface); }
+.bell-pill[data-on="true"] svg { color: var(--mint); }
+.bell-pill[data-on="true"] .on-dot { display: inline-block; }
+.bell-pill:hover { border-color: rgba(110, 223, 212, .75); }
+.alert-cta { width: 100%; display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; margin-top: 10px; padding: 11px 12px; text-align: left; font: 600 13px/1.3 var(--sans); border-color: rgba(110, 223, 212, .5); background: linear-gradient(180deg, rgba(110, 223, 212, .16), rgba(110, 223, 212, .05)); }
+.alert-cta .bell { font-size: 18px; line-height: 1; }
+.alert-cta small { display: block; margin-top: 3px; font: 400 11px/1.35 var(--sans); color: var(--muted); }
+.alert-cta.on { border-color: rgba(193, 232, 206, .45); background: var(--surface); font-weight: 500; }
+@media (max-width: 480px) { .audit-pill .ap-k { display: none; } .bell-pill { padding: 6px 10px; } }
