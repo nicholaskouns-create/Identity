@@ -262,9 +262,10 @@ export function renderAlerts(el, A, local) {
     body = `<div class="places">${chips || '<span class="none">Choose the counties to watch: home, family, work.</span>'}${n < MAX_PLACES ? `<button class="btn small" id="al-add"${dis}>＋ Add a county</button>` : ''}${here}</div>
       <label class="field-row"><span>Outages</span><select id="al-min"${dis}>${THRESHOLDS.map(([v, l]) => `<option value="${v}"${v === p.minOut ? ' selected' : ''}>${l}</option>`).join('')}</select></label>
       <label class="toggle"><input type="checkbox" id="al-wx"${p.weather ? ' checked' : ''}${dis}><span>Severe weather warnings (National Weather Service)</span></label>
-      <label class="toggle"><input type="checkbox" id="al-restore"${p.restore ? ' checked' : ''}${dis}><span>Tell me when the power is back</span></label>
+      <label class="toggle"><input type="checkbox" id="al-restore"${p.restore ? ' checked' : ''}${dis}><span>Tell me when reported outages fall or clear</span></label>
       <div class="al-actions">${on ? `<button class="btn" id="al-test"${dis}>Send a test alert</button><button class="btn danger" id="al-off"${dis}>Turn off</button>` : `<button class="btn accent" id="al-on"${dis}>${A.busy ? 'Turning on…' : 'Turn on alerts'}</button>`}</div>
-      ${plat.permission === 'denied' ? '<p class="note err">Notifications are blocked for this site. Allow them in the browser or phone settings, then turn alerts on.</p>' : ''}`;
+      ${plat.permission === 'denied' ? '<p class="note err">Notifications are blocked for this site. Allow them in the browser or phone settings, then turn alerts on.</p>' : ''}
+      <p class="note">Keep your phone’s government emergency alerts on as well. Grid adds to them; it does not replace them.</p>`;
   }
   const msg = A.msg ? `<p class="note ${A.err ? 'err' : 'okmsg'}" role="status">${esc(A.msg)}</p>` : '';
   const sweep = A.lastSweep?.at ? `<p class="note">The alert service last checked ODIN and the Weather Service ${ago(A.lastSweep.at)}.</p>` : '';

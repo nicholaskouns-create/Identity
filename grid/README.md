@@ -75,12 +75,18 @@ Grid can tell you when the power goes out where you or your family live, with Gr
 
 **What you get.**
 - **Power out.** A notification when the customers out in one of your counties reaches your threshold: any outage at all, or 10, 100, 1,000 or 10,000 customers. It names the utility and its restoration estimate, and carries the generator warning.
-- **Power back.** A notification once the outage has cleared, meaning reported outages have stayed under half your threshold for two checks in a row. It reminds you to report it to your utility if your own power is still out.
-- **Severe weather.** A notification when the National Weather Service issues a severe or extreme warning for one of your counties: tornado, severe thunderstorm, flash flood, hurricane, winter storm, ice storm, extreme heat or cold, high wind, and the like. Watches, advisories and statements stay in the app. An extended or continued warning does not notify you twice.
+- **Follow-ups** (the second switch). Grid never says the power is restored: a utility's report can lag what is true at your address, so every follow-up points you to the utility.
+  - **Reported outages down to N.** Sent once when the count falls below half your threshold, with the number still out.
+  - **No outages reported.** Sent when the utility's newer reports show none in the county on two checks in a row. If your power is still out, report it: the utility may not know about your address.
+  - **Outage data unavailable.** Sent once if, during an alert, Grid cannot trust the data for 15 minutes. That happens when ODIN does not answer, answers in an unexpected form, or the utility's own feed is in error or has sent nothing newer. This notice is sent even with the switch off.
+- **Severe weather.** A notification when the National Weather Service issues a severe or extreme warning for one of your counties: tornado, severe thunderstorm, flash flood, hurricane, winter storm, ice storm, extreme heat or cold, high wind, and the like. Watches, advisories and statements stay in the app.
+  - **One warning, one notice.** Each warning is known by its NWS identity: the VTEC event, or the earlier messages an update references. A continued or extended warning does not notify you twice.
+  - **Separate warnings.** A second, separate warning of the same kind in the same county is a new notification.
+- **Official alerts.** Keep your phone's government emergency alerts on as well. Grid adds to them and does not replace them.
 - **Counties.** Up to five per device: your own, found from your position, and any others you add by county or by town.
 - **Tapping a notification** opens Grid at that county.
 
-**Turning it on.** Open **Alerts** (the ⚑ chip, or **Alert me** in the outage panel), choose the counties, and tap **Turn on alerts**. **Send a test alert** confirms delivery.
+**Turning it on.** Tap **🔔 Alerts** in the top bar (or **Alert me about outages in …** under your GPS position), choose the counties, and tap **Turn on alerts**. **Send a test alert** sends one about 15 seconds later, so you can lock the phone or close Grid first. Tapping it should open your first county.
 - **iPhone and iPad.** Alerts work when Grid is on the Home Screen: in Safari tap Share, then **Add to Home Screen**, then open Grid from the new icon and turn alerts on there. iOS and iPadOS 16.4 or later.
 - **Android, Windows, macOS and Linux.** Chrome, Edge, Firefox and Samsung Internet work directly. Safari on macOS 13 or later does too.
 
@@ -93,7 +99,10 @@ Grid can tell you when the power goes out where you or your family live, with Gr
 **How it works.** Standard Web Push, with no app-store account and no third-party push service of Grid's own.
 - **The service.** `grid-alerts`, a Supabase Edge Function in the City's project (`tools/grid/supabase/grid-alerts`). Every five minutes a `pg_cron` job asks it to read ODIN and the Weather Service's active warnings, compare them with each subscriber's counties, and send what is due through the browser's own push service (Google, Apple, Mozilla or Microsoft).
 - **Encryption and signing.** Messages are encrypted to the device (RFC 8291) and signed with Grid's application server key (VAPID, RFC 8292), on WebCrypto with no third-party code. `node tools/grid/test_grid_alerts.mjs` checks the encryption byte for byte against the `http_ece` reference, checks the signatures with an independent verifier, and runs the whole service against recorded-format fixtures.
-- **Fail-safe rules.** If ODIN cannot be read, nothing is announced as restored. If a push service is briefly down, the notice goes out on the next check instead of being lost. Subscriptions a push service reports gone are deleted.
+- **Fail-safe rules.**
+  - **Smaller counts must be confirmed.** A smaller count is believed only when every utility that stopped reporting outages in the county has sent ODIN a newer report without an error (ODIN's feed status). Anything else, including a response that is valid JSON but not ODIN's feed, reads as "cannot be trusted", never as zero.
+  - **Delivery is tracked per notice.** A notice the push service cannot take for now is sent again on the next check while it still applies, even if other notices in the same check went through. Subscriptions a push service reports gone are deleted.
+- **Notifications turned off in settings.** If notifications for Grid are later turned off, Grid shows alerts as off, says why, and deletes the server copy until you turn them on again.
 - **Only push services are contacted.** A subscription is accepted only if its address belongs to a browser push service, so the alert sweep can never be pointed at any other address.
 
 **What is stored, and where.**

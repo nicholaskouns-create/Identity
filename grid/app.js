@@ -716,7 +716,7 @@ $('#p-alerts').addEventListener('click', (e) => {
     const go = AL.turnOn(alerts.prefs, alerts.key);
     busy(async () => { alerts.prefs = await go; done('Alerts are on. A confirmation notification is on its way.'); });
   } else if (t.id === 'al-test') busy(async () => {
-    try { await AL.sendTest(alerts.prefs); done('Test sent. It should arrive within a minute, even if you close Grid now.'); }
+    try { await AL.sendTest(alerts.prefs); done(`Test on its way in about ${AL.TEST_DELAY} seconds. Lock your phone or close Grid now to see it arrive; tapping it should open ${alerts.prefs.places[0]?.label || 'Grid'}.`); }
     catch (err) { throw new Error(err.status === 429 ? 'One test a minute. Try again shortly.' : err.status === 404 ? 'The alert service no longer knows this device. Turn alerts off, then on again.' : String(err.message || err)); }
   });
   else if (t.id === 'al-off') busy(async () => { alerts.prefs = await AL.turnOff(alerts.prefs); done('Alerts are off, and the server copy is deleted.'); });
@@ -743,6 +743,16 @@ $('#p-alerts').addEventListener('change', (e) => {
     renderOutagePanel();
   } else if (t.dataset.plan) { alerts.home = { ...alerts.home, done: { ...alerts.home.done, [t.dataset.plan]: t.checked } }; AL.saveHome(alerts.home); }
 });
+// Notifications switched off for Grid in the browser or phone settings: alerts cannot arrive, so say so plainly,
+// show them as off, and remove the server copy so nothing is sent into the void.
+async function checkPermission() {
+  if (!alerts.prefs.on || !('Notification' in window) || Notification.permission === 'granted') return;
+  const denied = Notification.permission === 'denied';
+  alerts.prefs = await AL.turnOff(alerts.prefs).catch(() => ({ ...alerts.prefs, on: false }));
+  alertMsg(denied ? 'Alerts are off: notifications for Grid are turned off in your settings. Allow them, then turn alerts on again.' : 'Alerts are off: Grid no longer has permission to notify you. Turn alerts on again to allow it.', true);
+  renderOutagePanel();
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkPermission(); });
 if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', (e) => {
   const d = e.data || {};
   if (d.type !== 'grid-open' || !d.url) return;
@@ -963,5 +973,6 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.se
 loadEmpower();
 if (alerts.plat.push) {
   AL.serviceInfo().then((k) => { alerts.key = k.publicKey; alerts.lastSweep = k.lastSweep; renderAlertsPanel(); }).catch(() => {});
-  if (alerts.prefs.on) AL.resync(alerts.prefs).then(({ prefs, state }) => { alerts.prefs = prefs; if (state === 'lost') alertMsg('This browser dropped Grid’s alert subscription. Turn alerts on again to keep receiving them.', true); else renderAlertsPanel(); }).catch(() => {});
+  if (alerts.prefs.on && Notification.permission !== 'granted') checkPermission();
+  else if (alerts.prefs.on) AL.resync(alerts.prefs).then(({ prefs, state }) => { alerts.prefs = prefs; if (state === 'lost') alertMsg('This browser dropped Grid’s alert subscription. Turn alerts on again to keep receiving them.', true); else renderAlertsPanel(); }).catch(() => {});
 }
