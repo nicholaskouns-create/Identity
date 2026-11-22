@@ -66,5 +66,5 @@ jobs:
         run: make -C formal/e47/native-residual regen
       - name: Falsify the transfer half (0 violations required)
         run: make -C formal/e47/native-residual falsify REPS=3
-      - name: Benchmark smoke (auditor: no transfer outside CM6, no false alarms)
+      - name: "Benchmark smoke (auditor: no transfer outside CM6, no false alarms)"
         run: make -C evidence/common-mode-auditor smoke
