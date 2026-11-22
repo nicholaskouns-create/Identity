@@ -1,0 +1,17 @@
+{
+  "name": "Grid · The Mathematical City",
+  "short_name": "Grid",
+  "description": "Live U.S. power-grid monitor with a certified spectral auditor.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#090b0d",
+  "theme_color": "#090b0d",
+  "icons": [
+    { "src": "icons/grid-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/grid-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/grid-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/grid.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

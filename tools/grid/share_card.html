@@ -1,0 +1,120 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Grid share card · City visual grammar (teal, mint, copper on near-black; Newsreader + IBM Plex).
+     Rendered by tools/grid/render_share_card.py at 1200×630. Cover art is drawn from
+     grid/data/plants-us.json (WRI GPPD, EIA-860) and grid/data/us-states.json. -->
+<style>
+@font-face { font-family: "Newsreader"; src: url(../../grid/fonts/newsreader-latin-400-normal.woff2) format("woff2"); font-weight: 400; }
+@font-face { font-family: "Newsreader"; src: url(../../grid/fonts/newsreader-latin-400-italic.woff2) format("woff2"); font-weight: 400; font-style: italic; }
+@font-face { font-family: "Newsreader"; src: url(../../grid/fonts/newsreader-latin-500-normal.woff2) format("woff2"); font-weight: 500; }
+@font-face { font-family: "IBM Plex Sans"; src: url(../../grid/fonts/ibm-plex-sans-latin-400-normal.woff2) format("woff2"); font-weight: 400; }
+@font-face { font-family: "IBM Plex Mono"; src: url(../../grid/fonts/ibm-plex-mono-latin-400-normal.woff2) format("woff2"); font-weight: 400; }
+@font-face { font-family: "IBM Plex Mono"; src: url(../../grid/fonts/ibm-plex-mono-latin-500-normal.woff2) format("woff2"); font-weight: 500; }
+@font-face { font-family: "Grid Formula"; src: url(../../grid/fonts/dejavu-sans-mono-math.woff2) format("woff2"); unicode-range: U+0370-03FF, U+2000-206F, U+2070-209F, U+2190-23FF, U+25A0-27EF, U+00B7; }
+* { box-sizing: border-box; margin: 0; }
+html, body { width: 1200px; height: 630px; background: #0c0e0f; overflow: hidden; }
+.card { position: relative; width: 1200px; height: 630px; color: #ece8df;
+  background-color: #0c0e0f;
+  background-image: linear-gradient(rgba(110,223,212,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(110,223,212,.045) 1px, transparent 1px);
+  background-size: 48px 48px; background-position: -1px -1px; }
+.card::after { content: ""; position: absolute; inset: 0; background: radial-gradient(900px 520px at 78% 50%, rgba(110,223,212,.05), transparent 60%); pointer-events: none; }
+.kicker { position: absolute; left: 64px; top: 56px; font: 500 14px/1 "IBM Plex Mono", "Grid Formula", monospace; letter-spacing: .2em; color: #6edfd4; text-transform: uppercase; }
+.title { position: absolute; left: 60px; top: 96px; font: 400 150px/0.92 "Newsreader", serif; letter-spacing: -0.035em; color: #efeae0; }
+.title em { font-style: italic; color: #c1e8ce; }
+.sub { position: absolute; left: 64px; top: 268px; width: 470px; font: 400 21px/1.42 "IBM Plex Sans", sans-serif; color: #a7b1b4; }
+.chips { position: absolute; left: 64px; top: 434px; display: flex; gap: 8px; }
+.chip { font: 500 12px/1 "IBM Plex Mono", "Grid Formula", monospace; letter-spacing: .08em; padding: 7px 9px; border: 1px solid; border-radius: 3px; }
+.c1 { color: #6edfd4; border-color: rgba(110,223,212,.55); }
+.c2 { color: #c1e8ce; border-color: rgba(193,232,206,.5); }
+.c3 { color: #bc9c6c; border-color: rgba(188,156,108,.6); }
+.c4 { color: #f1e3b8; border-color: rgba(241,227,184,.55); background: rgba(241,227,184,.06); }
+.url { position: absolute; left: 64px; top: 538px; font: 400 15px/1.55 "IBM Plex Mono", monospace; color: #7d878a; }
+.url b { color: #d8dcd8; font-weight: 500; }
+.frame { position: absolute; left: 578px; top: 128px; width: 576px; height: 366px; }
+.frame i { position: absolute; width: 22px; height: 22px; border-color: #6edfd4; border-style: solid; opacity: .9; }
+.frame .tl { left: 0; top: 0; border-width: 2px 0 0 2px; } .frame .tr { right: 0; top: 0; border-width: 2px 2px 0 0; }
+.frame .bl { left: 0; bottom: 0; border-width: 0 0 2px 2px; } .frame .br { right: 0; bottom: 0; border-width: 0 2px 2px 0; }
+.art { position: absolute; left: 12px; top: 12px; width: 552px; height: 342px; border-radius: 6px; overflow: hidden; border: 1px solid rgba(110,223,212,.22); background: #03070a; }
+.art canvas { width: 552px; height: 342px; display: block; }
+.cap { position: absolute; top: 503px; font: 400 13px/1 "IBM Plex Mono", monospace; letter-spacing: .14em; color: #7d878a; text-transform: uppercase; }
+.cap.l { left: 590px; } .cap.r { right: 58px; }
+</style></head>
+<body><div class="card">
+  <div class="kicker">◇ The Mathematical City · Instrument</div>
+  <div class="title">Grid</div>
+  <div class="sub">The U.S. power grid, live from public sources, with a certified spectral auditor that refuses what a corrupted topology file would pass.</div>
+  <div class="chips"><span class="chip c1">LIVE</span><span class="chip c2">E0</span><span class="chip c2">E1</span><span class="chip c3">IEEE 14 · 118</span><span class="chip c4">✦ SHA-256 PINNED</span></div>
+  <div class="url">nicholaskouns-create.github.io<br><b>/Identity/grid</b></div>
+  <div class="frame"><i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i><div class="art"><canvas id="art" width="1104" height="684"></canvas></div></div>
+  <div class="cap l">Cover art</div><div class="cap r">Nicholas Shane Kouns</div>
+</div>
+<script>
+const FUEL = { NUC: '#f1e3b8', COL: '#9a8574', NG: '#ff9b54', OIL: '#d87e74', PET: '#c46a5f', WAT: '#5aa9e6', WND: '#6edfd4', SUN: '#ffd166', GEO: '#e2a0e6', BIO: '#9bc53d', WST: '#7f9a54', BAT: '#c1e8ce', CHP: '#a0a8b0', OTH: '#7f8b90' };
+const r = Math.PI / 180, f1 = 29.5 * r, f2 = 45.5 * r, f0 = 37.5 * r, l0 = -96 * r;
+const n = (Math.sin(f1) + Math.sin(f2)) / 2, C = Math.cos(f1) ** 2 + 2 * n * Math.sin(f1), p0 = Math.sqrt(C - 2 * n * Math.sin(f0)) / n;
+const albers = (lon, lat) => { const p = Math.sqrt(C - 2 * n * Math.sin(lat * r)) / n, t = n * (lon * r - l0); return [p * Math.sin(t), p0 - p * Math.cos(t)]; };
+const conus = (lon, lat) => lon > -125.5 && lon < -66 && lat > 24 && lat < 50.2;
+function hex(c, a) { const v = parseInt(c.slice(1), 16); return `rgba(${v >> 16},${(v >> 8) & 255},${v & 255},${a})`; }
+window.render = async function () {
+  await document.fonts.ready;
+  const [plants, states] = await Promise.all([fetch('../../grid/data/plants-us.json').then((x) => x.json()), fetch('../../grid/data/us-states.json').then((x) => x.json())]);
+  const cv = document.getElementById('art'), ctx = cv.getContext('2d'), W = cv.width, H = cv.height;
+  // background: deep night with a faint atmospheric band
+  const bg = ctx.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#020509'); bg.addColorStop(0.55, '#03080c'); bg.addColorStop(1, '#061015');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  // fit CONUS
+  const pts = []; for (const f of states.features) { if (['02', '15', '72', '60', '66', '69', '78'].includes(String(f.id))) continue; const g = f.geometry; const polys = g.type === 'Polygon' ? [g.coordinates] : g.coordinates; for (const poly of polys) for (const ring of poly) for (const [lo, la] of ring) if (conus(lo, la)) pts.push(albers(lo, la)); }
+  const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const s = Math.min((W * 0.84) / (x1 - x0), (H * 0.66) / (y1 - y0));
+  const ox = (W - s * (x1 - x0)) / 2 - s * x0, oy = H * 0.43 + s * (y1 + y0) / 2;
+  const P = (lon, lat) => { const [x, y] = albers(lon, lat); return [ox + s * x, oy - s * y]; };
+  // land mass, faintly lit
+  ctx.save();
+  for (const f of states.features) {
+    if (['02', '15', '72', '60', '66', '69', '78'].includes(String(f.id))) continue;
+    const g = f.geometry, polys = g.type === 'Polygon' ? [g.coordinates] : g.coordinates;
+    ctx.beginPath();
+    for (const poly of polys) for (const ring of poly) { ring.forEach(([lo, la], i) => { const [x, y] = P(lo, la); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.closePath(); }
+    ctx.fillStyle = '#071114'; ctx.fill();
+    ctx.strokeStyle = 'rgba(110,223,212,.20)'; ctx.lineWidth = 1.1; ctx.stroke();
+  }
+  ctx.restore();
+  // coast glow
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.filter = 'blur(6px)';
+  for (const f of states.features) {
+    if (['02', '15', '72', '60', '66', '69', '78'].includes(String(f.id))) continue;
+    const g = f.geometry, polys = g.type === 'Polygon' ? [g.coordinates] : g.coordinates;
+    ctx.beginPath(); for (const poly of polys) for (const ring of poly) { ring.forEach(([lo, la], i) => { const [x, y] = P(lo, la); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.closePath(); }
+    ctx.strokeStyle = 'rgba(110,223,212,.05)'; ctx.lineWidth = 6; ctx.stroke();
+  }
+  ctx.restore();
+  // plants: additive glow by nameplate capacity, coloured by fuel
+  const rows = plants.rows.filter((q) => conus(q[0], q[1]));
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  for (const [lo, la, mw, fuel] of rows) {
+    const [x, y] = P(lo, la), rad = 2 + 0.5 * Math.sqrt(mw), col = FUEL[fuel] || '#7f8b90';
+    const gr = ctx.createRadialGradient(x, y, 0, x, y, rad); gr.addColorStop(0, hex(col, 0.30)); gr.addColorStop(0.35, hex(col, 0.09)); gr.addColorStop(1, hex(col, 0));
+    ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(x, y, rad, 0, Math.PI * 2); ctx.fill();
+  }
+  for (const [lo, la, mw, fuel] of rows) { if (mw < 20) continue; const [x, y] = P(lo, la); ctx.fillStyle = hex(FUEL[fuel] || '#7f8b90', 0.9); ctx.beginPath(); ctx.arc(x, y, Math.max(0.7, 0.07 * Math.sqrt(mw)), 0, Math.PI * 2); ctx.fill(); }
+  ctx.restore();
+  // five-replica glyph with the pinned reference
+  const gx = W - 86, gy = 82, R = 34;
+  const v = [0, 1, 2, 3, 4].map((k) => [gx + R * Math.sin(k * 2 * Math.PI / 5), gy - R * Math.cos(k * 2 * Math.PI / 5)]);
+  ctx.strokeStyle = 'rgba(193,232,206,.35)'; ctx.lineWidth = 1.2; ctx.beginPath(); v.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.closePath(); ctx.stroke();
+  v.forEach(([x, y]) => { ctx.beginPath(); ctx.moveTo(gx, gy); ctx.lineTo(x, y); ctx.stroke(); });
+  v.forEach(([x, y]) => { ctx.fillStyle = '#c1e8ce'; ctx.shadowColor = '#c1e8ce'; ctx.shadowBlur = 10; ctx.beginPath(); ctx.arc(x, y, 4.2, 0, Math.PI * 2); ctx.fill(); });
+  ctx.shadowColor = '#f1e3b8'; ctx.shadowBlur = 14; ctx.fillStyle = '#f1e3b8';
+  ctx.beginPath(); for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4, rr = k % 2 ? 4 : 10; ctx.lineTo(gx + rr * Math.sin(a), gy - rr * Math.cos(a)); } ctx.closePath(); ctx.fill(); ctx.shadowBlur = 0;
+  // lockup
+  ctx.fillStyle = 'rgba(239,234,224,.95)'; ctx.font = '500 58px Newsreader'; ctx.textAlign = 'center';
+  const word = 'G R I D'; ctx.shadowColor = 'rgba(110,223,212,.55)'; ctx.shadowBlur = 18; ctx.fillText(word, W / 2, H - 82); ctx.shadowBlur = 0;
+  ctx.fillStyle = 'rgba(110,223,212,.9)'; ctx.font = '400 19px "IBM Plex Mono"'; ctx.fillText('live U.S. power grid  ·  certified spectral auditor', W / 2, H - 54);
+  ctx.strokeStyle = 'rgba(110,223,212,.5)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(W / 2 - 120, H - 36); ctx.lineTo(W / 2 + 120, H - 36); ctx.stroke();
+  ctx.fillStyle = 'rgba(152,166,168,.95)'; ctx.font = '400 21px "IBM Plex Mono"'; ctx.textAlign = 'left';
+  ctx.fillText(`${rows.length.toLocaleString('en-US')} plants · EIA-860 via WRI GPPD`, 26, 42);
+  ctx.textAlign = 'right'; ctx.fillStyle = 'rgba(241,227,184,.85)'; ctx.fillText('τ = 239/7800', W - 30, 158);
+  return { plants: rows.length };
+};
+</script></body></html>
