@@ -54,3 +54,12 @@ Lean and Rocq sources for the E47 linear-algebra certificate are pinned in [form
 ## E47 deterministic AI governance (2026-11-14)
 
 [Publication and control matrix](docs/governance/E47_DETERMINISTIC_AI_GOVERNANCE_COMPLETE.md) · [Public landing page](https://nicholaskouns-create.github.io/Identity/site/governance/e47-deterministic-ai-governance.html) · [Lean 4 appendix](docs/governance/E47UnverifiedSuite.lean) · [Coq appendix](docs/governance/E47UnverifiedSuite.v). The author's Gemini-stipulated validation and reported historical compiler results are identified separately from any fresh compilation.
+
+
+<!-- FUN-WITH-EINSTEIN-2026 -->
+### 🪐 Fun With Einstein · Interactive spectral & quantum lab
+
+[Launch Fun With Einstein](https://nicholaskouns-create.github.io/fun-with-einstein/) · [Source & Python/Lean/Coq proof modules](https://github.com/nicholaskouns-create/E47-Kartekeya/tree/main/docs/fun-with-einstein) · [CI compiler status](https://github.com/nicholaskouns-create/E47-Kartekeya/actions/workflows/fun-with-einstein.yml).
+
+Fivefold C₅ eigenvalue ratio = φ⁻²; 125D Casimir E₄₇ projector; 250D quantum-ancilla probability α=47/(125φ²); stationary Einstein-equation recovery. Spectral simulation and gravitational statements have different evidence classes.
+<!-- /FUN-WITH-EINSTEIN-2026 -->
