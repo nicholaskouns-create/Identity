@@ -12,6 +12,7 @@ import { sparkline } from './ui/charts.js';
 import { fetchLive, interconnectionFor } from './live/pulse.js';
 import { EnfMeter } from './live/enf.js';
 import { loadCounties, countyAt, unionBbox } from './live/counties.js';
+import * as AL from './live/alerts.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const ORIGIN = location.origin;
@@ -137,6 +138,7 @@ async function bootMap() {
     refreshLines();
     if (st.gps && st.gps.source === 'device') gm.setGps(st.gps);
     pushMapData();
+    focusPending();
   });
 }
 
@@ -191,11 +193,24 @@ const fuelLabel = (k) => ({ NUC: 'Nuclear', COL: 'Coal', NG: 'Natural gas', OIL:
 
 // ----------------------------------------------------------------- frequency (ERCOT) and outages (ODIN) via grid-live
 let counties = null, outageGeo = null, outageByFips = new Map();
+// Background alerts (live/alerts.js) and the HHS emPOWER layer, declared early: the outage panel reads both.
+const alerts = { plat: AL.platform(), prefs: AL.loadPrefs(), home: AL.loadHome(), busy: false, msg: '', err: false, key: null, lastSweep: null };
+let empower = null, empByFips = null;
+// A notification tap opens Grid at ?county=FIPS; the map flies there once counties and the map are ready.
+let pendingCounty = (() => { const c = new URLSearchParams(location.search).get('county'); return c && /^\d{5}$/.test(c) ? c : null; })();
 async function ensureCounties() {
   if (counties) return counties;
-  try { counties = await loadCounties(); setStatus('counties', 'ok', `${counties.features.length.toLocaleString()} counties`); computeLocal(); buildOutageGeo(); }
+  try { counties = await loadCounties(); setStatus('counties', 'ok', `${counties.features.length.toLocaleString()} counties`); computeLocal(); buildOutageGeo(); focusPending(); }
   catch (e) { setStatus('counties', 'error', String(e.message || e)); }
   return counties;
+}
+function focusPending() {
+  if (!pendingCounty || !counties || !gm || !gm.ready) return;
+  const f = pendingCounty; pendingCounty = null;
+  if (currentTab !== 'map') showTab('map');
+  if (!layerState.outages) syncLayer('outages', true);
+  if (!layerState.alerts) syncLayer('alerts', true);
+  focusCounty(f);
 }
 async function pollErcot() {
   if (!st.ercot) setStatus('ercot-rt', 'loading');
@@ -229,8 +244,9 @@ async function pollOutages() {
       pushTicker(Date.parse(r[5]) || Date.now(), `<b style="color:#ff5f7a">${r[1].toLocaleString()} out</b> ${P.esc(f ? f.properties.label : r[0])} · ${P.esc(P.utilName(r[3]))}`, 'out-' + r[0] + '-' + Math.round(r[1] / 2500));
     }
     if (local.county) { const r = outageByFips.get(local.county.id); if (r && r[1] >= 10) notify('out-' + r[0] + '-' + Math.round(r[1] / 500), `Power outage in ${local.county.properties.label}`, `${r[1].toLocaleString()} customers out (${P.utilName(r[3])}).`); }
+    focusPending();
   } catch (e) { st.outages = { ...(st.outages || {}), error: String(e.message || e) }; setStatus('odin', 'error', st.outages.error); }
-  P.renderOutages($('#p-outages'), st, countyNames(), local);
+  renderOutagePanel();
 }
 function buildOutageGeo() {
   const o = st.outages?.data; if (!o || !counties) return;
@@ -238,18 +254,44 @@ function buildOutageGeo() {
   const fill = [], pts = [];
   for (const r of o.counties) {
     const f = counties.byFips.get(r[0]); if (!f) continue;
-    fill.push({ type: 'Feature', geometry: f.geometry, properties: { fips: r[0], label: f.properties.label, m: r[1], n: r[2], util: P.utilName(r[3]), nu: r[4], since: r[5] || '', back: r[6] || '', cause: r[7] || '' } });
+    fill.push({ type: 'Feature', geometry: f.geometry, properties: { fips: r[0], label: f.properties.label, m: r[1], n: r[2], util: P.utilName(r[3]), nu: r[4], since: r[5] || '', back: r[6] || '', cause: r[7] || '', ...empProps(r[0]) } });
     if (r[1] >= 100) pts.push({ type: 'Feature', geometry: { type: 'Point', coordinates: [(f.bbox[0] + f.bbox[2]) / 2, (f.bbox[1] + f.bbox[3]) / 2] }, properties: { m: r[1] } });
   }
   outageGeo = { fill: { type: 'FeatureCollection', features: fill }, pts: { type: 'FeatureCollection', features: pts } };
   pushMapData();
-  P.renderOutages($('#p-outages'), st, countyNames(), local);
+  renderOutagePanel();
+}
+function renderOutagePanel() {
+  P.renderOutages($('#p-outages'), st, countyNames(), local, { emp: empRow, empower, home: alerts.home, alertsOn: alerts.prefs.on });
+  scheduleNow();
+}
+
+// ----------------------------------------------------------------- HHS emPOWER: who in each county depends on powered medical equipment
+const EMP_KEY = 'kkp-grid-empower';
+function empRow(f) { if (!empByFips) return null; return empByFips.get(f) || (empower.aliases && empower.aliases[f] ? empByFips.get(empower.aliases[f]) : null) || null; }
+function empProps(f) { const e = empRow(f); return e ? { dep: e[2] ?? -1, med: e[1] ?? -1, dia: e[3] ?? -1, oxy: e[4] ?? -1, hh: e[5] ?? -1, hos: e[6] ?? -1 } : { dep: -1 }; }
+function setEmpower(d, saved) {
+  empower = d; empByFips = new Map(d.rows.map((r) => [r[0], r]));
+  const month = d.asOf ? new Date(d.asOf).toLocaleDateString([], { month: 'short', year: 'numeric' }) : 'latest';
+  setStatus('empower', 'ok', `${d.electricityDependent.toLocaleString()} Medicare beneficiaries rely on powered equipment · ${d.nCounties.toLocaleString()} counties · HHS data of ${month}${saved ? ' · saved copy' : ''}`);
+  buildOutageGeo(); renderOutagePanel();
+}
+async function loadEmpower() {
+  try { const c = JSON.parse(localStorage.getItem(EMP_KEY) || 'null'); if (c && c.d && Date.now() - c.t < 12 * 3600e3) return setEmpower(c.d, true); } catch { /* refetch */ }
+  setStatus('empower', 'loading');
+  try {
+    const d = await fetchLive('empower', { timeoutMs: 60000 });
+    setEmpower(d, false);
+    try { localStorage.setItem(EMP_KEY, JSON.stringify({ t: Date.now(), d })); } catch { /* storage full: keep in memory */ }
+  } catch (e) { setStatus('empower', 'error', String(e.message || e)); }
 }
 function countyNames() { const m = new Map(); if (counties && st.outages?.data) for (const r of st.outages.data.counties) { const f = counties.byFips.get(r[0]); if (f) m.set(r[0], f.properties.label); } return m; }
 const when = (t) => { const d = new Date(t); return t && Number.isFinite(d.getTime()) ? d.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'; };
 function outagePopup(p) {
   const v = (x) => (x == null || x === 'null' || x === '' ? null : x);
-  return `<div class="pop"><div class="k">Outages · ODIN · ${P.ev('RELAY')}</div><h3>${P.esc(p.label)}</h3><div class="kv"><span>Customers out</span><b>${Number(p.m).toLocaleString()}</b><span>Outage events</span><b>${Number(p.n).toLocaleString()}</b><span>Utility</span><b>${P.esc(p.util)}${Number(p.nu) > 1 ? ` +${Number(p.nu) - 1}` : ''}</b><span>Since</span><b>${when(v(p.since))}</b><span>Back by</span><b>${v(p.back) ? when(p.back) : 'no estimate'}</b><span>Cause</span><b>${P.esc(v(p.cause) || '—')}</b></div></div>`;
+  const k = (x) => (Number(x) >= 0 ? Number(x).toLocaleString() : '—');
+  const emp = Number(p.dep) >= 0 ? `<div class="k pop-emp">HHS emPOWER · Medicare only · ${P.ev('RELAY')}</div><div class="kv"><span>Rely on powered medical equipment</span><b>${k(p.dep)}</b><span>Medicare beneficiaries</span><b>${k(p.med)}</b><span>…also on facility dialysis</span><b>${k(p.dia)}</b><span>…also on oxygen service</span><b>${k(p.oxy)}</b><span>…also home health</span><b>${k(p.hh)}</b><span>…also hospice at home</span><b>${k(p.hos)}</b></div>` : '';
+  return `<div class="pop"><div class="k">Outages · ODIN · ${P.ev('RELAY')}</div><h3>${P.esc(p.label)}</h3><div class="kv"><span>Customers out</span><b>${Number(p.m).toLocaleString()}</b><span>Outage events</span><b>${Number(p.n).toLocaleString()}</b><span>Utility</span><b>${P.esc(p.util)}${Number(p.nu) > 1 ? ` +${Number(p.nu) - 1}` : ''}</b><span>Since</span><b>${when(v(p.since))}</b><span>Back by</span><b>${v(p.back) ? when(p.back) : 'no estimate'}</b><span>Cause</span><b>${P.esc(v(p.cause) || '—')}</b></div>${emp}<p class="co-line">Generator: outdoors only, 20+ ft from doors, windows and vents.</p></div>`;
 }
 function fitBox(b, maxZoom = 9) { if (gm && b) gm.map.fitBounds([[b[0], b[1]], [b[2], b[3]]], { padding: GridMap.padding(), maxZoom, duration: 1400 }); }
 function fitOutages() { const o = st.outages?.data; if (!o || !counties) return; fitBox(unionBbox(o.counties.slice(0, 40).map((r) => counties.byFips.get(r[0])?.bbox)), 8); }
@@ -257,7 +299,7 @@ function focusCounty(fips) {
   const f = counties?.byFips.get(fips); if (!f || !gm) return;
   closeSheets(); fitBox(f.bbox, 9.5);
   const r = outageByFips.get(fips);
-  if (r) gm.map.once('moveend', () => gm.popup([(f.bbox[0] + f.bbox[2]) / 2, (f.bbox[1] + f.bbox[3]) / 2], outagePopup({ label: f.properties.label, m: r[1], n: r[2], util: P.utilName(r[3]), nu: r[4], since: r[5], back: r[6], cause: r[7] })));
+  if (r) gm.map.once('moveend', () => gm.popup([(f.bbox[0] + f.bbox[2]) / 2, (f.bbox[1] + f.bbox[3]) / 2], outagePopup({ label: f.properties.label, m: r[1], n: r[2], util: P.utilName(r[3]), nu: r[4], since: r[5], back: r[6], cause: r[7], ...empProps(fips) })));
 }
 
 // ----------------------------------------------------------------- your outlet's frequency (microphone, on this device)
@@ -286,11 +328,11 @@ function enfTick() {
 }
 function drawEnf() { const c = $('#c-enf'); if (c && enf.hist.length > 1) sparkline(c, enf.hist, { h: 30, color: '#6edfd4' }); }
 $('#p-freq').addEventListener('click', (e) => { if (e.target.closest('#enf-start')) startEnf(); else if (e.target.closest('#enf-stop')) stopEnf(); });
-$('#p-outages').addEventListener('click', (e) => { const r = e.target.closest('.outrow'); if (r) focusCounty(r.dataset.fips); else if (e.target.closest('#out-fit')) { closeSheets(); fitOutages(); } });
+$('#p-outages').addEventListener('click', (e) => { const r = e.target.closest('.outrow'); if (r) focusCounty(r.dataset.fips); else if (e.target.closest('#out-fit')) { closeSheets(); fitOutages(); } else if (e.target.closest('#out-alerts')) goPanel('p-alerts'); });
 
 // ----------------------------------------------------------------- at a glance
 let nowTimer = null;
-function scheduleNow() { if (!nowTimer) nowTimer = setTimeout(() => { nowTimer = null; P.renderNow($('#now'), st, { enf, auditor: (($('#audit-pill')?.textContent || '').split('·').pop() || '').trim().toLowerCase() || null }); }, 250); }
+function scheduleNow() { if (!nowTimer) nowTimer = setTimeout(() => { nowTimer = null; P.renderNow($('#now'), st, { enf, auditor: (($('#audit-pill')?.textContent || '').split('·').pop() || '').trim().toLowerCase() || null, alertsOn: alerts.prefs.on, localOut: !!(local.county && outageByFips.get(local.county.id)) }); }, 250); }
 function closeSheets() { $('#rail-right').classList.remove('open'); $('#rail-left').classList.remove('open'); }
 function goPanel(id) {
   if (currentTab !== 'map') showTab('map');
@@ -309,9 +351,13 @@ $('#now').addEventListener('click', (e) => {
 function syncLayer(id, on) { setLayer(id, on); const cb = document.querySelector(`[data-layer="${id}"]`); if (cb) cb.checked = on; }
 
 // ----------------------------------------------------------------- search: counties, states, utilities, plants, places
-let palItems = [], palRes = [], palSel = 0;
+let palItems = [], palRes = [], palSel = 0, palMode = null; // palMode 'alert': choosing a county to watch
 function buildIndex() {
   const items = [];
+  if (palMode === 'alert') {
+    if (counties) for (const f of counties.features) items.push({ k: 'County', label: f.properties.label, sub: '', fips: f.id, w: 4, n: f.properties.label.toLowerCase() });
+    return items;
+  }
   if (statesGeo) for (const f of statesGeo.features) items.push({ k: 'State', label: f.properties.name, sub: '', b: bboxOf(f.geometry), w: 5 });
   if (counties) for (const f of counties.features) { const r = outageByFips.get(f.id); items.push({ k: 'County', label: f.properties.label, sub: r ? `${r[1].toLocaleString()} customers out now` : '', b: f.bbox, fips: f.id, w: r ? 4.5 : 4 }); }
   if (st.outages?.data) for (const u of st.outages.data.utilities) items.push({ k: 'Utility', label: P.utilName(u[1]), sub: `${u[2].toLocaleString()} customers out · ${u[4]} ${u[4] === 1 ? 'county' : 'counties'}`, fipsList: String(u[5] || '').split(',').filter(Boolean), w: 3.5 });
@@ -330,11 +376,13 @@ function renderPalette() {
   const list = palRes.slice();
   if (q.length >= 3) list.push({ k: 'Place', label: `Find “${q}” on OpenStreetMap`, sub: 'cities, towns and addresses', geo: q });
   palSel = Math.min(palSel, Math.max(0, list.length - 1));
-  $('#palette-res').innerHTML = list.length ? list.map((it, i) => `<li role="option" id="pal-${i}" aria-selected="${i === palSel}" data-i="${i}"><span class="kind k-${it.k.toLowerCase()}">${it.k}</span><b>${P.esc(it.label)}</b>${it.sub ? `<small>${P.esc(it.sub)}</small>` : ''}</li>`).join('') : `<li class="hint">${q ? 'Nothing local matches yet.' : 'Type a county, state, city, utility or power plant.'}</li>`;
+  $('#palette-res').innerHTML = list.length ? list.map((it, i) => `<li role="option" id="pal-${i}" aria-selected="${i === palSel}" data-i="${i}"><span class="kind k-${it.k.toLowerCase()}">${it.k}</span><b>${P.esc(it.label)}</b>${it.sub ? `<small>${P.esc(it.sub)}</small>` : ''}</li>`).join('') : `<li class="hint">${q ? 'Nothing local matches yet.' : palMode === 'alert' ? 'Type a county, or a town to find its county.' : 'Type a county, state, city, utility or power plant.'}</li>`;
   $('#palette-q').setAttribute('aria-activedescendant', list.length ? `pal-${palSel}` : '');
   $('#palette-res')._list = list;
 }
-async function openPalette() {
+async function openPalette(mode = null) {
+  palMode = mode === 'alert' ? 'alert' : null;
+  $('#palette-q').placeholder = palMode ? 'Which county should Grid watch? A county or a town' : 'County, state, city, utility or power plant';
   $('#palette').hidden = false; $('#palette-q').value = ''; palRes = []; palSel = 0;
   palItems = buildIndex(); renderPalette(); $('#palette-q').focus();
   if (!counties) { await ensureCounties(); palItems = buildIndex(); palRes = search($('#palette-q').value); renderPalette(); }
@@ -342,6 +390,13 @@ async function openPalette() {
 function closePalette() { $('#palette').hidden = true; }
 async function choose(it) {
   if (!it) return;
+  if (palMode === 'alert' && !it.geo) {
+    let c = it.fips ? { fips: it.fips, label: it.label } : null;
+    if (!c && it.b && counties) { const f = countyAt(counties, (it.b[0] + it.b[2]) / 2, (it.b[1] + it.b[3]) / 2); if (f) c = { fips: f.id, label: f.properties.label }; }
+    closePalette();
+    if (c) { addAlertPlace(c); goPanel('p-alerts'); } else alertMsg('That place is not inside a U.S. county that Grid knows.', true);
+    return;
+  }
   if (it.geo) {
     $('#palette-res').innerHTML = '<li class="hint">Asking OpenStreetMap…</li>';
     try {
@@ -360,7 +415,7 @@ async function choose(it) {
   else if (it.b) fitBox(it.b, it.k === 'Place' ? 13 : 7.5);
   else if (it.fipsList && counties) fitBox(unionBbox(it.fipsList.map((f) => counties.byFips.get(f)?.bbox)), 9);
 }
-$('#search-btn').addEventListener('click', openPalette);
+$('#search-btn').addEventListener('click', () => openPalette());
 $('#palette').addEventListener('click', (e) => { if (e.target.id === 'palette') closePalette(); const li = e.target.closest('li[data-i]'); if (li) choose($('#palette-res')._list[+li.dataset.i]); });
 $('#palette-q').addEventListener('input', () => { palRes = search($('#palette-q').value); palSel = 0; renderPalette(); });
 $('#palette-q').addEventListener('keydown', (e) => {
@@ -443,7 +498,9 @@ function computeLocal() {
     local.maxKv = Math.max(0, ...f.map((x) => x.properties.kv || 0)) || null;
   }
   local.alerts = st.nws?.data ? st.nws.data.geo.features.filter((a) => pointInGeom(here, a.geometry)).map((a) => a.properties) : [];
+  const before = local.county?.id;
   if (counties) local.county = countyAt(counties, g.lon, g.lat);
+  if (local.county?.id !== before) { renderAlertsPanel(); renderOutagePanel(); }
   if (statesGeo) { const sf = statesGeo.features.find((f) => pointInGeom(here, f.geometry)); local.state = sf ? sf.properties.name : null; local.ic = interconnectionFor(local.state, g.lon, g.lat); enf.ic = local.ic; }
 }
 
@@ -607,6 +664,69 @@ function startFlight() {
   }
 }
 
+// ----------------------------------------------------------------- background alerts (Web Push through grid-alerts)
+function renderAlertsPanel() { alerts.plat = AL.platform(); P.renderAlerts($('#p-alerts'), alerts, local); scheduleNow(); }
+function alertMsg(msg, err = false) { alerts.msg = msg; alerts.err = err; renderAlertsPanel(); }
+async function busy(fn) {
+  alerts.busy = true; alerts.msg = ''; renderAlertsPanel();
+  try { await fn(); } catch (e) { alerts.err = true; alerts.msg = String(e.message || e); } finally { alerts.busy = false; renderAlertsPanel(); renderOutagePanel(); }
+}
+function done(msg) { alerts.err = false; alerts.msg = msg; }
+function commitAlerts(msg = '') {
+  AL.savePrefs(alerts.prefs);
+  if (!alerts.prefs.on) return alertMsg(msg);
+  return busy(async () => { alerts.prefs = await AL.update(alerts.prefs); done(msg ? `${msg} Saved.` : 'Saved.'); });
+}
+function addAlertPlace(c) {
+  const p = alerts.prefs;
+  if (p.places.some((x) => x.fips === c.fips)) return alertMsg(`${c.label} is already on the list.`);
+  if (p.places.length >= AL.MAX_PLACES) return alertMsg(`Grid watches up to ${AL.MAX_PLACES} counties per device.`, true);
+  alerts.prefs = { ...p, places: [...p.places, { fips: c.fips, label: c.label }] };
+  return commitAlerts(`Added ${c.label}.`);
+}
+const hereAsPlace = () => (local.county ? { fips: local.county.id, label: local.county.properties.label } : null);
+$('#p-alerts').addEventListener('click', (e) => {
+  const t = e.target.closest('button'); if (!t || t.disabled) return;
+  if (t.id === 'al-on') {
+    if (!alerts.prefs.places.length && hereAsPlace()) alerts.prefs = { ...alerts.prefs, places: [hereAsPlace()] };
+    if (!alerts.prefs.places.length) return alertMsg('Add at least one county first.', true);
+    // turnOn asks for notification permission first, inside this tap.
+    const go = AL.turnOn(alerts.prefs, alerts.key);
+    busy(async () => { alerts.prefs = await go; done('Alerts are on. A confirmation notification is on its way.'); });
+  } else if (t.id === 'al-test') busy(async () => {
+    try { await AL.sendTest(alerts.prefs); done('Test sent. It should arrive within a minute, even if you close Grid now.'); }
+    catch (err) { throw new Error(err.status === 429 ? 'One test a minute. Try again shortly.' : err.status === 404 ? 'The alert service no longer knows this device. Turn alerts off, then on again.' : String(err.message || err)); }
+  });
+  else if (t.id === 'al-off') busy(async () => { alerts.prefs = await AL.turnOff(alerts.prefs); done('Alerts are off, and the server copy is deleted.'); });
+  else if (t.id === 'al-add') openPalette('alert');
+  else if (t.id === 'al-here' && hereAsPlace()) addAlertPlace(hereAsPlace());
+  else if (t.dataset.rm) {
+    const p = alerts.prefs;
+    if (p.on && p.places.length === 1) return alertMsg('Alerts need at least one county. Turn alerts off to remove the last one.', true);
+    alerts.prefs = { ...p, places: p.places.filter((x) => x.fips !== t.dataset.rm) };
+    commitAlerts('Removed.');
+  }
+});
+$('#p-alerts').addEventListener('change', (e) => {
+  const t = e.target;
+  if (t.id === 'al-min') { alerts.prefs = { ...alerts.prefs, minOut: +t.value }; commitAlerts(); }
+  else if (t.id === 'al-wx') { alerts.prefs = { ...alerts.prefs, weather: t.checked }; commitAlerts(); }
+  else if (t.id === 'al-restore') { alerts.prefs = { ...alerts.prefs, restore: t.checked }; commitAlerts(); }
+  else if (t.id === 'home-med') {
+    alerts.home = { ...alerts.home, medical: t.checked }; AL.saveHome(alerts.home);
+    if (t.checked) {
+      alerts.prefs = { ...alerts.prefs, minOut: 1, restore: true, weather: true, places: alerts.prefs.places.length || !hereAsPlace() ? alerts.prefs.places : [hereAsPlace()] };
+      commitAlerts(alerts.prefs.on ? 'Alerts now cover any outage in your counties.' : 'Set to alert on any outage. Turn alerts on above.');
+    } else renderAlertsPanel();
+    renderOutagePanel();
+  } else if (t.dataset.plan) { alerts.home = { ...alerts.home, done: { ...alerts.home.done, [t.dataset.plan]: t.checked } }; AL.saveHome(alerts.home); }
+});
+if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', (e) => {
+  const d = e.data || {};
+  if (d.type !== 'grid-open' || !d.url) return;
+  try { const c = new URL(d.url).searchParams.get('county'); if (c && /^\d{5}$/.test(c)) { pendingCounty = c; focusPending(); } } catch { /* ignore */ }
+});
+
 // ----------------------------------------------------------------- notifications and capabilities
 let notifyOn = false; const notified = new Set();
 function notify(key, title, body) {
@@ -618,6 +738,7 @@ window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); inst
 let wakeLock = null;
 const pageHandlers = {
   saveKey(key, relay) { settings = { ...settings, eiaKey: key, relayUrl: relay || SRC.RELAY_URL_DEFAULT }; SRC.saveSettings(settings); toast(key ? 'Key saved on this device. Fetching EIA-930…' : 'Key removed.'); pollEia(); pollRelay(); },
+  openAlerts() { goPanel('p-alerts'); },
   async enableNotify() { if (!('Notification' in window)) return toast('Notifications are not supported here.'); const p = await Notification.requestPermission(); notifyOn = p === 'granted'; $('#set-status').textContent = notifyOn ? 'Alerts on for this session.' : 'Notifications were not allowed.'; },
   async wallMode() {
     try { await document.documentElement.requestFullscreen(); } catch { /* optional */ }
@@ -802,7 +923,7 @@ setTimeout(dismissBoot, 5000);
 buildLayerRail();
 SRC.SOURCES.forEach((s) => { if (!s.onDemand && !st.status[s.id]) st.status[s.id] = { state: 'idle' }; });
 P.renderDemand($('#p-demand'), st); P.renderMix($('#p-mix'), st); P.renderIso($('#p-iso'), st); P.renderSpace($('#p-space'), st); P.renderHazard($('#p-hazard'), st, null); P.renderAuditorMini($('#p-auditor-mini'), null);
-P.renderFrequency($('#p-freq'), st, enf); P.renderOutages($('#p-outages'), st, null, local); scheduleNow();
+P.renderFrequency($('#p-freq'), st, enf); renderOutagePanel(); renderAlertsPanel();
 showTab(location.hash.slice(1) || 'map');
 bootMap();
 bootGps();
@@ -817,3 +938,8 @@ every(300, () => pollRelay());
 every(10, () => pollErcot());
 every(60, () => pollOutages());
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+loadEmpower();
+if (alerts.plat.push) {
+  AL.serviceInfo().then((k) => { alerts.key = k.publicKey; alerts.lastSweep = k.lastSweep; renderAlertsPanel(); }).catch(() => {});
+  if (alerts.prefs.on) AL.resync(alerts.prefs).then(({ prefs, state }) => { alerts.prefs = prefs; if (state === 'lost') alertMsg('This browser dropped Grid’s alert subscription. Turn alerts on again to keep receiving them.', true); else renderAlertsPanel(); }).catch(() => {});
+}
