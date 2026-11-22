@@ -1,0 +1,734 @@
+{
+ "summary": {
+  "total_checks": 61150,
+  "violations": 0,
+  "reps": 30,
+  "fracs": [
+   0.05,
+   0.2,
+   0.5,
+   0.8,
+   0.95,
+   0.999
+  ],
+  "kinds": [
+   "goe",
+   "rotate",
+   "close",
+   "shift",
+   "mixed",
+   "nonsym",
+   "nonnormal"
+  ],
+  "seed": 20261120,
+  "seconds": 163.8
+ },
+ "families": [
+  {
+   "name": "E47 Casimir, W-frame, Lam={6,30}",
+   "n": 125,
+   "r": 47,
+   "g": 3.9999999999999933,
+   "deltas": [
+    3.9999999999999933,
+    9.999999999999982
+   ],
+   "Lam": [
+    5.9999999999999805,
+    29.99999999999995
+   ],
+   "checks": {
+    "occupancy_real": [
+     900,
+     0
+    ],
+    "davis_kahan_l2": [
+     900,
+     0
+    ],
+    "flow_window": [
+     2700,
+     0
+    ],
+    "buoy_telescoping": [
+     900,
+     0
+    ],
+    "occupancy_complex": [
+     360,
+     0
+    ],
+    "riesz_projector": [
+     360,
+     0
+    ],
+    "residual_lower": [
+     200,
+     0
+    ],
+    "residual_upper": [
+     200,
+     0
+    ]
+   },
+   "max_ratio": {
+    "davis_kahan_l2": 0.9062991021165988,
+    "flow_window": 1.0000000000017388,
+    "buoy_telescoping": 1.0000000000000233,
+    "riesz_projector": 0.23733142754973158,
+    "residual_lower": 0.7000257561373664,
+    "residual_upper": 0.6154890959686441
+   },
+   "trials": 1260,
+   "gamma_K": 107.9999999999998,
+   "kappa_K": 432.0000000000014,
+   "sharpness": {
+    "occupancy_at_0.999g/2": 47,
+    "occupancy_at_1.001g/2": 56,
+    "telescoping_ratio_uniform_shift": [
+     1.0000000000001694,
+     1.0000000000000158,
+     1.0000000000000018,
+     0.9999999999999993
+    ],
+    "r": 47
+   },
+   "seconds": 21.1
+  },
+  {
+   "name": "E47 K-level buoy, Lam={0}",
+   "n": 125,
+   "r": 47,
+   "g": 107.99999999999996,
+   "deltas": [
+    107.99999999999996
+   ],
+   "Lam": [
+    -4.115173776695466e-13
+   ],
+   "checks": {
+    "occupancy_real": [
+     900,
+     0
+    ],
+    "davis_kahan_l2": [
+     900,
+     0
+    ],
+    "flow_window": [
+     2700,
+     0
+    ],
+    "buoy_telescoping": [
+     900,
+     0
+    ],
+    "occupancy_complex": [
+     360,
+     0
+    ],
+    "riesz_projector": [
+     360,
+     0
+    ],
+    "residual_lower": [
+     200,
+     0
+    ],
+    "residual_upper": [
+     200,
+     0
+    ]
+   },
+   "max_ratio": {
+    "davis_kahan_l2": 0.9740874105535012,
+    "flow_window": 1.0000000000004676,
+    "buoy_telescoping": 1.0000000000000067,
+    "riesz_projector": 0.47480176513367095,
+    "residual_lower": 0.6971533656902407,
+    "residual_upper": 0.6611828358351208
+   },
+   "trials": 1260,
+   "gamma_K": 107.99999999999996,
+   "kappa_K": 432.00000000000006,
+   "sharpness": {
+    "occupancy_at_0.999g/2": 47,
+    "occupancy_at_1.001g/2": 75,
+    "telescoping_ratio_uniform_shift": [
+     1.0000000000000382,
+     1.0000000000000013,
+     1.0000000000000004,
+     1.0000000000000002
+    ],
+    "r": 47
+   },
+   "seconds": 21.6
+  },
+  {
+   "name": "Professor's Cube Laplacian, golden cluster",
+   "n": 125,
+   "r": 12,
+   "g": 0.52786404500042,
+   "deltas": [
+    1.381966011250103,
+    0.52786404500042
+   ],
+   "Lam": [
+    1.3819660112501022,
+    3.6180339887498927
+   ],
+   "checks": {
+    "occupancy_real": [
+     900,
+     0
+    ],
+    "davis_kahan_l2": [
+     900,
+     0
+    ],
+    "flow_window": [
+     2700,
+     0
+    ],
+    "buoy_telescoping": [
+     900,
+     0
+    ],
+    "occupancy_complex": [
+     360,
+     0
+    ],
+    "riesz_projector": [
+     360,
+     0
+    ],
+    "residual_lower": [
+     200,
+     0
+    ],
+    "residual_upper": [
+     200,
+     0
+    ]
+   },
+   "max_ratio": {
+    "davis_kahan_l2": 0.9117641285529527,
+    "flow_window": 1.0000000000007756,
+    "buoy_telescoping": 1.0000000000000357,
+    "riesz_projector": 0.23731393051685593,
+    "residual_lower": 0.06548896099693141,
+    "residual_upper": 0.4930169287080756
+   },
+   "trials": 1260,
+   "gamma_K": 1.18033988749895,
+   "kappa_K": 68.54101966249678,
+   "sharpness": {
+    "occupancy_at_0.999g/2": 12,
+    "occupancy_at_1.001g/2": 20,
+    "telescoping_ratio_uniform_shift": [
+     1.000000000000104,
+     0.9999999999999963,
+     1.0000000000000024,
+     1.0000000000000022
+    ],
+    "r": 12
+   },
+   "seconds": 20.0
+  },
+  {
+   "name": "Heisenberg ring n=8, ground state (numeric gap)",
+   "n": 256,
+   "r": 1,
+   "g": 0.5226743450925992,
+   "deltas": [
+    0.5226743450925992
+   ],
+   "Lam": [
+    -3.651093408937177
+   ],
+   "checks": {
+    "occupancy_real": [
+     900,
+     0
+    ],
+    "davis_kahan_l2": [
+     900,
+     0
+    ],
+    "flow_window": [
+     2700,
+     0
+    ],
+    "buoy_telescoping": [
+     900,
+     0
+    ],
+    "occupancy_complex": [
+     360,
+     0
+    ],
+    "riesz_projector": [
+     360,
+     0
+    ],
+    "residual_lower": [
+     200,
+     0
+    ],
+    "residual_upper": [
+     200,
+     0
+    ]
+   },
+   "max_ratio": {
+    "davis_kahan_l2": 0.9740874105536479,
+    "flow_window": 1.000000000000198,
+    "buoy_telescoping": 1.000000000000022,
+    "riesz_projector": 0.4745936087699001,
+    "residual_lower": 0.14700689016371546,
+    "residual_upper": 0.724572885489876
+   },
+   "trials": 1260,
+   "gamma_K": 0.5226743450925992,
+   "kappa_K": 5.651093408937176,
+   "sharpness": {
+    "occupancy_at_0.999g/2": 1,
+    "occupancy_at_1.001g/2": 4,
+    "telescoping_ratio_uniform_shift": [
+     1.000000000000022,
+     1.000000000000022,
+     1.0000000000000018,
+     1.0000000000000004
+    ],
+    "r": 1
+   },
+   "seconds": 83.6
+  },
+  {
+   "name": "planted random n=40 #1, |Lam|=5",
+   "n": 40,
+   "r": 31,
+   "g": 1.6828916035490646,
+   "deltas": [
+    5.234972331682107,
+    1.6828916035490646,
+    1.9278790879442838
+   ],
+   "Lam": [
+    -7.00329495378545,
+    1.801883485532212,
+    3.0578069889370942,
+    6.668577680430443,
+    8.502370226882757
+   ],
+   "checks": {
+    "occupancy_real": [
+     900,
+     0
+    ],
+    "davis_kahan_l2": [
+     900,
+     0
+    ],
+    "buoy_telescoping": [
+     900,
+     0
+    ],
+    "occupancy_complex": [
+     360,
+     0
+    ],
+    "riesz_projector": [
+     360,
+     0
+    ],
+    "residual_lower": [
+     200,
+     0
+    ],
+    "residual_upper": [
+     200,
+     0
+    ]
+   },
+   "max_ratio": {
+    "davis_kahan_l2": 0.7148326813679784,
+    "buoy_telescoping": 0.41197237048620505,
+    "riesz_projector": 0.09497617390648735,
+    "residual_lower": 0.4509732067945204,
+    "residual_upper": 0.9127945224386937
+   },
+   "trials": 1260,
+   "gamma_K": 421.21602549739464,
+   "kappa_K": 7816.085818767779,
+   "sharpness": {
+    "occupancy_at_0.999g/2": 31,
+    "occupancy_at_1.001g/2": 37,
+    "telescoping_ratio_uniform_shift": [
+     0.36207889023477796,
+     0.3666999762570669,
+     0.3870571625868013,
+     0.4070760075560136
+    ],
+    "r": 31
+   },
+   "seconds": 2.6
+  },
+  {
+   "name": "planted random n=40 #2, |Lam|=2",
+   "n": 40,
+   "r": 7,
+   "g": 0.4542464887829296,
+   "deltas": [
+    2.0784111034810735,
+    0.4542464887829296
+   ],
+   "Lam": [
+    -7.459214562882632,
+    0.837953754940047
+   ],
+   "checks": {
+    "occupancy_real": [
+     900,
+     0
+    ],
+    "davis_kahan_l2": [
+     900,
+     0
+    ],
+    "flow_window": [
+     2250,
+     0
+    ],
+    "buoy_telescoping": [
+     900,
+     0
+    ],
+    "occupancy_complex": [
+     360,
+     0
+    ],
+    "riesz_projector": [
+     360,
+     0
+    ],
+    "residual_lower": [
+     200,
+     0
+    ],
+    "residual_upper": [
+     200,
+     0
+    ]
+   },
+   "max_ratio": {
+    "davis_kahan_l2": 0.9524697432512911,
+    "flow_window": 1.0000000000015754,
+    "buoy_telescoping": 1.0000000000000022,
+    "riesz_projector": 0.23737281723360393,
+    "residual_lower": 0.19253384511880867,
+    "residual_upper": 0.7343246496988453
+   },
+   "trials": 1260,
+   "gamma_K": 3.562619702640298,
+   "kappa_K": 66.23521814041644,
+   "sharpness": {
+    "occupancy_at_0.999g/2": 7,
+    "occupancy_at_1.001g/2": 13,
+    "telescoping_ratio_uniform_shift": [
+     1.0000000000000315,
+     1.000000000000002,
+     1.0000000000000004,
+     1.0000000000000002
+    ],
+    "r": 7
+   },
+   "seconds": 2.8
+  },
+  {
+   "name": "planted random n=40 #3, |Lam|=1",
+   "n": 40,
+   "r": 5,
+   "g": 0.24313003120366616,
+   "deltas": [
+    0.24313003120366616
+   ],
+   "Lam": [
+    9.27940999415353
+   ],
+   "checks": {
+    "occupancy_real": [
+     900,
+     0
+    ],
+    "davis_kahan_l2": [
+     900,
+     0
+    ],
+    "flow_window": [
+     2700,
+     0
+    ],
+    "buoy_telescoping": [
+     900,
+     0
+    ],
+    "occupancy_complex": [
+     360,
+     0
+    ],
+    "riesz_projector": [
+     360,
+     0
+    ],
+    "residual_lower": [
+     200,
+     0
+    ],
+    "residual_upper": [
+     200,
+     0
+    ]
+   },
+   "max_ratio": {
+    "davis_kahan_l2": 0.974087410553561,
+    "flow_window": 1.0000000000046783,
+    "buoy_telescoping": 1.0000000000001021,
+    "riesz_projector": 0.4747884299119835,
+    "residual_lower": 0.046208449865498456,
+    "residual_upper": 0.7040054844486856
+   },
+   "trials": 1260,
+   "gamma_K": 0.24313003120366616,
+   "kappa_K": 18.432605575368996,
+   "sharpness": {
+    "occupancy_at_0.999g/2": 5,
+    "occupancy_at_1.001g/2": 10,
+    "telescoping_ratio_uniform_shift": [
+     1.0000000000005407,
+     1.000000000000029,
+     1.0000000000000147,
+     1.0000000000000049
+    ],
+    "r": 5
+   },
+   "seconds": 2.8
+  },
+  {
+   "name": "planted random n=40 #4, |Lam|=2",
+   "n": 40,
+   "r": 9,
+   "g": 1.6325188802399253,
+   "deltas": [
+    1.6325188802399253,
+    4.0887119326763655
+   ],
+   "Lam": [
+    1.3670755396926244,
+    9.758904921633896
+   ],
+   "checks": {
+    "occupancy_real": [
+     900,
+     0
+    ],
+    "davis_kahan_l2": [
+     900,
+     0
+    ],
+    "flow_window": [
+     2700,
+     0
+    ],
+    "buoy_telescoping": [
+     900,
+     0
+    ],
+    "occupancy_complex": [
+     360,
+     0
+    ],
+    "riesz_projector": [
+     360,
+     0
+    ],
+    "residual_lower": [
+     200,
+     0
+    ],
+    "residual_upper": [
+     200,
+     0
+    ]
+   },
+   "max_ratio": {
+    "davis_kahan_l2": 0.9065219998568764,
+    "flow_window": 1.0000000000006848,
+    "buoy_telescoping": 1.0000000000000069,
+    "riesz_projector": 0.23733030683598216,
+    "residual_lower": 0.14595465190236062,
+    "residual_upper": 0.9020484019446391
+   },
+   "trials": 1260,
+   "gamma_K": 16.36493780011109,
+   "kappa_K": 188.92899818777693,
+   "sharpness": {
+    "occupancy_at_0.999g/2": 9,
+    "occupancy_at_1.001g/2": 13,
+    "telescoping_ratio_uniform_shift": [
+     1.0000000000000657,
+     1.000000000000002,
+     0.9999999999999997,
+     1.0
+    ],
+    "r": 9
+   },
+   "seconds": 3.1
+  },
+  {
+   "name": "planted random n=40 #5, |Lam|=5",
+   "n": 40,
+   "r": 31,
+   "g": 1.8532962574864444,
+   "deltas": [
+    6.635823382917892,
+    1.8532962574864444
+   ],
+   "Lam": [
+    -8.110497176339019,
+    -7.866489884521931,
+    5.120987911500144,
+    9.397340367376128,
+    9.555690910089789
+   ],
+   "checks": {
+    "occupancy_real": [
+     900,
+     0
+    ],
+    "davis_kahan_l2": [
+     900,
+     0
+    ],
+    "flow_window": [
+     1800,
+     0
+    ],
+    "buoy_telescoping": [
+     900,
+     0
+    ],
+    "occupancy_complex": [
+     360,
+     0
+    ],
+    "riesz_projector": [
+     360,
+     0
+    ],
+    "residual_lower": [
+     200,
+     0
+    ],
+    "residual_upper": [
+     200,
+     0
+    ]
+   },
+   "max_ratio": {
+    "davis_kahan_l2": 0.9394076543149367,
+    "flow_window": 1.000000000000122,
+    "buoy_telescoping": 0.06417893450912346,
+    "riesz_projector": 0.09496436053696701,
+    "residual_lower": 0.9298952337443255,
+    "residual_upper": 0.9069059353457507
+   },
+   "trials": 1260,
+   "gamma_K": 9049.49514647765,
+   "kappa_K": 33241.91707575409,
+   "sharpness": {
+    "occupancy_at_0.999g/2": 31,
+    "occupancy_at_1.001g/2": 37,
+    "telescoping_ratio_uniform_shift": [
+     0.06433175707234834,
+     0.06398204732783401,
+     0.06218320017554218,
+     0.060020292128612575
+    ],
+    "r": 31
+   },
+   "seconds": 3.3
+  },
+  {
+   "name": "planted random n=40 #6, |Lam|=2",
+   "n": 40,
+   "r": 6,
+   "g": 1.2036547294767628,
+   "deltas": [
+    1.2036547294767628,
+    2.790971417011559
+   ],
+   "Lam": [
+    -6.25184069294675,
+    3.0705050029128187
+   ],
+   "checks": {
+    "occupancy_real": [
+     900,
+     0
+    ],
+    "davis_kahan_l2": [
+     900,
+     0
+    ],
+    "flow_window": [
+     2700,
+     0
+    ],
+    "buoy_telescoping": [
+     900,
+     0
+    ],
+    "occupancy_complex": [
+     360,
+     0
+    ],
+    "riesz_projector": [
+     360,
+     0
+    ],
+    "residual_lower": [
+     200,
+     0
+    ],
+    "residual_upper": [
+     200,
+     0
+    ]
+   },
+   "max_ratio": {
+    "davis_kahan_l2": 0.8964606285411472,
+    "flow_window": 1.0000000000001659,
+    "buoy_telescoping": 1.0000000000000044,
+    "riesz_projector": 0.23736006177766725,
+    "residual_lower": 0.5178508022320452,
+    "residual_upper": 0.7774662208133943
+   },
+   "trials": 1260,
+   "gamma_K": 12.669670194430491,
+   "kappa_K": 64.95370725871219,
+   "sharpness": {
+    "occupancy_at_0.999g/2": 6,
+    "occupancy_at_1.001g/2": 11,
+    "telescoping_ratio_uniform_shift": [
+     1.0000000000000242,
+     1.0,
+     1.0,
+     0.9999999999999994
+    ],
+    "r": 6
+   },
+   "seconds": 2.8
+  }
+ ]
+}

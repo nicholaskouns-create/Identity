@@ -1,0 +1,70 @@
+name: E47 kernel certificate, native residuals, common-mode auditor
+
+# Item 1: the 125-dimensional kernel theorem as dimensions (formal/e47/kernel-certificate).
+# Item 2: the generic native-residual certificate theorem and its instances, plus the
+#         randomised falsification of the transfer half (formal/e47/native-residual).
+# Item 3: a smoke run of the common-mode benchmark (evidence/common-mode-auditor).
+on:
+  push:
+    paths:
+      - 'formal/e47/kernel-certificate/**'
+      - 'formal/e47/native-residual/**'
+      - 'evidence/common-mode-auditor/**'
+      - 'formal/e47/E47MatrixProjector.v'
+      - 'formal/e47/E47OddsContraction.v'
+      - 'formal/e47/E47OddsLink.v'
+      - '.github/workflows/e47-kernel-certificate.yml'
+  pull_request:
+    paths:
+      - 'formal/e47/kernel-certificate/**'
+      - 'formal/e47/native-residual/**'
+      - 'evidence/common-mode-auditor/**'
+      - '.github/workflows/e47-kernel-certificate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  coq:
+    name: Coq kernel checks (apt Coq, standard library only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq
+        run: sudo apt-get update -qq && sudo apt-get install -y coq
+      - run: coqc --version
+      - name: Reject Admitted / declared axioms in the new sources
+        run: |
+          ! grep -nE '^\s*(Admitted|Axiom|Parameter|Hypothesis)\b|\badmit\.' \
+            formal/e47/kernel-certificate/*.v formal/e47/native-residual/*.v
+      - name: Item 1 -- kernel certificate (16 theorems closed)
+        run: make -C formal/e47/kernel-certificate check
+      - name: Item 2 -- generic native certificate + E47, Cube, random instances (8 closed)
+        run: make -C formal/e47/native-residual check
+      - uses: actions/upload-artifact@v4
+        with:
+          name: print-assumptions
+          path: |
+            formal/e47/kernel-certificate/_build/assumptions.txt
+            formal/e47/native-residual/_build/assumptions_*.txt
+
+  python:
+    name: Witness regeneration, falsification, benchmark smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: pip install -r formal/e47/native-residual/requirements.txt
+      - name: Regenerate item-1 witnesses (byte-identical)
+        run: make -C formal/e47/kernel-certificate regen
+      - name: Regenerate item-2 witnesses (byte-identical) and exact constants
+        run: make -C formal/e47/native-residual regen
+      - name: Falsify the transfer half (0 violations required)
+        run: make -C formal/e47/native-residual falsify REPS=3
+      - name: Benchmark smoke (auditor: no transfer outside CM6, no false alarms)
+        run: make -C evidence/common-mode-auditor smoke

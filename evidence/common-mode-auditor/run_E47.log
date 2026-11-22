@@ -1,0 +1,10 @@
+[E47] calibration {'tol_vote': 0.0021099175302048555, 'iso_thr': 0.6736069385954845, 'ref_thr': 0.003570310495157869, 'legit_ranks': [47], 'max_replica_dev_legit': 0.00452892083100603, 'q999_replica_dev_legit': 0.0044701032247506, 'seconds': 34.1}
+[E47] legit                        vote:  0/  0  +validated:  0/  0  +anomaly:  0/  2  +reference:  0/  0  +auditor:  0/  0  auditor-select:  0/  0   (transfer/alarm of 600; 36s)
+[E47] F1-independent               vote:  0/  0  +validated:  0/  0  +anomaly:  0/ 25  +reference:  0/  1  +auditor:  0/  0  auditor-select:  0/  0   (transfer/alarm of 600; 36s)
+[E47] CM1a-spec-rank               vote:600/  0  +validated:600/  0  +anomaly:  0/600  +reference:597/  3  +auditor:  0/600  auditor-select:  0/600   (transfer/alarm of 600; 33s)
+[E47] CM1b-spec-isospectral-rank   vote:600/  0  +validated:600/  0  +anomaly:550/ 50  +reference:600/  0  +auditor:  0/600  auditor-select:  0/600   (transfer/alarm of 600; 45s)
+[E47] CM2-operator-file            vote: 65/  0  +validated:  1/219  +anomaly: 33/ 52  +reference:  0/235  +auditor:  0/ 65  auditor-select:  0/ 57   (transfer/alarm of 600; 35s)
+[E47] CM3-shared-helper            vote:  0/566  +validated:  0/566  +anomaly:  0/582  +reference:  0/566  +auditor:  0/566  auditor-select:  0/  0   (transfer/alarm of 600; 18s)
+[E47] CM4-substrate-drift          vote:196/  0  +validated:  0/196  +anomaly:169/ 33  +reference:  0/384  +auditor:  0/196  auditor-select:  0/193   (transfer/alarm of 600; 37s)
+[E47] CM5-precision-collapse       vote:531/ 69  +validated:  0/600  +anomaly:413/187  +reference:  0/600  +auditor:  0/600  auditor-select:  0/600   (transfer/alarm of 600; 36s)
+[E47] CM6-input-corruption         vote:595/  0  +validated:595/  0  +anomaly:589/  6  +reference:592/  3  +auditor:595/  0  auditor-select:595/  0   (transfer/alarm of 600; 35s)
