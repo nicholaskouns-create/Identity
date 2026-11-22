@@ -716,7 +716,7 @@ $('#p-alerts').addEventListener('click', (e) => {
     const go = AL.turnOn(alerts.prefs, alerts.key);
     busy(async () => { alerts.prefs = await go; done('Alerts are on. A confirmation notification is on its way.'); });
   } else if (t.id === 'al-test') busy(async () => {
-    try { await AL.sendTest(alerts.prefs); done('Test sent. It should arrive within a minute, even if you close Grid now.'); }
+    try { await AL.sendTest(alerts.prefs); done(`Test on its way in about ${AL.TEST_DELAY} seconds. Lock your phone or close Grid now to see it arrive; tapping it should open ${alerts.prefs.places[0]?.label || 'Grid'}.`); }
     catch (err) { throw new Error(err.status === 429 ? 'One test a minute. Try again shortly.' : err.status === 404 ? 'The alert service no longer knows this device. Turn alerts off, then on again.' : String(err.message || err)); }
   });
   else if (t.id === 'al-off') busy(async () => { alerts.prefs = await AL.turnOff(alerts.prefs); done('Alerts are off, and the server copy is deleted.'); });

@@ -86,7 +86,7 @@ Grid can tell you when the power goes out where you or your family live, with Gr
 - **Counties.** Up to five per device: your own, found from your position, and any others you add by county or by town.
 - **Tapping a notification** opens Grid at that county.
 
-**Turning it on.** Tap **🔔 Alerts** in the top bar (or **Alert me about outages in …** under your GPS position), choose the counties, and tap **Turn on alerts**. **Send a test alert** confirms delivery.
+**Turning it on.** Tap **🔔 Alerts** in the top bar (or **Alert me about outages in …** under your GPS position), choose the counties, and tap **Turn on alerts**. **Send a test alert** sends one about 15 seconds later, so you can lock the phone or close Grid first. Tapping it should open your first county.
 - **iPhone and iPad.** Alerts work when Grid is on the Home Screen: in Safari tap Share, then **Add to Home Screen**, then open Grid from the new icon and turn alerts on there. iOS and iPadOS 16.4 or later.
 - **Android, Windows, macOS and Linux.** Chrome, Edge, Firefox and Samsung Internet work directly. Safari on macOS 13 or later does too.
 

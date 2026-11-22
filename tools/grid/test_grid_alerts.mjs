@@ -310,6 +310,7 @@ ok('a subscription the push service refuses, or one that is not a push service, 
 
 res = await call('test', { endpoint: phone.endpoint });
 assert.equal(res.status, 200); assert.equal(inbox.at(-1).payload.title, 'Grid test alert');
+assert.equal(inbox.at(-1).payload.url, `${L.GRID}?county=32003`, 'tapping the test opens the first county'); assert.match(inbox.at(-1).payload.body, /Tap to open Clark County, NV\./);
 assert.equal((await call('test', { endpoint: phone.endpoint })).status, 429);
 assert.equal((await call('test', { endpoint: 'https://fcm.googleapis.com/fcm/send/nobody' })).status, 404);
 ok('test alert: delivered, then limited to one a minute; unknown endpoints get 404');

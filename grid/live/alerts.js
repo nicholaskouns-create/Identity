@@ -66,7 +66,9 @@ export async function update(prefs) {
   savePrefs(next);
   return next;
 }
-export const sendTest = (prefs) => api('test', { endpoint: prefs.endpoint });
+// Sent after a short delay, so the phone can be locked or Grid closed before it arrives.
+export const TEST_DELAY = 15;
+export const sendTest = (prefs) => api('test', { endpoint: prefs.endpoint, delay: TEST_DELAY });
 export async function turnOff(prefs) {
   const sub = await ready().then((r) => r.pushManager.getSubscription()).catch(() => null);
   const endpoint = (sub && sub.endpoint) || prefs.endpoint;

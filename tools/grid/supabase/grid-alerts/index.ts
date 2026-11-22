@@ -8,7 +8,8 @@
 //
 //   GET  ?op=key           application server public key and the last sweep's summary
 //   POST ?op=subscribe     { subscription, places:[{fips,label}], minOut, weather, restore }
-//   POST ?op=test          { endpoint }   sends one test notification (once a minute at most)
+//   POST ?op=test          { endpoint, delay }   one test notification, after up to 30 s so the phone can be
+//                          locked first; tapping it opens the first county (once a minute at most)
 //   POST ?op=unsubscribe   { endpoint }   deletes the subscription
 //   POST ?op=sweep         header x-grid-sweep: the token pg_cron reads from Vault
 //
@@ -116,8 +117,21 @@ async function opTest(req) {
   if (!s) return json({ error: 'not subscribed' }, 404);
   if (s.last_test_at && Date.now() - Date.parse(s.last_test_at) < 60e3) return json({ error: 'one test a minute' }, 429);
   await db('PATCH', `grid_push_subs?id=eq.${id}`, { last_test_at: new Date().toISOString() }, 'return=minimal');
-  const r = await send(s, payload({ kind: 'test', tag: 'grid-test', title: 'Grid test alert', body: `Alerts reach this device. Watching ${(s.places || []).map((p) => p.label).join(', ')}.` }), vapidOf(await config()), { ttl: 600, urgency: 'normal' });
-  if (r.gone) await db('DELETE', `grid_push_subs?id=eq.${id}`, undefined, 'return=minimal');
+  const delay = Math.max(0, Math.min(30, Math.round(Number(b.delay) || 0)));
+  const first = (s.places || [])[0];
+  const note = { kind: 'test', tag: 'grid-test', title: 'Grid test alert', url: first ? `${GRID}?county=${first.fips}` : GRID,
+    body: `Alerts reach this device. Watching ${(s.places || []).map((p) => p.label).join(', ')}.${first ? ` Tap to open ${first.label}.` : ''}` };
+  const vapid = vapidOf(await config());
+  const go = async () => {
+    if (delay) await new Promise((res) => setTimeout(res, delay * 1000));
+    const r = await send(s, payload(note), vapid, { ttl: 600, urgency: 'high' }).catch((e) => ({ ok: false, status: 0, gone: false, text: String(e) }));
+    if (r.gone) await db('DELETE', `grid_push_subs?id=eq.${id}`, undefined, 'return=minimal');
+    console.log(JSON.stringify({ op: 'test', delay, status: r.status, ok: r.ok }));
+    return r;
+  };
+  // With a delay, answer at once and send in the background, so the phone can be locked or Grid closed meanwhile.
+  if (delay && typeof EdgeRuntime !== 'undefined' && EdgeRuntime.waitUntil) { EdgeRuntime.waitUntil(go()); return json({ ok: true, scheduled: delay }); }
+  const r = await go();
   return json({ ok: r.ok, status: r.status, gone: r.gone }, r.ok ? 200 : 502);
 }
 
