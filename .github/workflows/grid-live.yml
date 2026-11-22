@@ -1,0 +1,52 @@
+name: Grid live relay
+
+# Fetches ISO/RTO real-time load and fuel mix (and EIA-930 when the
+# EIA_API_KEY secret is set) and publishes a snapshot to the orphan
+# branch `grid-live`, which Grid reads from raw.githubusercontent.com.
+# The branch is force-rewritten each run, so no history accumulates.
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: grid-live
+  cancel-in-progress: false
+
+jobs:
+  relay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: tools/grid
+          path: src
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install relay dependencies
+        run: pip install --quiet gridstatus==0.37.0 requests
+      - name: Fetch the previous snapshot (rolling 24 h history)
+        run: |
+          mkdir -p out
+          git clone --quiet --depth 1 --branch grid-live "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" prev 2>/dev/null || true
+          cp prev/live.json out/previous.json 2>/dev/null || true
+      - name: Relay
+        env:
+          EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
+          PJM_API_KEY: ${{ secrets.PJM_API_KEY }}
+        run: python src/tools/grid/relay.py --previous out/previous.json --out out
+      - name: Publish snapshot to grid-live
+        run: |
+          cd out
+          rm -f previous.json
+          git init --quiet
+          git checkout --quiet -b grid-live
+          git add live.json door.json README.md
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit --quiet -m "grid: live snapshot $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push --quiet --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" grid-live
