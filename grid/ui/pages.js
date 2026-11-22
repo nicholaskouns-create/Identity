@@ -195,7 +195,7 @@ function renderDoors(card, d) {
   }).join('');
   const all = [...groups.entries()].map(([repo, list]) => `<li><b>${esc(repo)}</b><ol>${list.map((x) => `<li><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title || x.path)}</a>${x.lead ? ' <small class="lead-tag">lead card</small>' : ''}</li>`).join('')}</ol></li>`).join('');
   card.innerHTML = `<h3>Doorways</h3><div class="sub"><span>Where Grid is linked from · ${esc(d.schema || 'survey')}</span></div>
-    <p>${pages.length} published pages across ${groups.size} repositories open Grid: a corner doorway on every page, and a lead card on ${hubs} hub pages. The doorway is plain HTML, so it works with scripts off; a small script moves it clear of each page's own controls and shows a live reading from the relay.${tpl}</p>
+    <p>${pages.length} site pages across ${groups.size} repositories open Grid: a corner doorway on every page, and a lead card on ${hubs} hub pages. The doorway is plain HTML, so it works with scripts off; a small script moves it clear of each page's own controls and shows a live reading from the relay.${tpl}</p>
     <table class="t doors-table"><tr><th style="text-align:left">Repository</th><th>Pages</th><th>Lead cards</th></tr>${rows}</table>
     <details class="doors-all"><summary>All ${pages.length} pages</summary><ul>${all}</ul></details>`;
 }

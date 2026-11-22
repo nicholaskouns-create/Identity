@@ -180,7 +180,7 @@ It checks the sector dimensions, tr P = 47 and the rate 15/17 against the City's
 
 - It places a **GRID** doorway on each page, as plain HTML that works with scripts off. A small script, `door.js`, moves the doorway clear of the page's own fixed panels and controls, including those inside same-origin embeds. It also shows the relay reading, and stays hidden inside iframes.
 - It adds a lead card to the five hub pages.
-- It writes the survey to `data/surfaces.json`. The Sources tab lists it in full: 184 published pages and one generator template.
+- It writes the survey to `data/surfaces.json`. The Sources tab lists it in full: 184 site pages and one generator template. A page appears on the web whenever its repository's Pages site is switched on.
 
 The installer is idempotent, so you can rerun it after adding pages.
 
