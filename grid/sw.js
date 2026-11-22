@@ -2,15 +2,15 @@
 // tiles work offline. Live publisher APIs are never answered from cache, so an
 // offline Grid shows sources as unavailable rather than presenting old values
 // as current. The relay snapshot carries its own generation time and may be cached.
-const VERSION = 'grid-2026-11-22-2';
+const VERSION = 'grid-2026-11-22-3';
 const SHELL = [
   './', 'index.html', 'grid.css', 'app.js', 'manifest.webmanifest', 'door.js',
-  'map/map.js', 'map/fly.js', 'live/sources.js', 'ui/charts.js', 'ui/panels.js', 'ui/pages.js',
+  'map/map.js', 'map/fly.js', 'live/sources.js', 'live/pulse.js', 'live/counties.js', 'live/enf.js', 'live/enf-worklet.js', 'ui/charts.js', 'ui/panels.js', 'ui/pages.js',
   'engine/prng.js', 'engine/linalg.js', 'engine/monitor.js', 'engine/rational.js', 'engine/certificate.js', 'engine/e47.js', 'engine/worker.js', 'engine/pins.js',
   'lib/maplibre/maplibre-gl.mjs', 'lib/maplibre/maplibre-gl-worker.mjs', 'lib/maplibre/maplibre-gl.css',
   'data/topology-ieee14.json', 'data/topology-ieee118.json', 'data/certificate-ieee14.json', 'data/certificate-ieee118.json',
   'data/cm2-survey-ieee14.json', 'data/cm2-survey-ieee118.json', 'data/reference-acceptance.json',
-  'data/plants-us.json', 'data/us-states.json', 'data/ba-meta.json',
+  'data/plants-us.json', 'data/us-states.json', 'data/us-counties-10m.json', 'data/ba-meta.json',
   'fonts/newsreader-latin-400-normal.woff2', 'fonts/newsreader-latin-400-italic.woff2', 'fonts/newsreader-latin-500-normal.woff2', 'fonts/newsreader-latin-500-italic.woff2',
   'fonts/ibm-plex-sans-latin-400-normal.woff2', 'fonts/ibm-plex-sans-latin-500-normal.woff2', 'fonts/ibm-plex-sans-latin-600-normal.woff2',
   'fonts/ibm-plex-sans-greek-400-normal.woff2', 'fonts/ibm-plex-sans-greek-500-normal.woff2',

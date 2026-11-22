@@ -8,6 +8,10 @@ import { CLASS_INFO } from './engine/monitor.js';
 import { E47_LOCK_FALLBACK } from './engine/e47.js';
 import * as P from './ui/panels.js';
 import * as PG from './ui/pages.js';
+import { sparkline } from './ui/charts.js';
+import { fetchLive, interconnectionFor } from './live/pulse.js';
+import { EnfMeter } from './live/enf.js';
+import { loadCounties, countyAt, unionBbox } from './live/counties.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const ORIGIN = location.origin;
@@ -26,6 +30,7 @@ function setStatus(id, state, detail = '') {
   const li = document.querySelector(`[data-src-dot="${id}"]`);
   if (li) li.className = 'dot ' + (state === 'ok' ? 'ok' : state === 'error' ? 'err' : state === 'loading' ? 'warn' : 'idle');
   if (currentTab === 'sources') PG.updateSources($('#view-sources'), st, settings);
+  scheduleNow();
 }
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 3800); }
 function pushTicker(time, html, key) {
@@ -81,6 +86,7 @@ const LAYERS = [
   { id: 'osm', label: 'Local grid around you (OSM)', src: 'overpass', layers: ['osm-line-glow', 'osm-line', 'osm-area', 'osm-point'], on: true },
   { id: 'plants', label: 'Generating plants', src: 'plants', layers: ['plants-heat', 'plants-glow', 'plants-core'], on: true },
   { id: 'skyline', label: 'Generation skyline (3D)', src: 'plants', layers: ['skyline'], on: false },
+  { id: 'outages', label: 'Power outages by county (ODIN)', src: 'odin', layers: ['outage-fill', 'outage-line', 'outage-pulse'], on: true },
   { id: 'alerts', label: 'Severe weather warnings', src: 'nws', layers: ['alerts-fill', 'alerts-line'], on: true },
   { id: 'fires', label: 'Wildfires', src: 'wfigs', layers: ['fires-glow', 'fires-core'], on: true },
   { id: 'perims', label: 'Fire perimeters', src: 'wfigs-perim', layers: ['perim-fill', 'perim-line'], on: false },
@@ -158,11 +164,12 @@ function pushMapData() {
   if (st.perimeters?.data) gm.set('perimeters', st.perimeters.data);
   if (st.aurora?.data) gm.set('aurora', { type: 'FeatureCollection', features: st.aurora.data.pts });
   if (st.osm?.data) gm.set('osm', st.osm.data);
+  if (outageGeo) { gm.set('outages', outageGeo.fill); gm.set('outagept', outageGeo.pts); }
 }
 
 function wireMapInteractions() {
   const m = gm.map;
-  const clickable = ['plants-core', 'skyline', 'alerts-fill', 'fires-core', 'quakes', 'lines-core', 'osm-line', 'osm-point', 'osm-area', 'perim-fill'];
+  const clickable = ['outage-fill', 'plants-core', 'skyline', 'alerts-fill', 'fires-core', 'quakes', 'lines-core', 'osm-line', 'osm-point', 'osm-area', 'perim-fill'];
   m.on('click', (e) => {
     const f = m.queryRenderedFeatures(e.point, { layers: clickable.filter((id) => m.getLayer(id)) })[0];
     if (!f) return;
@@ -173,12 +180,200 @@ function wireMapInteractions() {
     else if (L === 'quakes') html = `<div class="pop"><div class="k">USGS · ${P.ev('LIVE')}</div><h3>M${Number(p.mag).toFixed(1)} · ${P.esc(p.place)}</h3><div class="kv"><span>Time</span><b>${new Date(Number(p.time)).toISOString().replace('T', ' ').slice(0, 16)}Z</b><span>Depth</span><b>${Number(p.depth).toFixed(1)} km</b></div></div>`;
     else if (L === 'lines-core') html = `<div class="pop"><div class="k">HIFLD transmission · ${P.ev('LIVE')}</div><h3>${p.kv && p.kv !== 'null' ? p.kv + ' kV' : P.esc(p.cls || 'voltage not recorded')}</h3><div class="kv"><span>Owner</span><b>${P.esc(p.owner || '—')}</b><span>Status</span><b>${P.esc(p.status || '—')}</b></div></div>`;
     else if (L.startsWith('osm')) html = `<div class="pop"><div class="k">OpenStreetMap · power=${P.esc(p.kind)} · ${P.ev('LIVE')}</div><h3>${P.esc(p.name || p.kind)}</h3><div class="kv"><span>Voltage</span><b>${p.kv && p.kv !== 'null' ? p.kv + ' kV' : '—'}</b><span>Operator</span><b>${P.esc(p.operator || '—')}</b></div></div>`;
+    else if (L === 'outage-fill') html = outagePopup(p);
     else if (L === 'perim-fill') html = `<div class="pop"><div class="k">Fire perimeter · ${P.ev('LIVE')}</div><h3>${P.esc(p.name)}</h3><div class="kv"><span>Area</span><b>${p.acres ? Number(p.acres).toLocaleString() + ' ac' : '—'}</b></div></div>`;
     if (html) gm.popup(e.lngLat, html);
   });
   for (const id of clickable) { m.on('mouseenter', id, () => { m.getCanvas().style.cursor = 'pointer'; }); m.on('mouseleave', id, () => { m.getCanvas().style.cursor = ''; }); }
 }
 const fuelLabel = (k) => ({ NUC: 'Nuclear', COL: 'Coal', NG: 'Natural gas', OIL: 'Oil', PET: 'Petroleum coke', WAT: 'Hydro', WND: 'Wind', SUN: 'Solar', GEO: 'Geothermal', BIO: 'Biomass', WST: 'Waste', BAT: 'Battery storage', CHP: 'Cogeneration', OTH: 'Other' }[k] || k);
+
+
+// ----------------------------------------------------------------- frequency (ERCOT) and outages (ODIN) via grid-live
+let counties = null, outageGeo = null, outageByFips = new Map();
+async function ensureCounties() {
+  if (counties) return counties;
+  try { counties = await loadCounties(); setStatus('counties', 'ok', `${counties.features.length.toLocaleString()} counties`); computeLocal(); buildOutageGeo(); }
+  catch (e) { setStatus('counties', 'error', String(e.message || e)); }
+  return counties;
+}
+async function pollErcot() {
+  if (!st.ercot) setStatus('ercot-rt', 'loading');
+  try {
+    const d = await fetchLive('ercot', { timeoutMs: 15000 });
+    const hist = st.ercot?.hist || [], t = Date.parse(d.updated || d.fetched) || Date.now();
+    if (!hist.length || hist.at(-1).t !== t) hist.push({ t, f: d.frequency });
+    while (hist.length && hist[0].t < Date.now() - 45 * 60000) hist.shift();
+    st.ercot = { data: d, at: new Date(), hist };
+    setStatus('ercot-rt', 'ok', `${d.frequency.toFixed(3)} Hz · time error ${d.timeError} s${d.stale ? ' · cached' : ''}`);
+    const dev = (d.frequency - 60) * 1000;
+    if (Math.abs(dev) >= 50) pushTicker(t, `<b style="color:#ff9f43">ERCOT ${d.frequency.toFixed(3)} Hz</b> ${dev > 0 ? '+' : '−'}${Math.abs(dev).toFixed(0)} mHz from 60`, 'ercot-' + Math.round(t / 120000));
+  } catch (e) { st.ercot = { hist: [], ...(st.ercot || {}), error: String(e.message || e) }; setStatus('ercot-rt', 'error', st.ercot.error); }
+  renderFreqPanel();
+}
+function renderFreqPanel() {
+  const keep = enf.running ? $('#enf-box') : null;
+  P.renderFrequency($('#p-freq'), st, enf);
+  if (keep) $('#enf-box')?.replaceWith(keep);
+  drawEnf();
+}
+async function pollOutages() {
+  if (!st.outages) setStatus('odin', 'loading');
+  try {
+    const d = await fetchLive('outages', { timeoutMs: 30000 });
+    st.outages = { data: d, at: new Date() };
+    setStatus('odin', 'ok', `${d.customers.toLocaleString()} customers out · ${d.nCounties} counties · ${d.feeds || '?'} utility feeds${d.stale ? ' · cached' : ''}`);
+    await ensureCounties(); buildOutageGeo();
+    for (const r of d.counties.filter((x) => x[1] >= 5000).slice(0, 3)) {
+      const f = counties?.byFips.get(r[0]);
+      pushTicker(Date.parse(r[5]) || Date.now(), `<b style="color:#ff5f7a">${r[1].toLocaleString()} out</b> ${P.esc(f ? f.properties.label : r[0])} · ${P.esc(P.utilName(r[3]))}`, 'out-' + r[0] + '-' + Math.round(r[1] / 2500));
+    }
+    if (local.county) { const r = outageByFips.get(local.county.id); if (r && r[1] >= 10) notify('out-' + r[0] + '-' + Math.round(r[1] / 500), `Power outage in ${local.county.properties.label}`, `${r[1].toLocaleString()} customers out (${P.utilName(r[3])}).`); }
+  } catch (e) { st.outages = { ...(st.outages || {}), error: String(e.message || e) }; setStatus('odin', 'error', st.outages.error); }
+  P.renderOutages($('#p-outages'), st, countyNames(), local);
+}
+function buildOutageGeo() {
+  const o = st.outages?.data; if (!o || !counties) return;
+  outageByFips = new Map(o.counties.map((r) => [r[0], r]));
+  const fill = [], pts = [];
+  for (const r of o.counties) {
+    const f = counties.byFips.get(r[0]); if (!f) continue;
+    fill.push({ type: 'Feature', geometry: f.geometry, properties: { fips: r[0], label: f.properties.label, m: r[1], n: r[2], util: P.utilName(r[3]), nu: r[4], since: r[5] || '', back: r[6] || '', cause: r[7] || '' } });
+    if (r[1] >= 100) pts.push({ type: 'Feature', geometry: { type: 'Point', coordinates: [(f.bbox[0] + f.bbox[2]) / 2, (f.bbox[1] + f.bbox[3]) / 2] }, properties: { m: r[1] } });
+  }
+  outageGeo = { fill: { type: 'FeatureCollection', features: fill }, pts: { type: 'FeatureCollection', features: pts } };
+  pushMapData();
+  P.renderOutages($('#p-outages'), st, countyNames(), local);
+}
+function countyNames() { const m = new Map(); if (counties && st.outages?.data) for (const r of st.outages.data.counties) { const f = counties.byFips.get(r[0]); if (f) m.set(r[0], f.properties.label); } return m; }
+const when = (t) => { const d = new Date(t); return t && Number.isFinite(d.getTime()) ? d.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'; };
+function outagePopup(p) {
+  const v = (x) => (x == null || x === 'null' || x === '' ? null : x);
+  return `<div class="pop"><div class="k">Outages · ODIN · ${P.ev('RELAY')}</div><h3>${P.esc(p.label)}</h3><div class="kv"><span>Customers out</span><b>${Number(p.m).toLocaleString()}</b><span>Outage events</span><b>${Number(p.n).toLocaleString()}</b><span>Utility</span><b>${P.esc(p.util)}${Number(p.nu) > 1 ? ` +${Number(p.nu) - 1}` : ''}</b><span>Since</span><b>${when(v(p.since))}</b><span>Back by</span><b>${v(p.back) ? when(p.back) : 'no estimate'}</b><span>Cause</span><b>${P.esc(v(p.cause) || '—')}</b></div></div>`;
+}
+function fitBox(b, maxZoom = 9) { if (gm && b) gm.map.fitBounds([[b[0], b[1]], [b[2], b[3]]], { padding: GridMap.padding(), maxZoom, duration: 1400 }); }
+function fitOutages() { const o = st.outages?.data; if (!o || !counties) return; fitBox(unionBbox(o.counties.slice(0, 40).map((r) => counties.byFips.get(r[0])?.bbox)), 8); }
+function focusCounty(fips) {
+  const f = counties?.byFips.get(fips); if (!f || !gm) return;
+  closeSheets(); fitBox(f.bbox, 9.5);
+  const r = outageByFips.get(fips);
+  if (r) gm.map.once('moveend', () => gm.popup([(f.bbox[0] + f.bbox[2]) / 2, (f.bbox[1] + f.bbox[3]) / 2], outagePopup({ label: f.properties.label, m: r[1], n: r[2], util: P.utilName(r[3]), nu: r[4], since: r[5], back: r[6], cause: r[7] })));
+}
+
+// ----------------------------------------------------------------- your outlet's frequency (microphone, on this device)
+const enf = { supported: EnfMeter.supported(), running: false, last: null, hist: [], ic: null, meter: null, error: null, n: 0 };
+async function startEnf() {
+  enf.error = null; enf.hist = []; enf.n = 0;
+  try {
+    enf.meter = new EnfMeter((r) => { enf.last = r; if (r.ok && enf.n++ % 5 === 0) { enf.hist.push(r.f); if (enf.hist.length > 240) enf.hist.shift(); } enfTick(); });
+    setStatus('enf', 'loading', 'listening');
+    await enf.meter.start(); enf.running = true;
+  } catch (e) {
+    enf.running = false; enf.meter?.stop();
+    enf.error = e && e.name === 'NotAllowedError' ? 'Microphone permission was declined, so nothing was measured.' : String((e && e.message) || e);
+    setStatus('enf', 'error', enf.error);
+  }
+  P.renderFrequency($('#p-freq'), st, enf); drawEnf();
+}
+function stopEnf() { enf.meter?.stop(); enf.meter = null; enf.running = false; enf.last = null; enf.hist = []; setStatus('enf', 'idle', 'stopped'); P.renderFrequency($('#p-freq'), st, enf); }
+let enfT = 0;
+function enfTick() {
+  const now = performance.now(); if (now - enfT < 300) return; enfT = now;
+  const body = $('#enf-body'), box = $('#enf-box');
+  if (body) body.innerHTML = P.enfBodyHtml(enf); else if (box) box.innerHTML = P.enfHtml(enf);
+  drawEnf();
+  if (enf.last?.ok) setStatus('enf', 'ok', `${enf.last.f.toFixed(4)} Hz from ${enf.last.used.join('/')} Hz hum`);
+}
+function drawEnf() { const c = $('#c-enf'); if (c && enf.hist.length > 1) sparkline(c, enf.hist, { h: 30, color: '#6edfd4' }); }
+$('#p-freq').addEventListener('click', (e) => { if (e.target.closest('#enf-start')) startEnf(); else if (e.target.closest('#enf-stop')) stopEnf(); });
+$('#p-outages').addEventListener('click', (e) => { const r = e.target.closest('.outrow'); if (r) focusCounty(r.dataset.fips); else if (e.target.closest('#out-fit')) { closeSheets(); fitOutages(); } });
+
+// ----------------------------------------------------------------- at a glance
+let nowTimer = null;
+function scheduleNow() { if (!nowTimer) nowTimer = setTimeout(() => { nowTimer = null; P.renderNow($('#now'), st, { enf, auditor: (($('#audit-pill')?.textContent || '').split('·').pop() || '').trim().toLowerCase() || null }); }, 250); }
+function closeSheets() { $('#rail-right').classList.remove('open'); $('#rail-left').classList.remove('open'); }
+function goPanel(id) {
+  if (currentTab !== 'map') showTab('map');
+  const el = $('#' + id); if (!el) return;
+  if (matchMedia('(max-width: 860px)').matches) { $('#rail-right').classList.add('open'); $('#rail-left').classList.remove('open'); }
+  else $('#rail-right').classList.remove('collapsed');
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+}
+$('#now').addEventListener('click', (e) => {
+  const b = e.target.closest('.now-chip'); if (!b) return;
+  if (b.dataset.now === 'out' && st.outages?.data) { if (!layerState.outages) syncLayer('outages', true); fitOutages(); }
+  if (b.dataset.now === 'wx' && !layerState.alerts) syncLayer('alerts', true);
+  goPanel(b.dataset.go);
+});
+function syncLayer(id, on) { setLayer(id, on); const cb = document.querySelector(`[data-layer="${id}"]`); if (cb) cb.checked = on; }
+
+// ----------------------------------------------------------------- search: counties, states, utilities, plants, places
+let palItems = [], palRes = [], palSel = 0;
+function buildIndex() {
+  const items = [];
+  if (statesGeo) for (const f of statesGeo.features) items.push({ k: 'State', label: f.properties.name, sub: '', b: bboxOf(f.geometry), w: 5 });
+  if (counties) for (const f of counties.features) { const r = outageByFips.get(f.id); items.push({ k: 'County', label: f.properties.label, sub: r ? `${r[1].toLocaleString()} customers out now` : '', b: f.bbox, fips: f.id, w: r ? 4.5 : 4 }); }
+  if (st.outages?.data) for (const u of st.outages.data.utilities) items.push({ k: 'Utility', label: P.utilName(u[1]), sub: `${u[2].toLocaleString()} customers out · ${u[4]} ${u[4] === 1 ? 'county' : 'counties'}`, fipsList: String(u[5] || '').split(',').filter(Boolean), w: 3.5 });
+  if (plants) for (const r of plants.rows) items.push({ k: 'Plant', label: r[4], sub: `${Math.round(r[2]).toLocaleString()} MW · ${fuelLabel(r[3])}`, pt: [r[0], r[1]], w: 1 + Math.min(1.5, r[2] / 1500) });
+  for (const it of items) it.n = it.label.toLowerCase();
+  return items;
+}
+function search(q) {
+  q = q.trim().toLowerCase(); if (!q) return [];
+  const out = [];
+  for (const it of palItems) { const i = it.n.indexOf(q); if (i < 0) continue; out.push([(i === 0 ? 3 : /[\s,(.-]/.test(it.n[i - 1]) ? 2 : 0.5) + it.w * 0.4, it]); }
+  return out.sort((a, b) => b[0] - a[0]).slice(0, 12).map((x) => x[1]);
+}
+function renderPalette() {
+  const q = $('#palette-q').value.trim();
+  const list = palRes.slice();
+  if (q.length >= 3) list.push({ k: 'Place', label: `Find “${q}” on OpenStreetMap`, sub: 'cities, towns and addresses', geo: q });
+  palSel = Math.min(palSel, Math.max(0, list.length - 1));
+  $('#palette-res').innerHTML = list.length ? list.map((it, i) => `<li role="option" id="pal-${i}" aria-selected="${i === palSel}" data-i="${i}"><span class="kind k-${it.k.toLowerCase()}">${it.k}</span><b>${P.esc(it.label)}</b>${it.sub ? `<small>${P.esc(it.sub)}</small>` : ''}</li>`).join('') : `<li class="hint">${q ? 'Nothing local matches yet.' : 'Type a county, state, city, utility or power plant.'}</li>`;
+  $('#palette-q').setAttribute('aria-activedescendant', list.length ? `pal-${palSel}` : '');
+  $('#palette-res')._list = list;
+}
+async function openPalette() {
+  $('#palette').hidden = false; $('#palette-q').value = ''; palRes = []; palSel = 0;
+  palItems = buildIndex(); renderPalette(); $('#palette-q').focus();
+  if (!counties) { await ensureCounties(); palItems = buildIndex(); palRes = search($('#palette-q').value); renderPalette(); }
+}
+function closePalette() { $('#palette').hidden = true; }
+async function choose(it) {
+  if (!it) return;
+  if (it.geo) {
+    $('#palette-res').innerHTML = '<li class="hint">Asking OpenStreetMap…</li>';
+    try {
+      const r = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=us&limit=6&q=${encodeURIComponent(it.geo)}`, { headers: { Accept: 'application/json' } });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      palRes = (await r.json()).map((p) => ({ k: 'Place', label: p.display_name.split(',').slice(0, 3).join(','), sub: (p.type || '').replace(/_/g, ' '), b: [+p.boundingbox[2], +p.boundingbox[0], +p.boundingbox[3], +p.boundingbox[1]] }));
+      setStatus('nominatim', 'ok', `${palRes.length} places for “${it.geo}”`);
+    } catch (e) { palRes = []; setStatus('nominatim', 'error', String(e.message || e)); }
+    palSel = 0; renderPalette(); if (!palRes.length) $('#palette-res').insertAdjacentHTML('afterbegin', '<li class="hint">No place found.</li>');
+    return;
+  }
+  closePalette(); closeSheets();
+  if (currentTab !== 'map' && currentTab !== 'fly') showTab('map');
+  if (it.pt) gm.map.flyTo({ center: it.pt, zoom: 12.5, pitch: 55, duration: 1800 });
+  else if (it.fips) focusCounty(it.fips);
+  else if (it.b) fitBox(it.b, it.k === 'Place' ? 13 : 7.5);
+  else if (it.fipsList && counties) fitBox(unionBbox(it.fipsList.map((f) => counties.byFips.get(f)?.bbox)), 9);
+}
+$('#search-btn').addEventListener('click', openPalette);
+$('#palette').addEventListener('click', (e) => { if (e.target.id === 'palette') closePalette(); const li = e.target.closest('li[data-i]'); if (li) choose($('#palette-res')._list[+li.dataset.i]); });
+$('#palette-q').addEventListener('input', () => { palRes = search($('#palette-q').value); palSel = 0; renderPalette(); });
+$('#palette-q').addEventListener('keydown', (e) => {
+  const list = $('#palette-res')._list || [];
+  if (e.key === 'ArrowDown') { palSel = Math.min(list.length - 1, palSel + 1); renderPalette(); e.preventDefault(); }
+  else if (e.key === 'ArrowUp') { palSel = Math.max(0, palSel - 1); renderPalette(); e.preventDefault(); }
+  else if (e.key === 'Enter') { choose(list[palSel]); e.preventDefault(); }
+  else if (e.key === 'Escape') closePalette();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === '/' && !/input|textarea|select/i.test(document.activeElement?.tagName || '') && $('#palette').hidden) { e.preventDefault(); openPalette(); }
+  else if (e.key === 'Escape' && !$('#palette').hidden) closePalette();
+});
 
 // ----------------------------------------------------------------- scenes
 document.querySelectorAll('.scene').forEach((b) => b.addEventListener('click', () => {
@@ -248,6 +443,8 @@ function computeLocal() {
     local.maxKv = Math.max(0, ...f.map((x) => x.properties.kv || 0)) || null;
   }
   local.alerts = st.nws?.data ? st.nws.data.geo.features.filter((a) => pointInGeom(here, a.geometry)).map((a) => a.properties) : [];
+  if (counties) local.county = countyAt(counties, g.lon, g.lat);
+  if (statesGeo) { const sf = statesGeo.features.find((f) => pointInGeom(here, f.geometry)); local.state = sf ? sf.properties.name : null; local.ic = interconnectionFor(local.state, g.lon, g.lat); enf.ic = local.ic; }
 }
 
 // ----------------------------------------------------------------- geometry helpers
@@ -603,8 +800,9 @@ function ensureSourcesPage() { const r = $('#view-sources'); if (!r.firstChild) 
 function dismissBoot() { const b = document.getElementById('boot'); if (!b || b.classList.contains('gone')) return; b.classList.add('gone'); setTimeout(() => b.remove(), 900); }
 setTimeout(dismissBoot, 5000);
 buildLayerRail();
-SRC.SOURCES.forEach((s) => { if (!st.status[s.id]) st.status[s.id] = { state: 'idle' }; });
+SRC.SOURCES.forEach((s) => { if (!s.onDemand && !st.status[s.id]) st.status[s.id] = { state: 'idle' }; });
 P.renderDemand($('#p-demand'), st); P.renderMix($('#p-mix'), st); P.renderIso($('#p-iso'), st); P.renderSpace($('#p-space'), st); P.renderHazard($('#p-hazard'), st, null); P.renderAuditorMini($('#p-auditor-mini'), null);
+P.renderFrequency($('#p-freq'), st, enf); P.renderOutages($('#p-outages'), st, null, local); scheduleNow();
 showTab(location.hash.slice(1) || 'map');
 bootMap();
 bootGps();
@@ -616,4 +814,6 @@ every(120, () => pollQuakes());
 every(600, () => pollFires());
 every(600, () => pollEia());
 every(300, () => pollRelay());
+every(10, () => pollErcot());
+every(60, () => pollOutages());
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});

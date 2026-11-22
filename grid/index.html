@@ -52,6 +52,7 @@
     </nav>
     <div class="status">
       <span class="clock mono" id="clock" aria-live="off">--:--:-- UTC</span>
+      <button class="pill search-pill" id="search-btn" title="Search counties, states, cities, utilities and power plants (press /)" aria-label="Search">⌕ <span>Search</span></button>
       <button class="pill" id="live-pill" data-tab="sources" title="Sources responding now">LIVE <b id="live-count">0/0</b></button>
       <span class="pill gps" id="gps-chip" title="Your position stays on this device">GPS · locating</span>
       <span class="pill audit-pill" id="audit-pill" data-state="idle" title="Certified spectral monitor">AUDITOR · starting</span>
@@ -63,6 +64,7 @@
     <section class="view view-map" id="view-map" aria-label="Map">
       <div id="map" class="map" role="region" aria-label="Interactive map of the U.S. power grid"></div>
       <div class="map-vignette" aria-hidden="true"></div>
+      <nav class="now" id="now" aria-label="At a glance: tap a number for its panel"></nav>
 
       <aside class="rail rail-left glass" id="rail-left" aria-label="Scenes and layers">
         <div class="rail-head"><span class="eyebrow">Scene</span><button class="icon-btn collapse" data-collapse="rail-left" aria-label="Collapse layers">‹</button></div>
@@ -84,6 +86,8 @@
 
       <aside class="rail rail-right" id="rail-right" aria-label="Live panels">
         <div class="panel glass" id="p-demand"></div>
+        <div class="panel glass" id="p-freq"></div>
+        <div class="panel glass" id="p-outages"></div>
         <div class="panel glass" id="p-mix"></div>
         <div class="panel glass" id="p-iso"></div>
         <div class="panel glass" id="p-hazard"></div>
@@ -114,6 +118,13 @@
     <section class="view page" id="view-formalism" aria-label="Formalism" hidden></section>
     <section class="view page" id="view-sources" aria-label="Sources and settings" hidden></section>
   </main>
+</div>
+<div class="palette" id="palette" hidden>
+  <div class="palette-box glass" role="dialog" aria-modal="true" aria-label="Search">
+    <input id="palette-q" type="search" placeholder="County, state, city, utility or power plant" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="true" aria-controls="palette-res" aria-autocomplete="list">
+    <ul id="palette-res" role="listbox"></ul>
+    <div class="palette-foot mono"><span>↑↓ choose · ↵ open · Esc close</span><span>Places: © OpenStreetMap Nominatim</span></div>
+  </div>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <noscript><div class="noscript">Grid is a live instrument and needs JavaScript. The data sources it reads are listed in <a href="README.md">README.md</a>.</div></noscript>
