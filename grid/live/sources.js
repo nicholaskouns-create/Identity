@@ -15,7 +15,7 @@ export const RELAY_URL_DEFAULT = 'https://raw.githubusercontent.com/nicholaskoun
 
 const settingsKey = 'kkp-grid-settings-v1';
 export function loadSettings() {
-  try { return { relayUrl: RELAY_URL_DEFAULT, eiaKey: '', ...JSON.parse(localStorage.getItem(settingsKey) || '{}') }; }
+  try { const s = { relayUrl: RELAY_URL_DEFAULT, eiaKey: '', ...JSON.parse(localStorage.getItem(settingsKey) || '{}') }; s.eiaKey = String(s.eiaKey || '').trim(); return s; }
   catch { return { relayUrl: RELAY_URL_DEFAULT, eiaKey: '' }; }
 }
 export function saveSettings(s) { try { localStorage.setItem(settingsKey, JSON.stringify(s)); } catch { /* private mode */ } }
