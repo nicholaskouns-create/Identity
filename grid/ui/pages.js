@@ -166,16 +166,18 @@ export function buildSources(root, h) {
       <label class="field"><span class="eyebrow">Relay snapshot URL</span><input id="set-relay" spellcheck="false"></label></div>
     <div class="card w6"><h3>Instrument controls</h3><div class="sub"><span>Browser capabilities, all opt-in</span></div>
       <div class="rail-actions">
-        <button class="btn" id="set-notify">🔔 Alerts: notify me on auditor refusal, Kp ≥ 6, or a new extreme warning at my position</button>
+        <button class="btn accent" id="set-alerts">⚑ Background alerts for your counties: outages, power back, severe weather. Works with Grid closed</button>
+        <button class="btn" id="set-notify">🔔 While Grid is open: notify me on auditor refusal, Kp ≥ 6, or a new extreme warning at my position</button>
         <button class="btn" id="set-wall">▣ Wall mode: full screen, keep the screen awake</button>
         <button class="btn" id="set-install" hidden>⤓ Install Grid as an app (works offline)</button></div>
       <p class="note" id="set-status"></p>
-      <p class="note">Privacy: your GPS position stays on this device. The only place it leaves is the bounding box of an OpenStreetMap Overpass query when you ask for the local grid. The EIA key is sent only to api.eia.gov.</p></div>
+      <p class="note">Privacy: your GPS position stays on this device. The only place it leaves is the bounding box of an OpenStreetMap Overpass query when you ask for the local grid. The EIA key is sent only to api.eia.gov. Background alerts keep this device’s push address, the counties you chose and your alert choices on Grid’s server, nothing else; turning them off deletes them. The medical-equipment setting never leaves this device.</p></div>
     <div class="card w12" id="src-doors"><h3>Doorways</h3><div class="sub"><span>Where Grid is linked from · survey of every published page</span></div><p class="note">Reading the survey…</p></div>
   </div></div>`;
   fetch('data/surfaces.json').then((r) => (r.ok ? r.json() : null)).then((d) => renderDoors(root.querySelector('#src-doors'), d)).catch((e) => { console.error('doorway survey', e); renderDoors(root.querySelector('#src-doors'), null); });
   root.querySelector('#set-save').addEventListener('click', () => h.saveKey(root.querySelector('#set-eia').value.trim(), root.querySelector('#set-relay').value.trim()));
   root.querySelector('#set-clear').addEventListener('click', () => h.saveKey('', root.querySelector('#set-relay').value.trim()));
+  root.querySelector('#set-alerts').addEventListener('click', () => h.openAlerts());
   root.querySelector('#set-notify').addEventListener('click', () => h.enableNotify());
   root.querySelector('#set-wall').addEventListener('click', () => h.wallMode());
   root.querySelector('#set-install').addEventListener('click', () => h.install());

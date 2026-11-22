@@ -11,7 +11,8 @@ Grid reads public publishers directly where they allow browser access, and throu
 
 | Tab | What it shows |
 |---|---|
-| **At a glance** | A strip across the top of the map: national load, Texas grid frequency, customers without power, severe-weather warnings, the geomagnetic Kp index and the auditor's state. Tapping any of them opens its panel; tapping the outage figure also frames every affected county on the map. |
+| **At a glance** | A strip across the top of the map: national load, Texas grid frequency, customers without power (red when your own county is out), whether your alerts are on, severe-weather warnings, the geomagnetic Kp index and the auditor's state. Tapping any of them opens its panel; tapping the outage figure also frames every affected county on the map. |
+| **Alerts** | A notification on your phone or computer when the power goes out in a county you choose, when it comes back, and when the National Weather Service issues a severe or extreme warning there. It works with Grid closed. See [Alerts](#alerts). |
 | **Search** | Press **/** or tap ⌕. It searches all 3,231 counties, every state, every utility now reporting outages and all 9,833 power plants on the device as you type, and cities and addresses through OpenStreetMap when you ask. Choosing a result flies there. |
 | **Map** | Night-light, satellite and terrain scenes on a globe. Layers: power outages by county (ODIN), transmission lines (HIFLD), the local grid around you (OpenStreetMap), 9,833 generating plants and a 3D generation skyline, severe-weather warnings, wildfires and perimeters, earthquakes, the auroral oval, last night's VIIRS Day/Night Band, the day–night terminator. Side panels show Lower-48 demand, fuel mix, operator load, space weather, the hazard exposure at your position, and the auditor. |
 | **Fly** | The map as a flight instrument, using the same imagery registry as the City flight simulators. W/S pitch, A/D roll, Q/E yaw, Z/X throttle, **P** flies the nearest transmission line, Esc exits. The HUD shows heading, ground speed, altitude and height above terrain, and position. It also names the nearest plant and the nearest line, and flags any active weather warning over the aircraft. |
@@ -41,6 +42,13 @@ When a source is down, its panel says so. Nothing is filled in.
 - **Coverage.** ODIN covers the utilities that report to it: about 160 utility feeds, which the panel counts live. Utilities outside ODIN do not appear, so an empty county is not proof that the power is on.
 - **Your county.** Grid finds your county from your GPS position and tells you when it has an outage.
 
+**Who depends on the power.** The HHS emPOWER Program publishes, for every county, how many Medicare beneficiaries have claims for electricity-dependent medical equipment: ventilators, oxygen concentrators, home dialysis, enteral feeding and infusion pumps, powered wheelchairs and beds, cardiac assist devices.
+- **On the map.** Each outage county's popup shows that count beside the customers out, with how many of those people also rely on facility dialysis, oxygen service, home health or hospice at home.
+- **In the panel.** The panel adds up the people who rely on powered equipment in every county with 1,000 or more customers out, and marks each county in the list with ⚕ and its count.
+- **Limits.** The counts are Medicare only (Fee-for-Service and Medicare Advantage), so people on other insurance are not counted. To protect privacy HHS shows any ZIP Code with 1 to 10 people as 11 before summing counties, so small counts run slightly high. HHS refreshes the data monthly, and Grid shows its month.
+
+**Generators and carbon monoxide.** When your county is out, the panel shows the CDC and CPSC guidance with the outage: run a generator outdoors only, at least 20 feet from doors, windows and vents, never in a home, garage, basement or carport; keep battery-powered CO alarms on; and get outside and call 911 if an alarm sounds or anyone has symptoms. Every outage popup and every outage notification carries the short form.
+
 **Grid frequency, live.** ERCOT publishes the Texas Interconnection's frequency, time error and inertia on its real-time conditions page. The panel shows:
 - the frequency;
 - its deviation from 60 Hz against the ±30 mHz normal band and the ±90 mHz ACE limit;
@@ -56,10 +64,43 @@ The Eastern and Western Interconnections do not publish a live public frequency;
 - **Absolute accuracy.** The device's audio clock adds a fixed offset, typically under ±3 mHz.
 - **Privacy.** The sound never leaves the device.
 
-**The edge function.** ERCOT and ODIN do not allow browsers to read them directly, so Grid reads both through `grid-live`, a Supabase Edge Function in the City's project. Its source is `tools/grid/supabase/grid-live/index.ts`, with tests in `tools/grid/test_grid_live.mjs`.
-- **Fixed upstreams.** Its two sources are fixed in the code, and no request parameter becomes a URL.
-- **Caching.** Each instance caches ERCOT for 8 seconds and ODIN for 60, so the publishers see one read per interval however many people have Grid open.
+**The edge function.** ERCOT and ODIN do not allow browsers to read them directly, and emPOWER's county table is large, so Grid reads all three through `grid-live`, a Supabase Edge Function in the City's project. Its source is `tools/grid/supabase/grid-live/index.ts`, with tests in `tools/grid/test_grid_live.mjs`.
+- **Fixed upstreams.** Its three sources are fixed in the code, and no request parameter becomes a URL.
+- **Caching.** Each instance caches ERCOT for 8 seconds, ODIN for 60 and emPOWER for 12 hours, so the publishers see one read per interval however many people have Grid open. Grid also keeps the emPOWER table on the device for 12 hours.
 - **Freshness.** Grid polls it every 10 seconds for frequency and every 60 for outages. The panels show the age of each reading.
+
+## Alerts
+
+Grid can tell you when the power goes out where you or your family live, with Grid closed.
+
+**What you get.**
+- **Power out.** A notification when the customers out in one of your counties reaches your threshold: any outage at all, or 10, 100, 1,000 or 10,000 customers. It names the utility and its restoration estimate, and carries the generator warning.
+- **Power back.** A notification once the outage has cleared, meaning reported outages have stayed under half your threshold for two checks in a row. It reminds you to report it to your utility if your own power is still out.
+- **Severe weather.** A notification when the National Weather Service issues a severe or extreme warning for one of your counties: tornado, severe thunderstorm, flash flood, hurricane, winter storm, ice storm, extreme heat or cold, high wind, and the like. Watches, advisories and statements stay in the app. An extended or continued warning does not notify you twice.
+- **Counties.** Up to five per device: your own, found from your position, and any others you add by county or by town.
+- **Tapping a notification** opens Grid at that county.
+
+**Turning it on.** Open **Alerts** (the ⚑ chip, or **Alert me** in the outage panel), choose the counties, and tap **Turn on alerts**. **Send a test alert** confirms delivery.
+- **iPhone and iPad.** Alerts work when Grid is on the Home Screen: in Safari tap Share, then **Add to Home Screen**, then open Grid from the new icon and turn alerts on there. iOS and iPadOS 16.4 or later.
+- **Android, Windows, macOS and Linux.** Chrome, Edge, Firefox and Samsung Internet work directly. Safari on macOS 13 or later does too.
+
+**Powered medical equipment at home.** A switch in the Alerts panel for households where someone relies on electricity for medical equipment.
+- **What it changes.** It sets alerts to any outage at all, with power-back notices on.
+- **The plan.** It shows a checklist: tell the utility (medical lists bring warnings before planned shutoffs, but no promise of faster restoration); know battery hours; keep backup oxygen; write down settings and numbers; check how long cold-stored medicines keep; know the dialysis center's emergency plan; decide where to go if the outage outlasts the batteries; and put CO alarms near sleeping areas.
+- **When your county is out.** The outage panel shows what to do now, with the generator warning.
+- **Privacy.** The switch and the checklist are kept only on the device. Grid's server never learns that anyone in the household uses medical equipment.
+
+**How it works.** Standard Web Push, with no app-store account and no third-party push service of Grid's own.
+- **The service.** `grid-alerts`, a Supabase Edge Function in the City's project (`tools/grid/supabase/grid-alerts`). Every five minutes a `pg_cron` job asks it to read ODIN and the Weather Service's active warnings, compare them with each subscriber's counties, and send what is due through the browser's own push service (Google, Apple, Mozilla or Microsoft).
+- **Encryption and signing.** Messages are encrypted to the device (RFC 8291) and signed with Grid's application server key (VAPID, RFC 8292), on WebCrypto with no third-party code. `node tools/grid/test_grid_alerts.mjs` checks the encryption byte for byte against the `http_ece` reference, checks the signatures with an independent verifier, and runs the whole service against recorded-format fixtures.
+- **Fail-safe rules.** If ODIN cannot be read, nothing is announced as restored. If a push service is briefly down, the notice goes out on the next check instead of being lost. Subscriptions a push service reports gone are deleted.
+- **Only push services are contacted.** A subscription is accepted only if its address belongs to a browser push service, so the alert sweep can never be pointed at any other address.
+
+**What is stored, and where.**
+- **On Grid's server**, for each device with alerts on: the push address and its two public keys, the counties, the threshold, the two on/off choices, and a record of what has been sent so nothing repeats. No name, email, IP address, precise location or health information. Turning alerts off deletes the record.
+- **On the device:** your choices, the medical-equipment switch and the checklist.
+
+**What alerts cannot do.** ODIN covers the utilities that report to it, so an outage at a utility outside ODIN never produces a notification. Utility feeds and push delivery can each add minutes. Grid is an independent public-data tool, not your utility or an emergency service: report outages to your utility, and in an emergency call 911.
 
 ## Sources
 
@@ -72,6 +113,8 @@ The Eastern and Western Interconnections do not publish a live public frequency;
 | Active power outages by county | ODIN (DOE / ORNL) public feed, via `grid-live` | ◆ | 1 min |
 | Real-time frequency, time error, inertia, demand, wind, solar (Texas) | ERCOT Real-Time System Conditions, via `grid-live` | ◆ | 10 s |
 | Your outlet's frequency (on request) | This device's microphone; nothing leaves it | ● | 0.1 s |
+| Medicare beneficiaries who rely on electricity-dependent medical equipment, by county | HHS emPOWER Program (CMS, HHS) public REST service, via `grid-live` | ◆ | monthly (HHS); 12 h cache |
+| Background alerts for your counties (on request) | `grid-alerts` over Web Push, reading ODIN and the NWS | ● | 5 min |
 | County boundaries (1:10m) | U.S. Census Bureau via us-atlas 3.0.1 | ■ | fixed |
 | Place search (on request) | OpenStreetMap Nominatim | ● | on request |
 | Severe and extreme weather alerts | National Weather Service API | ● | 2 min |
@@ -88,7 +131,7 @@ The Eastern and Western Interconnections do not publish a live public frequency;
 | 9,833 U.S. generating plants | WRI Global Power Plant Database v1.3.0 (EIA-860) | ■ | fixed |
 | IEEE 14-bus and 118-bus systems | MATPOWER case files via PYPOWER 5.1.21 | ■ | fixed |
 
-Privacy: your GPS position stays on your device. The only time any of it leaves is as the bounding box of an Overpass query, and only when you ask for the local grid. The EIA key is stored in your browser and sent only to `api.eia.gov`.
+Privacy: your GPS position stays on your device. The only time any of it leaves is as the bounding box of an Overpass query, and only when you ask for the local grid. The EIA key is stored in your browser and sent only to `api.eia.gov`. With alerts on, Grid's server keeps your device's push address, your counties and your alert choices, and nothing else; see [Alerts](#alerts).
 
 ## The relay
 
@@ -230,9 +273,13 @@ python3 tools/grid/acceptance.py --trials14 240 --trials118 40 --seed 47
 # browser engine agrees with the reference, trial by trial
 node --test grid/engine/monitor.test.mjs
 
-# outlet meter on synthetic hum; edge-function parsers on ERCOT and ODIN fixtures
+# outlet meter on synthetic hum; edge-function parsers on ERCOT, ODIN and emPOWER fixtures
 node grid/engine/enf.test.mjs
 node tools/grid/test_grid_live.mjs
+
+# alert service: encryption against http_ece, VAPID against an independent verifier, then end to end
+npm install --prefix /tmp/wpt web-push@3.6.7 http_ece@1.2.0
+node tools/grid/test_grid_alerts.mjs /tmp/wpt/node_modules
 
 # share card and cover art (headless Chrome)
 python3 tools/grid/render_share_card.py --chrome /usr/bin/google-chrome
@@ -252,14 +299,17 @@ grid/
   index.html, app.js, grid.css     the instrument
   map/       map.js (scenes, layers, terminator, GPS), fly.js (flight model, HUD, line patrol)
   live/      sources.js (publishers, parsers, evidence classes), pulse.js (grid-live reads, interconnections),
-             counties.js (county geometry and lookup), enf.js + enf-worklet.js (outlet frequency meter)
+             counties.js (county geometry and lookup), enf.js + enf-worklet.js (outlet frequency meter),
+             alerts.js (background alerts, the medical-equipment plan)
   engine/    linalg, rational, certificate, monitor, e47, prng, worker, pins
   ui/        charts, panels, pages
   data/      topologies, certificates, CM2 surveys, plants, states, BA metadata, reference run, doorway survey
   lib/       MapLibre GL JS 6.19.0 (vendored)
   fonts/     Newsreader, IBM Plex Sans and Mono, DejaVu Sans Mono (formula glyphs), with licences
   sw.js, manifest.webmanifest, door.js, og-grid.png, cover-grid.jpg, icons/
-tools/grid/supabase/grid-live/index.ts   the edge function for ERCOT and ODIN
+tools/grid/supabase/grid-live/index.ts   the edge function for ERCOT, ODIN and HHS emPOWER
+tools/grid/supabase/grid-alerts/         the alert service: index.ts (requests and the sweep), logic.ts (what is due), webpush.ts (RFC 8291 + VAPID)
+tools/grid/supabase/migrations/          its two tables and the five-minute schedule
 tools/grid/  build_grid_data.py, acceptance.py, prng.py, relay.py, render_share_card.py, share_card.html, install_door.py
 .github/workflows/grid-live.yml
 ```

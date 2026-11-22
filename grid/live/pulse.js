@@ -3,7 +3,7 @@
 // block browser reads, so the function reads them server-side, caches briefly and adds CORS.
 export const LIVE_URL = 'https://gpkjvihkyectnenvnbng.supabase.co/functions/v1/grid-live';
 // The City project's public anon key: it names the project and grants only public access.
-const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdwa2p2aWhreWVjdG5lbnZuYm5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNzYwOTYsImV4cCI6MjEwMDc1MjA5Nn0.WLsj1N9akCxpNVAIPj43fO9InCTHRuNz1WTPDNyuOVM';
+export const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdwa2p2aWhreWVjdG5lbnZuYm5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNzYwOTYsImV4cCI6MjEwMDc1MjA5Nn0.WLsj1N9akCxpNVAIPj43fO9InCTHRuNz1WTPDNyuOVM';
 
 export async function fetchLive(src, { timeoutMs = 20000 } = {}) {
   const ctl = new AbortController();

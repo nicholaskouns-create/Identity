@@ -54,4 +54,27 @@ assert.deepEqual(o.counties[0], ['06037', 138, 3, 'SOUTHERN CALIFORNIA EDISON CO
 assert.equal(o.utilities[0][1], 'SOUTHERN CALIFORNIA EDISON CO'); assert.equal(o.utilities[0][2], 133); assert.equal(o.utilities[0][5], '06037');
 assert.equal(o.feeds, 2); assert.equal(o.feedErrors, 1); assert.equal(o.newestFeed, '2026-11-22T14:43:59.754Z');
 assert.equal(G.aggregateOdin([], null).customers, 0);
+
+// HHS emPOWER: the first four rows the public service returns (copied from a live query), a recoded FIPS,
+// and junk that must be dropped.
+const A = (o) => ({ attributes: o });
+const emp = G.compactEmpower([
+  { features: [
+    A({ FIPS_Code: '72085', FIPS_Code_recode: '72085', Medicare_Benes: 8426, Power_Dependent_Devices_DME: 406, Facility_ESRD_Dialysis_Any_DME: 11, O2_Services_Any_DME: 22, Home_Health_Services_Any_DME: 48, AtHome_Hospice_Any_DME: 11 }),
+    A({ FIPS_Code: '25025', FIPS_Code_recode: '25025', Medicare_Benes: 115088, Power_Dependent_Devices_DME: 3402, Facility_ESRD_Dialysis_Any_DME: 242, O2_Services_Any_DME: 465, Home_Health_Services_Any_DME: 695, AtHome_Hospice_Any_DME: 187 }),
+    A({ FIPS_Code: '72115', FIPS_Code_recode: '72115', Medicare_Benes: 6514, Power_Dependent_Devices_DME: 292, Facility_ESRD_Dialysis_Any_DME: 11, O2_Services_Any_DME: 11, Home_Health_Services_Any_DME: 22, AtHome_Hospice_Any_DME: 11 }),
+  ], exceededTransferLimit: true },
+  { features: [
+    A({ FIPS_Code: '78030', FIPS_Code_recode: '78030', Medicare_Benes: 10062, Power_Dependent_Devices_DME: 56, Facility_ESRD_Dialysis_Any_DME: 11, O2_Services_Any_DME: 11, Home_Health_Services_Any_DME: 11, AtHome_Hospice_Any_DME: 11 }),
+    A({ FIPS_Code: '9110', FIPS_Code_recode: '9003', Medicare_Benes: 200000, Power_Dependent_Devices_DME: 5000, Facility_ESRD_Dialysis_Any_DME: null, O2_Services_Any_DME: -1, Home_Health_Services_Any_DME: 'n/a', AtHome_Hospice_Any_DME: 9 }),
+    A({ FIPS_Code: 'XX', Medicare_Benes: 5 }),
+  ] },
+], { editingInfo: { lastEditDate: Date.UTC(2026, 10, 9) } });
+assert.equal(emp.nCounties, 5);
+assert.deepEqual(emp.fields, ['fips', 'medicare', 'electricityDependent', 'dialysis', 'oxygen', 'homeHealth', 'hospice']);
+assert.deepEqual(emp.rows[0], ['09110', 200000, 5000, null, null, null, 9]);
+assert.deepEqual(emp.rows.find((r) => r[0] === '25025'), ['25025', 115088, 3402, 242, 465, 695, 187]);
+assert.equal(emp.aliases['09003'], '09110');
+assert.equal(emp.medicare, 8426 + 115088 + 6514 + 10062 + 200000); assert.equal(emp.electricityDependent, 406 + 3402 + 292 + 56 + 5000);
+assert.equal(emp.asOf, '2026-11-09T00:00:00.000Z');
 console.log('grid-live parsers: all assertions pass');

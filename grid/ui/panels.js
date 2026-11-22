@@ -2,6 +2,7 @@
 import { EVIDENCE, gScale } from '../live/sources.js';
 import { FUEL } from '../map/map.js';
 import { sparkline, demandChart, kpBars } from './charts.js';
+import { THRESHOLDS, PLAN, MAX_PLACES } from '../live/alerts.js';
 
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 export const ev = (k, extra = '') => `<span class="ev ev-${k}" title="${esc(EVIDENCE[k]?.label || k)}: ${esc(EVIDENCE[k]?.note || '')}">${EVIDENCE[k]?.glyph || '?'} ${esc(EVIDENCE[k]?.label || k)}${extra ? ' · ' + esc(extra) : ''}</span>`;
@@ -147,7 +148,8 @@ export function renderLocal(el, st, local) {
 
 // ------------------------------------------------------------------ frequency, outages, at-a-glance
 const titleCase = (s) => String(s || '').toLowerCase().replace(/\b([a-z])/g, (m) => m.toUpperCase()).replace(/(?!^)\b(Of|And|The|De)\b/g, (m) => m.toLowerCase()).replace(/\bCo\b/g, 'Co.').replace(/\bInc\b/g, 'Inc.').replace(/\bAssn\b/g, 'Assn.').replace(/\bLlc\b/g, 'LLC');
-export const utilName = titleCase;
+// ODIN sends most names in capitals; names already in mixed case ("NV Energy") are left as written.
+export const utilName = (s) => (/[a-z]/.test(String(s || '')) ? String(s) : titleCase(s));
 const hhmm = (t) => { const d = new Date(t); return Number.isFinite(d.getTime()) ? d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—'; };
 const compact = (n) => (n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e4 ? Math.round(n / 1e3) + 'k' : n >= 1e3 ? (n / 1e3).toFixed(1) + 'k' : String(n));
 export function freqBand(f) {
@@ -199,21 +201,71 @@ export function enfBodyHtml(enf) {
     <p class="note">${ev('LIVE', 'this device')} Changes are exact to the spread shown; the absolute value also carries your device clock’s offset, typically under ±3 mHz.</p>`;
 }
 
-export function renderOutages(el, st, names, local) {
+// CDC and CPSC guidance, shown wherever an outage touches the person reading.
+export const CO_HTML = `<div class="co" role="note"><b>Generators and carbon monoxide</b><span>Run a generator outdoors only, at least 20 feet from doors, windows and vents: never in a home, garage, basement or carport, even with the doors open. Keep battery-powered CO alarms on. If one sounds, or anyone has a headache, dizziness, weakness, nausea or confusion, get everyone outside and call 911.</span><small>CDC · CPSC</small></div>`;
+const monthYear = (t) => { const d = new Date(t); return Number.isFinite(d.getTime()) ? d.toLocaleDateString([], { month: 'short', year: 'numeric' }) : 'this month'; };
+
+// x: { emp(fips) → emPOWER row | null, empower: meta, home: { medical } }
+export function renderOutages(el, st, names, local, x = {}) {
   const o = st.outages?.data;
   const head = `<div class="sub"><span>Customers without power</span>${ev('RELAY', 'ODIN · DOE/ORNL')}</div>`;
   if (!o) { el.innerHTML = `${head}<h2>${st.outages?.error ? 'Outage feed unavailable' : 'Reading outages…'}</h2>${st.outages?.error ? `<p class="note">${esc(st.outages.error)}</p>` : ''}`; return; }
   const nm = (f) => (names && names.get(f)) || f;
-  const rows = o.counties.slice(0, 6).map((r) => `<li><button class="outrow" data-fips="${r[0]}"><span class="n">${esc(nm(r[0]))}</span><b>${r[1].toLocaleString()}</b><small>${esc(titleCase(r[3]))}${r[5] ? ' · since ' + hhmm(r[5]) : ''}${r[6] ? ' · back by ' + hhmm(r[6]) : ''}</small></button></li>`).join('');
+  const dep = (f) => { const r = x.emp && x.emp(f); return r && Number.isFinite(r[2]) ? r[2] : null; };
+  const rows = o.counties.slice(0, 6).map((r) => { const d = dep(r[0]); return `<li><button class="outrow" data-fips="${r[0]}"><span class="n">${esc(nm(r[0]))}</span><b>${r[1].toLocaleString()}</b><small>${d ? `<span class="dep" title="Medicare beneficiaries here who rely on electricity-dependent medical equipment (HHS emPOWER)">⚕ ${d.toLocaleString()}</span> · ` : ''}${esc(utilName(r[3]))}${r[5] ? ' · since ' + hhmm(r[5]) : ''}${r[6] ? ' · back by ' + hhmm(r[6]) : ''}</small></button></li>`; }).join('');
   const mine = local?.county ? o.counties.find((r) => r[0] === local.county.id) : null;
-  const here = local?.county ? `<p class="here">${mine ? `<b>${esc(nm(mine[0]))}</b> · ${mine[1].toLocaleString()} customers out · ${esc(titleCase(mine[3]))}${mine[6] ? ` · back by ${hhmm(mine[6])}` : ''}` : `Your county, <b>${esc(local.county.properties.label)}</b>: no outage reported by ODIN utilities.`}</p>` : '';
+  let here = '';
+  if (mine) {
+    here = `<div class="here out" role="alert"><b>Power outage in your county</b> · ${esc(nm(mine[0]))}<br>${mine[1].toLocaleString()} customers out · ${esc(utilName(mine[3]))}${mine[6] ? ` · utility estimate: back by ${hhmm(mine[6])}` : ''}
+      ${x.home?.medical ? '<p class="medline">Powered medical equipment: check battery hours now, switch to backup oxygen if you use a concentrator, and leave early for the place you planned if the outage may outlast the batteries. If a device someone needs to live stops and there is no backup, call 911.</p>' : ''}${CO_HTML}</div>`;
+  } else if (local?.county) {
+    here = `<p class="here">Your county, <b>${esc(local.county.properties.label)}</b>: no outage reported by ODIN utilities.</p>`;
+  }
+  let emp = '';
+  if (x.empower) {
+    let sum = 0, n = 0;
+    for (const r of o.counties) if (r[1] >= 1000) { const d = dep(r[0]); if (d) { sum += d; n++; } }
+    emp = `<p class="emp"><span class="g" aria-hidden="true">⚕</span><span>${n ? `<b>${sum.toLocaleString()}</b> Medicare beneficiaries who rely on electricity-dependent medical equipment live in the ${n} ${n === 1 ? 'county' : 'counties'} with 1,000 or more customers out.` : 'No county has 1,000 or more customers out right now.'} <span class="src">${ev('RELAY', 'HHS emPOWER · ' + monthYear(x.empower.asOf))}</span></span></p>`;
+  }
   el.innerHTML = `${head}
     <div class="row"><div class="big">${compact(o.customers)}<small>out</small></div>
       <div class="kv"><span>Counties</span><b>${o.nCounties.toLocaleString()}</b><span>Utilities</span><b>${o.nUtilities}${o.feeds ? ' / ' + o.feeds : ''}</b><span>Updated</span><b>${ago(o.fetched)}${o.stale ? ' · cached' : ''}</b></div></div>
-    <ol class="outlist">${rows || '<li class="none">No active outages reported right now.</li>'}</ol>
     ${here}
-    <div class="legend"><button class="link-btn" id="out-fit">Show all on the map</button><span>${o.events.toLocaleString()} outage events</span></div>
-    <p class="note">ODIN is the Department of Energy and Oak Ridge National Laboratory’s outage-data network; ${o.feeds || 'about 160'} utility feeds report to it. Utilities outside ODIN do not appear, so an empty county is not proof that the power is on.</p>`;
+    <ol class="outlist">${rows || '<li class="none">No active outages reported right now.</li>'}</ol>
+    ${emp}
+    <div class="legend"><button class="link-btn" id="out-fit">Show all on the map</button><button class="link-btn" id="out-alerts">${x.alertsOn ? 'Alerts are on' : 'Alert me'}</button><span>${o.events.toLocaleString()} outage events</span></div>
+    <p class="note">ODIN is the Department of Energy and Oak Ridge National Laboratory’s outage-data network; ${o.feeds || 'about 160'} utility feeds report to it. Utilities outside ODIN do not appear, so an empty county is not proof that the power is on.${x.empower ? ' HHS emPOWER counts Medicare beneficiaries only, and shows ZIP Codes with 1 to 10 people as 11.' : ''}</p>`;
+}
+
+// Background alerts and the medical-equipment plan. A: { plat, prefs, home, busy, msg, err, lastSweep }
+export function renderAlerts(el, A, local) {
+  const p = A.prefs, plat = A.plat, on = p.on, n = p.places.length, dis = A.busy ? ' disabled' : '';
+  const head = `<div class="sub"><span>Background alerts</span>${ev('LIVE', 'Web Push')}</div>`;
+  let body;
+  if (!plat.push) {
+    body = plat.ios && !plat.standalone
+      ? `<div class="steps"><b>On iPhone and iPad, alerts work from the Home Screen.</b><ol><li>In Safari, tap <b>Share</b> <span class="share-glyph" aria-hidden="true">⎙</span></li><li>Choose <b>Add to Home Screen</b></li><li>Open Grid from the new icon, then turn alerts on here</li></ol><small>Needs iOS or iPadOS 16.4 or later.</small></div>`
+      : `<p class="note">This browser cannot receive notifications in the background. Chrome, Edge, Firefox, Samsung Internet and Safari can.</p>`;
+  } else {
+    const chips = p.places.map((c) => `<span class="place">${esc(c.label)}<button class="x" data-rm="${esc(c.fips)}" aria-label="Stop watching ${esc(c.label)}"${dis}>✕</button></span>`).join('');
+    const here = local?.county && !p.places.some((c) => c.fips === local.county.id) && n < MAX_PLACES
+      ? `<button class="btn small" id="al-here"${dis}>◎ ${esc(local.county.properties.label)}</button>` : '';
+    body = `<div class="places">${chips || '<span class="none">Choose the counties to watch: home, family, work.</span>'}${n < MAX_PLACES ? `<button class="btn small" id="al-add"${dis}>＋ Add a county</button>` : ''}${here}</div>
+      <label class="field-row"><span>Outages</span><select id="al-min"${dis}>${THRESHOLDS.map(([v, l]) => `<option value="${v}"${v === p.minOut ? ' selected' : ''}>${l}</option>`).join('')}</select></label>
+      <label class="toggle"><input type="checkbox" id="al-wx"${p.weather ? ' checked' : ''}${dis}><span>Severe weather warnings (National Weather Service)</span></label>
+      <label class="toggle"><input type="checkbox" id="al-restore"${p.restore ? ' checked' : ''}${dis}><span>Tell me when the power is back</span></label>
+      <div class="al-actions">${on ? `<button class="btn" id="al-test"${dis}>Send a test alert</button><button class="btn danger" id="al-off"${dis}>Turn off</button>` : `<button class="btn accent" id="al-on"${dis}>${A.busy ? 'Turning on…' : 'Turn on alerts'}</button>`}</div>
+      ${plat.permission === 'denied' ? '<p class="note err">Notifications are blocked for this site. Allow them in the browser or phone settings, then turn alerts on.</p>' : ''}`;
+  }
+  const msg = A.msg ? `<p class="note ${A.err ? 'err' : 'okmsg'}" role="status">${esc(A.msg)}</p>` : '';
+  const sweep = A.lastSweep?.at ? `<p class="note">The alert service last checked ODIN and the Weather Service ${ago(A.lastSweep.at)}.</p>` : '';
+  const h = A.home;
+  const plan = h.medical ? `<ol class="plan">${PLAN.map(([k, t]) => `<li><label><input type="checkbox" data-plan="${k}"${h.done?.[k] ? ' checked' : ''}><span>${esc(t)}</span></label></li>`).join('')}</ol>${CO_HTML}<p class="note">If a device someone needs to live stops and there is no backup, call 911.</p>` : '';
+  el.innerHTML = `${head}<h2>${on ? `On for ${n} ${n === 1 ? 'county' : 'counties'}` : 'Know when the power goes out'}</h2>${body}${msg}${sweep}
+    <details class="home"${h.medical ? ' open' : ''}><summary>Powered medical equipment at home</summary>
+      <label class="toggle"><input type="checkbox" id="home-med"${h.medical ? ' checked' : ''}><span>Someone here relies on electricity for medical equipment</span></label>
+      <p class="note">Kept only on this device; Grid’s server never learns it. With it on, alerts cover any outage in your counties, and Grid shows this plan when your county is out.</p>${plan}</details>
+    <p class="note">To send alerts, Grid’s server keeps this device’s push address, the counties and these choices, nothing more; turning alerts off deletes them. Grid is an independent public-data tool, not your utility or an emergency service. Alerts can be late, and outages at utilities that do not report to ODIN never appear. In an emergency, call 911.</p>`;
 }
 
 // At a glance: one tap from each number to its panel.
@@ -228,7 +280,8 @@ export function renderNow(el, st, extra = {}) {
   chips.push(chip('freq', '∿', e ? `${e.frequency.toFixed(3)} Hz` : '— Hz', 'Texas frequency', 'p-freq', e ? 'f-' + freqBand(e.frequency).cls : ''));
   if (extra.enf && extra.enf.running && extra.enf.last?.ok) chips.push(chip('enf', '◉', `${extra.enf.last.f.toFixed(4)} Hz`, 'your outlet', 'p-freq', 'f-' + freqBand(extra.enf.last.f).cls));
   const o = st.outages?.data;
-  chips.push(chip('out', '⚠', o ? `${compact(o.customers)} out` : '— out', o ? `${o.nCounties.toLocaleString()} counties` : 'outages', 'p-outages', o && o.customers >= 50000 ? 'f-warn' : ''));
+  chips.push(chip('out', '⚠', o ? `${compact(o.customers)} out` : '— out', extra.localOut ? 'your county is out' : o ? `${o.nCounties.toLocaleString()} counties` : 'outages', 'p-outages', extra.localOut ? 'f-bad' : o && o.customers >= 50000 ? 'f-warn' : ''));
+  chips.push(chip('alerts', '⚑', extra.alertsOn ? 'On' : 'Off', 'alerts', 'p-alerts', extra.alertsOn ? 'f-on' : ''));
   const nws = st.nws?.data?.all?.length;
   chips.push(chip('wx', '☁', Number.isFinite(nws) ? String(nws) : '—', 'severe weather', 'p-hazard', nws >= 25 ? 'f-warn' : ''));
   const kp = st.space?.data?.kp1m?.at(-1)?.kp;

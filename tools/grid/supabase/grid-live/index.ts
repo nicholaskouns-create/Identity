@@ -1,8 +1,10 @@
 // grid-live · Supabase Edge Function behind Grid (https://nicholaskouns-create.github.io/Identity/grid/).
 //
-// Reads two public sources that browsers cannot read directly, and serves them with CORS:
+// Reads public sources that browsers cannot read directly (or not compactly), and serves them with CORS:
 //   ?src=ercot    ERCOT Real-Time System Conditions: frequency, time error, inertia, demand, wind, solar, DC ties
 //   ?src=outages  ODIN (Outage Data Initiative Nationwide, DOE / ORNL): active outages by county, aggregated
+//   ?src=empower  HHS emPOWER (CMS, HHS): Medicare beneficiaries who rely on electricity-dependent medical
+//                 equipment, by county, from the public REST service, refreshed monthly by HHS
 //
 // The upstream URLs are fixed: no request parameter ever becomes a URL, so this is not an open proxy.
 // Each warm instance caches ERCOT for 8 s and ODIN for 60 s, so the publishers see at most one read per
@@ -12,6 +14,8 @@
 const ERCOT_URL = 'https://www.ercot.com/content/cdr/html/real_time_system_conditions.html';
 const ODIN_URL = 'https://odin.ornl.gov/odi';
 const ODIN_STATUS_URL = 'https://odin.ornl.gov/odi/status';
+const EMPOWER_LAYER = 'https://services2.arcgis.com/ZQ4jTQn6k7VPXEwO/arcgis/rest/services/HHS_emPOWER_REST_Service_Public/FeatureServer/2';
+const EMPOWER_FIELDS = ['FIPS_Code', 'FIPS_Code_recode', 'Medicare_Benes', 'Power_Dependent_Devices_DME', 'Facility_ESRD_Dialysis_Any_DME', 'O2_Services_Any_DME', 'Home_Health_Services_Any_DME', 'AtHome_Hospice_Any_DME'];
 const UA = 'Grid/1.0 (+https://nicholaskouns-create.github.io/Identity/grid/)';
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -157,6 +161,51 @@ export function aggregateOdin(j, status) {
   };
 }
 
+// ------------------------------------------------------------------ HHS emPOWER
+// Layer 2, "Electricity Dependent DME – ALL – CountyLevel": one row per county (states, DC, territories).
+// Counts are Medicare beneficiaries (Fee-for-Service and Medicare Advantage) with claims for
+// electricity-dependent equipment; the four service columns count those who also rely on dialysis at a
+// facility, oxygen services, home health or at-home hospice. HHS shows ZIP Codes with 1 to 10 people as 11
+// and sums ZIP Codes into counties, so small county counts run slightly high.
+const cnt = (x) => { if (x === null || x === undefined || x === '') return null; const v = Number(x); return Number.isFinite(v) && v >= 0 ? Math.round(v) : null; };
+export function compactEmpower(pages, meta) {
+  const rows = [], aliases = {};
+  let medicare = 0, dependent = 0;
+  for (const p of pages) for (const ft of (p && p.features) || []) {
+    const a = ft.attributes || {};
+    const f = String(a.FIPS_Code ?? '').trim().padStart(5, '0');
+    if (!/^\d{5}$/.test(f)) continue;
+    const v = EMPOWER_FIELDS.slice(2).map((k) => cnt(a[k]));
+    rows.push([f, ...v]);
+    medicare += v[0] || 0; dependent += v[1] || 0;
+    const r = String(a.FIPS_Code_recode ?? '').trim().padStart(5, '0');
+    if (/^\d{5}$/.test(r) && r !== f) aliases[r] = f;
+  }
+  rows.sort((x, y) => (x[0] < y[0] ? -1 : 1));
+  const ed = meta && meta.editingInfo && (meta.editingInfo.dataLastEditDate || meta.editingInfo.lastEditDate);
+  return {
+    source: 'HHS emPOWER Program (CMS, HHS)', url: 'https://empowerprogram.hhs.gov/empowermap', service: EMPOWER_LAYER,
+    asOf: ed ? new Date(ed).toISOString() : null,
+    fields: ['fips', 'medicare', 'electricityDependent', 'dialysis', 'oxygen', 'homeHealth', 'hospice'],
+    note: 'Medicare beneficiaries only (Fee-for-Service and Medicare Advantage). HHS shows ZIP Codes with 1 to 10 people as 11 before summing counties, so small counts run slightly high.',
+    nCounties: rows.length, medicare, electricityDependent: dependent, aliases, rows,
+  };
+}
+async function readEmpower() {
+  const q = (off) => `${EMPOWER_LAYER}/query?where=1%3D1&outFields=${EMPOWER_FIELDS.join(',')}&returnGeometry=false&orderByFields=OBJECTID&resultOffset=${off}&resultRecordCount=2000&f=json`;
+  const pages = [];
+  for (let off = 0, i = 0; i < 6; i++, off += 2000) {
+    const j = JSON.parse(await getText(q(off), 25000));
+    if (j.error) throw new Error(`emPOWER: ${j.error.message || j.error.code}`);
+    pages.push(j);
+    if (!j.exceededTransferLimit || !(j.features || []).length) break;
+  }
+  const meta = await getText(`${EMPOWER_LAYER}?f=json`, 15000).then((t) => JSON.parse(t)).catch(() => null);
+  const out = compactEmpower(pages, meta);
+  if (out.nCounties < 1000) throw new Error(`emPOWER returned only ${out.nCounties} counties`);
+  return out;
+}
+
 // ------------------------------------------------------------------ serve
 function json(o, status = 200, maxAge = 0) {
   return new Response(JSON.stringify(o), { status, headers: { ...CORS, 'content-type': 'application/json; charset=utf-8', 'cache-control': `public, max-age=${maxAge}` } });
@@ -178,11 +227,13 @@ async function handle(req) {
       ]);
       return { ...aggregateOdin(raw, Array.isArray(status) ? status : null), fetched: new Date().toISOString() };
     });
+  } else if (src === 'empower') {
+    body = await cached('empower', 12 * 3600e3, async () => ({ ...(await readEmpower()), fetched: new Date().toISOString() }));
   } else {
-    return json({ error: 'unknown src: use ercot or outages' }, 400);
+    return json({ error: 'unknown src: use ercot, outages or empower' }, 400);
   }
-  console.log(JSON.stringify({ src, ms: Date.now() - t0, ok: !body.error, stale: !!body.stale, err: body.error || body.staleReason || null, hz: body.frequency ?? null, counties: body.nCounties ?? null, customers: body.customers ?? null }));
-  return json({ schema: 'KKP-GRID-LIVE-1.0', src, ...body }, body.error ? 502 : 200, src === 'ercot' ? 4 : 30);
+  console.log(JSON.stringify({ src, ms: Date.now() - t0, ok: !body.error, stale: !!body.stale, err: body.error || body.staleReason || null, hz: body.frequency ?? null, counties: body.nCounties ?? null, customers: body.customers ?? null, dependent: body.electricityDependent ?? null, asOf: body.asOf ?? null }));
+  return json({ schema: 'KKP-GRID-LIVE-1.0', src, ...body }, body.error ? 502 : 200, src === 'ercot' ? 4 : src === 'empower' ? 3600 : 30);
 }
 
 if (typeof Deno !== 'undefined') Deno.serve(handle);
