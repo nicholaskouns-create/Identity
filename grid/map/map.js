@@ -48,6 +48,8 @@ function baseStyle(imageryUrl, demUrl, demEncoding, nightUrl, dnbUrl) {
       terminator: { type: 'image', url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', coordinates: [[-180, 85.0511], [180, 85.0511], [180, -85.0511], [-180, -85.0511]] },
       aurora: { type: 'geojson', data: empty() },
       alerts: { type: 'geojson', data: empty() },
+      outages: { type: 'geojson', data: empty(), attribution: 'Outages: ODIN (DOE / ORNL)' },
+      outagept: { type: 'geojson', data: empty() },
       perimeters: { type: 'geojson', data: empty() },
       lines: { type: 'geojson', data: empty(), attribution: 'Transmission lines: HIFLD (via DOE NETL)' },
       osm: { type: 'geojson', data: empty(), attribution: '© OpenStreetMap contributors' },
@@ -71,6 +73,10 @@ function baseStyle(imageryUrl, demUrl, demEncoding, nightUrl, dnbUrl) {
       { id: 'aurora', type: 'heatmap', source: 'aurora', maxzoom: 9, layout: { visibility: 'none' }, paint: {
         'heatmap-weight': ['/', ['get', 'p'], 100], 'heatmap-intensity': 1.2, 'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 2, 14, 6, 40],
         'heatmap-color': ['interpolate', ['linear'], ['heatmap-density'], 0, 'rgba(0,0,0,0)', 0.2, 'rgba(60,220,140,0.25)', 0.5, 'rgba(90,255,170,0.45)', 0.8, 'rgba(200,120,255,0.55)', 1, 'rgba(255,120,200,0.7)'], 'heatmap-opacity': 0.8 } },
+      // Customers out by county (ODIN): colour and opacity on a log scale, 10 to 100,000.
+      { id: 'outage-fill', type: 'fill', source: 'outages', layout: { visibility: 'visible' }, paint: { 'fill-color': ['interpolate', ['linear'], ['ln', ['+', 1, ['get', 'm']]], 0, '#ffd166', 4.6, '#ff9f43', 6.9, '#ff5f7a', 9.2, '#e0306f', 11.5, '#b3124f'], 'fill-opacity': ['interpolate', ['linear'], ['ln', ['+', 1, ['get', 'm']]], 0, 0.26, 6.9, 0.5, 11.5, 0.72] } },
+      { id: 'outage-line', type: 'line', source: 'outages', layout: { visibility: 'visible' }, paint: { 'line-color': '#ffc2cf', 'line-width': ['interpolate', ['linear'], ['zoom'], 3, 0.4, 9, 1.4], 'line-opacity': 0.75 } },
+      { id: 'outage-pulse', type: 'circle', source: 'outagept', layout: { visibility: 'visible' }, paint: { 'circle-color': '#ff5f7a', 'circle-opacity': 0, 'circle-stroke-color': '#ff8fa3', 'circle-stroke-width': 1.2, 'circle-stroke-opacity': ['interpolate', ['linear'], ['zoom'], 3, 0.85, 8, 0.4], 'circle-radius': ['interpolate', ['linear'], ['ln', ['+', 1, ['get', 'm']]], 4.6, 3, 9.2, 9, 11.5, 15] } },
       { id: 'alerts-fill', type: 'fill', source: 'alerts', layout: { visibility: 'visible' }, paint: { 'fill-color': ['get', 'color'], 'fill-opacity': 0.16 } },
       { id: 'alerts-line', type: 'line', source: 'alerts', paint: { 'line-color': ['get', 'color'], 'line-opacity': 0.8, 'line-width': 1.1 } },
       { id: 'perim-fill', type: 'fill', source: 'perimeters', layout: { visibility: 'none' }, paint: { 'fill-color': '#ff6b3d', 'fill-opacity': 0.32 } },

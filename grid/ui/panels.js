@@ -144,3 +144,96 @@ export function renderLocal(el, st, local) {
     <span>Warnings here</span><b>${local?.alerts?.length ? esc(local.alerts.map((a) => a.event).join(', ')) : 'none in force'}</b></div>
     <div class="rail-actions" style="grid-template-columns:1fr 1fr"><button class="btn small" id="btn-osm">↻ Local grid</button><button class="btn small accent" data-act="fly-here">✈ Fly from here</button></div>`;
 }
+
+// ------------------------------------------------------------------ frequency, outages, at-a-glance
+const titleCase = (s) => String(s || '').toLowerCase().replace(/\b([a-z])/g, (m) => m.toUpperCase()).replace(/(?!^)\b(Of|And|The|De)\b/g, (m) => m.toLowerCase()).replace(/\bCo\b/g, 'Co.').replace(/\bInc\b/g, 'Inc.').replace(/\bAssn\b/g, 'Assn.').replace(/\bLlc\b/g, 'LLC');
+export const utilName = titleCase;
+const hhmm = (t) => { const d = new Date(t); return Number.isFinite(d.getTime()) ? d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—'; };
+const compact = (n) => (n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e4 ? Math.round(n / 1e3) + 'k' : n >= 1e3 ? (n / 1e3).toFixed(1) + 'k' : String(n));
+export function freqBand(f) {
+  const dev = (f - 60) * 1000, a = Math.abs(dev);
+  return a <= 30 ? { cls: 'ok', text: 'inside the normal band (±30 mHz)' } : a <= 90 ? { cls: 'warn', text: 'outside normal, inside the ACE limit (±90 mHz)' } : { cls: 'bad', text: 'beyond ±90 mHz: a disturbance' };
+}
+
+export function renderFrequency(el, st, enf) {
+  const d = st.ercot?.data, hist = st.ercot?.hist || [];
+  const head = `<div class="sub"><span>Grid frequency · Texas</span>${ev('RELAY', 'ERCOT')}</div>`;
+  if (!d) {
+    el.innerHTML = `${head}<h2>${st.ercot?.error ? 'ERCOT feed unavailable' : 'Reading ERCOT…'}</h2>${st.ercot?.error ? `<p class="note">${esc(st.ercot.error)}</p>` : ''}<div class="enf" id="enf-box">${enfHtml(enf)}</div>`;
+    return;
+  }
+  const dev = (d.frequency - 60) * 1000, band = freqBand(d.frequency), pos = Math.max(-100, Math.min(100, dev));
+  el.innerHTML = `${head}
+    <div class="row"><div class="big">${d.frequency.toFixed(3)}<small>Hz</small></div>
+      <div class="kv"><span>Deviation</span><b class="f-${band.cls}">${dev >= 0 ? '+' : '−'}${Math.abs(dev).toFixed(0)} mHz</b><span>Time error</span><b>${fmt(d.timeError, 2)} s</b><span>Inertia</span><b>${Number.isFinite(d.inertia) ? fmt(d.inertia / 1000, 0) + ' GW·s' : '—'}</b></div></div>
+    <div class="fgauge" role="img" aria-label="Deviation ${dev.toFixed(0)} millihertz from 60 hertz"><i class="b90"></i><i class="b30"></i><i class="mid"></i><b class="f-${band.cls}" style="left:${50 + pos / 2}%"></b></div>
+    <div class="fscale mono"><span>−100</span><span>60.000 Hz</span><span>+100 mHz</span></div>
+    <canvas class="chart" id="c-freq"></canvas>
+    <div class="legend"><span>${esc(band.text)}</span><span>${hist.length > 1 ? `last ${Math.max(1, Math.round((hist.at(-1).t - hist[0].t) / 60000))} min · ` : ''}${ago(d.updated || d.fetched)}${d.stale ? ' · cached' : ''}</span></div>
+    <div class="kv kv3"><span>Demand</span><b>${fmt(d.demand / 1000, 1)} GW</b><span>Wind</span><b>${fmt(d.wind / 1000, 1)} GW</b><span>Solar</span><b>${fmt(d.solar / 1000, 1)} GW</b></div>
+    <div class="enf" id="enf-box">${enfHtml(enf)}</div>`;
+  if (hist.length > 1) sparkline(el.querySelector('#c-freq'), hist.map((p) => p.f), { h: 34, color: band.cls === 'ok' ? '#c1e8ce' : band.cls === 'warn' ? '#ffd166' : '#ff5f7a' });
+}
+
+// The outlet meter's block, re-rendered alone while it runs.
+export function enfHtml(enf) {
+  const ic = enf?.ic;
+  const where = ic ? `<span class="ic">${esc(ic.name)}</span>` : '';
+  if (!enf || !enf.running) {
+    const lead = ic?.id === 'ercot' ? 'You are on the Texas grid, so the reading above is your frequency. Check it yourself:' : ic ? `ERCOT publishes Texas only. You are on the ${esc(ic.name)}; its frequency is in the hum of the wiring around you.` : 'ERCOT publishes Texas only. Your own grid’s frequency is in the hum of the wiring around you.';
+    return `<div class="enf-head"><span class="eyebrow">Your outlet</span>${where}</div>
+      <p class="note">${lead} This device’s microphone can read it to a few millihertz. The sound is analysed on the device and never leaves it.</p>
+      <button class="btn accent" id="enf-start"${enf && enf.supported === false ? ' disabled title="This browser has no AudioWorklet"' : ''}>◉ Measure at your outlet</button>${enf?.error ? `<p class="note err">${esc(enf.error)}</p>` : ''}`;
+  }
+  return `<div class="enf-head"><span class="eyebrow">Your outlet</span>${where}<button class="btn" id="enf-stop">Stop</button></div><div id="enf-body">${enfBodyHtml(enf)}</div>`;
+}
+
+// The changing part of a running meter; the head with its Stop button stays put so taps land.
+export function enfBodyHtml(enf) {
+  const r = enf && enf.last;
+  if (!r || !r.ready) return `<div class="enf-progress"><i style="width:${Math.round(100 * (r?.progress || 0))}%"></i></div><p class="note">Listening: collecting two seconds of sound…</p>`;
+  if (!r.ok) return `<h2 class="enf-wait">No steady hum yet</h2><p class="note">Hold the device near a charger, power strip, lamp or appliance, and keep music off. Phones often filter out 60 Hz itself; its 120 and 180 Hz overtones are enough.</p>`;
+  const dev = (r.f - 60) * 1000, band = freqBand(r.f);
+  return `<div class="row"><div class="big enf-big">${r.f.toFixed(4)}<small>Hz</small></div><div class="kv"><span>Deviation</span><b class="f-${band.cls}">${dev >= 0 ? '+' : '−'}${Math.abs(dev).toFixed(1)} mHz</b><span>Spread</span><b>± ${(r.sd * 1000).toFixed(2)} mHz</b><span>From</span><b>${r.used.join(' · ')} Hz</b></div></div>
+    <canvas class="chart" id="c-enf"></canvas>
+    <p class="note">${ev('LIVE', 'this device')} Changes are exact to the spread shown; the absolute value also carries your device clock’s offset, typically under ±3 mHz.</p>`;
+}
+
+export function renderOutages(el, st, names, local) {
+  const o = st.outages?.data;
+  const head = `<div class="sub"><span>Customers without power</span>${ev('RELAY', 'ODIN · DOE/ORNL')}</div>`;
+  if (!o) { el.innerHTML = `${head}<h2>${st.outages?.error ? 'Outage feed unavailable' : 'Reading outages…'}</h2>${st.outages?.error ? `<p class="note">${esc(st.outages.error)}</p>` : ''}`; return; }
+  const nm = (f) => (names && names.get(f)) || f;
+  const rows = o.counties.slice(0, 6).map((r) => `<li><button class="outrow" data-fips="${r[0]}"><span class="n">${esc(nm(r[0]))}</span><b>${r[1].toLocaleString()}</b><small>${esc(titleCase(r[3]))}${r[5] ? ' · since ' + hhmm(r[5]) : ''}${r[6] ? ' · back by ' + hhmm(r[6]) : ''}</small></button></li>`).join('');
+  const mine = local?.county ? o.counties.find((r) => r[0] === local.county.id) : null;
+  const here = local?.county ? `<p class="here">${mine ? `<b>${esc(nm(mine[0]))}</b> · ${mine[1].toLocaleString()} customers out · ${esc(titleCase(mine[3]))}${mine[6] ? ` · back by ${hhmm(mine[6])}` : ''}` : `Your county, <b>${esc(local.county.properties.label)}</b>: no outage reported by ODIN utilities.`}</p>` : '';
+  el.innerHTML = `${head}
+    <div class="row"><div class="big">${compact(o.customers)}<small>out</small></div>
+      <div class="kv"><span>Counties</span><b>${o.nCounties.toLocaleString()}</b><span>Utilities</span><b>${o.nUtilities}${o.feeds ? ' / ' + o.feeds : ''}</b><span>Updated</span><b>${ago(o.fetched)}${o.stale ? ' · cached' : ''}</b></div></div>
+    <ol class="outlist">${rows || '<li class="none">No active outages reported right now.</li>'}</ol>
+    ${here}
+    <div class="legend"><button class="link-btn" id="out-fit">Show all on the map</button><span>${o.events.toLocaleString()} outage events</span></div>
+    <p class="note">ODIN is the Department of Energy and Oak Ridge National Laboratory’s outage-data network; ${o.feeds || 'about 160'} utility feeds report to it. Utilities outside ODIN do not appear, so an empty county is not proof that the power is on.</p>`;
+}
+
+// At a glance: one tap from each number to its panel.
+export function renderNow(el, st, extra = {}) {
+  const chips = [];
+  const eia = st.eia?.data || st.relay?.data?.eia;
+  const D = eia?.series?.D?.filter((p) => Number.isFinite(p.v));
+  const isos = st.relay?.data?.isos ? Object.values(st.relay.data.isos).filter((x) => Number.isFinite(x.load_mw)) : [];
+  const load = D && D.length ? { v: D.at(-1).v / 1000, l: 'Lower-48 demand' } : isos.length ? { v: isos.reduce((a, x) => a + x.load_mw, 0) / 1000, l: `load · ${isos.length} operators` } : null;
+  chips.push(chip('load', '⚡', load ? `${load.v.toFixed(0)} GW` : '— GW', load ? load.l : 'demand', 'p-demand'));
+  const e = st.ercot?.data;
+  chips.push(chip('freq', '∿', e ? `${e.frequency.toFixed(3)} Hz` : '— Hz', 'Texas frequency', 'p-freq', e ? 'f-' + freqBand(e.frequency).cls : ''));
+  if (extra.enf && extra.enf.running && extra.enf.last?.ok) chips.push(chip('enf', '◉', `${extra.enf.last.f.toFixed(4)} Hz`, 'your outlet', 'p-freq', 'f-' + freqBand(extra.enf.last.f).cls));
+  const o = st.outages?.data;
+  chips.push(chip('out', '⚠', o ? `${compact(o.customers)} out` : '— out', o ? `${o.nCounties.toLocaleString()} counties` : 'outages', 'p-outages', o && o.customers >= 50000 ? 'f-warn' : ''));
+  const nws = st.nws?.data?.all?.length;
+  chips.push(chip('wx', '☁', Number.isFinite(nws) ? String(nws) : '—', 'severe weather', 'p-hazard', nws >= 25 ? 'f-warn' : ''));
+  const kp = st.space?.data?.kp1m?.at(-1)?.kp;
+  chips.push(chip('kp', '✷', Number.isFinite(kp) ? `Kp ${kp.toFixed(1)}` : 'Kp —', 'geomagnetic', 'p-space', kp >= 5 ? 'f-warn' : ''));
+  if (extra.auditor) chips.push(chip('aud', '✦', extra.auditor, 'auditor', 'p-auditor-mini', /refus/i.test(extra.auditor) ? 'f-bad' : ''));
+  el.innerHTML = chips.join('');
+}
+const chip = (id, glyph, value, label, target, cls = '') => `<button class="now-chip ${cls}" data-go="${target}" data-now="${id}" title="${esc(label)}"><span class="g" aria-hidden="true">${glyph}</span><b>${esc(value)}</b><small>${esc(label)}</small></button>`;
