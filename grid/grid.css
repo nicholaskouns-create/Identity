@@ -443,3 +443,36 @@ details.home[open] summary::before { content: '▾ '; }
 .alert-cta small { display: block; margin-top: 3px; font: 400 11px/1.35 var(--sans); color: var(--muted); }
 .alert-cta.on { border-color: rgba(193, 232, 206, .45); background: var(--surface); font-weight: 500; }
 @media (max-width: 480px) { .audit-pill .ap-k { display: none; } .bell-pill { padding: 6px 10px; } }
+
+/* ---- flight: altitude hold (▲ / ▼ move the held height 2,000 ft; letting go of the stick holds where you are) */
+.alt-hold { position: absolute; right: 14px; bottom: 128px; display: grid; grid-template-rows: auto auto auto; justify-items: center; gap: 4px; padding: 8px 6px; border-radius: 14px; pointer-events: auto; }
+.alt-hold button { width: 54px; height: 44px; border-radius: 10px; border: 1px solid rgba(110, 223, 212, .45); background: rgba(6, 17, 24, .65); color: var(--cyan); font-size: 18px; cursor: pointer; touch-action: manipulation; }
+.alt-hold button:active { background: rgba(110, 223, 212, .22); }
+.alt-hold span { display: grid; justify-items: center; line-height: 1.15; }
+.alt-hold small { font-size: 8.5px; letter-spacing: .12em; color: var(--muted); }
+.alt-hold b { font-size: 11px; font-weight: 500; color: var(--fg); white-space: nowrap; }
+
+/* ---- header between phone and wide desktop (861–1400 px: tablets, small laptops). Brand, tabs and status no
+   longer fit on one row there, and the centred tab strip used to slide under the brand where it could not be
+   tapped. Tabs now take their own row, and they centre only when there is room (never cut off on the left). */
+.tabs { justify-content: flex-start; }
+.tabs > button:first-child { margin-left: auto; }
+.tabs > button:last-child { margin-right: auto; }
+@media (max-width: 1520px) { .status .clock { display: none; } }
+@media (min-width: 861px) and (max-width: 1400px) {
+  :root { --bar-h: 100px; }
+  .bar { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto; gap: 6px 16px; padding: 8px 16px; }
+  .tabs { grid-column: 1 / -1; grid-row: 2; }
+  .brand { min-width: 0; overflow: hidden; }
+}
+@media (max-width: 860px) { .tabs > button:first-child { margin-left: 0; } }
+
+/* ---- flight layout: map-only controls step aside; on phones the HUD wraps and the controls clear each other */
+#app[data-view="fly"] .now, #app[data-view="fly"] .sheet-btn, #app[data-view="fly"] .maplibregl-ctrl-top-right, #app[data-view="fly"] .maplibregl-ctrl-scale { display: none; }
+@media (pointer: coarse), (max-width: 860px) {
+  .hud-top { flex-wrap: wrap; justify-content: center; width: max-content; max-width: calc(100% - 24px); gap: 2px 12px; border-radius: 14px; font-size: 11px; top: 10px; }
+  #hud-pos { display: none; }
+  .hud-near { left: 12px; right: 12px; bottom: 72px; max-width: none; }
+  .alt-hold { left: 12px; right: auto; bottom: 178px; }
+  .stick { bottom: 178px; }
+}

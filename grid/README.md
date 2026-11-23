@@ -15,7 +15,7 @@ Grid reads public publishers directly where they allow browser access, and throu
 | **Alerts** | A notification on your phone or computer when the power goes out in a county you choose, when it comes back, and when the National Weather Service issues a severe or extreme warning there. It works with Grid closed. See [Alerts](#alerts). |
 | **Search** | Press **/** or tap ⌕. It searches all 3,231 counties, every state, every utility now reporting outages and all 9,833 power plants on the device as you type, and cities and addresses through OpenStreetMap when you ask. Choosing a result flies there. |
 | **Map** | Night-light, satellite and terrain scenes on a globe. Layers: power outages by county (ODIN), transmission lines (HIFLD), the local grid around you (OpenStreetMap), 9,833 generating plants and a 3D generation skyline, severe-weather warnings, wildfires and perimeters, earthquakes, the auroral oval, last night's VIIRS Day/Night Band, the day–night terminator. Side panels show Lower-48 demand, fuel mix, operator load, space weather, the hazard exposure at your position, and the auditor. |
-| **Fly** | The map as a flight instrument, using the same imagery registry as the City flight simulators. W/S pitch, A/D roll, Q/E yaw, Z/X throttle, **P** flies the nearest transmission line, Esc exits. The HUD shows heading, ground speed, altitude and height above terrain, and position. It also names the nearest plant and the nearest line, and flags any active weather warning over the aircraft. |
+| **Fly** | The map as a flight instrument, using the same imagery registry as the City flight simulators. Flight starts about 13,000 ft above the ground with **altitude hold** on, so the aircraft flies level on its own; ▲ / ▼ on screen (R / F on a keyboard) move the held altitude 2,000 ft. Pushing the stick (W/S) flies by hand, and letting go holds the altitude you are at. A/D roll, Q/E yaw, Z/X throttle, **P** flies the nearest transmission line, Esc exits. The HUD shows heading, ground speed, altitude, height above terrain, the held altitude and position. It also names the nearest plant and the nearest line, and flags any active weather warning over the aircraft. |
 | **Auditor** | Five replicas, five pipelines and the hash-chained decision ledger, live. You can inject each fault class (L0, CM2, H1, E1, CM6) and watch every pipeline decide. You can also run the acceptance protocol in a worker and compare it with the Python reference. |
 | **Formalism** | The window Λ, the gap g, the envelope ε₀ and the tolerance τ for each system, with every inertia count of the exact certificate recomputed over ℚ in the browser. Also the E47 reference instantiation computed live and checked against the City's E47 lock. |
 | **Sources** | Every source with its publisher, evidence class, status and age. Also the EIA key, alerts, wall mode, install, and the doorway survey. |
@@ -289,6 +289,9 @@ node tools/grid/test_grid_live.mjs
 # alert service: encryption against http_ece, VAPID against an independent verifier, then end to end
 npm install --prefix /tmp/wpt web-push@3.6.7 http_ece@1.2.0
 node tools/grid/test_grid_alerts.mjs /tmp/wpt/node_modules
+
+# flight: take-off height with terrain still loading, altitude hold, ▲ / ▼, hand flying, terrain floor
+node tools/grid/test_grid_fly.mjs
 
 # share card and cover art (headless Chrome)
 python3 tools/grid/render_share_card.py --chrome /usr/bin/google-chrome
