@@ -13,6 +13,19 @@ export const FUEL = {
 };
 const fuelMatch = ['match', ['get', 'fuel'], ...Object.entries(FUEL).flatMap(([k, v]) => [k, v.color]), '#7f8b90'];
 const kvColor = ['step', ['coalesce', ['get', 'kv'], 0], '#3d6f88', 69, '#4f8fb0', 115, '#5fb3c9', 230, '#8fd3ff', 345, '#6edfd4', 500, '#f1e3b8', 735, '#ffffff'];
+// National Weather Service flood categories: action (near flood stage) yellow, minor orange, moderate red, major purple.
+export const FLOOD_COLORS = { action: '#f2d06b', minor: '#ff9f43', moderate: '#ff5f7a', major: '#d88cff' };
+const floodMatch = ['match', ['get', 's'], ...Object.entries(FLOOD_COLORS).flat(), '#f2d06b'];
+
+// A water drop, drawn once per flood colour when the map first asks for it.
+function dropImage(color) {
+  const c = document.createElement('canvas'); c.width = 40; c.height = 48;
+  const g = c.getContext('2d');
+  g.beginPath(); g.moveTo(20, 3); g.bezierCurveTo(26, 13, 33, 21, 33, 31); g.arc(20, 31, 13, 0, Math.PI, false); g.bezierCurveTo(7, 21, 14, 13, 20, 3); g.closePath();
+  g.fillStyle = color; g.fill(); g.lineWidth = 3; g.strokeStyle = 'rgba(3, 7, 10, 0.92)'; g.stroke();
+  g.beginPath(); g.arc(20, 31, 7.5, Math.PI * 1.05, Math.PI * 1.5, false); g.lineWidth = 2.4; g.lineCap = 'round'; g.strokeStyle = 'rgba(255, 255, 255, 0.55)'; g.stroke();
+  return g.getImageData(0, 0, 40, 48);
+}
 
 // Registry fallbacks mirror E47-Kartekeya/interfaces/skyrmion/world-registry.js.
 export const TILE_SOURCES = {
@@ -59,6 +72,8 @@ function baseStyle(imageryUrl, demUrl, demEncoding, nightUrl, dnbUrl) {
       quakes: { type: 'geojson', data: empty() },
       gpsacc: { type: 'geojson', data: empty() },
       patrol: { type: 'geojson', data: empty() },
+      rivers: { type: 'geojson', data: empty(), attribution: 'River gauges: NOAA NWPS' },
+      waterarea: { type: 'geojson', data: empty(), attribution: 'Water service areas: EPA' },
     },
     sky: { 'sky-color': '#07131c', 'horizon-color': '#1d4b52', 'fog-color': '#060d11', 'fog-ground-blend': 0.55, 'horizon-fog-blend': 0.6, 'sky-horizon-blend': 0.7, 'atmosphere-blend': ['interpolate', ['linear'], ['zoom'], 0, 1, 7, 0.9, 11, 0] },
     layers: [
@@ -79,6 +94,9 @@ function baseStyle(imageryUrl, demUrl, demEncoding, nightUrl, dnbUrl) {
       { id: 'outage-pulse', type: 'circle', source: 'outagept', layout: { visibility: 'visible' }, paint: { 'circle-color': '#ff5f7a', 'circle-opacity': 0, 'circle-stroke-color': '#ff8fa3', 'circle-stroke-width': 1.2, 'circle-stroke-opacity': ['interpolate', ['linear'], ['zoom'], 3, 0.85, 8, 0.4], 'circle-radius': ['interpolate', ['linear'], ['ln', ['+', 1, ['get', 'm']]], 4.6, 3, 9.2, 9, 11.5, 15] } },
       { id: 'alerts-fill', type: 'fill', source: 'alerts', layout: { visibility: 'visible' }, paint: { 'fill-color': ['get', 'color'], 'fill-opacity': 0.16 } },
       { id: 'alerts-line', type: 'line', source: 'alerts', paint: { 'line-color': ['get', 'color'], 'line-opacity': 0.8, 'line-width': 1.1 } },
+      // Your water system's service area (EPA), and any area overlapping it at your position.
+      { id: 'waterarea-fill', type: 'fill', source: 'waterarea', paint: { 'fill-color': '#66b7ff', 'fill-opacity': ['case', ['get', 'mine'], 0.13, 0.04] } },
+      { id: 'waterarea-line', type: 'line', source: 'waterarea', layout: { 'line-join': 'round' }, paint: { 'line-color': '#9fd0ff', 'line-width': ['case', ['get', 'mine'], 1.8, 0.8], 'line-opacity': ['case', ['get', 'mine'], 0.95, 0.5], 'line-dasharray': [3, 2] } },
       { id: 'perim-fill', type: 'fill', source: 'perimeters', layout: { visibility: 'none' }, paint: { 'fill-color': '#ff6b3d', 'fill-opacity': 0.32 } },
       { id: 'perim-line', type: 'line', source: 'perimeters', layout: { visibility: 'none' }, paint: { 'line-color': '#ffb38a', 'line-width': 1 } },
       { id: 'lines-glow', type: 'line', source: 'lines', layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' }, paint: { 'line-color': kvColor, 'line-width': ['interpolate', ['linear'], ['zoom'], 3, 3, 9, 7, 14, 12], 'line-blur': ['interpolate', ['linear'], ['zoom'], 3, 3, 12, 8], 'line-opacity': 0.32 } },
@@ -97,6 +115,9 @@ function baseStyle(imageryUrl, demUrl, demEncoding, nightUrl, dnbUrl) {
       { id: 'fires-glow', type: 'circle', source: 'fires', paint: { 'circle-color': '#ff6b3d', 'circle-radius': ['interpolate', ['linear'], ['ln', ['+', 2, ['get', 'acres']]], 0, 4, 12, 26], 'circle-blur': 1, 'circle-opacity': 0.55 } },
       { id: 'fires-core', type: 'circle', source: 'fires', paint: { 'circle-color': '#ffd0a8', 'circle-radius': ['interpolate', ['linear'], ['ln', ['+', 2, ['get', 'acres']]], 0, 1.5, 12, 5], 'circle-stroke-color': '#ff6b3d', 'circle-stroke-width': 1 } },
       { id: 'quakes', type: 'circle', source: 'quakes', paint: { 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-color': ['interpolate', ['linear'], ['get', 'mag'], 2.5, '#c9b6ff', 4.5, '#ff9bd2', 6, '#ff5f7a'], 'circle-stroke-width': 1.6, 'circle-radius': ['interpolate', ['exponential', 1.6], ['get', 'mag'], 2.5, 3, 7, 30] } },
+      // River gauges at action stage or above (NOAA NWPS): a drop in the National Weather Service flood colours.
+      { id: 'rivers-glow', type: 'circle', source: 'rivers', paint: { 'circle-color': floodMatch, 'circle-radius': ['interpolate', ['linear'], ['zoom'], 3, ['+', 5, ['*', 2, ['get', 'rank']]], 10, ['+', 12, ['*', 3, ['get', 'rank']]]], 'circle-blur': 1, 'circle-opacity': ['interpolate', ['linear'], ['get', 'rank'], 0, 0.22, 3, 0.5] } },
+      { id: 'rivers', type: 'symbol', source: 'rivers', layout: { 'icon-image': ['concat', 'drop-', ['get', 's']], 'icon-size': ['interpolate', ['linear'], ['zoom'], 3, ['+', 0.62, ['*', 0.08, ['get', 'rank']]], 10, ['+', 1, ['*', 0.1, ['get', 'rank']]]], 'icon-anchor': 'bottom', 'icon-allow-overlap': true, 'icon-ignore-placement': true, 'symbol-sort-key': ['get', 'rank'] } },
       { id: 'patrol', type: 'line', source: 'patrol', paint: { 'line-color': '#ffffff', 'line-width': 2.5, 'line-dasharray': [2, 2], 'line-opacity': 0.9 } },
       { id: 'gpsacc', type: 'fill', source: 'gpsacc', paint: { 'fill-color': '#6edfd4', 'fill-opacity': 0.12, 'fill-outline-color': '#6edfd4' } },
     ],
@@ -119,6 +140,10 @@ export class GridMap {
     this.map.addControl(new maplibregl.NavigationControl({ visualizePitch: true, showCompass: true }), 'top-right');
     this.map.addControl(new maplibregl.ScaleControl({ unit: 'imperial', maxWidth: 110 }), 'bottom-right');
     this.map.on('error', (e) => this.handleError(e));
+    this.map.on('styleimagemissing', (e) => {
+      const k = String(e.id || '').replace(/^drop-/, '');
+      if (e.id.startsWith('drop-') && !this.map.hasImage(e.id)) this.map.addImage(e.id, dropImage(FLOOD_COLORS[k] || FLOOD_COLORS.action), { pixelRatio: 2 });
+    });
     this.map.on('load', () => { this.ready = true; if (onReady) onReady(this); });
     this.gpsMarker = null;
   }

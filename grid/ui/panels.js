@@ -3,6 +3,7 @@ import { EVIDENCE, gScale } from '../live/sources.js';
 import { FUEL } from '../map/map.js';
 import { sparkline, demandChart, kpBars } from './charts.js';
 import { THRESHOLDS, PLAN, MAX_PLACES } from '../live/alerts.js';
+import * as W from '../live/water.js';
 
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 export const ev = (k, extra = '') => `<span class="ev ev-${k}" title="${esc(EVIDENCE[k]?.label || k)}: ${esc(EVIDENCE[k]?.note || '')}">${EVIDENCE[k]?.glyph || '?'} ${esc(EVIDENCE[k]?.label || k)}${extra ? ' · ' + esc(extra) : ''}</span>`;
@@ -246,6 +247,83 @@ export function renderOutages(el, st, names, local, x = {}) {
     <p class="note">ODIN is the Department of Energy and Oak Ridge National Laboratory’s outage-data network; ${o.feeds || 'about 160'} utility feeds report to it. Utilities outside ODIN do not appear, so an empty county is not proof that the power is on.${x.empower ? ' HHS emPOWER counts Medicare beneficiaries only, and shows ZIP Codes with 1 to 10 people as 11.' : ''}</p>`;
 }
 
+// Water: your water system and how it stands with EPA, drought where you are, rivers at flood stage, and the
+// water systems in the counties where the power is out.
+// D: { rivers: { data, error }, here: { fips, label, water, wErr, area: { hit, also }, aErr, aBusy, drought, dErr }, top: [{ fips, label, out, water }] }
+// x: { gps, outHere: ODIN row for your county or null }
+const people = (n) => (Number.isFinite(n) ? `${n >= 1e6 ? (n / 1e6).toFixed(n >= 1e7 ? 0 : 1) + ' million' : n.toLocaleString()} ${n === 1 ? 'person' : 'people'}` : 'an unreported number of people');
+const miles = (km) => `${Math.max(1, Math.round(km * 0.621371))} mi`;
+const shortDate = (s) => { const d = new Date(String(s || '') + 'T12:00:00Z'); return Number.isFinite(d.getTime()) ? d.toLocaleDateString([], { month: 'short', day: 'numeric' }) : '—'; };
+export function renderWater(el, D, local, x = {}) {
+  const g = x.gps, h = D.here, county = h?.label || local?.county?.properties?.label || null;
+  // 1. You: the system that serves your position, or the county's systems when no boundary holds it.
+  let you;
+  if (!g || g.source !== 'device') {
+    you = `<div class="wsys"><div class="wk">Your drinking water</div><p class="note">Allow location to find the water system that serves you. Grid asks EPA’s service-area map with a box about 2 km across; your exact position stays on this device.</p><button class="btn small" id="w-locate">◎ Find my water system</button></div>`;
+  } else if (!h || (!h.area && !h.aErr && !h.water && !h.wErr)) {
+    you = `<div class="wsys"><div class="wk">Your drinking water</div><p class="note">Finding the water system that serves your position…</p></div>`;
+  } else {
+    const sys = W.systems(h.water), hit = h.area?.hit || null;
+    if (hit) {
+      const mine = sys.find((s) => s.pwsid === hit.pwsid) || null, sd = W.standing(h.water ? mine : null), src = mine && W.sourceText(mine.source);
+      const record = !h.water ? (h.wErr ? `<p class="note err">EPA’s compliance records did not load: ${esc(h.wErr)}</p>` : '<p class="note">Reading EPA’s compliance records…</p>')
+        : `<p class="wstand ${sd.cls}"><i aria-hidden="true"></i><span>${esc(sd.text)}</span></p>${mine && Number.isFinite(mine.quarters) ? `<div class="wmeta">${mine.quarters === 0 ? 'No violations in the last 12 quarters' : `Violations in ${mine.quarters} of the last 12 quarters`}${mine.health ? ' · health-based violations on record' : ''}</div>` : ''}`;
+      you = `<div class="wsys ${h.water ? sd.cls : ''}"><div class="wk"><span>Your water system</span>${ev('LIVE', 'EPA map')}</div><h3>${esc(W.waterName(mine?.name || hit.name))}</h3>
+        <div class="wmeta">Serves ${people(mine?.pop ?? hit.pop)}${src ? ` · ${esc(src)}` : ''}</div>${record}
+        <div class="wlinks"><a href="${esc(W.dfrUrl(hit.pwsid, mine))}" target="_blank" rel="noopener">EPA report ↗</a><button class="link-btn" id="w-area">Show on map</button><span>${esc(hit.pwsid)} · ${esc(W.basisText(hit))}</span></div>
+        ${h.area.also.length ? `<p class="note">Also mapped at your position: ${h.area.also.slice(0, 3).map((p) => esc(W.waterName(p.name))).join(', ')}.</p>` : ''}</div>`;
+    } else {
+      const why = h.aBusy ? 'Checking EPA’s service-area map for your position…'
+        : h.aErr ? `EPA’s service-area map did not answer (${esc(h.aErr)}), so Grid cannot tell which of these serves your exact position.`
+        : h.area ? 'EPA’s service-area map has no boundary at your position. Homes on private wells, and some small systems, are not mapped.' : '';
+      const list = sys.slice(0, 5).map((s) => { const sd = W.standing(s); return `<li><i class="wdot ${sd.cls}" title="${esc(sd.text)}"></i><span class="n">${esc(W.waterName(s.name))}</span><b>${s.pop != null ? s.pop.toLocaleString() : '—'}</b></li>`; }).join('');
+      you = `<div class="wsys"><div class="wk"><span>Drinking water in ${esc(county || 'your county')}</span>${ev('RELAY', 'EPA ECHO')}</div>
+        ${h.water ? `<h3>${h.water.nSystems ? `${h.water.nSystems.toLocaleString()} community water ${h.water.nSystems === 1 ? 'system serves' : 'systems serve'} ${people(h.water.population)}` : 'No community water system on EPA’s list'}</h3>
+          ${list ? `<ol class="wlist">${list}</ol>` : ''}${h.water.nViolating ? `<div class="wmeta">${h.water.nViolating} in violation in EPA’s latest quarter${h.water.nPriority ? ` · ${h.water.nPriority} an enforcement priority` : ''}</div>` : h.water.nSystems ? '<div class="wmeta">None in violation in EPA’s latest quarter</div>' : ''}`
+          : h.wErr ? `<p class="note err">EPA’s records did not load: ${esc(h.wErr)}</p>` : '<p class="note">Reading EPA’s records…</p>'}
+        ${why ? `<p class="note">${why}</p>` : ''}</div>`;
+    }
+  }
+  // 2. The power–water link where you are, and drought.
+  const out = x.outHere && x.outHere[1] >= 1000 ? `<div class="here out"><b>The power is out in your county</b> · ${x.outHere[1].toLocaleString()} customers. Water systems pump and treat with electricity; if your water pressure drops, your water system may issue a boil-water notice.</div>` : '';
+  const dr = h?.drought;
+  const drought = dr ? `<p class="wline"><span class="g" aria-hidden="true">◐</span><span>${dr.inDrought >= 0.5 ? `<b>${dr.inDrought.toFixed(0)}%</b> of ${esc(county || 'your county')} is in drought${dr.worst && dr.worst !== 'D0' ? `, up to ${esc(W.DROUGHT[dr.worst])} (${dr.worst})` : ''}` : dr.d0 >= 0.5 ? `No drought in ${esc(county || 'your county')}; ${dr.d0.toFixed(0)}% abnormally dry` : `No drought in ${esc(county || 'your county')}`} <small>U.S. Drought Monitor · ${shortDate(dr.week)}</small></span></p>` : '';
+  const boil = `<details class="boil"><summary>If a boil-water notice comes</summary>
+    <p>Boil-water notices come from your water system or your state: by text or phone, on local news, or on the utility’s website. No national feed of them exists, so Grid cannot show them. Your water system’s phone number is on your water bill.</p>
+    <ul><li>Bring clear water to a rolling boil for 1 minute (3 minutes above 6,500 feet), then let it cool.</li><li>Use bottled or boiled water for drinking, cooking and brushing teeth. For babies, ready-to-use formula if you can.</li><li>Boiling does not remove chemicals. If the notice says do not drink the water, use bottled water.</li></ul>
+    <p class="note">From the CDC’s guidance on drinking water advisories · <a href="${W.CDC_BOIL}" target="_blank" rel="noopener">CDC ↗</a></p></details>`;
+  // 3. Rivers.
+  const R = D.rivers?.data;
+  let rivers;
+  if (!R) rivers = `<p class="note">${D.rivers?.error ? `River gauges unavailable: ${esc(D.rivers.error)}` : 'Reading river gauges…'}</p>`;
+  else {
+    const rows = W.riverRows(R), c = R.counts;
+    const flooding = rows.filter((r) => r.status !== 'action');
+    const show = (flooding.length ? flooding : rows).slice(0, 5);
+    let near = '';
+    if (g && g.source === 'device') {
+      const nr = W.nearRivers(R, g.lon, g.lat, 80);
+      near = nr.length ? `<p class="here"><b>Near you</b> · ${nr.length} ${nr.length === 1 ? 'gauge' : 'gauges'} within 50 mi at or near flood stage. Nearest: ${esc(nr[0].name)}, <span style="color:${W.FLOOD[nr[0].status].color}">${esc(W.FLOOD[nr[0].status].label.toLowerCase())}</span>, ${miles(nr[0].km)} away.</p>`
+        : `<p class="here">No river gauge within 50 mi of you is at or near flood stage.</p>`;
+    }
+    rivers = `<div class="row"><div class="big">${R.inFlood.toLocaleString()}<small>${R.inFlood === 1 ? 'gauge' : 'gauges'} in flood</small></div>
+      <div class="kv">${['major', 'moderate', 'minor', 'action'].map((k) => `<span><i class="fk" style="background:${W.FLOOD[k].color}"></i>${W.FLOOD[k].short}</span><b>${c[k].toLocaleString()}</b>`).join('')}</div></div>
+      ${near}
+      <ol class="outlist rivlist">${show.map((r) => { const t = W.stageText(r); return `<li><button class="outrow rivrow" data-lon="${r.lon}" data-lat="${r.lat}"><span class="n"><i class="fk" style="background:${W.FLOOD[r.status].color}"></i>${esc(r.name || r.lid)}${r.state ? `, ${esc(r.state)}` : ''}</span><b style="color:${W.FLOOD[r.status].color}">${esc(t.now || W.FLOOD[r.status].short)}</b><small>${esc(W.FLOOD[r.status].label)}${t.ref ? ` · ${esc(t.ref)}` : ''}</small></button></li>`; }).join('') || '<li class="none">No river gauge is at or near flood stage.</li>'}</ol>
+      <div class="legend">${rows.length ? '<button class="link-btn" id="riv-fit">Show all on the map</button>' : ''}<span>${R.reporting ? `${R.reporting.toLocaleString()} NOAA gauges reporting · ` : ''}${ago(R.fetched)}${R.stale ? ' · cached' : ''}</span></div>`;
+  }
+  // 4. Where the power is out: the water systems in those counties.
+  const top = D.top || [];
+  const pw = top.length ? `<ol class="outlist">${top.map((t) => `<li><button class="outrow pwrow" data-fips="${esc(t.fips)}"><span class="n">${esc(t.label)}</span><b>${t.out.toLocaleString()} out</b><small>${t.water ? (t.water.nSystems ? `${t.water.nSystems.toLocaleString()} community water ${t.water.nSystems === 1 ? 'system serves' : 'systems serve'} ${people(t.water.population)}` : 'no community water system on EPA’s list') : t.err ? 'EPA records unavailable' : 'reading EPA records…'}</small></button></li>`).join('')}</ol>
+      <p class="note">Community water systems that EPA records as serving the counties with the most customers out. Water systems pump and treat with electricity; those with backup power keep running, but a long outage can drop water pressure, and a loss of pressure can lead to a boil-water notice.</p>`
+    : '<p class="note">No county has 1,000 or more customers out right now.</p>';
+  el.innerHTML = `<div class="sub"><span>Water</span>${ev('RELAY', 'EPA · NOAA · Drought Monitor')}</div>
+    ${you}${out}${drought}${boil}
+    <div class="wsec"><span>Rivers at flood stage</span>${ev('RELAY', 'NOAA NWPS')}</div>${rivers}
+    <div class="wsec"><span>Where the power is out</span>${ev('RELAY', 'ODIN × EPA')}</div>${pw}
+    <p class="note">EPA’s drinking-water records come from the states each quarter and can trail by three to six months; some states publish newer data on their own sites. Service areas are EPA’s national map, and some boundaries are modeled. River stages are NOAA’s, refreshed every 30 minutes. Grid is an independent public-data tool, not your water utility.</p>`;
+}
+
 // Background alerts and the medical-equipment plan. A: { plat, prefs, home, busy, msg, err, lastSweep }
 export function renderAlerts(el, A, local) {
   const p = A.prefs, plat = A.plat, on = p.on, n = p.places.length, dis = A.busy ? ' disabled' : '';
@@ -291,6 +369,8 @@ export function renderNow(el, st, extra = {}) {
   if (extra.enf && extra.enf.running && extra.enf.last?.ok) chips.push(chip('enf', '◉', `${extra.enf.last.f.toFixed(4)} Hz`, 'your outlet', 'p-freq', 'f-' + freqBand(extra.enf.last.f).cls));
   const o = st.outages?.data;
   chips.push(chip('out', '⚠', o ? `${compact(o.customers)} out` : '— out', extra.localOut ? 'your county is out' : o ? `${o.nCounties.toLocaleString()} counties` : 'outages', 'p-outages', extra.localOut ? 'f-bad' : o && o.customers >= 50000 ? 'f-warn' : ''));
+  const rv = extra.rivers;
+  chips.push(chip('water', '≈', rv ? String(rv.inFlood) : '—', 'rivers in flood', 'p-water', rv && rv.counts && rv.counts.major ? 'f-warn' : ''));
   chips.push(chip('alerts', '⚑', extra.alertsOn ? 'On' : 'Off', 'alerts', 'p-alerts', extra.alertsOn ? 'f-on' : ''));
   const nws = st.nws?.data?.all?.length;
   chips.push(chip('wx', '☁', Number.isFinite(nws) ? String(nws) : '—', 'severe weather', 'p-hazard', nws >= 25 ? 'f-warn' : ''));

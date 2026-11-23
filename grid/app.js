@@ -13,6 +13,7 @@ import { fetchLive, interconnectionFor } from './live/pulse.js';
 import { EnfMeter } from './live/enf.js';
 import { loadCounties, countyAt, unionBbox } from './live/counties.js';
 import * as AL from './live/alerts.js';
+import * as W from './live/water.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const ORIGIN = location.origin;
@@ -89,6 +90,8 @@ const LAYERS = [
   { id: 'plants', label: 'Generating plants', src: 'plants', layers: ['plants-heat', 'plants-glow', 'plants-core'], on: true },
   { id: 'skyline', label: 'Generation skyline (3D)', src: 'plants', layers: ['skyline'], on: false },
   { id: 'outages', label: 'Power outages by county (ODIN)', src: 'odin', layers: ['outage-fill', 'outage-line', 'outage-pulse'], on: true },
+  { id: 'rivers', label: 'Rivers at flood stage (NOAA)', src: 'nwps', layers: ['rivers-glow', 'rivers'], on: true },
+  { id: 'waterarea', label: 'Your water system’s service area (EPA)', src: 'epa-sab', layers: ['waterarea-fill', 'waterarea-line'], on: true },
   { id: 'alerts', label: 'Severe weather warnings', src: 'nws', layers: ['alerts-fill', 'alerts-line'], on: true },
   { id: 'fires', label: 'Wildfires', src: 'wfigs', layers: ['fires-glow', 'fires-core'], on: true },
   { id: 'perims', label: 'Fire perimeters', src: 'wfigs-perim', layers: ['perim-fill', 'perim-line'], on: false },
@@ -168,11 +171,13 @@ function pushMapData() {
   if (st.aurora?.data) gm.set('aurora', { type: 'FeatureCollection', features: st.aurora.data.pts });
   if (st.osm?.data) gm.set('osm', st.osm.data);
   if (outageGeo) { gm.set('outages', outageGeo.fill); gm.set('outagept', outageGeo.pts); }
+  if (water.rivers?.geo) gm.set('rivers', water.rivers.geo);
+  gm.set('waterarea', { type: 'FeatureCollection', features: water.here?.area?.features || [] });
 }
 
 function wireMapInteractions() {
   const m = gm.map;
-  const clickable = ['outage-fill', 'plants-core', 'skyline', 'alerts-fill', 'fires-core', 'quakes', 'lines-core', 'osm-line', 'osm-point', 'osm-area', 'perim-fill'];
+  const clickable = ['rivers', 'outage-fill', 'plants-core', 'skyline', 'alerts-fill', 'fires-core', 'quakes', 'lines-core', 'osm-line', 'osm-point', 'osm-area', 'perim-fill', 'waterarea-fill'];
   m.on('click', (e) => {
     const f = m.queryRenderedFeatures(e.point, { layers: clickable.filter((id) => m.getLayer(id)) })[0];
     if (!f) return;
@@ -184,6 +189,8 @@ function wireMapInteractions() {
     else if (L === 'lines-core') html = `<div class="pop"><div class="k">HIFLD transmission · ${P.ev('LIVE')}</div><h3>${p.kv && p.kv !== 'null' ? p.kv + ' kV' : P.esc(p.cls || 'voltage not recorded')}</h3><div class="kv"><span>Owner</span><b>${P.esc(p.owner || '—')}</b><span>Status</span><b>${P.esc(p.status || '—')}</b></div></div>`;
     else if (L.startsWith('osm')) html = `<div class="pop"><div class="k">OpenStreetMap · power=${P.esc(p.kind)} · ${P.ev('LIVE')}</div><h3>${P.esc(p.name || p.kind)}</h3><div class="kv"><span>Voltage</span><b>${p.kv && p.kv !== 'null' ? p.kv + ' kV' : '—'}</b><span>Operator</span><b>${P.esc(p.operator || '—')}</b></div></div>`;
     else if (L === 'outage-fill') html = outagePopup(p);
+    else if (L === 'rivers') html = riverPopup(p);
+    else if (L === 'waterarea-fill') html = waterAreaPopup(p);
     else if (L === 'perim-fill') html = `<div class="pop"><div class="k">Fire perimeter · ${P.ev('LIVE')}</div><h3>${P.esc(p.name)}</h3><div class="kv"><span>Area</span><b>${p.acres ? Number(p.acres).toLocaleString() + ' ac' : '—'}</b></div></div>`;
     if (html) gm.popup(e.lngLat, html);
   });
@@ -191,6 +198,81 @@ function wireMapInteractions() {
 }
 const fuelLabel = (k) => ({ NUC: 'Nuclear', COL: 'Coal', NG: 'Natural gas', OIL: 'Oil', PET: 'Petroleum coke', WAT: 'Hydro', WND: 'Wind', SUN: 'Solar', GEO: 'Geothermal', BIO: 'Biomass', WST: 'Waste', BAT: 'Battery storage', CHP: 'Cogeneration', OTH: 'Other' }[k] || k);
 
+
+// ----------------------------------------------------------------- water: rivers, your water system, drought, power–water
+// Rivers come every 10 minutes for everyone. Your water system, its EPA record and your county's drought are
+// looked up once your position is known; the water systems of the counties with the most customers out are
+// looked up as outages change. Failed lookups wait before trying again (two minutes here, five for other counties).
+const water = { rivers: null, here: null, top: [], byFips: new Map(), failed: new Map() };
+const due = (t, ms) => !t || Date.now() - t > ms;
+async function pollRivers() {
+  if (!water.rivers) setStatus('nwps', 'loading');
+  try {
+    const d = await W.fetchRivers();
+    water.rivers = { data: d, geo: W.riversGeo(d), at: new Date() };
+    setStatus('nwps', 'ok', `${d.inFlood.toLocaleString()} gauges in flood · ${d.counts.action.toLocaleString()} near flood stage${d.reporting ? ` · ${d.reporting.toLocaleString()} reporting` : ''}${d.stale ? ' · cached' : ''}`);
+    for (const r of W.riverRows(d).filter((x) => x.status === 'major').slice(0, 3)) pushTicker(Date.now(), `<b style="color:${W.FLOOD.major.color}">Major flooding</b> ${P.esc(r.name)}${r.state ? ', ' + P.esc(r.state) : ''}`, 'riv-' + r.lid + '-major');
+    pushMapData();
+  } catch (e) { water.rivers = { ...(water.rivers || {}), error: String(e.message || e) }; setStatus('nwps', 'error', water.rivers.error); }
+  renderWaterPanel();
+}
+function loadHereWater() {
+  const c = local.county, g = st.gps;
+  if (!c || !g || g.source !== 'device') return;
+  if (!water.here || water.here.fips !== c.id) water.here = { fips: c.id, label: c.properties.label };
+  const h = water.here, label = c.properties.label;
+  if (!h.water && !h.wBusy && due(h.wAt, 120000)) {
+    h.wBusy = true; h.wAt = Date.now(); setStatus('echo-sdw', 'loading');
+    W.fetchWater(c.id).then((d) => { h.water = d; h.wErr = null; water.byFips.set(c.id, d); setStatus('echo-sdw', 'ok', `${d.nSystems.toLocaleString()} community water systems in ${label}${d.stale ? ' · cached' : ''}`); })
+      .catch((e) => { h.wErr = String(e.message || e); setStatus('echo-sdw', 'error', h.wErr); }).finally(() => { h.wBusy = false; renderWaterPanel(); });
+  }
+  if (!h.drought && !h.dBusy && due(h.dAt, 120000)) {
+    h.dBusy = true; h.dAt = Date.now(); setStatus('usdm', 'loading');
+    W.fetchDrought(c.id).then((d) => { h.drought = d; setStatus('usdm', 'ok', `${label}: ${d.inDrought.toFixed(0)}% in drought · week of ${d.week}`); })
+      .catch((e) => { h.dErr = String(e.message || e); setStatus('usdm', 'error', h.dErr); }).finally(() => { h.dBusy = false; renderWaterPanel(); });
+  }
+  // EPA is asked again only after you leave the area found, or move more than 1 km where none was found.
+  const at = [g.lon, g.lat], mine = h.area?.hit ? h.area.features[0] : null;
+  const inside = !!(mine && W.pointInGeom(at, mine.geometry)), moved = h.areaAt ? W.km(h.areaAt, at) : Infinity;
+  if (!h.aBusy && !inside && moved > 1 && (!h.aErr || due(h.aAt, 120000))) {
+    h.aBusy = true; h.aAt = Date.now(); setStatus('epa-sab', 'loading');
+    W.serviceAreaAt(g.lon, g.lat).then((r) => { h.area = r; h.areaAt = at; h.aErr = null; setStatus('epa-sab', 'ok', r.hit ? `${W.waterName(r.hit.name)} · ${W.basisText(r.hit)}` : 'no service area mapped at your position'); pushMapData(); })
+      .catch((e) => { h.aErr = String(e.message || e); setStatus('epa-sab', 'error', h.aErr); }).finally(() => { h.aBusy = false; renderWaterPanel(); });
+  }
+}
+function loadOutageWater() {
+  const o = st.outages?.data; if (!o) return;
+  water.top = o.counties.filter((r) => r[1] >= 1000).slice(0, 3).map((r) => ({ fips: r[0], out: r[1], label: counties?.byFips.get(r[0])?.properties.label || r[0] }));
+  for (const t of water.top) {
+    if (water.byFips.has(t.fips) || !due(water.failed.get(t.fips), 300000)) continue;
+    W.fetchWater(t.fips).then((d) => { water.byFips.set(t.fips, d); water.failed.delete(t.fips); }).catch(() => { water.failed.set(t.fips, Date.now()); }).finally(renderWaterPanel);
+  }
+}
+function renderWaterPanel() {
+  const top = water.top.map((t) => ({ ...t, water: water.byFips.get(t.fips) || null, err: water.failed.has(t.fips) }));
+  P.renderWater($('#p-water'), { rivers: water.rivers, here: water.here, top }, local, { gps: st.gps, outHere: local.county ? outageByFips.get(local.county.id) || null : null });
+  scheduleNow();
+}
+const numOr = (x) => (x === '' || x === null || x === undefined ? null : Number(x));
+function riverPopup(p) {
+  const f = W.FLOOD[p.s] || W.FLOOD.action;
+  const t = W.stageText({ status: p.s, observed: numOr(p.obs), units: p.units, action: numOr(p.action), flood: numOr(p.flood), moderate: numOr(p.moderate), major: numOr(p.major) });
+  const url = /^https:\/\/water\.(noaa|weather)\.gov\//i.test(String(p.url || '')) ? p.url : `https://water.noaa.gov/gauges/${encodeURIComponent(p.lid)}`;
+  return `<div class="pop"><div class="k">NOAA river gauge ${P.esc(p.lid)} · ${P.ev('RELAY')}</div><h3>${P.esc(p.name)}</h3><div class="kv"><span>Status</span><b style="color:${f.color}">${P.esc(f.label)}</b><span>Stage</span><b>${P.esc(t.now || '—')}</b><span>Threshold</span><b>${P.esc(t.ref || '—')}</b><span>Observed</span><b>${P.esc(p.at || '—')}</b></div><p class="pop-link"><a href="${P.esc(url)}" target="_blank" rel="noopener">Hydrograph and forecast at NOAA ↗</a></p></div>`;
+}
+function waterAreaPopup(p) {
+  const s = W.systems(water.here?.water).find((x) => x.pwsid === p.pwsid) || null, sd = W.standing(water.here?.water ? s : null);
+  const pop = Number(p.pop);
+  return `<div class="pop"><div class="k">${p.mine ? 'Your water system' : 'Water system'} · EPA · ${P.ev('LIVE')}</div><h3>${P.esc(W.waterName(s?.name || p.name))}</h3><div class="kv"><span>Serves</span><b>${Number.isFinite(pop) && pop > 0 ? pop.toLocaleString() + ' people' : '—'}</b><span>System ID</span><b>${P.esc(p.pwsid)}</b><span>Boundary</span><b>${P.esc(W.basisText(p))}</b></div>${water.here?.water ? `<p class="pop-link">${P.esc(sd.text)}</p>` : ''}</div>`;
+}
+$('#p-water').addEventListener('click', (e) => {
+  const rv = e.target.closest('.rivrow'), pw = e.target.closest('.pwrow');
+  if (rv && gm) { closeSheets(); if (!layerState.rivers) syncLayer('rivers', true); gm.map.flyTo({ center: [Number(rv.dataset.lon), Number(rv.dataset.lat)], zoom: 10, duration: 1600 }); }
+  else if (pw) focusCounty(pw.dataset.fips);
+  else if (e.target.closest('#riv-fit') && gm) { const rows = W.riverRows(water.rivers?.data), fl = rows.filter((r) => r.status !== 'action'), use = fl.length ? fl : rows; if (use.length) { closeSheets(); if (!layerState.rivers) syncLayer('rivers', true); fitBox([Math.min(...use.map((r) => r.lon)) - 0.5, Math.min(...use.map((r) => r.lat)) - 0.5, Math.max(...use.map((r) => r.lon)) + 0.5, Math.max(...use.map((r) => r.lat)) + 0.5], 8); } }
+  else if (e.target.closest('#w-locate')) locate();
+  else if (e.target.closest('#w-area')) { const fts = water.here?.area?.features; if (fts && fts[0]) { closeSheets(); if (!layerState.waterarea) syncLayer('waterarea', true); fitBox(bboxOf(fts[0].geometry), 13); } }
+});
 
 // ----------------------------------------------------------------- frequency (ERCOT) and outages (ODIN) via grid-live
 let counties = null, outageGeo = null, outageByFips = new Map();
@@ -239,7 +321,7 @@ async function pollOutages() {
     const d = await fetchLive('outages', { timeoutMs: 30000 });
     st.outages = { data: d, at: new Date() };
     setStatus('odin', 'ok', `${d.customers.toLocaleString()} customers out · ${d.nCounties} counties · ${d.feeds || '?'} utility feeds${d.stale ? ' · cached' : ''}`);
-    await ensureCounties(); buildOutageGeo();
+    await ensureCounties(); buildOutageGeo(); loadOutageWater();
     for (const r of d.counties.filter((x) => x[1] >= 5000).slice(0, 3)) {
       const f = counties?.byFips.get(r[0]);
       pushTicker(Date.parse(r[5]) || Date.now(), `<b style="color:#ff5f7a">${r[1].toLocaleString()} out</b> ${P.esc(f ? f.properties.label : r[0])} · ${P.esc(P.utilName(r[3]))}`, 'out-' + r[0] + '-' + Math.round(r[1] / 2500));
@@ -247,7 +329,7 @@ async function pollOutages() {
     if (local.county) { const r = outageByFips.get(local.county.id); if (r && r[1] >= 10) notify('out-' + r[0] + '-' + Math.round(r[1] / 500), `Power outage in ${local.county.properties.label}`, `${r[1].toLocaleString()} customers out (${P.utilName(r[3])}).`); }
     focusPending();
   } catch (e) { st.outages = { ...(st.outages || {}), error: String(e.message || e) }; setStatus('odin', 'error', st.outages.error); }
-  renderOutagePanel();
+  renderOutagePanel(); renderWaterPanel();
 }
 function buildOutageGeo() {
   const o = st.outages?.data; if (!o || !counties) return;
@@ -333,7 +415,7 @@ $('#p-outages').addEventListener('click', (e) => { const r = e.target.closest('.
 
 // ----------------------------------------------------------------- at a glance
 let nowTimer = null;
-function scheduleNow() { if (!nowTimer) nowTimer = setTimeout(() => { nowTimer = null; P.renderNow($('#now'), st, { enf, auditor: (($('#audit-pill')?.textContent || '').split('·').pop() || '').trim().toLowerCase() || null, alertsOn: alerts.prefs.on, localOut: !!(local.county && outageByFips.get(local.county.id)) }); }, 250); }
+function scheduleNow() { if (!nowTimer) nowTimer = setTimeout(() => { nowTimer = null; P.renderNow($('#now'), st, { enf, auditor: (($('#audit-pill')?.textContent || '').split('·').pop() || '').trim().toLowerCase() || null, alertsOn: alerts.prefs.on, localOut: !!(local.county && outageByFips.get(local.county.id)), rivers: water.rivers?.data || null }); }, 250); }
 function closeSheets() { $('#rail-right').classList.remove('open'); $('#rail-left').classList.remove('open'); }
 function goPanel(id) {
   if (currentTab !== 'map') showTab('map');
@@ -347,6 +429,7 @@ $('#now').addEventListener('click', (e) => {
   const b = e.target.closest('.now-chip'); if (!b) return;
   if (b.dataset.now === 'out' && st.outages?.data) { if (!layerState.outages) syncLayer('outages', true); fitOutages(); }
   if (b.dataset.now === 'wx' && !layerState.alerts) syncLayer('alerts', true);
+  if (b.dataset.now === 'water' && !layerState.rivers) syncLayer('rivers', true);
   goPanel(b.dataset.go);
 });
 function syncLayer(id, on) { setLayer(id, on); const cb = document.querySelector(`[data-layer="${id}"]`); if (cb) cb.checked = on; }
@@ -506,6 +589,7 @@ function computeLocal() {
     if (!before && local.county && !alerts.prefs.on) { try { if (!sessionStorage.getItem('kkp-grid-alert-tip')) { sessionStorage.setItem('kkp-grid-alert-tip', '1'); toast(`Tap 🔔 Alerts at the top for outage alerts in ${local.county.properties.label}.`); } } catch { /* private mode */ } }
   }
   if (statesGeo) { const sf = statesGeo.features.find((f) => pointInGeom(here, f.geometry)); local.state = sf ? sf.properties.name : null; local.ic = interconnectionFor(local.state, g.lon, g.lat); enf.ic = local.ic; }
+  loadHereWater();
 }
 
 // ----------------------------------------------------------------- geometry helpers
@@ -955,7 +1039,7 @@ setTimeout(dismissBoot, 5000);
 buildLayerRail();
 SRC.SOURCES.forEach((s) => { if (!s.onDemand && !st.status[s.id]) st.status[s.id] = { state: 'idle' }; });
 P.renderDemand($('#p-demand'), st); P.renderMix($('#p-mix'), st); P.renderIso($('#p-iso'), st); P.renderSpace($('#p-space'), st); P.renderHazard($('#p-hazard'), st, null); P.renderAuditorMini($('#p-auditor-mini'), null);
-P.renderFrequency($('#p-freq'), st, enf); renderOutagePanel(); renderAlertsPanel();
+P.renderFrequency($('#p-freq'), st, enf); renderOutagePanel(); renderAlertsPanel(); renderWaterPanel();
 showTab(location.hash.slice(1) || 'map');
 bootMap();
 bootGps();
@@ -969,6 +1053,7 @@ every(600, () => pollEia());
 every(300, () => pollRelay());
 every(10, () => pollErcot());
 every(60, () => pollOutages());
+every(600, () => pollRivers());
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
 loadEmpower();
 if (alerts.plat.push) {
