@@ -44,11 +44,29 @@ export function riversGeo(d) {
 export function nearRivers(d, lon, lat, radius = 80) {
   return riverRows(d).map((r) => ({ ...r, km: km([lon, lat], [r.lon, r.lat]) })).filter((r) => r.km <= radius).sort((a, b) => a.km - b.km);
 }
-// "32.1 ft" with the stage that defines the gauge's category beside it.
+// The stage that defines a gauge's category, used only when NOAA's numbers for the gauge fit together: the
+// thresholds in order, the reading at or above its category's threshold, and not implausibly far above it. Some
+// lake gauges carry thresholds on a different scale from the reading (Devils Lake, ND: a 49.88 ft reading
+// against a major stage of 0.3 ft); for those the flood category stands alone, without a number.
+const CATEGORY_STAGE = { action: 'action', minor: 'flood', moderate: 'moderate', major: 'major' };
+export function threshold(r) {
+  const key = CATEGORY_STAGE[r && r.status], T = key ? r[key] : null, O = r ? r.observed : null;
+  if (!key || !Number.isFinite(T) || !Number.isFinite(O)) return null;
+  const set = [r.action, r.flood, r.moderate, r.major].filter(Number.isFinite);
+  if (set.some((x, i) => i > 0 && x < set[i - 1])) return null;
+  if (O < T - 0.05 || O - T > Math.max(15, Math.abs(T) * 0.5)) return null;
+  return { key, value: T, over: O - T };
+}
+// "32.1 ft" with the stage that defines the gauge's category beside it, when that stage fits the reading.
 export function stageText(r) {
   const u = r.units || 'ft', v = (x) => (Number.isFinite(x) ? `${Number(x).toLocaleString(undefined, { maximumFractionDigits: 2 })} ${u}` : null);
-  const thr = { major: ['major', r.major], moderate: ['moderate', r.moderate], minor: ['flood', r.flood], action: ['action', r.action] }[r.status];
-  return { now: v(r.observed), ref: thr && v(thr[1]) ? `${thr[0]} stage ${v(thr[1])}` : (v(r.flood) ? `flood stage ${v(r.flood)}` : null) };
+  const t = threshold(r);
+  return { now: v(r.observed), ref: t ? `${t.key} stage ${v(t.value)}` : null };
+}
+// Worst category first; within one, furthest above its own threshold; gauges whose threshold does not fit last.
+export function rankRivers(rows) {
+  const over = (r) => { const t = threshold(r); return t ? t.over : -Infinity; };
+  return [...rows].sort((a, b) => FLOOD[b.status].rank - FLOOD[a.status].rank || over(b) - over(a) || String(a.name).localeCompare(String(b.name)));
 }
 
 // ------------------------------------------------------------------ drinking-water systems (EPA ECHO via grid-live)

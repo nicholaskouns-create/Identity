@@ -4,7 +4,7 @@
 // as current. The relay snapshot carries its own generation time and may be cached.
 // It also shows Grid's background alerts (Web Push from the grid-alerts edge function)
 // and opens Grid at the county a notification is about.
-const VERSION = 'grid-2026-11-23-2';
+const VERSION = 'grid-2026-11-23-3';
 const PREFS = 'grid-prefs';
 const ALERTS_URL = 'https://gpkjvihkyectnenvnbng.supabase.co/functions/v1/grid-alerts';
 // The City project's public anon key: it names the project and grants only public access.
