@@ -1,15 +1,17 @@
 // Live reads through Grid's edge function (Supabase Edge Function `grid-live`, source in
-// tools/grid/supabase/grid-live): ERCOT real-time frequency and ODIN county outages. Both publishers
-// block browser reads, so the function reads them server-side, caches briefly and adds CORS.
+// tools/grid/supabase/grid-live): ERCOT real-time frequency, ODIN county outages, HHS emPOWER, NOAA river
+// gauges, EPA drinking-water systems and the U.S. Drought Monitor. The function reads them server-side,
+// caches them and adds CORS.
 export const LIVE_URL = 'https://gpkjvihkyectnenvnbng.supabase.co/functions/v1/grid-live';
 // The City project's public anon key: it names the project and grants only public access.
 export const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdwa2p2aWhreWVjdG5lbnZuYm5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNzYwOTYsImV4cCI6MjEwMDc1MjA5Nn0.WLsj1N9akCxpNVAIPj43fO9InCTHRuNz1WTPDNyuOVM';
 
-export async function fetchLive(src, { timeoutMs = 20000 } = {}) {
+export async function fetchLive(src, { timeoutMs = 20000, params = null } = {}) {
   const ctl = new AbortController();
   const h = setTimeout(() => ctl.abort(), timeoutMs);
+  const q = new URLSearchParams({ src, ...(params || {}) });
   try {
-    const r = await fetch(`${LIVE_URL}?src=${encodeURIComponent(src)}`, { headers: { Authorization: `Bearer ${ANON}`, apikey: ANON }, signal: ctl.signal, cache: 'no-store' });
+    const r = await fetch(`${LIVE_URL}?${q}`, { headers: { Authorization: `Bearer ${ANON}`, apikey: ANON }, signal: ctl.signal, cache: 'no-store' });
     const j = await r.json().catch(() => null);
     if (!r.ok || !j || j.error) throw new Error((j && j.error) || `HTTP ${r.status}`);
     return j;

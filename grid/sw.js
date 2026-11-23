@@ -4,14 +4,14 @@
 // as current. The relay snapshot carries its own generation time and may be cached.
 // It also shows Grid's background alerts (Web Push from the grid-alerts edge function)
 // and opens Grid at the county a notification is about.
-const VERSION = 'grid-2026-11-23-1';
+const VERSION = 'grid-2026-11-23-2';
 const PREFS = 'grid-prefs';
 const ALERTS_URL = 'https://gpkjvihkyectnenvnbng.supabase.co/functions/v1/grid-alerts';
 // The City project's public anon key: it names the project and grants only public access.
 const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdwa2p2aWhreWVjdG5lbnZuYm5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNzYwOTYsImV4cCI6MjEwMDc1MjA5Nn0.WLsj1N9akCxpNVAIPj43fO9InCTHRuNz1WTPDNyuOVM';
 const SHELL = [
   './', 'index.html', 'grid.css', 'app.js', 'manifest.webmanifest', 'door.js',
-  'map/map.js', 'map/fly.js', 'live/sources.js', 'live/pulse.js', 'live/alerts.js', 'live/counties.js', 'live/enf.js', 'live/enf-worklet.js', 'ui/charts.js', 'ui/panels.js', 'ui/pages.js',
+  'map/map.js', 'map/fly.js', 'live/sources.js', 'live/pulse.js', 'live/alerts.js', 'live/water.js', 'live/counties.js', 'live/enf.js', 'live/enf-worklet.js', 'ui/charts.js', 'ui/panels.js', 'ui/pages.js',
   'engine/prng.js', 'engine/linalg.js', 'engine/monitor.js', 'engine/rational.js', 'engine/certificate.js', 'engine/e47.js', 'engine/worker.js', 'engine/pins.js',
   'lib/maplibre/maplibre-gl.mjs', 'lib/maplibre/maplibre-gl-worker.mjs', 'lib/maplibre/maplibre-gl.css',
   'data/topology-ieee14.json', 'data/topology-ieee118.json', 'data/certificate-ieee14.json', 'data/certificate-ieee118.json',

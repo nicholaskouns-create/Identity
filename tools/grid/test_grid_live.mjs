@@ -77,4 +77,90 @@ assert.deepEqual(emp.rows.find((r) => r[0] === '25025'), ['25025', 115088, 3402,
 assert.equal(emp.aliases['09003'], '09110');
 assert.equal(emp.medicare, 8426 + 115088 + 6514 + 10062 + 200000); assert.equal(emp.electricityDependent, 406 + 3402 + 292 + 56 + 5000);
 assert.equal(emp.asOf, '2026-11-09T00:00:00.000Z');
+// NOAA NWPS river gauges (layer 0 of riv_gauges, f=json): the documented fields, strings for stages, blank
+// and sentinel values, a gauge outside the four flood levels, a gauge with no position, a lowercase id, and a
+// hydrograph link that is not NOAA's.
+const gauge = (o) => ({ attributes: { status: 'action', location: 'Somewhere', waterbody: 'Some River', state: 'KY', obstime: '2026-11-23 14:00:00', units: 'ft', latitude: 38.0, longitude: -84.5, ...o } });
+const riv = G.compactRivers({ features: [
+  gauge({ gaugelid: 'FKFK2', status: 'minor', location: 'Kentucky River at Frankfort', observed: '32.10', action: '29.0', flood: '31.0', moderate: '40.0', major: '48.0', url: 'https://water.noaa.gov/gauges/FKFK2', latitude: 38.2014, longitude: -84.8819 }),
+  gauge({ gaugelid: 'stlm7', status: 'MAJOR', location: 'Mississippi River at St. Louis', state: 'mo', observed: '41.2', action: '28', flood: '30', moderate: '35', major: '40', url: 'javascript:alert(1)', latitude: 38.6286, longitude: -90.1797 }),
+  gauge({ gaugelid: 'LXGK2', status: 'action', observed: '-9999', flood: ' ', action: '12' }),
+  gauge({ gaugelid: 'CYNK2', status: 'minor', observed: '24.0', flood: '20', latitude: 38.4, longitude: -84.3 }),
+  gauge({ gaugelid: 'NOFL1', status: 'no_flooding' }),
+  gauge({ gaugelid: 'ZERO1', status: 'moderate', latitude: 0, longitude: 0 }),
+  gauge({ gaugelid: 'TOOLONGID', status: 'moderate' }),
+] }, { features: [{ attributes: { status: 'no_flooding', n: 6200 } }, { attributes: { status: 'obs_not_current', n: 1400 } }, { attributes: { status: 'minor', n: 2 } }, { attributes: { status: 'major', n: 1 } }, { attributes: { status: 'action', n: 1 } }] });
+assert.deepEqual(riv.counts, { major: 1, moderate: 0, minor: 2, action: 1 });
+assert.equal(riv.inFlood, 3);
+assert.deepEqual(riv.rows.map((r) => r[0]), ['STLM7', 'CYNK2', 'FKFK2', 'LXGK2']);   // worst first; CYNK2 is 4 ft over flood stage, FKFK2 1.1 ft
+assert.equal(riv.rows[0][14], 'https://water.noaa.gov/gauges/STLM7');                 // non-NOAA link replaced
+assert.equal(riv.rows[0][4], 'MO');
+assert.equal(riv.rows[3][6], null); assert.equal(riv.rows[3][9], null);              // sentinel and blank stages read as missing
+assert.equal(riv.reporting, 6204);                                                   // gauges not reporting are left out
+assert.throws(() => G.compactRivers({ error: { code: 400, message: 'Invalid query' } }), /Invalid query/);
+assert.throws(() => G.compactRivers({ features: 'x' }), /unexpected/);
+
+// EPA ECHO drinking-water systems for one county (get_systems, output=JSON): values are strings. A transient
+// system, an inactive one, a duplicate and a malformed ID must be dropped; violations read as ECHO defines them.
+const ws = (o) => ({ PWSTypeCode: 'CWS', PWSActivityCode: 'A', PrimarySourceCode: 'GW', SNC: 'No Violation', SeriousViolator: 'No', HealthFlag: 'N', RulesVio: '0', QtrsWithVio: '0', SDWAContaminantsInCurViol: '', SDWAContaminantsInViol3yr: '', CitiesServed: '', OwnerDesc: 'Local Government', ...o });
+const wat = G.compactWater({ Results: { Message: 'Success', QueryID: '4417', QueryRows: '6', WaterSystems: [
+  ws({ PWSId: 'KY0250482', PWSName: 'WINCHESTER MUNICIPAL UTILITIES', PopulationServedCount: '24800', PrimarySourceCode: 'SW', CitiesServed: 'WINCHESTER', DfrUrl: 'http://echo.epa.gov/detailed-facility-report?fid=KY0250482&sys=SDWIS' }),
+  ws({ PWSId: 'KY0250999', PWSName: 'SMALL TOWN WATER', PopulationServedCount: '1,250', SNC: 'In Violation', HealthFlag: 'Y', RulesVio: '1', QtrsWithVio: '3', SDWAContaminantsInCurViol: 'Revised Total Coliform Rule', SeriousViolator: 'Yes', DfrUrl: 'javascript:alert(1)' }),
+  ws({ PWSId: 'KY0250482', PWSName: 'DUPLICATE ROW', PopulationServedCount: '99' }),
+  ws({ PWSId: 'KY0250111', PWSName: 'CAMPGROUND', PWSTypeCode: 'TNCWS', PopulationServedCount: '40' }),
+  ws({ PWSId: 'KY0250222', PWSName: 'CLOSED SYSTEM', PWSActivityCode: 'I', PopulationServedCount: '300' }),
+  ws({ PWSId: 'BAD', PWSName: 'MALFORMED' }),
+] } }, '21049');
+assert.equal(wat.nSystems, 2); assert.equal(wat.population, 26050); assert.equal(wat.nViolating, 1); assert.equal(wat.nPriority, 1);
+assert.deepEqual(wat.systems[0], ['KY0250482', 'WINCHESTER MUNICIPAL UTILITIES', 24800, 'SW', 'No Violation', false, false, 0, 0, '', '', 'WINCHESTER', 'Local Government', 'https://echo.epa.gov/detailed-facility-report?fid=KY0250482&sys=SDWIS']);
+assert.equal(wat.systems[1][13], '');                                                // only EPA's own report links pass
+assert.deepEqual(wat.systems[1].slice(0, 10), ['KY0250999', 'SMALL TOWN WATER', 1250, 'GW', 'In Violation', true, true, 1, 3, 'Revised Total Coliform Rule']);
+assert.equal(G.compactWater({ Results: { Message: 'Success', QueryRows: '0' } }, '02013').nSystems, 0);   // a county with none
+assert.throws(() => G.compactWater({ Results: { Error: { ErrorMessage: 'Invalid FIPS' } } }, '99999'), /Invalid FIPS/);
+assert.throws(() => G.compactWater({ Results: { Message: 'Success', QueryRows: '12' } }, '21049'), /ECHO/);   // rows promised, none sent
+assert.throws(() => G.compactWater('<html>maintenance</html>', '21049'), /unexpected/);
+
+// U.S. Drought Monitor county statistics (JSON): the latest week wins, keys in any case; the categorical form
+// is used as is, the cumulative form is converted, and shares that do not add up are refused.
+const dr = G.compactDrought([
+  { MapDate: '20261110', FIPS: '32003', County: 'Clark County', State: 'NV', None: '0.00', D0: '0.00', D1: '10.00', D2: '50.00', D3: '40.00', D4: '0.00', ValidStart: '2026-11-11', ValidEnd: '2026-11-17' },
+  { MapDate: '20261117', FIPS: '32003', County: 'Clark County', State: 'NV', None: '0.00', D0: '5.10', D1: '20.00', D2: '40.00', D3: '34.90', D4: '0.00', ValidStart: '2026-11-18', ValidEnd: '2026-11-24' },
+], '32003');
+assert.equal(dr.week, '2026-11-17'); assert.equal(dr.inDrought, 94.9); assert.equal(dr.worst, 'D3'); assert.equal(dr.d0, 5.1);
+const cum = G.compactDrought([{ mapDate: '2026-11-17T00:00:00', none: 20, d0: 80, d1: 60, d2: 25, d3: 0, d4: 0 }], '21049');
+assert.deepEqual([cum.none, cum.d0, cum.d1, cum.d2, cum.d3], [20, 20, 35, 25, 0]); assert.equal(cum.inDrought, 60); assert.equal(cum.worst, 'D2');
+assert.equal(G.compactDrought([{ MapDate: '20261117', None: 100, D0: 0, D1: 0, D2: 0, D3: 0, D4: 0 }], '21049').worst, null);
+assert.throws(() => G.compactDrought([{ MapDate: '20261117', None: 50, D0: 10, D1: 10, D2: 0, D3: 0, D4: 0 }], '21049'), /sum to 70/);
+assert.throws(() => G.compactDrought({ message: 'error' }, '21049'), /unexpected/);
+assert.throws(() => G.compactDrought([], '21049'), /no weekly/);
+// The request path, end to end with the network replaced: fixed hosts, the county code checked, results cached.
+const seen = [];
+globalThis.fetch = async (url, init) => {
+  seen.push({ url: String(url), accept: init?.headers?.accept });
+  const u = new URL(url);
+  const body = u.host === 'mapservices.weather.noaa.gov' ? (u.searchParams.get('outStatistics') ? { features: [{ attributes: { status: 'no_flooding', n: 10 } }] } : { features: [gauge({ gaugelid: 'FKFK2', status: 'minor', observed: '32', flood: '31' })] })
+    : u.host === 'echodata.epa.gov' ? { Results: { Message: 'Success', QueryRows: '1', WaterSystems: [ws({ PWSId: 'KY0250482', PWSName: 'WINCHESTER MUNICIPAL UTILITIES', PopulationServedCount: '24800' })] } }
+    : u.host === 'usdmdataservices.unl.edu' ? [{ MapDate: '20261117', None: 100, D0: 0, D1: 0, D2: 0, D3: 0, D4: 0 }] : null;
+  return new Response(JSON.stringify(body), { status: body ? 200 : 404 });
+};
+const call = async (q) => { const r = await G.handle(new Request('https://x.supabase.co/functions/v1/grid-live?' + q)); return { status: r.status, body: await r.json(), cache: r.headers.get('cache-control') }; };
+const origLog = console.log; console.log = () => {};
+let r = await call('src=water&fips=21049');
+assert.equal(r.status, 200); assert.equal(r.body.systems[0][0], 'KY0250482'); assert.match(r.cache, /max-age=3600/);
+assert.match(seen[0].url, /^https:\/\/echodata\.epa\.gov\/echo\/sdw_rest_services\.get_systems\?output=JSON&p_fips=21049&p_systyp=CWS&p_act=Y&responseset=1000$/);
+assert.equal(seen[0].accept, 'application/json');
+await call('src=water&fips=21049'); assert.equal(seen.length, 1);                   // second read served from the cache
+for (const bad of ['fips=2104', 'fips=21049x', 'fips=../x', 'fips=']) { r = await call('src=water&' + bad); assert.equal(r.status, 400); }
+assert.equal(seen.length, 1);                                                         // nothing reached EPA
+r = await call('src=rivers');
+assert.equal(r.status, 200); assert.equal(r.body.inFlood, 1); assert.equal(r.body.reporting, 10);
+assert.ok(seen.slice(1).every((x) => x.url.startsWith('https://mapservices.weather.noaa.gov/eventdriven/rest/services/water/riv_gauges/MapServer/0/query?')));
+r = await call('src=drought&fips=21049');
+assert.equal(r.status, 200); assert.equal(r.body.worst, null); assert.match(seen.at(-1).url, /^https:\/\/usdmdataservices\.unl\.edu\/api\/CountyStatistics\/GetDroughtSeverityStatisticsByAreaPercent\?aoi=21049&startdate=\d{1,2}\/\d{1,2}\/\d{4}&enddate=\d{1,2}\/\d{1,2}\/\d{4}&statisticsType=2$/);
+r = await call('src=nope'); assert.equal(r.status, 400);
+// More than 40 uncached county lookups in a minute: the rest are told to wait, and EPA is not asked.
+const before = seen.length; let busy = 0;
+for (let i = 0; i < 45; i++) { r = await call(`src=water&fips=${String(30000 + i)}`); if (r.status === 429) busy++; }
+assert.ok(busy >= 4 && seen.length - before <= 40, `busy ${busy}, upstream ${seen.length - before}`);
+console.log = origLog;
 console.log('grid-live parsers: all assertions pass');

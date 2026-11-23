@@ -11,10 +11,11 @@ Grid reads public publishers directly where they allow browser access, and throu
 
 | Tab | What it shows |
 |---|---|
-| **At a glance** | A strip across the top of the map: national load, Texas grid frequency, customers without power (red when your own county is out), whether your alerts are on, severe-weather warnings, the geomagnetic Kp index and the auditor's state. Tapping any of them opens its panel; tapping the outage figure also frames every affected county on the map. |
+| **At a glance** | A strip across the top of the map: national load, Texas grid frequency, customers without power (red when your own county is out), river gauges in flood, whether your alerts are on, severe-weather warnings, the geomagnetic Kp index and the auditor's state. Tapping any of them opens its panel; tapping the outage figure also frames every affected county on the map. |
 | **Alerts** | A notification on your phone or computer when the power goes out in a county you choose, when it comes back, and when the National Weather Service issues a severe or extreme warning there. It works with Grid closed. See [Alerts](#alerts). |
+| **Water** | The water system that serves your position and how it stands with EPA, drought in your county, rivers at flood stage across the country and near you, and the water systems in the counties where the power is out. See [Water](#water). |
 | **Search** | Press **/** or tap ⌕. It searches all 3,231 counties, every state, every utility now reporting outages and all 9,833 power plants on the device as you type, and cities and addresses through OpenStreetMap when you ask. Choosing a result flies there. |
-| **Map** | Night-light, satellite and terrain scenes on a globe. Layers: power outages by county (ODIN), transmission lines (HIFLD), the local grid around you (OpenStreetMap), 9,833 generating plants and a 3D generation skyline, severe-weather warnings, wildfires and perimeters, earthquakes, the auroral oval, last night's VIIRS Day/Night Band, the day–night terminator. Side panels show Lower-48 demand, fuel mix, operator load, space weather, the hazard exposure at your position, and the auditor. |
+| **Map** | Night-light, satellite and terrain scenes on a globe. Layers: power outages by county (ODIN), rivers at flood stage (NOAA), your water system's service area (EPA), transmission lines (HIFLD), the local grid around you (OpenStreetMap), 9,833 generating plants and a 3D generation skyline, severe-weather warnings, wildfires and perimeters, earthquakes, the auroral oval, last night's VIIRS Day/Night Band, the day–night terminator. Side panels show Lower-48 demand, fuel mix, operator load, water, space weather, the hazard exposure at your position, and the auditor. |
 | **Fly** | The map as a flight instrument, using the same imagery registry as the City flight simulators. Flight starts about 13,000 ft above the ground with **altitude hold** on, so the aircraft flies level on its own; ▲ / ▼ on screen (R / F on a keyboard) move the held altitude 2,000 ft. Pushing the stick (W/S) flies by hand, and letting go holds the altitude you are at. A/D roll, Q/E yaw, Z/X throttle, **P** flies the nearest transmission line, Esc exits. The HUD shows heading, ground speed, altitude, height above terrain, the held altitude and position. It also names the nearest plant and the nearest line, and flags any active weather warning over the aircraft. |
 | **Auditor** | Five replicas, five pipelines and the hash-chained decision ledger, live. You can inject each fault class (L0, CM2, H1, E1, CM6) and watch every pipeline decide. You can also run the acceptance protocol in a worker and compare it with the Python reference. |
 | **Formalism** | The window Λ, the gap g, the envelope ε₀ and the tolerance τ for each system, with every inertia count of the exact certificate recomputed over ℚ in the browser. Also the E47 reference instantiation computed live and checked against the City's E47 lock. |
@@ -64,10 +65,29 @@ The Eastern and Western Interconnections do not publish a live public frequency;
 - **Absolute accuracy.** The device's audio clock adds a fixed offset, typically under ±3 mHz.
 - **Privacy.** The sound never leaves the device.
 
-**The edge function.** ERCOT and ODIN do not allow browsers to read them directly, and emPOWER's county table is large, so Grid reads all three through `grid-live`, a Supabase Edge Function in the City's project. Its source is `tools/grid/supabase/grid-live/index.ts`, with tests in `tools/grid/test_grid_live.mjs`.
-- **Fixed upstreams.** Its three sources are fixed in the code, and no request parameter becomes a URL.
-- **Caching.** Each instance caches ERCOT for 8 seconds, ODIN for 60 and emPOWER for 12 hours, so the publishers see one read per interval however many people have Grid open. Grid also keeps the emPOWER table on the device for 12 hours.
+**The edge function.** ERCOT and ODIN do not allow browsers to read them directly, and emPOWER's county table is large, so Grid reads them through `grid-live`, a Supabase Edge Function in the City's project. The water sources go through it too (see [Water](#water)). Its source is `tools/grid/supabase/grid-live/index.ts`, with tests in `tools/grid/test_grid_live.mjs`.
+- **Fixed upstreams.** Its sources are fixed in the code. The only request value that reaches a publisher's URL is a county code, checked to be exactly five digits, and county lookups that miss the cache are capped at 40 a minute per instance.
+- **Caching.** Each instance caches ERCOT for 8 seconds, ODIN for 60, river gauges for 10 minutes, a county's drought for 6 hours, a county's water systems for 24 hours and emPOWER for 12 hours, so the publishers see one read per interval however many people have Grid open. Grid also keeps the emPOWER table on the device for 12 hours.
 - **Freshness.** Grid polls it every 10 seconds for frequency and every 60 for outages. The panels show the age of each reading.
+
+## Water
+
+**Your water system.** Once you allow location, the Water panel names the water system that serves your position and shows how it stands with EPA.
+- **Which system.** EPA's national map of public water system service areas (version 3, March 2026) holds a boundary for most community water systems. Some boundaries come from the water systems and states, and EPA modeled the rest; the panel says which. Grid asks the map with a box about 2 km across around you and finds the boundary that holds your position on the device. Where boundaries overlap, as a wholesaler's does with the towns it sells to, the smallest one holding you is yours and the others are listed.
+- **How it stands.** EPA ECHO's Drinking Water System Search, over the federal Safe Drinking Water Information System, gives every active community water system serving your county. The panel shows the population it serves, its source water, and ECHO's compliance fields in ECHO's own terms: violations in the latest quarter and the contaminants involved, the quarters in violation over the past three years (of 12), whether EPA treats it as an enforcement priority, and whether health-based violations are on record. States report quarterly, and the federal copy can trail by three to six months.
+- **No boundary at your position.** Homes on private wells and some small systems are not mapped. The panel then lists your county's systems, largest first, with how each stands.
+
+**Boil-water notices.** No national feed of boil-water notices exists: each water system or state issues its own, by text or phone, on local news or on the utility's website. Grid cannot show them, and says so. The panel carries the CDC's guidance: bring clear water to a rolling boil for 1 minute (3 minutes above 6,500 feet); use bottled or boiled water for drinking, cooking and brushing teeth, and ready-to-use formula for babies if possible; boiling does not remove chemicals, so a do-not-drink notice means bottled water.
+
+**Water where the power is out.** Water systems pump and treat with electricity, and a loss of pressure can lead to a boil-water notice. For the three counties with the most customers out (1,000 or more), the panel shows how many community water systems serve them and how many people. When your own county has 1,000 or more customers out, your water card says that pressure can drop.
+
+**Rivers at flood stage.** NOAA's National Water Prediction Service publishes every river gauge's latest stage and flood category; NOAA refreshes it every 30 minutes, and most stages come from USGS stream gauges.
+- **On the map.** Every gauge at action stage or above is a drop in the National Weather Service flood colours: yellow near flood stage, orange minor, red moderate, purple major. Each popup gives the stage, the threshold it has passed, and a link to the gauge's NOAA hydrograph and forecast.
+- **In the panel.** Counts by category, the worst gauges, and whether any gauge within 50 miles of you is at or near flood stage.
+
+**Drought.** The U.S. Drought Monitor's county statistics for the latest weekly map: the share of your county in drought (D1 to D4) and the worst category present.
+
+**Through the edge function.** Rivers, county water systems and drought come through `grid-live` (`?src=rivers`, `?src=water&fips=`, `?src=drought&fips=`). Your water system's boundary comes straight from EPA's map service.
 
 ## Alerts
 
@@ -123,6 +143,10 @@ Grid can tell you when the power goes out where you or your family live, with Gr
 | Real-time frequency, time error, inertia, demand, wind, solar (Texas) | ERCOT Real-Time System Conditions, via `grid-live` | ◆ | 10 s |
 | Your outlet's frequency (on request) | This device's microphone; nothing leaves it | ● | 0.1 s |
 | Medicare beneficiaries who rely on electricity-dependent medical equipment, by county | HHS emPOWER Program (CMS, HHS) public REST service, via `grid-live` | ◆ | monthly (HHS); 12 h cache |
+| River gauges at or near flood stage | NOAA National Water Prediction Service, via `grid-live` | ◆ | 30 min (NOAA); 10 min cache |
+| Community water systems by county, with EPA compliance status | EPA ECHO Drinking Water System Search (SDWIS/Fed), via `grid-live` | ◆ | quarterly (states); 24 h cache |
+| Your water system's service area (with your location) | EPA public water system service areas | ● | once per place |
+| Drought in your county (with your location) | U.S. Drought Monitor (NDMC, USDA, NOAA), via `grid-live` | ◆ | weekly; 6 h cache |
 | Background alerts for your counties (on request) | `grid-alerts` over Web Push, reading ODIN and the NWS | ● | 5 min |
 | County boundaries (1:10m) | U.S. Census Bureau via us-atlas 3.0.1 | ■ | fixed |
 | Place search (on request) | OpenStreetMap Nominatim | ● | on request |
@@ -140,7 +164,7 @@ Grid can tell you when the power goes out where you or your family live, with Gr
 | 9,833 U.S. generating plants | WRI Global Power Plant Database v1.3.0 (EIA-860) | ■ | fixed |
 | IEEE 14-bus and 118-bus systems | MATPOWER case files via PYPOWER 5.1.21 | ■ | fixed |
 
-Privacy: your GPS position stays on your device. The only time any of it leaves is as the bounding box of an Overpass query, and only when you ask for the local grid. The EIA key is stored in your browser and sent only to `api.eia.gov`. With alerts on, Grid's server keeps your device's push address, your counties and your alert choices, and nothing else; see [Alerts](#alerts).
+Privacy: your GPS position stays on your device. Parts of it leave in three forms only: the bounding box of an Overpass query for the local grid; a box about 2 km across sent to EPA's service-area map to find your water system; and your county's five-digit code, sent to `grid-live` for its water systems and drought. The EIA key is stored in your browser and sent only to `api.eia.gov`. With alerts on, Grid's server keeps your device's push address, your counties and your alert choices, and nothing else; see [Alerts](#alerts).
 
 ## The relay
 
@@ -282,9 +306,12 @@ python3 tools/grid/acceptance.py --trials14 240 --trials118 40 --seed 47
 # browser engine agrees with the reference, trial by trial
 node --test grid/engine/monitor.test.mjs
 
-# outlet meter on synthetic hum; edge-function parsers on ERCOT, ODIN and emPOWER fixtures
+# outlet meter on synthetic hum; edge-function parsers and request path on ERCOT, ODIN, emPOWER, NOAA, EPA ECHO and Drought Monitor fixtures
 node grid/engine/enf.test.mjs
 node tools/grid/test_grid_live.mjs
+
+# water in the browser: service-area matching and ring orientation, the rounded EPA query, rivers near you, EPA standing
+node tools/grid/test_grid_water.mjs
 
 # alert service: encryption against http_ece, VAPID against an independent verifier, then end to end
 npm install --prefix /tmp/wpt web-push@3.6.7 http_ece@1.2.0
@@ -312,14 +339,14 @@ grid/
   map/       map.js (scenes, layers, terminator, GPS), fly.js (flight model, HUD, line patrol)
   live/      sources.js (publishers, parsers, evidence classes), pulse.js (grid-live reads, interconnections),
              counties.js (county geometry and lookup), enf.js + enf-worklet.js (outlet frequency meter),
-             alerts.js (background alerts, the medical-equipment plan)
+             alerts.js (background alerts, the medical-equipment plan), water.js (rivers, service areas, EPA standing)
   engine/    linalg, rational, certificate, monitor, e47, prng, worker, pins
   ui/        charts, panels, pages
   data/      topologies, certificates, CM2 surveys, plants, states, BA metadata, reference run, doorway survey
   lib/       MapLibre GL JS 6.19.0 (vendored)
   fonts/     Newsreader, IBM Plex Sans and Mono, DejaVu Sans Mono (formula glyphs), with licences
   sw.js, manifest.webmanifest, door.js, og-grid.png, cover-grid.jpg, icons/
-tools/grid/supabase/grid-live/index.ts   the edge function for ERCOT, ODIN and HHS emPOWER
+tools/grid/supabase/grid-live/index.ts   the edge function for ERCOT, ODIN, HHS emPOWER, NOAA rivers, EPA ECHO water systems and drought
 tools/grid/supabase/grid-alerts/         the alert service: index.ts (requests and the sweep), logic.ts (what is due), webpush.ts (RFC 8291 + VAPID)
 tools/grid/supabase/migrations/          its two tables and the five-minute schedule
 tools/grid/  build_grid_data.py, acceptance.py, prng.py, relay.py, render_share_card.py, share_card.html, install_door.py
