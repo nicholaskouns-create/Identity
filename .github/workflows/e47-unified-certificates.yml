@@ -24,7 +24,7 @@ jobs:
           for f in formal/e47/unified/{Core47,RGFixed,Retention,Clock,EncodedOracle,Spin2Generators,Tensor125}.lean; do
             lean "$f" | tee -a lean-unified-axioms.txt
           done
-          for theorem in candidateCasimirSpectrum_exact candidateCasimirMoments candidateCasimirFirstMomentMatchesConcreteTrace concreteCasimirZ_first_five_columns concreteCasimirZ_next_five_columns concreteCasimirZ_columns_ten_through_fourteen concreteCasimirZ_columns_fifteen_through_nineteen; do
+          for theorem in candidateCasimirSpectrum_exact candidateCasimirMoments candidateCasimirFirstMomentMatchesConcreteTrace concreteCasimirZ_first_five_columns concreteCasimirZ_next_five_columns concreteCasimirZ_columns_ten_through_fourteen; do
             grep -Fq "E47Tensor125.${theorem}" lean-unified-axioms.txt
           done
           sha256sum formal/e47/unified/Tensor125.lean > lean-unified-sha256.txt
@@ -69,6 +69,44 @@ jobs:
             coq-unified-version.txt
             coq-unified-sha256.txt
             coq-unified-commit.txt
+
+  lean-casimir-z-15-19:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify shared concrete spin-2 generators are unchanged
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('formal/e47/unified')
+          base = (root / 'Tensor125.lean').read_text().split('theorem highest_weight', 1)[0]
+          separate = (root / 'Tensor125CasimirZ15to19.lean').read_text().split('/-! ## Isolated', 1)[0]
+          assert base == separate, 'concrete generator definitions drifted'
+          print('CASIMIR_Z_15_19_SHARED_GENERATORS_MATCH')
+          PY
+      - name: Install pinned Lean 4.19.0
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile isolated 625-entry theorem and audit axioms
+        run: |
+          set -euo pipefail
+          lean --version | tee lean-casimir-z-15-19-version.txt
+          lean formal/e47/unified/Tensor125CasimirZ15to19.lean | tee lean-casimir-z-15-19-axioms.txt
+          grep -Fq "'E47Tensor125.concreteCasimirZ_columns_fifteen_through_nineteen' depends on axioms: [propext]" lean-casimir-z-15-19-axioms.txt
+          sha256sum formal/e47/unified/Tensor125CasimirZ15to19.lean > lean-casimir-z-15-19-sha256.txt
+          git rev-parse HEAD > lean-casimir-z-15-19-commit.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lean-casimir-z-15-19-axiom-audit
+          path: |
+            lean-casimir-z-15-19-version.txt
+            lean-casimir-z-15-19-axioms.txt
+            lean-casimir-z-15-19-sha256.txt
+            lean-casimir-z-15-19-commit.txt
 
   integer-matrix:
     runs-on: ubuntu-latest
