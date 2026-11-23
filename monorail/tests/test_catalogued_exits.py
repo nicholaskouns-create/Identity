@@ -569,5 +569,52 @@ class CataloguedExitTests(unittest.TestCase):
         self.assertEqual(same.full_url, unpinned + "?canonical=1")
 
 
+    def test_json_certificate_exit_rejects_html_fallback(self):
+        # Real HTTP responses: a static .json certificate must not be
+        # counted as a working JSON exit when Pages returns an HTML fallback.
+        # A valid JSON MIME and an unrelated HTML application remain OK.
+        from http.server import BaseHTTPRequestHandler, HTTPServer
+        from threading import Thread
+
+        class JsonExitServer(BaseHTTPRequestHandler):
+            def do_GET(self):
+                if self.path == "/certificate.json":
+                    mime, payload = "text/html; charset=utf-8", b"<html>fallback</html>"
+                elif self.path == "/valid.json":
+                    mime, payload = "application/json; charset=utf-8", b'{"ok":true}'
+                else:
+                    mime, payload = "text/html; charset=utf-8", b"<html>app</html>"
+                self.send_response(200)
+                self.send_header("Content-Type", mime)
+                self.send_header("Content-Length", str(len(payload)))
+                self.end_headers()
+                self.wfile.write(payload)
+
+            def log_message(self, *_):
+                pass
+
+        server = HTTPServer(("127.0.0.1", 0), JsonExitServer)
+        thread = Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        base = f"http://127.0.0.1:{server.server_port}"
+        try:
+            for suffix, expected, error_type in (
+                ("/certificate.json", "http_error", "unexpected_json_content_type"),
+                ("/valid.json", "http_ok", None),
+                ("/app/", "http_ok", None),
+            ):
+                with self.subTest(suffix=suffix):
+                    row = {"station": "time", "label": "Clock certificate",
+                           "url": base + suffix, "state": "live"}
+                    receipt = probe.probe_exit(row, timeout=3)
+                    self.assertEqual(receipt["http_status"], 200)
+                    self.assertEqual(receipt["outcome"], expected)
+                    self.assertEqual(receipt.get("error_type"), error_type)
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=3)
+
+
 if __name__ == "__main__":
     unittest.main()

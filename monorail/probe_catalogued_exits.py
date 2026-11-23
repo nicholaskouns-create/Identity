@@ -227,6 +227,19 @@ def probe_exit(row: dict, timeout: float = 15) -> dict:
             response.read(1)
             result["outcome"] = ("http_ok" if 200 <= response.status < 400
                                  else "http_error")
+            # Certificate and machine-data exits are typed JSON resources.
+            # A Pages HTML fallback can return HTTP 200 while providing no
+            # usable certificate. Do not classify that as a working JSON exit.
+            # Other exits include HTML, source files and scripts; their media
+            # types remain deliberately outside this narrow check.
+            if urlsplit(url).path.lower().endswith(".json"):
+                content_type = response.headers.get_content_type().lower()
+                result["content_type"] = content_type
+                if (result["outcome"] == "http_ok"
+                        and content_type != "application/json"
+                        and not content_type.endswith("+json")):
+                    result["outcome"] = "http_error"
+                    result["error_type"] = "unexpected_json_content_type"
             reviewed = REVIEWED_EXTERNAL_REDIRECTS.get(row["url"])
             if (reviewed and observed_final_url
                     and urlsplit(observed_final_url)._replace(fragment="").geturl()
