@@ -1,0 +1,29 @@
+name: Monorail independent receipt audit
+on:
+  pull_request:
+    paths:
+      - 'monorail/independent_receipt_audit.py'
+      - 'monorail/test_independent_receipt_audit.py'
+      - 'monorail/INDEPENDENT-VALIDATION.md'
+      - '.github/workflows/monorail-independent-receipt-audit.yml'
+  push:
+    paths:
+      - 'monorail/independent_receipt_audit.py'
+      - 'monorail/test_independent_receipt_audit.py'
+      - 'monorail/INDEPENDENT-VALIDATION.md'
+      - '.github/workflows/monorail-independent-receipt-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  independent-receipts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Synthetic receipt and independent producer cross-check
+        run: python -m unittest discover -s monorail -p 'test_independent_receipt_audit.py' -v
+      - name: Syntax verification
+        run: python -m py_compile monorail/independent_receipt_audit.py
