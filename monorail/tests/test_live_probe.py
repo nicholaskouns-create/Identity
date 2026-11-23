@@ -395,5 +395,59 @@ class PublicDoorProbeTests(unittest.TestCase):
         self.assertEqual(canonical.full_url, unpinned + "?canonical=1")
 
 
+
+    def test_monorail_entry_empty_200_and_204_never_count_as_undeployed_source(self):
+        # Real HTTP server: an empty public Monorail entry cannot be excused
+        # as merely an undeployed feature branch's source-byte mismatch.
+        from http.server import BaseHTTPRequestHandler, HTTPServer
+        from threading import Thread
+
+        payload = probe.CORPUS.read_bytes()
+
+        class EntryServer(BaseHTTPRequestHandler):
+            def do_GET(self):
+                if self.path == "/empty":
+                    status, body = 200, b""
+                elif self.path == "/no-content":
+                    status, body = 204, b""
+                else:
+                    status, body = 200, payload
+                self.send_response(status)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                if body:
+                    self.wfile.write(body)
+
+            def log_message(self, *_):
+                pass
+
+        server = HTTPServer(("127.0.0.1", 0), EntryServer)
+        thread = Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        base = f"http://127.0.0.1:{server.server_port}"
+        try:
+            for path, status in (("/empty", 200), ("/no-content", 204)):
+                with self.subTest(path=path):
+                    with patch.object(probe, "SOURCE_URL", base + path):
+                        result = probe.probe_monorail_source(timeout=3)
+                    self.assertEqual(result["http_status"], status)
+                    self.assertEqual(result["outcome"], "http_error")
+                    self.assertEqual(result.get("error_type"), "empty_response_body")
+                    receipt = {"monorail_entry": result,
+                               "http_error": 0, "network_error": 0}
+                    self.assertEqual(
+                        probe.exit_status(receipt, allow_undeployed_source=True), 1
+                    )
+            with patch.object(probe, "SOURCE_URL", base + "/healthy"):
+                good = probe.probe_monorail_source(timeout=3)
+            self.assertEqual(good["outcome"], "http_ok")
+            self.assertTrue(good["matches_source"])
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=3)
+
+
 if __name__ == "__main__":
     unittest.main()

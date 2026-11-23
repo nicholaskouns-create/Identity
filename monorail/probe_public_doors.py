@@ -188,9 +188,16 @@ def probe_monorail_source(path: Path = CORPUS, timeout: float = 12) -> dict:
             record["http_status"] = response.status
             record["served_sha256"] = hashlib.sha256(payload).hexdigest()
             record["matches_source"] = record["served_sha256"] == expected
-            record["outcome"] = ("http_error" if response.status >= 400
-                                 else "http_ok" if record["matches_source"]
-                                 else "source_mismatch")
+            # A zero-byte entry is not a deploy-version mismatch. In PR
+            # mode source_mismatch is intentionally tolerated, so treating
+            # an empty 200/204 as such would conceal a non-navigable entry.
+            if not payload:
+                record["outcome"] = "http_error"
+                record["error_type"] = "empty_response_body"
+            else:
+                record["outcome"] = ("http_error" if not 200 <= response.status < 300
+                                     else "http_ok" if record["matches_source"]
+                                     else "source_mismatch")
     except DoorIdentityRedirectBlocked as error:
         record["http_status"] = error.code
         record["outcome"] = "door_identity_redirect_blocked"
