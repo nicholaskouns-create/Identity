@@ -194,10 +194,40 @@ $("enableAI").addEventListener("click",async()=>{
  $("aiProgress").textContent="Local model initialized. Sources remain visible; all generated text is marked MODEL DRAFT.";
  $("enableAI").textContent="Local AI ready ✓";
 });
-$("cityPacket").addEventListener("click",()=>{
+const VIEWER_SOURCES=new Set([...$("viewerSource").options].map(o=>o.value));
+$("viewerSource").addEventListener("change",()=>{$("viewerOpen").href=$("viewerSource").value;});
+$("viewerLoad").addEventListener("click",()=>{
+ const src=$("viewerSource").value;
+ if(!VIEWER_SOURCES.has(src))return;
+ $("viewerPlaceholder").hidden=true;
+ const frame=$("viewerFrame");frame.hidden=false;frame.src=src;
+ $("viewerOpen").href=src;
+ notify("VIEWING EXTERNAL INSTRUMENT · NO MIRROR DATA SHARED");
+});
+function buildCityPacket(){
  const now=new Date().toISOString();
- const query={schema:"CITY-QUERY/1.0",query_code:"SEE-"+Date.now().toString(36).toUpperCase(),title:"SEE evidence reflection / user-exported",prompt:"Analyze these user-provided statements while preserving source labels, contradictions, uncertainty and unknowns. Do not treat a rank-47 projection as a truth classifier.",task_type:"evidence_reflection",observations:[],requested_sources:[...new Set(records.map(r=>r.url).filter(Boolean))],blind_sources:[],metadata:{from:"SEE/1.0",no_evidence_promotion:true,note:"NOT a density-reconstruct input: no 0–4 carrier coordinates supplied.",evidence:records.map(r=>({statement:r.statement,source:r.source,kind:r.kind,url:r.url}))},created_at:now};
- download(query.query_code+".json",JSON.stringify(query,null,2));notify("CITY QUERY PACKET EXPORTED LOCALLY — NOT PUBLISHED");
+ return {schema:"CITY-QUERY/1.0",query_code:"SEE-"+Date.now().toString(36).toUpperCase(),title:"SEE evidence reflection / user-authorized",prompt:"Analyze user-provided statements preserving provenance, uncertainty, contradictions and unresolved observations. A spectral rank does not determine truth.",task_type:"evidence_reflection",observations:[],requested_sources:[...new Set(records.map(r=>r.url).filter(Boolean))],blind_sources:[],metadata:{from:"SEE/1.0",no_evidence_promotion:true,note:"NOT a density-reconstruct input: no 0–4 carrier coordinates supplied.",evidence:records.map(r=>({statement:r.statement,source:r.source,kind:r.kind,url:r.url}))},created_at:now};
+}
+$("cityPacket").addEventListener("click",()=>{
+ const query=buildCityPacket();
+ download(query.query_code+".json",JSON.stringify(query,null,2));
+ $("cityStatus").textContent="CITY-QUERY/1.0 packet downloaded locally. Not published.";
+ notify("CITY QUERY PACKET EXPORTED LOCALLY — NOT PUBLISHED");
+});
+$("cityPublish").addEventListener("click",async()=>{
+ if(!records.length){$("cityStatus").textContent="No evidence records to publish.";return;}
+ if(window.top!==window.self){$("cityStatus").textContent="Publishing is disabled inside an embedded frame. Open SEE directly.";return;}
+ const allow=confirm("Publish all current SEE evidence records to the existing City Query bus? This will broadcast to other open Mathematical City tabs on this origin and persist the last packet in this browser's localStorage. This is not a private sync service. Continue?");
+ if(!allow)return;
+ try{
+  if(location.origin!=="https://nicholaskouns-create.github.io")throw Error("City Query bus requires the published Mathematical City origin.");
+  const original=await import("/E47-Kartekeya/interfaces/shared/city-query.js");
+  const raw=buildCityPacket();
+  const packet=original.makeCityQuery(raw);
+  const bus=original.installCityQuery({surface:"SEE-EVIDENCE-MIRROR"});
+  bus.publish(packet);
+  $("cityStatus").textContent="Published locally through the existing CITY-PULSE/1.0 transport: "+packet.query_code+". No agent completion is implied.";
+ }catch(e){$("cityStatus").textContent="Publish unavailable: "+e.message+". The local packet export remains available.";}
 });
 if("serviceWorker"in navigator&&location.protocol==="https:")navigator.serviceWorker.register("./sw.js").catch(()=>{});
 const v=location.hash.replace("#","");setView(["mirror","evidence","sources","method"].includes(v)?v:"mirror");
