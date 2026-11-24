@@ -146,21 +146,49 @@ $("askForm").addEventListener("submit",async e=>{
 $("question").addEventListener("keydown",e=>{
  if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();$("askForm").requestSubmit();}
 });
+async function loadMobileModel(){
+ $("aiProgress").textContent="Initializing small free on-device CPU model (Transformers.js / WASM)…";
+ const lib=await import("https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2");
+ let pipe;
+ try{
+  pipe=await lib.pipeline("text-generation","onnx-community/SmolLM2-135M-Instruct-ONNX-GQA",{
+   device:"wasm",dtype:"q4",progress_callback:p=>{$("aiProgress").textContent=p?.status==="progress"?"Downloading CPU model: "+Math.round(p.progress||0)+"%":"Preparing CPU model…";}
+  });
+ }catch(first){
+  $("aiProgress").textContent="Trying alternative CPU quantization…";
+  pipe=await lib.pipeline("text-generation","onnx-community/SmolLM2-135M-Instruct-ONNX-GQA",{device:"wasm",dtype:"q8"});
+ }
+ return {chat:{completions:{create:async({messages,max_tokens})=>{
+  const out=await pipe(messages,{max_new_tokens:Math.min(220,max_tokens||220),do_sample:false});
+  const raw=out?.[0]?.generated_text;
+  const content=Array.isArray(raw)?String(raw.at(-1)?.content||""):String(raw||"");
+  return {choices:[{message:{content}}]};
+ }}}};
+}
 $("enableAI").addEventListener("click",async()=>{
  if(engine){notify("LOCAL MODEL ALREADY ACTIVE");return}
- if(!("gpu" in navigator)){$("aiProgress").textContent="WebGPU is unavailable on this device. The evidence engine remains fully usable.";return}
  $("enableAI").disabled=true;
- try{
- $("aiProgress").textContent="Loading the free WebLLM runtime. This may require a large one-time model download.";
- const lib=await import("https://esm.run/@mlc-ai/web-llm");
- engine=await lib.CreateMLCEngine(MODEL,{initProgressCallback:p=>{$("aiProgress").textContent=p?.text||"Loading on-device model…"}});
- $("modelState").textContent="ON-DEVICE AI";
- $("aiProgress").textContent="Local language model ready. Source retrieval stays active; generated explanations remain marked DRAFT.";
- $("enableAI").textContent="Model ready ✓";
- }catch(e){
-  engine=null;$("enableAI").disabled=false;
-  $("aiProgress").textContent="Local AI could not initialize: "+e.message+". The evidence engine remains available.";
+ let gpuError="";
+ if("gpu" in navigator){
+  try{
+   $("aiProgress").textContent="Downloading WebGPU model on your device (first use can be large)…";
+   const lib=await import("https://esm.run/@mlc-ai/web-llm");
+   engine=await lib.CreateMLCEngine(MODEL,{initProgressCallback:p=>{$("aiProgress").textContent=p?.text||"Loading WebGPU model…"}});
+   $("modelState").textContent="ON-DEVICE AI · GPU";
+  }catch(e){gpuError=e.message;engine=null;}
  }
+ if(!engine){
+  try{
+   engine=await loadMobileModel();
+   $("modelState").textContent="ON-DEVICE AI · CPU";
+  }catch(e){
+   engine=null;$("enableAI").disabled=false;
+   $("aiProgress").textContent="On-device model unavailable"+(gpuError?" (GPU: "+gpuError+")":"")+": "+e.message+". The free evidence mirror remains usable.";
+   return;
+  }
+ }
+ $("aiProgress").textContent="Local model initialized. Sources remain visible; all generated text is marked MODEL DRAFT.";
+ $("enableAI").textContent="Local AI ready ✓";
 });
 $("cityPacket").addEventListener("click",()=>{
  const now=new Date().toISOString();
