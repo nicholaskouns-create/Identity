@@ -51,6 +51,9 @@ jobs:
       - name: Concrete Casimir numerical cross-check (E1, not formal proof)
         run: python3 validation/lane19_casimir_numeric.py
 
+      - name: Concrete Casimir exact integer and global spectral cross-check (computed, not Lean/Coq)
+        run: python3 validation/e47_global_casimir_root_discovery.py
+
       - name: Monorail scenario tests
         run: python3 monorail/tests/test_monorail.py
 
