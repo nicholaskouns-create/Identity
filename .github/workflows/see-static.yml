@@ -1,0 +1,34 @@
+name: SEE static and evidence tests
+on:
+  push:
+    paths:
+      - 'see/**'
+      - '.github/workflows/see-static.yml'
+  pull_request:
+    paths:
+      - 'see/**'
+      - '.github/workflows/see-static.yml'
+  workflow_dispatch:
+jobs:
+  see:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: |
+          node --check see/engine.mjs
+          node --check see/app.mjs
+          node --check see/sw.js
+      - name: Test evidence engine
+        run: node --test see/engine.test.mjs
+      - name: Static app file checks
+        run: |
+          test -f see/index.html
+          test -f see/style.css
+          test -f see/manifest.webmanifest
+          test -f see/favicon.svg
