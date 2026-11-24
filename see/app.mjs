@@ -1,4 +1,4 @@
-import {SCHEMA,newRecord,rank,reflect,tensions,exportArchive,importArchive,sourceContext} from "./engine.mjs";
+import {SCHEMA,newRecord,rank,reflect,tensions,evidenceVector,exportArchive,importArchive,sourceContext} from "./engine.mjs";
 const $=id=>document.getElementById(id);
 const STORAGE="SEE_RECORDS_V1";
 const MODEL="Llama-3.2-1B-Instruct-q4f16_1-MLC";
@@ -103,6 +103,10 @@ function addMessage(who,text,status="",hits=[]){
  msg.append(make("div","speaker",who+" / "+new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})));
  if(status){const t=make("span","tag"+(status.includes("UNKNOWN")||status.includes("INSUFFICIENT")?" unknown":""),status);msg.append(t);}
  msg.append(make("div","message-text",text));
+ if(who==="SEE"){
+  const v=evidenceVector(hits||[]);
+  msg.append(make("div","truth-vector","EVIDENCE VECTOR · RECORDS "+v.cited_records+" · SOURCE URLS "+v.source_urls+" · TENSION CANDIDATES "+v.possible_tensions+" · UNKNOWN "+(v.unknown?"YES":"NOT RESOLVED")));
+ }
  if(hits?.length){
  const c=make("div","receipts");
  hits.forEach((h,i)=>{
