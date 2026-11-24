@@ -10,3 +10,5 @@ test("import and export preserve statements",()=>assert.equal(importArchive(expo
 test("rejects invalid URLs",()=>assert.throws(()=>newRecord("x","s","external","javascript:alert(1)")));
 test("tensions are flagged, not resolved",()=>assert.equal(tensions([{...a,statement:"The gate has passed controls."},{...b,statement:"The gate has not passed controls."}]).length,1));
 test("Unicode tokens",()=>assert.ok(tokens("Spectral E₄₇ symmetry").length>0));
+
+test("built/made retrieval aliases",()=>assert.equal(rank("What have I made?",[a,b])[0].record.id,"a"));
