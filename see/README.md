@@ -40,3 +40,6 @@ For end-to-end browser review, serve the repository root using \`python3 -m http
 
 ## Coexistence
 No existing app is replaced, no common adjudicating authority is created and the City surfaces remain independently addressable. The packet is compatible with CITY-QUERY/1.0 but does not silently push data across origins.
+
+### Same-origin storage boundary
+GitHub Pages hosts SEE alongside other Mathematical City paths under `nicholaskouns-create.github.io`. Browser `localStorage` is **origin-scoped, not path-scoped**. Any script executing on that origin may read locally stored records. Avoid entering secrets unless the app is moved to an isolated origin or given client-side encryption. Third-party model runtime JavaScript is downloaded only following a direct user action.
