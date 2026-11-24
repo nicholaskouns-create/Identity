@@ -58,3 +58,8 @@ export function importArchive(text) {
 export function sourceContext(hits) {
  return hits.map((h,i)=>"["+(i+1)+"] ("+h.record.kind+"; "+h.record.source+(h.record.url?"; "+h.record.url:"")+") "+h.record.statement).join("\n");
 }
+export function evidenceVector(hits) {
+  const rows=hits.map(x=>x.record||x);
+  const urls=new Set(rows.map(r=>r.url).filter(Boolean));
+  return {cited_records:rows.length,source_urls:urls.size,inference_records:rows.filter(r=>r.kind==="inferred").length,possible_tensions:tensions(rows).length,unknown:rows.length===0};
+}
