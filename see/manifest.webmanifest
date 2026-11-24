@@ -1,0 +1,18 @@
+{
+  "name": "SEE — An AI to Mirror You",
+  "short_name": "SEE",
+  "description": "Free, local-first, evidence-grounded personal AI mirror",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#090e10",
+  "theme_color": "#090e10",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    }
+  ]
+}
