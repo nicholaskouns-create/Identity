@@ -111,7 +111,7 @@ Forward recovery only:
 
 ```sh
 python3 run_route.py KX-E47-KERNEL          # needs lean 4.35.0, coqc 8.18.0, numpy
-python3 monorail/tests/test_monorail.py     # 15 scenarios
+python3 monorail/tests/test_monorail.py     # 18 scenarios (see DEPLOYMENT.md)
 python3 monorail/tests/test_canonical_crosslang.py   # Python/SQL/JS agreement
 python3 monorail/tests/test_migration_pg.py # 15 migration integrity tests
 ```
@@ -128,12 +128,34 @@ CI runs all four: `.github/workflows/monorail-route.yml`.
    objects. Floats, NaN/Infinity and U+0000 are rejected, not supported.
 6. Six of nine theorem identifiers match **no** City citizen. They are
    reported, never auto-created.
-7. The carrier bridge (`E47Bridge`, E47-CORE-003) connects the **weight
-   data** of the concrete 125-state operator to the block decomposition
-   that yields 47, with three independent trace cross-checks. It does
-   **not** connect the **eigenspaces**. `E47Centrality` (E47-CORE-004)
-   adds lane #17's Z half: `[C, Z] = 0` on the genuine 125-term product,
-   proved structurally after a brute-force `decide` was OOM-killed at 10
-   minutes. Still open: `[C, U] = 0`, `[C, D] = 0`, and the identification
-   of C's eigenspaces with the spin blocks (lane #19). So
-   `dim ker (C−6I)(C−30I) = 47` for the full Casimir remains open.
+7. The abstract carrier bridge (`E47Bridge`, E47-CORE-003) derives the
+   spin multiplicities and the 47-dimensional isotypic selection, but does
+   **not** alone identify the concrete Casimir eigenspaces.
+8. A stronger, already committed concrete source exists at
+   `formal/e47/E47ConcreteMatrix.lean`. It constructs the **actual 125×125
+   integer Casimir** and states machine-checkable identities:
+   `casimir_annihilator`, `selected_subspace_is_kernel`,
+   `scaled_projector_is_idempotent`, `scaled_projector_trace`, and
+   `kernel_bezout`. The source uses Mathlib and `native_decide`; its
+   compiler execution and axiom ledger must be checked independently rather
+   than inferred from source text.
+9. Taken together over characteristic zero, the latter identities already
+   give a direct algebraic path to **dim ker K = 47**, without waiting for
+   an explicit Clebsch–Gordan isometry: for `P = projectorNumerator/1814400`,
+   `P²=P`, `K P=0`, and `P+K B=I`, so `im(P)=ker(K)`; its trace
+   is 47, hence its rank is 47. The corresponding explicitly packaged
+   concrete rank theorem, paired Lean/Coq proof and current CI readback
+   remain separate formalization obligations in issue #244. Do not describe
+   this source inspection as a newly compiled proof.
+10. The existing `validation/e47_global_casimir_root_discovery.py` is a
+    separate **exact-integer computation** of all three commutators,
+    seven spectral multiplicities and rank/nullity on the concrete carrier.
+    The Monorail PR workflow now exercises it alongside the numerical
+    regression. It supplies computed evidence, not a Lean/Coq certificate.
+11. `E47Centrality.lean` is not present at
+    `formal/e47/E47Centrality.lean` on the inspected main branch. A
+    historical operations claim about its Z proof is not a substitute for
+    identifying and compiling the original source. The concrete
+    `[C,Z]=[C,U]=[C,D]=0` formulas are mathematically supported by the
+    standard spin commutation relations; current formal compilation of
+    the exact concrete statements remains to be inspected.

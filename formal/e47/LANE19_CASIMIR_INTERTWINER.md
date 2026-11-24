@@ -8,6 +8,39 @@ Status: **OPEN proof obligation**, not a completed theorem. Additive research ar
 - `formal/e47/E47BlockCasimir.lean`: total-weight grading yields fiber sizes 1,3,6,10,15,18,19,18,15,10,6,3,1; it does **not** yet identify the concrete Casimir eigenspaces with the spin blocks.
 - `monorail/OPERATIONS.md`: Z-commutation established by E47Centrality as reported in the operations guide; U/D commutation and lane-19 identification remain open. Locate and independently compile the relevant original module before changing this status.
 
+## Existing concrete certificate: alternative kernel-dimension route
+
+Source inspection (2026-11-23) found `formal/e47/E47ConcreteMatrix.lean`
+already defines `M = Matrix (Fin 125) (Fin 125) ℤ`, concrete spin generators,
+`casimir = z*z + z + down*up`, `kernelOperator`, and
+`projectorNumerator`. Its named theorem statements include:
+
+- `scaled_projector_is_idempotent`: `Q² = 1814400 Q`;
+- `selected_subspace_is_kernel`: `K Q = 0`;
+- `scaled_projector_trace`: `tr(Q) = 47·1814400`;
+- `kernel_bezout`: `Q + K B = 1814400 I`;
+- `casimir_annihilator`: the seven-factor polynomial vanishes on the
+  concrete 125-state matrix.
+
+Over a characteristic-zero field, set `P = Q/1814400`.
+Then `P²=P`, `K P=0`, and `I-P=K(B/1814400)`.
+Because `K` and `B` are polynomials in `C`, they commute, so
+`ker(K) ⊆ im(P)`; the reverse inclusion follows from `K P=0`.
+Thus `im(P)=ker(K)`, and idempotence gives
+`dim ker(K)=rank(P)=tr(P)=47`.
+
+This is an exact mathematical derivation from existing theorem *statements*.
+The source uses Mathlib and `native_decide`. A fresh successful Lean build,
+reported axioms, and a separately closed rank/nullity corollary have **not**
+been established merely by examining the file. It also does not construct
+the requested Clebsch–Gordan isometry `S`; that is a distinct target.
+
+`validation/e47_global_casimir_root_discovery.py` already implements
+full exact-integer 125-state commutator checks, characteristic-polynomial
+root discovery by weight blocks, and exact rational rank calculation.
+This is computed evidence, not a proof-assistant certificate. The Monorail
+workflow is being extended to exercise this existing witness.
+
 ## Exact target
 
 Let H := (ℂ⁵)⊗³ and C := Jx²+Jy²+Jz² with total spin generators. Let
