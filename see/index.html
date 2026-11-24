@@ -66,7 +66,23 @@
 <a class="sourcecard" target="_blank" rel="noopener noreferrer" href="https://nicholaskouns-create.github.io/Identity/grid/"><span class="source-id">06 / SITUATIONAL AWARENESS</span><h2>GRID</h2><p>Public grid and hazard information with operational maps and an independent spectral auditor.</p><span class="source-go">OPEN GRID ↗</span></a>
 <a class="sourcecard" target="_blank" rel="noopener noreferrer" href="https://nicholaskouns-create.github.io/Identity/site/"><span class="source-id">07 / RESEARCH ARCHIVE</span><h2>MNEMOSYNE</h2><p>Local-first research records, SHA-256 content receipts and optional account sync.</p><span class="source-go">OPEN ARCHIVE ↗</span></a>
 </div>
-<div class="panel wide"><div class="panel-kicker">REUSE / NO REINVENTION</div><h2>City query compatibility</h2><p>SEE supports <code>SEE-EVIDENCE/1.0</code> records and exports an explicit <code>CITY-QUERY/1.0</code> task packet for the existing DENSITY workflow. Exporting is local; it does not silently transmit personal memories to another app.</p><button id="cityPacket" class="action">Download City query packet <span>↓</span></button></div>
+<div class="panel wide">
+<div class="panel-kicker">EMBED / ORIGINAL SOURCE</div>
+<h2>Live instrument viewer.</h2>
+<p>Open the actual source interface inside See. The original instruments keep their own calculations, controls and evidence boundaries. Nothing is copied into your personal mirror automatically.</p>
+<div class="viewer-controls"><label for="viewerSource" class="sr">Choose a source instrument</label>
+<select id="viewerSource" aria-label="Source instrument">
+<option value="https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/density-sensitivity/">DENSITY · Source reconstruction</option>
+<option value="https://brave-ivory-pearl-ever.grok.me/">BUILD · Transport</option>
+<option value="https://heart-eagle-blade-hazel.grok.me/">SCALAR · Spectral field</option>
+<option value="https://orbit-coral-delta-fjord.grok.me/">ORBIT · Supplied link</option>
+<option value="https://apex-zinc-daisy-acre.grok.me/">APEX · Supplied link</option>
+<option value="https://nicholaskouns-create.github.io/Identity/grid/">GRID · Power-grid viewer</option>
+<option value="https://nicholaskouns-create.github.io/Identity/site/">MNEMOSYNE · Archive</option>
+</select><button id="viewerLoad" class="action">Load original ↗</button><a id="viewerOpen" href="https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/density-sensitivity/" target="_blank" rel="noopener noreferrer" class="outline">Open in a new tab ↗</a></div>
+<div class="viewer-stage"><div id="viewerPlaceholder" class="viewer-placeholder">SOURCE VIEWER / INACTIVE<br>Choose a source, then select Load original.<br><small>External framing may be blocked by the host. Loading sends a network request to the selected site.</small></div><iframe id="viewerFrame" title="Original Mathematical City instrument" referrerpolicy="no-referrer" loading="lazy" sandbox="allow-scripts allow-same-origin allow-forms" hidden></iframe></div>
+</div>
+<div class="panel wide"><div class="panel-kicker">REUSE / NO REINVENTION</div><h2>City query compatibility</h2><p>SEE supports <code>SEE-EVIDENCE/1.0</code> records and exports an explicit <code>CITY-QUERY/1.0</code> task packet for the existing DENSITY workflow. Export is local. An optional Publish action uses the existing same-origin City Query bus with explicit consent; it never sends records automatically.</p><div class="row-buttons"><button id="cityPacket" class="action">Download City query packet <span>↓</span></button><button id="cityPublish" class="outline">Publish to City bus (opt-in) <span>↗</span></button></div><p id="cityStatus" class="note" role="status">Nothing published. Your records remain private to this browser until you explicitly choose a transfer.</p></div>
 </section>
 <section id="view-method" class="view hidden">
 <div class="sectionhead"><div class="micro">04 / INSPECTABLE METHOD</div><h1>Method<span class="accent">.</span></h1><p>An AI mirror should demonstrate where each reflection came from, what was inferred, and what remains unknown.</p></div>
