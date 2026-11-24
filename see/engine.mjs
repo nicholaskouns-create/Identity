@@ -1,8 +1,10 @@
 // SEE/1.0 · local-first evidence retrieval. Relevance is never a probability of truth.
 export const SCHEMA = "SEE-EVIDENCE/1.0";
 const STOP = new Set("a an the and or but if to of in on by for at with from is are was were be been being i you he she we they it this that these those my your our their me about what who how why does do did tell show say think know can could should would please not no as have has had".split(" "));
+const RELEVANCE_ALIASES = {made:"build",built:"build",building:"build",created:"build",create:"build",creating:"build",construct:"build",constructed:"build"};
 export function tokens(input) {
-  return [...new Set(String(input||"").toLowerCase().normalize("NFKC").match(/[\p{L}\p{N}]{2,}/gu)||[])].filter(w=>!STOP.has(w));
+  const words=(String(input||"").toLowerCase().normalize("NFKC").match(/[\p{L}\p{N}]{2,}/gu)||[]).filter(w=>!STOP.has(w));
+  return [...new Set(words.map(w=>RELEVANCE_ALIASES[w]||w))];
 }
 export function newRecord(text,source="Personal note",kind="user-supplied",url="",id="") {
   const statement=String(text||"").trim().slice(0,2500);
