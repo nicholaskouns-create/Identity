@@ -1,24 +1,24 @@
 {
   "schema": "mc.murmuration.feed/1",
-  "generated_at": "2026-11-24T17:41:17.566528Z",
+  "generated_at": "2026-11-25T02:26:02.328636Z",
   "scope": "public-github-metadata-only",
   "sources": [
     {
       "id": "github:nicholaskouns-create/Identity",
       "kind": "public_github_repository",
       "url": "https://github.com/nicholaskouns-create/Identity",
-      "commit_sha": "1450f20014386ba35259008dfbb6d35907f031c8",
-      "commit_url": "https://github.com/nicholaskouns-create/Identity/commit/1450f20014386ba35259008dfbb6d35907f031c8",
-      "source_timestamp": "2026-11-24T06:00:15Z",
+      "commit_sha": "16e0516e85db0bc7a14ad2215cc02a02b379b5ad",
+      "commit_url": "https://github.com/nicholaskouns-create/Identity/commit/16e0516e85db0bc7a14ad2215cc02a02b379b5ad",
+      "source_timestamp": "2026-11-25T01:45:31Z",
       "status": "ok"
     },
     {
       "id": "github:nicholaskouns-create/E47-Kartekeya",
       "kind": "public_github_repository",
       "url": "https://github.com/nicholaskouns-create/E47-Kartekeya",
-      "commit_sha": "754aa281f809e9f3bfb375838720a86de9339d93",
-      "commit_url": "https://github.com/nicholaskouns-create/E47-Kartekeya/commit/754aa281f809e9f3bfb375838720a86de9339d93",
-      "source_timestamp": "2026-11-24T01:42:23Z",
+      "commit_sha": "6fb4b08b6c99e4e8a0fd5d35bd5f1bcb1c46d65e",
+      "commit_url": "https://github.com/nicholaskouns-create/E47-Kartekeya/commit/6fb4b08b6c99e4e8a0fd5d35bd5f1bcb1c46d65e",
+      "source_timestamp": "2026-11-25T01:48:49Z",
       "status": "ok"
     }
   ],
@@ -28,5 +28,5 @@
     "A source commit SHA is not a theorem certificate",
     "No browser execution or deployed instrument health verified"
   ],
-  "sha256": "55f82470de768d5e6502a5cd1a55748163180dad75a1702c6f9f4ed6f7b1f5e7"
+  "sha256": "371722869cfc56174178165fcc4d5338e35672c8f9a319af9184cbf4289ec4e1"
 }
