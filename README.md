@@ -63,3 +63,12 @@ Lean and Rocq sources for the E47 linear-algebra certificate are pinned in [form
 
 Fivefold C₅ eigenvalue ratio = φ⁻²; 125D Casimir E₄₇ projector; 250D quantum-ancilla probability α=47/(125φ²); stationary Einstein-equation recovery. Spectral simulation and gravitational statements have different evidence classes.
 <!-- /FUN-WITH-EINSTEIN-2026 -->
+
+
+---
+
+### E₄₇ · Computed spectral geometry
+
+[Open the interactive E₄₇ visualizer](./e47-geometry/index.html) · [GitHub Pages instrument](https://nicholaskouns-create.github.io/Identity/e47-geometry/)
+
+Additive, mobile-friendly 125-site 3D projector-density lattice, five exact rational density slices, seven SU(2) spectral sectors, minimax contraction and five-stage polynomial projection. The 3D embedding is a coordinate visualization of the invariant spectral subspace, not a physical solid.
