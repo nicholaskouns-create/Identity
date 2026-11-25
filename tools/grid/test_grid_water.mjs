@@ -63,9 +63,19 @@ const near = W.nearRivers(rv, -84.18, 37.99, 80);
 assert.deepEqual(near.map((r) => r.lid), ['FKFK2']); assert.ok(near[0].km > 60 && near[0].km < 70);
 assert.deepEqual(W.stageText(W.riverRows(rv)[0]), { now: '32.1 ft', ref: 'flood stage 31 ft' });
 assert.deepEqual(W.stageText(W.riverRows(rv)[1]), { now: '41.2 ft', ref: 'major stage 40 ft' });
+// A lake gauge whose thresholds sit on a different scale from its reading (as NOAA lists Devils Lake, ND): the
+// category stands alone, and the gauge ranks after those whose numbers fit. Thresholds out of order, or a
+// reading below its own category's threshold, are treated the same way.
+const devils = { lid: 'DEVN8', status: 'major', name: 'Devils Lake', observed: 49.88, units: 'ft', action: null, flood: null, moderate: null, major: 0.3 };
+assert.deepEqual(W.stageText(devils), { now: '49.88 ft', ref: null });
+assert.equal(W.threshold({ ...devils, observed: 41.2, action: 28, flood: 30, moderate: 45, major: 40 }), null);
+assert.equal(W.threshold({ status: 'minor', observed: 29.5, flood: 31, action: 29 }), null);
+assert.deepEqual(W.threshold({ status: 'minor', observed: 32.1, flood: 31, action: 29, moderate: 40, major: 48 }).key, 'flood');
+const ranked = W.rankRivers([devils, ...W.riverRows(rv), { lid: 'HRNF1', status: 'major', name: 'Lake Harney', observed: 12.82, units: 'ft', major: 10 }]);
+assert.deepEqual(ranked.map((r) => r.lid), ['HRNF1', 'STLM7', 'DEVN8', 'FKFK2']);
 const geo = W.riversGeo(rv);
 assert.equal(geo.features.length, 2); assert.equal(geo.features[1].properties.rank, 3);
-ok('river gauges: compact rows, distance from you, stage beside its threshold');
+ok('river gauges: compact rows, distance from you, a threshold only where it fits the reading');
 
 // 5. A water system's standing in EPA's terms, source water, names.
 const sys = W.systems({ systems: [

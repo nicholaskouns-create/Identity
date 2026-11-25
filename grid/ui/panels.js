@@ -297,7 +297,7 @@ export function renderWater(el, D, local, x = {}) {
   let rivers;
   if (!R) rivers = `<p class="note">${D.rivers?.error ? `River gauges unavailable: ${esc(D.rivers.error)}` : 'Reading river gauges…'}</p>`;
   else {
-    const rows = W.riverRows(R), c = R.counts;
+    const rows = W.rankRivers(W.riverRows(R)), c = R.counts;
     const flooding = rows.filter((r) => r.status !== 'action');
     const show = (flooding.length ? flooding : rows).slice(0, 5);
     let near = '';

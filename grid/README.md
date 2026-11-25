@@ -82,7 +82,7 @@ The Eastern and Western Interconnections do not publish a live public frequency;
 **Water where the power is out.** Water systems pump and treat with electricity, and a loss of pressure can lead to a boil-water notice. For the three counties with the most customers out (1,000 or more), the panel shows how many community water systems serve them and how many people. When your own county has 1,000 or more customers out, your water card says that pressure can drop.
 
 **Rivers at flood stage.** NOAA's National Water Prediction Service publishes every river gauge's latest stage and flood category; NOAA refreshes it every 30 minutes, and most stages come from USGS stream gauges.
-- **On the map.** Every gauge at action stage or above is a drop in the National Weather Service flood colours: yellow near flood stage, orange minor, red moderate, purple major. Each popup gives the stage, the threshold it has passed, and a link to the gauge's NOAA hydrograph and forecast.
+- **On the map.** Every gauge at action stage or above is a drop in the National Weather Service flood colours: yellow near flood stage, orange minor, red moderate, purple major. Each popup gives the stage, the threshold it has passed, and a link to the gauge's NOAA hydrograph and forecast. Where NOAA's thresholds for a gauge do not fit its reading, as at some lake gauges recorded on a different scale, the flood category is shown without a number.
 - **In the panel.** Counts by category, the worst gauges, and whether any gauge within 50 miles of you is at or near flood stage.
 
 **Drought.** The U.S. Drought Monitor's county statistics for the latest weekly map: the share of your county in drought (D1 to D4) and the worst category present.
