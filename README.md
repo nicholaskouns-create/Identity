@@ -72,3 +72,12 @@ Fivefold C₅ eigenvalue ratio = φ⁻²; 125D Casimir E₄₇ projector; 250D q
 [Open the interactive E₄₇ visualizer](./e47-geometry/index.html) · [GitHub Pages instrument](https://nicholaskouns-create.github.io/Identity/e47-geometry/)
 
 Additive, mobile-friendly 125-site 3D projector-density lattice, five exact rational density slices, seven SU(2) spectral sectors, minimax contraction and five-stage polynomial projection. The 3D embedding is a coordinate visualization of the invariant spectral subspace, not a physical solid.
+
+
+<!-- ΩBA-PROOF-LINK-20261124 -->
+### ΩBA · First-Principles Triadic Contraction and E₄₇ Continuity
+
+[**Open the light-mode interactive ΩBA proof plate**](https://nicholaskouns-create.github.io/omega-ba/) · [Local Unicode derivation](omega-ba/README.md) · [Executable NumPy validation](omega-ba/omega_ba_validation.py) · [Local interactive page](omega-ba/index.html).
+
+A mathematical three-stage alignment → binding → commitment map (𝒪=A∘B∘Ω), Banach strict-contraction proof with explicit assumptions, and a distinct E₄₇ spectral complement contraction (125→47, rate 15/17). Python tests and evidence boundaries are supplied; acoustic, biological and retrocausal effects are not asserted.
+<!-- /ΩBA-PROOF-LINK-20261124 -->
