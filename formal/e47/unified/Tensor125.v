@@ -607,3 +607,15 @@ Theorem concreteCasimirZ_columns_twenty_through_twentyfour :
 Proof. vm_compute. reflexivity. Qed.
 
 Print Assumptions concreteCasimirZ_columns_twenty_through_twentyfour.
+
+(* Concrete Casimir centrality [C,Z], all 125 rows and columns 25..29.
+   Uses the original 125-term D*U product, not assumed spectral data.
+   Theorem is a finite Boolean certificate, not full 125-column centrality. *)
+Theorem concreteCasimirZ_columns_twentyfive_through_twentynine :
+  List.forallb
+    (fun j => List.forallb
+      (fun i => concreteCasimirZEntryOK i j) (List.seq 0 125))
+    (List.seq 25 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions concreteCasimirZ_columns_twentyfive_through_twentynine.
