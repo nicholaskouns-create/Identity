@@ -599,3 +599,41 @@ jobs:
             lean-casimir-z-25-29-axioms.txt
             lean-casimir-z-25-29-sha256.txt
             lean-casimir-z-25-29-commit.txt
+
+  lean-casimir-z-30-34:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify shared concrete spin-2 generators are unchanged
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('formal/e47/unified')
+          base = (root / 'Tensor125.lean').read_text().split('theorem highest_weight', 1)[0]
+          separate = (root / 'Tensor125CasimirZ30to34.lean').read_text().split('/-! ## Isolated', 1)[0]
+          assert base == separate, 'concrete generator definitions drifted'
+          print('CASIMIR_Z_30_34_SHARED_GENERATORS_MATCH')
+          PY
+      - name: Install pinned Lean 4.19.0
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile isolated 625-entry theorem and audit axioms
+        run: |
+          set -euo pipefail
+          lean --version | tee lean-casimir-z-30-34-version.txt
+          lean formal/e47/unified/Tensor125CasimirZ30to34.lean | tee lean-casimir-z-30-34-axioms.txt
+          grep -Fq "'E47Tensor125.concreteCasimirZ_columns_thirty_through_thirtyfour' depends on axioms: [propext]" lean-casimir-z-30-34-axioms.txt
+          sha256sum formal/e47/unified/Tensor125CasimirZ30to34.lean > lean-casimir-z-30-34-sha256.txt
+          git rev-parse HEAD > lean-casimir-z-30-34-commit.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lean-casimir-z-30-34-axiom-audit
+          path: |
+            lean-casimir-z-30-34-version.txt
+            lean-casimir-z-30-34-axioms.txt
+            lean-casimir-z-30-34-sha256.txt
+            lean-casimir-z-30-34-commit.txt
