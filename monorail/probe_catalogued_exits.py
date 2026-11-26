@@ -15,7 +15,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.error import HTTPError, URLError
-from urllib.parse import urldefrag, urlsplit
+from urllib.parse import parse_qsl, urldefrag, urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 from probe_public_doors import read_corpus
@@ -130,6 +130,26 @@ def partition_exits(data: dict) -> tuple[list[dict], list[dict]]:
     return public, excluded
 
 
+# Never send unreviewed credentials discovered in a redirect's query back
+# over the network. Receipt redaction alone is too late: urllib would already
+# have followed the 302. The fixed 51-exit catalogue has no such credential
+# parameters; benign canonical query redirects remain permitted.
+CREDENTIAL_QUERY_KEYS = frozenset({
+    "access_token", "id_token", "refresh_token", "api_key",
+    "authorization", "client_secret", "password",
+    "x-amz-signature", "x-goog-signature",
+})
+
+
+def has_unreviewed_credential_query(original_query: str, target_query: str) -> bool:
+    if target_query == original_query:
+        return False
+    return any(
+        key.casefold() in CREDENTIAL_QUERY_KEYS
+        for key, _ in parse_qsl(target_query, keep_blank_values=True)
+    )
+
+
 class RestrictedDriveRedirect(HTTPError):
     """Redirect to an unreviewed Google Drive/Docs destination, not fetched."""
 
@@ -153,6 +173,10 @@ class SameExitRedirect(HTTPRedirectHandler):
         if target.hostname in {"drive.google.com", "docs.google.com"}:
             raise RestrictedDriveRedirect(
                 safe_url, code, "restricted_drive_redirect_blocked", headers, fp
+            )
+        if has_unreviewed_credential_query(self.original.query, target.query):
+            raise ExitIdentityRedirectBlocked(
+                safe_url, code, "credential_query_redirect_blocked", headers, fp
             )
         if (req.full_url in REVIEWED_EXTERNAL_REDIRECTS
                 and newurl == REVIEWED_EXTERNAL_REDIRECTS[req.full_url]):
