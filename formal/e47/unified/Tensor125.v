@@ -329,3 +329,15 @@ Theorem totalUp_down_bracket_columns_eighty_through_eightyfour :
 Proof. vm_compute. reflexivity. Qed.
 
 Print Assumptions totalUp_down_bracket_columns_eighty_through_eightyfour.
+
+(* Concrete third-bracket columns 85..89: all 625 entries of
+   [totalUp,totalDown] = 2 totalZ use explicit spin-2 triple-tensor
+   generators and genuine 125-term integer matrix products.
+   No imported commutator conclusion. Columns 90..124 remain open. *)
+Theorem totalUp_down_bracket_columns_eightyfive_through_eightynine :
+  List.forallb
+    (fun j => List.forallb (fun i => ud_entry_ok i j) (List.seq 0 125))
+    (List.seq 85 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions totalUp_down_bracket_columns_eightyfive_through_eightynine.
