@@ -58,6 +58,14 @@ When a source is down, its panel says so. Nothing is filled in.
 
 The Eastern and Western Interconnections do not publish a live public frequency; FNET/GridEye's public display runs on sample data.
 
+**Disturbances.** A generation or transmission loss writes itself into system frequency, and the trace above is enough to say that something went, which way, and how deep. The panel reads it and reports the most recent event in the window.
+- **What counts.** A step larger than ±34 mHz between consecutive readings, after a quiet run-up. That figure is the governor deadband for steam and hydro turbines with mechanical governors (NERC BAL-001-TRE-2 R6.1), the wider of the two published deadbands: below it no governor is obliged to respond, so smaller motion is regulation rather than a disturbance. A ramp is not a step, and the run-up has to be flat to within the ±17 mHz standard deadband, so a slow drift never reports as an event.
+- **How deep.** The nadir against ERCOT's own bands: the ±30 mHz normal band, the ±90 mHz ACE limit, and the load-shedding stages, where 59.3 Hz sheds at least 5% of Transmission Operator load, 58.9 Hz at least 15% cumulative and 58.5 Hz at least 25% (ERCOT, Transmission Operator UFLS obligations). The stages are cumulative, so the panel reports the deepest one reached rather than the first one crossed.
+- **How large.** ERCOT publishes system inertia in the same feed, so the swing equation **ΔP = 2·H·(df/dt)/f₀** gives a figure in megawatts. Grid states it as **a floor and never an estimate**: sampling every ten seconds averages away the steepest part of the fall, and governors are arresting it inside that same interval, so both errors push the same way and the true imbalance is larger — often several times larger. When ERCOT does not publish inertia with a reading, no size is given at all, because a number without H would be invented.
+- **A gap is never an event.** If the feed stops and returns at a different frequency, the jump across the gap is discarded. The same rule the outage alerts follow: a reading that cannot be trusted reads as unknown, never as a number.
+- **What it cannot say.** It cannot name a line. Breaker position is utility-internal SCADA, protected under NERC CIP and published nowhere, at any latency, so no feature can reach it. A detection here says the Texas Interconnection lost or gained something — not which line, unit or substation. Where an outage follows, the counties appear in the outage panel. A quiet trace is also not proof that nothing happened: an event can arrive and be corrected between two readings.
+- **Where it runs.** `grid/engine/disturbance.js`, in the browser from live inputs, which is why it carries △ Model rather than ◆ Relay. Tests in `grid/engine/disturbance.test.mjs`.
+
 **Your outlet.** The frequency of whichever interconnection you are on is present in the hum of the wiring around you: chargers, power strips, lamps and transformers.
 - **How it is measured.** *Measure at your outlet* asks for the microphone, mixes the sound with 60, 120, 180, 240, 300 and 360 Hz references on the device (an AudioWorklet), and reads the frequency from how fast each harmonic's phase turns. Harmonics are combined by inverse variance.
 - **What counts as hum.** Hum counts only when its phase is coherent, its level is steady, it implies a grid within 0.25 Hz of 60, and its harmonics agree. Beeps, speech and music produce no reading.
@@ -142,6 +150,7 @@ Grid can tell you when the power goes out where you or your family live, with Gr
 | Active power outages by county | ODIN (DOE / ORNL) public feed, via `grid-live` | ◆ | 1 min |
 | Real-time frequency, time error, inertia, demand, wind, solar (Texas) | ERCOT Real-Time System Conditions, via `grid-live` | ◆ | 10 s |
 | Your outlet's frequency (on request) | This device's microphone; nothing leaves it | ● | 0.1 s |
+| Frequency disturbances (Texas) | Computed here from the ERCOT trace and published inertia; deadbands from NERC BAL-001-TRE-2, load-shed stages from ERCOT | △ | 10 s |
 | Medicare beneficiaries who rely on electricity-dependent medical equipment, by county | HHS emPOWER Program (CMS, HHS) public REST service, via `grid-live` | ◆ | monthly (HHS); 12 h cache |
 | River gauges at or near flood stage | NOAA National Water Prediction Service, via `grid-live` | ◆ | 30 min (NOAA); 10 min cache |
 | Community water systems by county, with EPA compliance status | EPA ECHO Drinking Water System Search (SDWIS/Fed), via `grid-live` | ◆ | quarterly (states); 24 h cache |
@@ -308,6 +317,10 @@ node --test grid/engine/monitor.test.mjs
 
 # outlet meter on synthetic hum; edge-function parsers and request path on ERCOT, ODIN, emPOWER, NOAA, EPA ECHO and Drought Monitor fixtures
 node grid/engine/enf.test.mjs
+
+# disturbance detector: synthetic steps recover the swing equation; noise, ramps,
+# gaps and malformed samples produce nothing; the panel always carries its limits
+node --test grid/engine/disturbance.test.mjs
 node tools/grid/test_grid_live.mjs
 
 # water in the browser: service-area matching and ring orientation, the rounded EPA query, rivers near you, EPA standing

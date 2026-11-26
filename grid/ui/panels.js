@@ -3,6 +3,7 @@ import { EVIDENCE, gScale } from '../live/sources.js';
 import { FUEL } from '../map/map.js';
 import { sparkline, demandChart, kpBars } from './charts.js';
 import { THRESHOLDS, PLAN, MAX_PLACES } from '../live/alerts.js';
+import { detect as detectDisturbance } from '../engine/disturbance.js';
 import * as W from '../live/water.js';
 
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -183,8 +184,45 @@ export function renderFrequency(el, st, enf) {
     <canvas class="chart" id="c-freq"></canvas>
     <div class="legend"><span>${esc(band.text)}</span><span>${hist.length > 1 ? `last ${Math.max(1, Math.round((hist.at(-1).t - hist[0].t) / 60000))} min · ` : ''}${ago(d.updated || d.fetched)}${d.stale ? ' · cached' : ''}</span></div>
     <div class="kv kv3"><span>Demand</span><b>${fmt(d.demand / 1000, 1)} GW</b><span>Wind</span><b>${fmt(d.wind / 1000, 1)} GW</b><span>Solar</span><b>${fmt(d.solar / 1000, 1)} GW</b></div>
+    ${disturbanceHtml(st)}
     <div class="enf" id="enf-box">${enfHtml(enf)}</div>`;
   if (hist.length > 1) sparkline(el.querySelector('#c-freq'), hist.map((p) => p.f), { h: 34, color: band.cls === 'ok' ? '#c1e8ce' : band.cls === 'warn' ? '#ffd166' : '#ff5f7a' });
+}
+
+// Disturbances read out of the frequency trace itself.
+//
+// A generation or transmission loss leaves a step in frequency, and the trace
+// Grid already holds is enough to say that something went and roughly how
+// hard. It is never enough to say what went. Breaker status is utility SCADA
+// under NERC CIP and is published nowhere, so this block names no line and
+// says so where the reader will see it.
+export function disturbanceHtml(st) {
+  const hist = st.ercot?.hist || [], inertiaMwS = st.ercot?.data?.inertia;
+  if (hist.length < 5) return '';
+  const events = detectDisturbance(hist, { inertiaMwS });
+  const mins = Math.max(1, Math.round((hist.at(-1).t - hist[0].t) / 60000));
+  const head = `<div class="eyebrow">Disturbances ${ev('MODEL', 'from this trace')}</div>`;
+
+  if (!events.length) {
+    return `${head}<p class="note">No step beyond the ±34 mHz governor deadband in the last ${mins} min. A quiet trace is not proof that nothing happened: Grid samples ERCOT every 10 seconds, and a small event can arrive and be corrected between two readings.</p>`;
+  }
+
+  const e = events[events.length - 1];
+  const lost = e.direction === 'loss';
+  const dev = Math.abs(e.deviationHz) * 1000;
+  const severe = e.severity.level === 'ufls' || e.severity.level === 'beyond-ace';
+  const floor = Number.isFinite(e.mwFloor)
+    ? `<br>Inertia was ${fmt(inertiaMwS / 1000, 0)} GW·s, so the swing equation puts the imbalance at <b>no less than ${Math.round(e.mwFloor).toLocaleString()} MW</b>. Read that as a floor and not an estimate: ten-second sampling averages away the steepest part of the fall, and governors are already arresting it inside the interval, so the true figure is larger — often several times larger.`
+    : '<br>ERCOT did not publish inertia with this reading, so no bound on the size is stated. A number without it would be invented.';
+
+  return `${head}
+    <div class="here${severe ? ' out' : ''}" role="${severe ? 'alert' : 'note'}">
+      <b>${lost ? 'Generation or load lost' : 'Load lost or generation surged'}</b> · ${hhmm(e.atMs)}<br>
+      Frequency stepped ${lost ? 'down' : 'up'} ${Math.abs(e.stepHz * 1000).toFixed(0)} mHz in one ${Math.round(e.dtMs / 1000)}-second interval, ${lost ? 'reaching' : 'peaking at'} <b>${e.extremeHz.toFixed(3)} Hz</b> — ${dev.toFixed(0)} mHz from 60 Hz, ${esc(e.severity.text)}.
+      ${e.severity.level === 'ufls' ? `<br><b>Automatic load shedding operates at this frequency</b> — ${esc(e.severity.stage.note)}.` : ''}
+      ${floor}
+    </div>
+    <p class="note">Inferred from frequency alone. Grid cannot see breaker positions — those are utility SCADA, protected under NERC CIP and not published — so this says the Texas Interconnection lost or gained something, not which line, unit or substation. Where an outage follows, the counties appear in the outage panel.${events.length > 1 ? ` ${events.length} disturbances in the last ${mins} min; the most recent is shown.` : ''}</p>`;
 }
 
 // The outlet meter's block, re-rendered alone while it runs.
