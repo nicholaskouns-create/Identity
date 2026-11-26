@@ -539,3 +539,47 @@ Proof.
 Qed.
 
 Print Assumptions totalUp_down_bracket_full_columns.
+
+
+(* Concrete C = D*U + Z*(Z+I), using the genuine 125-term product.
+   Z is diagonal, so [C,Z]_{ij} = (Z_jj-Z_ii)*C_ij.
+   This checks every row and columns 0..4, not the full matrix.
+   No imported Casimir centrality axiom or spectral conclusion. *)
+Definition concreteCasimirEntry (i j : nat) : Z :=
+  mulEntry totalDown totalUp i j +
+    (if Nat.eqb i j then totalZ i i * (totalZ i i + 1) else 0).
+
+Definition concreteCasimirZEntryOK (i j : nat) : bool :=
+  Z.eqb ((totalZ i i - totalZ j j) * concreteCasimirEntry i j) 0.
+
+Theorem concreteCasimirZ_first_five_columns :
+  List.forallb
+    (fun j => List.forallb
+      (fun i => concreteCasimirZEntryOK i j) (List.seq 0 125))
+    (List.seq 0 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions concreteCasimirZ_first_five_columns.
+
+(* Concrete Casimir centrality [C,Z] for all rows, columns 5..9.
+   Reuses the actual 125-term D*U matrix product, not spectral data. *)
+Theorem concreteCasimirZ_next_five_columns :
+  List.forallb
+    (fun j => List.forallb
+      (fun i => concreteCasimirZEntryOK i j) (List.seq 0 125))
+    (List.seq 5 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions concreteCasimirZ_next_five_columns.
+
+(* Exact [C,Z] columns 10..14: 625 concrete entries from the genuine
+   125-term D*U product and diagonal Z correction. No assumed spectrum,
+   imported Casimir centrality theorem, or admitted lemma. *)
+Theorem concreteCasimirZ_columns_ten_through_fourteen :
+  List.forallb
+    (fun j => List.forallb
+      (fun i => concreteCasimirZEntryOK i j) (List.seq 0 125))
+    (List.seq 10 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions concreteCasimirZ_columns_ten_through_fourteen.
