@@ -83,3 +83,72 @@ This derives the coframe and its curvature. It does **not** derive Einstein's eq
 matter stress tensor, or any physical scale, and it asserts no observable. Bridges 2–5 of
 the 22 November note remain open, bridge 5 — independent `G/c⁴` and `Λ` with testable
 scales — above all. No evidence classification is promoted.
+
+---
+
+# Addendum: can Einstein's equations be derived here? No, and here is the obstruction
+
+**Attribution, since the body above learned this lesson:** everything in this addendum is a
+test of the construction built *in this file*. Nothing here tests, revises or bears on the
+E₄₇ formalism. `Ω_c = 47/125`, `dim ker K = 47` and the spectral facts of §0 are untouched.
+
+## The question has to be posed correctly
+
+`G_μν + Λg_μν = (8πG/c⁴) T_μν` cannot be *derived* from a metric. For any `g` whatever,
+define `T_μν ≔ (c⁴/8πG)(G_μν + Λg_μν)` and the equation holds identically. That is a
+definition dressed as a result.
+
+The decidable question is instead: **does the flowed geometry satisfy the field equations
+with a source that is physically admissible?** That has an answer, and the answer is no.
+
+## What the computation returns
+
+With `G = c = 1`, at the base point:
+
+    R = −37.3238
+    best-fit Λ = R/4 = −9.3309
+    ‖Ric − Λg‖ / ‖Ric‖ = 1.5907          →  NOT an Einstein manifold
+
+So `Λ` is not produced by the construction. `R_μν ∝ g_μν` fails by more than its own size.
+
+Reading `T_(ab) = G_(ab)/8π` in an orthonormal frame (tetrad verified to 6.6×10⁻¹⁶):
+
+    energy density       ρ   = +0.166011
+    principal pressures  p_i = (0.401595, 0.539984, 0.709496)
+    anisotropy                 23%  — three distinct pressures, not one
+    shear / heat flux          1.31×10⁻¹, nonzero
+    equation of state    w     = +3.3152
+
+    weak      ρ ≥ 0                 ✓
+    null      ρ + p_i ≥ 0           ✓
+    strong    ρ + Σp_i ≥ 0          ✓
+    dominant  ρ ≥ |p_i|             ✗
+
+`w = 3.32` puts the sound speed above `c`, the pressures are anisotropic with shear, and the
+dominant energy condition fails. This is not matter.
+
+The Bianchi check `‖∇_a G^a_b‖/‖G‖ = 9.6×10⁻⁵` is a measurement of finite-difference error,
+not of physics — the identity holds exactly in exact arithmetic.
+
+## Why it fails, stated as a reason rather than a disappointment
+
+The coframe of §3 is **kinematic**. It is a pullback along a group orbit, and a pullback
+carries no dynamics. Einstein's equations are not a property a metric can have on its own;
+they are the Euler–Lagrange equations of an action. Nothing in `exp(−x⁰ε*A)·exp(ix^k J_k)`
+says how geometry should respond to matter, so there is no reason for the resulting `g` to
+satisfy a field equation, and it does not.
+
+This is bridge 3 of the 22 November note, quoted exactly:
+
+> Derive a covariant action and its coupling from microscopic state weights rather than
+> inserting Einstein-Hilbert dynamics as a chosen effective action.
+
+That bridge is not crossable by the route in this file, and the computation above is the
+demonstration rather than an assertion. Getting the dynamics requires an action built from
+the microscopic weights — a different construction, not a further step in this one.
+
+## What the addendum settles
+
+- Bridge 1 (the coframe) — closed by the body of this note.
+- Bridge 3 (the action) — shown here to be **not** reachable kinematically.
+- Bridges 2, 4, 5 — untouched and open.
