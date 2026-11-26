@@ -808,3 +808,16 @@ Theorem concreteCasimirZ_columns_onehundredfive_through_onehundrednine :
 Proof. vm_compute. reflexivity. Qed.
 
 Print Assumptions concreteCasimirZ_columns_onehundredfive_through_onehundrednine.
+
+(* Concrete [C,Z] for all 125 rows and columns 110..114, using the
+   explicit spin-2 triple-tensor generators and genuine 125-term D*U
+   product. This finite block does not assume the Casimir spectrum,
+   rank, or global centrality. *)
+Theorem concreteCasimirZ_columns_onehundredten_through_onehundredfourteen :
+  List.forallb
+    (fun j => List.forallb
+      (fun i => concreteCasimirZEntryOK i j) (List.seq 0 125))
+    (List.seq 110 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions concreteCasimirZ_columns_onehundredten_through_onehundredfourteen.
