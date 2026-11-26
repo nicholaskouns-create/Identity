@@ -318,3 +318,41 @@ jobs:
             lean-columns-100-104-axioms.txt
             lean-columns-100-104-sha256.txt
             lean-columns-100-104-commit.txt
+
+  lean-columns-105-109:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify exact shared 125-state generator definitions
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          root = Path('formal/e47/unified')
+          original = (root / 'Tensor125.lean').read_text().split('theorem highest_weight', 1)[0]
+          isolated = (root / 'Tensor125Columns105to109.lean').read_text().split('/-! ## Isolated', 1)[0]
+          assert original == isolated, '105..109 generator definitions drifted from original'
+          print('SPIN2_COLUMNS_105_109_SHARED_DEFINITIONS_MATCH')
+          PY
+      - name: Install pinned Lean 4.19.0
+        run: |
+          set -euo pipefail
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile 625 genuine bracket entries and retain axiom evidence
+        run: |
+          set -euo pipefail
+          lean --version | tee lean-columns-105-109-version.txt
+          lean formal/e47/unified/Tensor125Columns105to109.lean | tee lean-columns-105-109-axioms.txt
+          grep -Fq "'E47Tensor125.totalUp_down_bracket_columns_onehundredfive_through_onehundrednine' depends on axioms: [propext]" lean-columns-105-109-axioms.txt
+          sha256sum formal/e47/unified/Tensor125Columns105to109.lean > lean-columns-105-109-sha256.txt
+          git rev-parse HEAD > lean-columns-105-109-commit.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lean-columns-105-109-proof-audit
+          path: |
+            lean-columns-105-109-version.txt
+            lean-columns-105-109-axioms.txt
+            lean-columns-105-109-sha256.txt
+            lean-columns-105-109-commit.txt
