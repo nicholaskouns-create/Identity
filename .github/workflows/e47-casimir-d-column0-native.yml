@@ -1,0 +1,77 @@
+name: E47 Casimir-D column zero paired audit
+on:
+  pull_request:
+    paths:
+      - 'formal/e47/unified/Tensor125CasimirDColumn0Native.lean'
+      - 'formal/e47/unified/Tensor125CasimirDColumn0.v'
+      - '.github/workflows/e47-casimir-d-column0-native.yml'
+  workflow_dispatch:
+jobs:
+  lean-native-cd0:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify generator byte parity
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          root=Path('formal/e47/unified')
+          original=(root/'Tensor125.lean').read_text().split('theorem highest_weight',1)[0]
+          candidate=(root/'Tensor125CasimirDColumn0Native.lean').read_text().removeprefix('import Lean\n').split('/-! ## Concrete',1)[0]
+          assert original == candidate, 'generator definitions changed'
+          print('CD0_GENERATOR_PARITY_PASS')
+          PY
+      - name: Install pinned Lean 4.19.0
+        run: |
+          set -euo pipefail
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Record source and compiler provenance
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee cd0-lean-commit.txt
+          sha256sum formal/e47/unified/Tensor125CasimirDColumn0Native.lean | tee cd0-lean-source.txt
+          lean --version | tee cd0-lean-version.txt
+          grep -Fq 'Lean (version 4.19.0' cd0-lean-version.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cd0-lean-preflight
+          path: cd0-lean-*.txt
+      - name: Compile and audit axioms
+        run: |
+          set -euo pipefail
+          lean formal/e47/unified/Tensor125CasimirDColumn0Native.lean 2>&1 | tee cd0-lean-axioms.txt
+          grep -Fq 'E47Tensor125.concreteCasimirD_column_zero_native' cd0-lean-axioms.txt
+          grep -Fq '[propext, Lean.ofReduceBool]' cd0-lean-axioms.txt
+          ! grep -Eq 'sorryAx|admit|unsafe' cd0-lean-axioms.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cd0-lean-audit
+          path: cd0-lean-*.txt
+  coq-cd0:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq 8.18.0
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y coq
+      - name: Compile and audit Coq assumptions
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee cd0-coq-commit.txt
+          sha256sum formal/e47/unified/Tensor125CasimirDColumn0.v | tee cd0-coq-source.txt
+          coqc --version | tee cd0-coq-version.txt
+          grep -Fq 'version 8.18.0' cd0-coq-version.txt
+          coqc -Q formal/e47/unified E47Tensor formal/e47/unified/Tensor125.v > cd0-coq-base.txt 2>&1
+          coqc -Q formal/e47/unified E47Tensor formal/e47/unified/Tensor125CasimirDColumn0.v 2>&1 | tee cd0-coq-axioms.txt
+          grep -Fxq 'Closed under the global context' cd0-coq-axioms.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cd0-coq-audit
+          path: cd0-coq-*.txt

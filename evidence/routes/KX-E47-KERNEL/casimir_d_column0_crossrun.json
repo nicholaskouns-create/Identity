@@ -1,0 +1,81 @@
+{
+  "schema_version": "e47.crossrun.evidence.v1",
+  "kind": "unsigned_content_addressed_compiler_evidence_join",
+  "scope": {
+    "operator": "[C,D]",
+    "column_zero_based": 0,
+    "rows": 125,
+    "dimension": 125,
+    "claim": "All 125 entries of the concrete Casimir-Down commutator in column zero are zero"
+  },
+  "observed_on": "2026-10-31/2026-11-01 UTC",
+  "source_files": [
+    {
+      "path": "formal/e47/unified/Tensor125CasimirDColumn0.v",
+      "git_blob_sha1": "11955084054710a4c6ad032f6fde0f3a1cd38d07",
+      "sha256": "b9cd193c410ed36db1150532ad482919e2c39b345d7d427adef178542efb608f"
+    },
+    {
+      "path": "formal/e47/unified/Tensor125.v",
+      "git_blob_sha1": "b021d9575a10073e759431c6c774fa67d1a24f48"
+    },
+    {
+      "path": "formal/e47/unified/Tensor125CasimirDColumn0Native.lean",
+      "git_blob_sha1": "2e6f985d633e4aee48e25c6137c078b563fceffb",
+      "sha256": "ac10ff63cf6f4e17ce46c3b0593b57f28f1e18caae1d1efabc7de4e6f4d2f8c4"
+    },
+    {
+      "path": "formal/e47/unified/Tensor125.lean",
+      "git_blob_sha1": "4f73bf8cee7abb0e2a056608f918e75c3116b63c"
+    }
+  ],
+  "compiler_observations": [
+    {
+      "language": "Coq",
+      "version": "8.18.0",
+      "commit": "0dddfd182e58a09fea07fb520a720ae7d38a4741",
+      "run_id": 41253198381,
+      "job_id": 124690805408,
+      "job_conclusion": "success",
+      "axiom_audit": "Closed under the global context",
+      "artifact_id": 13062439420,
+      "source_sha256": "b9cd193c410ed36db1150532ad482919e2c39b345d7d427adef178542efb608f"
+    },
+    {
+      "language": "Lean",
+      "version": "4.19.0",
+      "commit": "6cbfe5cc3d857d9f74534a98bf8bf8c34e29b2f3",
+      "run_id": 41253216947,
+      "job_id": 124690860856,
+      "job_conclusion": "success",
+      "axiom_audit": "[propext, Lean.ofReduceBool]",
+      "artifact_id": 13062431330,
+      "source_sha256": "ac10ff63cf6f4e17ce46c3b0593b57f28f1e18caae1d1efabc7de4e6f4d2f8c4"
+    }
+  ],
+  "negative_observations": [
+    {
+      "commit": "0dddfd182e58a09fea07fb520a720ae7d38a4741",
+      "run_id": 41253198381,
+      "job_id": 124690805204,
+      "language": "Lean",
+      "conclusion": "failure",
+      "detail": "generator-byte-parity preflight failed; mathematical compiler step not executed"
+    },
+    {
+      "commit": "6cbfe5cc3d857d9f74534a98bf8bf8c34e29b2f3",
+      "run_id": 41253216947,
+      "job_id": 124690860971,
+      "language": "Coq",
+      "conclusion": "cancelled",
+      "detail": "coqc process was terminated; no Coq theorem acceptance at this commit"
+    }
+  ],
+  "limitations": [
+    "Paired compiler acceptance is content-addressed across distinct commits; no same-head paired success is claimed.",
+    "Lean theorem depends on Lean.ofReduceBool; this is not kernel-only verification.",
+    "Only column zero is compiler certified here; full 125x125 [C,D]=0 remains a formal obligation.",
+    "Source parity checks and exact-integer checks are not replacements for the compiler logs.",
+    "This evidence join is unsigned, not inserted into the undeployed Monorail ledger, and is not a civic identity."
+  ]
+}
