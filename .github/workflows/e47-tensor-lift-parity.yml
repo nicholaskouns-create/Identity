@@ -1,0 +1,93 @@
+name: E47 paired 125-state tensor generator lift parity
+on:
+  pull_request:
+    paths:
+      - 'formal/e47/unified/TensorLiftParity.lean'
+      - 'formal/e47/unified/TensorLiftParity.v'
+      - 'validation/e47_tensor_lift_parity.py'
+      - '.github/workflows/e47-tensor-lift-parity.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lean-tensor-lift:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean 4.19.0
+        run: |
+          set -euo pipefail
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile five theorems and audit assumptions
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee e47-lift-lean-checkout.txt
+          printf 'GITHUB_HEAD_REF=%s\nGITHUB_SHA=%s\n' "$GITHUB_HEAD_REF" "$GITHUB_SHA" | tee e47-lift-lean-ref.txt
+          sha256sum formal/e47/unified/TensorLiftParity.lean | tee e47-lift-lean-sha256.txt
+          lean --version | tee e47-lift-lean-version.txt
+          grep -Fq 'Lean (version 4.19.0' e47-lift-lean-version.txt
+          lean formal/e47/unified/TensorLiftParity.lean 2>&1 | tee e47-lift-lean-log.txt
+          for theorem in tensor_index_roundtrip tensor_z_is_three_factor_lift tensor_up_is_three_factor_lift tensor_down_is_three_factor_lift mutated_local_generator_rejected; do
+            grep -Fq "E47TensorLiftParity.$theorem" e47-lift-lean-log.txt
+          done
+          ! grep -Eq 'sorryAx|admit|unsafe' e47-lift-lean-log.txt
+          ! grep -Eq '^[[:space:]]*(sorry|axiom)\b' formal/e47/unified/TensorLiftParity.lean
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-tensor-lift-lean-unsigned
+          path: e47-lift-lean-*.txt
+  coq-tensor-lift:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq 8.18.0
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y coq
+      - name: Compile five theorems and audit assumptions
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee e47-lift-coq-checkout.txt
+          printf 'GITHUB_HEAD_REF=%s\nGITHUB_SHA=%s\n' "$GITHUB_HEAD_REF" "$GITHUB_SHA" | tee e47-lift-coq-ref.txt
+          sha256sum formal/e47/unified/TensorLiftParity.v | tee e47-lift-coq-sha256.txt
+          coqc --version | tee e47-lift-coq-version.txt
+          grep -Fq 'version 8.18.0' e47-lift-coq-version.txt
+          coqc formal/e47/unified/TensorLiftParity.v 2>&1 | tee e47-lift-coq-log.txt
+          test "$(grep -Fxc 'Closed under the global context' e47-lift-coq-log.txt)" -eq 5
+          ! grep -Eq 'Admitted\.|Axiom ' formal/e47/unified/TensorLiftParity.v
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-tensor-lift-coq-unsigned
+          path: e47-lift-coq-*.txt
+  python-tensor-lift:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Independent exact parity and mutant rejection
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee e47-lift-python-checkout.txt
+          sha256sum validation/e47_tensor_lift_parity.py | tee e47-lift-python-sha256.txt
+          # Pin the exact concrete Tensor125 source blobs being bridged.
+          # A changed generator definition must trigger a fresh parity review.
+          test "$(git hash-object formal/e47/unified/Tensor125.lean)" = 79e01628560f729fb06e993b430ac1e920d047b3
+          test "$(git hash-object formal/e47/unified/Tensor125.v)" = 54d2d851f177a815d69e4c37d520494be1c1bd13
+          python --version | tee e47-lift-python-version.txt
+          python -I validation/e47_tensor_lift_parity.py 2>&1 | tee e47-lift-python-log.txt
+          grep -Fq 'E47_TENSOR_LIFT_PARITY_PASS' e47-lift-python-log.txt
+          grep -Fq '"negative_control_rejected": true' e47-lift-python-log.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-tensor-lift-python-unsigned
+          path: e47-lift-python-*.txt
