@@ -701,3 +701,38 @@ Theorem concreteCasimirZ_columns_sixty_through_sixtyfour :
 Proof. vm_compute. reflexivity. Qed.
 
 Print Assumptions concreteCasimirZ_columns_sixty_through_sixtyfour.
+
+(* Concrete [C,Z] for all 125 rows and columns 65..69. Exact D*U
+   multiplication, with no assumed spectrum, centrality or kernel rank. *)
+Theorem concreteCasimirZ_columns_sixtyfive_through_sixtynine :
+  List.forallb
+    (fun j => List.forallb
+      (fun i => concreteCasimirZEntryOK i j) (List.seq 0 125))
+    (List.seq 65 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions concreteCasimirZ_columns_sixtyfive_through_sixtynine.
+
+(* Concrete [C,Z], all 125 rows and columns 70..74, evaluated with
+   the genuine 125-term D*U product and diagonal Z. No spectral or
+   centrality lemma is imported. *)
+Theorem concreteCasimirZ_columns_seventy_through_seventyfour :
+  List.forallb
+    (fun j => List.forallb
+      (fun i => concreteCasimirZEntryOK i j) (List.seq 0 125))
+    (List.seq 70 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions concreteCasimirZ_columns_seventy_through_seventyfour.
+
+(* Concrete [C,Z], all 125 rows and columns 75..79. This checks 625
+   exact entries of the original 125-term D*U matrix product and diagonal Z.
+   No spectral multiplicity, rank or centrality is imported as an axiom. *)
+Theorem concreteCasimirZ_columns_seventyfive_through_seventynine :
+  List.forallb
+    (fun j => List.forallb
+      (fun i => concreteCasimirZEntryOK i j) (List.seq 0 125))
+    (List.seq 75 5) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions concreteCasimirZ_columns_seventyfive_through_seventynine.
