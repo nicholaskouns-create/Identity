@@ -41,6 +41,44 @@ theorem rational_minimax_lower_bound (p q : Int) (_hq : 0 < q) :
   dsimp [gamma, lambdaMax]
   omega
 
+
+/-- Any rational step whose two signed endpoint residuals are both at
+    most the sharp 15/17 bound must equal 1/99144 after cancellation.
+    The statement is exact integer arithmetic, with no real-valued
+    approximation and no assumptions on the concrete Casimir matrix. -/
+theorem rational_sharp_step_unique (p q : Int)
+    (hleft : 17 * (q - gamma * p) ≤ 15 * q)
+    (hright : 17 * (lambdaMax * p - q) ≤ 15 * q) :
+    q = qStar * p := by
+  dsimp [gamma, lambdaMax, qStar] at *
+  omega
+
+/-- The two endpoint residuals cannot simultaneously be strictly below
+    the minimax threshold. This excludes any strictly better rational
+    Richardson step by exact linear integer arithmetic. -/
+theorem rational_no_strict_endpoint_improvement (p q : Int) :
+    ¬ (17 * (q - gamma * p) < 15 * q ∧
+       17 * (lambdaMax * p - q) < 15 * q) := by
+  dsimp [gamma, lambdaMax]
+  omega
+
+/-- With positive rational denominator, the two absolute endpoint
+    residuals are both at most 15/17 iff the represented step equals
+    1/99144. The equality q = 99144*p is invariant under rescaling
+    the numerator and denominator. -/
+theorem rational_sharp_endpoints_iff (p q : Int) (_hq : 0 < q) :
+    ((-15 * q ≤ 17 * (q - gamma * p) ∧
+       17 * (q - gamma * p) ≤ 15 * q) ∧
+      (-15 * q ≤ 17 * (q - lambdaMax * p) ∧
+       17 * (q - lambdaMax * p) ≤ 15 * q))
+      ↔ q = qStar * p := by
+  dsimp [gamma, lambdaMax, qStar]
+  constructor
+  · intro h
+    omega
+  · intro h
+    omega
+
 end MC88OptimalStep
 
 #print axioms MC88OptimalStep.denominator_identity
@@ -48,3 +86,6 @@ end MC88OptimalStep
 #print axioms MC88OptimalStep.endpoint_equioscillation
 #print axioms MC88OptimalStep.five_modes_within_sharp_bound
 #print axioms MC88OptimalStep.rational_minimax_lower_bound
+#print axioms MC88OptimalStep.rational_sharp_step_unique
+#print axioms MC88OptimalStep.rational_no_strict_endpoint_improvement
+#print axioms MC88OptimalStep.rational_sharp_endpoints_iff
