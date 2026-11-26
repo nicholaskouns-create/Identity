@@ -70,6 +70,17 @@ The Eastern and Western Interconnections do not publish a live public frequency;
 - **Caching.** Each instance caches ERCOT for 8 seconds, ODIN for 60, river gauges for 10 minutes, a county's drought for 6 hours, a county's water systems for 24 hours and emPOWER for 12 hours, so the publishers see one read per interval however many people have Grid open. Grid also keeps the emPOWER table on the device for 12 hours.
 - **Freshness.** Grid polls it every 10 seconds for frequency and every 60 for outages. The panels show the age of each reading.
 
+## Mass-energy
+
+**What the electricity in the grid weighs.** E = mc², read backwards, on numbers already on the page. Two quantities, kept apart because conflating them is the whole trap in this subject.
+
+- **Stored.** ERCOT publishes system inertia in MW·s: the kinetic energy turning in the synchronous machines at this instant. Divided by c² that is a mass, and it is the only figure here that is actually *in* the grid. At a typical 320 GW·s the Texas Interconnection carries **3.56 mg** of mass-energy in its spinning fleet.
+- **Flowing.** Demand is power, joules per second, so divided by c² it is a mass *rate* — kilograms per second, not a weight, and not sitting anywhere. Texas runs about 668 µg/s and the Lower 48 about 5.34 mg/s, which is 169 kg over a year. The panel labels the row *a rate, not a weight* and never sums it into the stored figure.
+- **Ride-through.** Stored divided by flowing has units of time, and the number it lands on is the inertia constant H/S that power engineers already use — c² cancels out of the ratio, so this is a standard quantity reached from the other side. About **5.3 s** at typical inertia. Wind and solar are inverter-based and add no synchronous inertia, so as their share rises this figure falls: at 250 GW·s it is 4.8 s, and the same megawatt loss then produces a steeper rate of change of frequency, which is exactly what the disturbance reading measures.
+- **The grid does not get heavier.** Electricity passes through and leaves as heat; nothing accumulates in the wires. Rest mass genuinely is converted, but at the generator, where burning fuel leaves the fuel lighter — upstream of anything Grid can see.
+- **Coverage.** Inertia covers rotating machines only. Field energy in lines, transformers and reactors is also stored, also real, and published by nobody, so the stored figure is a floor on the grid's true instantaneous energy content. When ERCOT publishes no inertia, no stored figure is given and the flow rate is not offered as a substitute.
+- **Where it runs.** `grid/engine/massenergy.js`, in the browser from live inputs, which is why it carries △ Model. Tests in `grid/engine/massenergy.test.mjs`.
+
 ## Water
 
 **Your water system.** Once you allow location, the Water panel names the water system that serves your position and shows how it stands with EPA.
@@ -142,6 +153,7 @@ Grid can tell you when the power goes out where you or your family live, with Gr
 | Active power outages by county | ODIN (DOE / ORNL) public feed, via `grid-live` | ◆ | 1 min |
 | Real-time frequency, time error, inertia, demand, wind, solar (Texas) | ERCOT Real-Time System Conditions, via `grid-live` | ◆ | 10 s |
 | Your outlet's frequency (on request) | This device's microphone; nothing leaves it | ● | 0.1 s |
+| Mass-energy of the grid: stored and flowing | Computed here as E/c² from ERCOT inertia and EIA-930 / ISO demand | △ | 10 s |
 | Medicare beneficiaries who rely on electricity-dependent medical equipment, by county | HHS emPOWER Program (CMS, HHS) public REST service, via `grid-live` | ◆ | monthly (HHS); 12 h cache |
 | River gauges at or near flood stage | NOAA National Water Prediction Service, via `grid-live` | ◆ | 30 min (NOAA); 10 min cache |
 | Community water systems by county, with EPA compliance status | EPA ECHO Drinking Water System Search (SDWIS/Fed), via `grid-live` | ◆ | quarterly (states); 24 h cache |
@@ -309,6 +321,9 @@ node --test grid/engine/monitor.test.mjs
 # outlet meter on synthetic hum; edge-function parsers and request path on ERCOT, ODIN, emPOWER, NOAA, EPA ECHO and Drought Monitor fixtures
 node grid/engine/enf.test.mjs
 node tools/grid/test_grid_live.mjs
+
+# mass-energy: stored vs flowing kept apart, units, and the panel's own wording
+node --test grid/engine/massenergy.test.mjs
 
 # water in the browser: service-area matching and ring orientation, the rounded EPA query, rivers near you, EPA standing
 node tools/grid/test_grid_water.mjs
