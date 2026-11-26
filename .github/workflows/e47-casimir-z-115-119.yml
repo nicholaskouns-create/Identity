@@ -1,0 +1,78 @@
+name: E47 concrete Casimir-Z 115-119 paired receipt
+on:
+  pull_request:
+    paths:
+      - 'formal/e47/unified/Tensor125CasimirZ115to119.lean'
+      - 'formal/e47/unified/Tensor125.v'
+      - '.github/workflows/e47-casimir-z-115-119.yml'
+  workflow_dispatch:
+jobs:
+  lean-casimir-z-115-119:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify generator definition identity
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('formal/e47/unified')
+          original = (root / 'Tensor125.lean').read_text().split('theorem highest_weight', 1)[0]
+          isolated = (root / 'Tensor125CasimirZ115to119.lean').read_text().split('/-! ## Isolated', 1)[0]
+          assert original == isolated, '125-state generator definitions diverged'
+          print('CASIMIR_Z_115_119_GENERATOR_PARITY_PASS')
+          PY
+      - name: Install pinned Lean 4.19.0
+        run: |
+          set -euo pipefail
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile exact 625-entry theorem and audit axioms
+        run: |
+          set -euo pipefail
+          lean --version | tee lean-115-119-version.txt
+          grep -Fq 'Lean (version 4.19.0' lean-115-119-version.txt
+          lean formal/e47/unified/Tensor125CasimirZ115to119.lean | tee lean-115-119-axioms.txt
+          grep -Fq "'E47Tensor125.concreteCasimirZ_columns_onehundredfifteen_through_onehundrednineteen' depends on axioms: [propext]" lean-115-119-axioms.txt
+          sha256sum formal/e47/unified/Tensor125CasimirZ115to119.lean > lean-115-119-sha256.txt
+          git rev-parse HEAD > lean-115-119-commit.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lean-casimir-z-115-119-proof-audit
+          path: |
+            lean-115-119-version.txt
+            lean-115-119-axioms.txt
+            lean-115-119-sha256.txt
+            lean-115-119-commit.txt
+
+  coq-casimir-z-115-119:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq 8.18.0
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y coq
+      - name: Compile concrete Coq theorem and audit assumptions
+        run: |
+          set -euo pipefail
+          coqc --version | tee coq-115-119-version.txt
+          grep -Fq 'version 8.18.0' coq-115-119-version.txt
+          grep -Fq 'Theorem concreteCasimirZ_columns_onehundredfifteen_through_onehundrednineteen :' formal/e47/unified/Tensor125.v
+          grep -Fq 'Print Assumptions concreteCasimirZ_columns_onehundredfifteen_through_onehundrednineteen.' formal/e47/unified/Tensor125.v
+          coqc formal/e47/unified/Tensor125.v | tee coq-115-119-assumptions.txt
+          test "$(grep -c '^Closed under the global context$' coq-115-119-assumptions.txt)" -eq "$(grep -c '^Print Assumptions ' formal/e47/unified/Tensor125.v)"
+          sha256sum formal/e47/unified/Tensor125.v > coq-115-119-sha256.txt
+          git rev-parse HEAD > coq-115-119-commit.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coq-casimir-z-115-119-assumption-audit
+          path: |
+            coq-115-119-version.txt
+            coq-115-119-assumptions.txt
+            coq-115-119-sha256.txt
+            coq-115-119-commit.txt
