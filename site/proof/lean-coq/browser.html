@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lean · Coq source browser | E47 Mathematical City</title>
+<meta name="description" content="Browsable, paired Lean 4 and Coq proof sources in the Identity repository. Links are source references, not new compiler certificates.">
+<style>
+:root{color-scheme:light;--ink:#182434;--muted:#526173;--line:#d8e0e8;--blue:#164c90;--paper:#fff;--bg:#f4f7fa}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:960px;margin:auto;padding:3rem 1.25rem 5rem}
+header{border-bottom:2px solid var(--ink);padding-bottom:1.5rem}
+.kicker{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);font-weight:700}
+h1{font-size:clamp(1.9rem,4vw,3rem);line-height:1.13;margin:.45rem 0}
+h2{font-size:1.2rem;margin:2rem 0 .5rem}
+p{max-width:75ch}
+a{color:var(--blue);text-underline-offset:3px}
+a:focus-visible,input:focus-visible{outline:3px solid #b87b18;outline-offset:3px}
+.note{background:#eaf2fa;border-left:4px solid var(--blue);padding:1rem 1.25rem;margin:1.5rem 0}
+.search{display:block;font-weight:650;margin:1.5rem 0 .5rem}
+input{width:100%;max-width:35rem;border:1px solid #8295aa;border-radius:5px;background:white;padding:.8rem;font:inherit}
+#count{color:var(--muted);font-size:.9rem}
+table{width:100%;border-collapse:collapse;background:var(--paper);margin:1rem 0}
+th,td{text-align:left;border-bottom:1px solid var(--line);padding:.85rem;vertical-align:top}
+th{background:#e7eef5;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em}
+td a{display:inline-block;margin-right:1rem;font-weight:650}
+table tr[hidden]{display:none!important}
+small{display:block;color:var(--muted);margin-top:.2rem}
+footer{border-top:1px solid var(--line);padding-top:1.25rem;margin-top:2rem}
+@media(max-width:650px){table,thead,tbody,tr,th,td{display:block}thead{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden}tr{border:1px solid var(--line);margin:0 0 1rem}td{border:0;padding:.55rem .85rem}td:first-child{font-weight:700;padding-top:1rem}td:last-child{padding-bottom:1rem}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<div class="kicker">Mathematical City · Identity · proof navigation</div>
+<h1>Lean 4 / Coq source browser</h1>
+<p>Navigate paired formal sources in the existing Identity repository. This restores the previously missing <code>/site/proof/lean-coq/browser.html</code> route without changing the proof plate, source modules, or compiler workflow.</p>
+</header>
+<div class="note"><strong>Evidence boundary:</strong> A source link is not a compiler receipt. The listed files contain encoded statements with different scopes. Verify the exact theorem, axiom audit, commit, and successful CI run before citing a machine-checked result. This page does not run Lean or Coq.</div>
+<label class="search" for="filter">Find a module or theorem topic</label>
+<input id="filter" type="search" placeholder="Try: kernel, spectrum, contraction" autocomplete="off" aria-controls="proofs">
+<p id="count" role="status" aria-live="polite">Showing 4 source pairs.</p>
+<table id="proofs">
+<thead><tr><th scope="col">Module</th><th scope="col">What the source encodes</th><th scope="col">Original source files</th></tr></thead>
+<tbody>
+<tr data-keywords="core47 carrier 125 47 dimension finite arithmetic">
+<td>Core47</td><td>Finite carrier and kernel arithmetic.<small>Not a concrete 125×125 matrix certificate.</small></td>
+<td><a href="https://github.com/nicholaskouns-create/Identity/blob/main/formal/e47/unified/Core47.lean">Lean 4</a><a href="https://github.com/nicholaskouns-create/Identity/blob/main/formal/e47/unified/Core47.v">Coq</a></td>
+</tr>
+<tr data-keywords="e47weightalgebra weight multiplicities spectrum 47 kernel polynomial">
+<td>E47WeightAlgebra</td><td>Weight counts, scalar Casimir selection and 47-dimensional count.<small>The source explicitly separates scalar identities from concrete matrices.</small></td>
+<td><a href="https://github.com/nicholaskouns-create/Identity/blob/main/formal/e47/E47WeightAlgebra.lean">Lean 4</a><a href="https://github.com/nicholaskouns-create/Identity/blob/main/formal/e47/E47WeightAlgebra.v">Coq</a></td>
+</tr>
+<tr data-keywords="e47spectral spectrum casimir scalar eigenvalues">
+<td>E47Spectral</td><td>Finite spectral and scalar checks.<small>Not the full 125×125 operator construction.</small></td>
+<td><a href="https://github.com/nicholaskouns-create/Identity/blob/main/formal/e47/E47Spectral.lean">Lean 4</a><a href="https://github.com/nicholaskouns-create/Identity/blob/main/formal/e47/E47Spectral.v">Coq</a></td>
+</tr>
+<tr data-keywords="e47richardson contraction 15/17 minimax epsilon">
+<td>E47Richardson</td><td>Exact rational Richardson step and scalar contraction identities.<small>Concrete operator-norm power results require their own proof receipts.</small></td>
+<td><a href="https://github.com/nicholaskouns-create/Identity/blob/main/formal/e47/E47Richardson.lean">Lean 4</a><a href="https://github.com/nicholaskouns-create/Identity/blob/main/formal/e47/E47Richardson.v">Coq</a></td>
+</tr>
+</tbody>
+</table>
+<p id="empty" hidden>No matching source pairs. Try another theorem or module name.</p>
+<h2>Evidence and original instruments</h2>
+<p><a href="./">Lean / Coq academic proof plate</a> · <a href="https://github.com/nicholaskouns-create/Identity/actions/workflows/e47-formal-validation.yml">Formal validation workflow</a> · <a href="https://nicholaskouns-create.github.io/e47-formal-validation.html">Formal validation archive</a> · <a href="https://github.com/nicholaskouns-create/Identity">Identity source repository</a></p>
+<footer><small>Navigation repair only. No citizen identity, mathematical claim, certificate, private document, or independent application was changed.</small></footer>
+</main>
+<script>
+(function(){
+  "use strict";
+  const input=document.getElementById("filter");
+  const rows=Array.from(document.querySelectorAll("#proofs tbody tr"));
+  const count=document.getElementById("count");
+  const empty=document.getElementById("empty");
+  input.addEventListener("input",function(){
+    const query=input.value.trim().toLocaleLowerCase();
+    let shown=0;
+    for(const row of rows){
+      const match=(row.textContent+" "+row.dataset.keywords).toLocaleLowerCase().includes(query);
+      row.hidden=!match;
+      if(match)shown++;
+    }
+    count.textContent="Showing "+shown+" of "+rows.length+" source pairs.";
+    empty.hidden=shown!==0;
+  });
+})();
+</script>
+</body>
+</html>
