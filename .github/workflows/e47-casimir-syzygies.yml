@@ -1,0 +1,88 @@
+name: E47 free-algebra Casimir syzygies paired audit
+on:
+  pull_request:
+    paths:
+      - 'formal/e47/unified/CasimirSyzygies.lean'
+      - 'formal/e47/unified/CasimirSyzygies.v'
+      - 'validation/e47_casimir_syzygies.py'
+      - '.github/workflows/e47-casimir-syzygies.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lean-syzygies:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Lean 4.19.0
+        run: |
+          set -euo pipefail
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile, audit axioms and retain provenance
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee syzygy-lean-commit.txt
+          sha256sum formal/e47/unified/CasimirSyzygies.lean | tee syzygy-lean-sha256.txt
+          lean --version | tee syzygy-lean-version.txt
+          grep -Fq 'Lean (version 4.19.0' syzygy-lean-version.txt
+          lean formal/e47/unified/CasimirSyzygies.lean 2>&1 | tee syzygy-lean-log.txt
+          grep -Fq 'E47CasimirSyzygies.casimir_U_syzygy' syzygy-lean-log.txt
+          ! grep -Eq 'sorryAx|Lean.ofReduceBool|native_decide.ax|admit' syzygy-lean-log.txt
+          ! grep -Eq '^[[:space:]]*(sorry|axiom)\b' formal/e47/unified/CasimirSyzygies.lean
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-syzygy-lean-unsigned
+          path: syzygy-lean-*.txt
+  coq-syzygies:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Coq 8.18.0
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq coq
+      - name: Compile, audit assumptions and retain provenance
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee syzygy-coq-commit.txt
+          sha256sum formal/e47/unified/CasimirSyzygies.v | tee syzygy-coq-sha256.txt
+          coqc --version | tee syzygy-coq-version.txt
+          grep -Fq 'version 8.18.0' syzygy-coq-version.txt
+          coqc -q formal/e47/unified/CasimirSyzygies.v 2>&1 | tee syzygy-coq-log.txt
+          test "$(grep -c 'Closed under the global context' syzygy-coq-log.txt)" -eq 5
+          ! grep -Eq 'Admitted\.|Axiom ' formal/e47/unified/CasimirSyzygies.v
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-syzygy-coq-unsigned
+          path: syzygy-coq-*.txt
+  python-syzygies:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Independent exact word coefficients and mutant
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee syzygy-python-commit.txt
+          sha256sum validation/e47_casimir_syzygies.py | tee syzygy-python-sha256.txt
+          python --version | tee syzygy-python-version.txt
+          python -I validation/e47_casimir_syzygies.py 2>&1 | tee syzygy-python-log.txt
+          grep -Fq 'E47_SYZYGY_Z_EXACT_PASS' syzygy-python-log.txt
+          grep -Fq 'E47_SYZYGY_U_EXACT_PASS' syzygy-python-log.txt
+          grep -Fq 'E47_SYZYGY_D_EXACT_PASS' syzygy-python-log.txt
+          grep -Fq 'E47_SYZYGY_MUTANT_REJECTED' syzygy-python-log.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e47-syzygy-python-unsigned
+          path: syzygy-python-*.txt
