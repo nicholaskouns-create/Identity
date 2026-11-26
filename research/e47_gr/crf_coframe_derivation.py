@@ -150,10 +150,12 @@ pure = {signature(metric_at_state(
     (KER @ (rng.normal(size=47) + 1j * rng.normal(size=47))) /
     np.linalg.norm(KER @ (rng.normal(size=47) + 1j * rng.normal(size=47)))))
     for _ in range(25)}
-check("a pure E47 state is (3,0): no time at the fixed point", pure == {(3, 0)}, str(pure))
+check("guess 2 refuted: a pure E47 state is (3,0), no time direction", pure == {(3, 0)}, str(pure))
 
 # ------------------------------------------------- 4. the threshold is NOT Omega_c
-print("\n4. Where the signature turns — a negative result, stated as one")
+print("\n4. Two guesses made while building this, both discarded")
+print("   Neither was a claim of the corpus. Omega_c = 47/125 is untouched and is")
+print("   reconfirmed in section 1; only the extra role guessed for it is refuted.")
 th = []
 for _ in range(120):
     u = KER @ (rng.normal(size=47) + 1j * rng.normal(size=47))
@@ -173,9 +175,9 @@ for _ in range(120):
 th = np.array(th)
 print(f"        120 mixing directions: min {th.min():.4f}  median {np.median(th):.4f}  max {th.max():.4f}")
 check("the threshold is direction-dependent, not a constant", th.std() > 1e-3, f"sd = {th.std():.4f}")
-check("Omega_c = 0.376 is NOT the signature threshold",
+check("guess 1 refuted: the turn is not at Omega_c",
       not (th.min() <= 0.376 <= th.max()),
-      "0.376 lies outside the whole observed range; the identification fails")
+      "0.376 lies outside the observed range; Omega_c as a kernel fraction is unaffected")
 
 # ------------------------------------------------- 5. the flowed coframe
 print("\n5. The coframe, flowed rather than chosen")

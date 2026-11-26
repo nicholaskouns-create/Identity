@@ -45,22 +45,30 @@ signature `(0,4)` — wholly non-Lorentzian, because 78 of 125 dimensions carry 
 Under `Γ = I − ε*A` it passes `(1,3)`, `(2,2)`, and reaches `(3,1)` by the fifth step,
 where it stays. Spacetime signature is something the contraction *produces*.
 
-## Two negative results, stated as such
+## Two hypotheses formed while building this, both discarded
 
-**Ω_c is not the signature threshold.** Over 120 random mixing directions the turn happens
-between **0.509 and 0.701**, median 0.607, standard deviation 0.042. It is
-direction-dependent, so it is not a constant at all — and `Ω_c = 0.376` lies **outside the
-entire observed range**. The identification fails. The 0.376 that appears elsewhere in the
-corpus is doing a different job.
+Neither of the following was a claim of the corpus. Both were guesses made by the author of
+this file during the derivation, written down here so they are not guessed again.
 
-**The fixed point has no time.** A state lying wholly inside `E₄₇` gives signature `(3,0)`
+**Guess 1: that the signature would turn at Ω_c.** It does not. Over 120 random mixing
+directions the turn happens between **0.509 and 0.701**, median 0.607, standard deviation
+0.042 — direction-dependent, so not a constant at all, and `0.376` lies outside the entire
+observed range.
+
+This says nothing about `Ω_c = 47/125` itself, which is untouched. `dim ker K = 47`,
+`125 − 47 = 78` and `Ω_c = 0.376` are all reconfirmed at the top of the validator. Ω_c is a
+kernel fraction and remains exactly that. The only thing refuted is the extra role this file
+briefly supposed for it.
+
+**Guess 2: that states inside `E₄₇` would carry ordinary spacetime.** They do not. A state
+lying wholly inside `E₄₇` gives signature `(3,0)`
 in every draw: `A` annihilates it, so the time leg vanishes. Lorentzian geometry exists
 strictly *between* the two ends — it needs weight off the kernel to have a time direction
 and enough weight on it to have space. The attractor of the flow is therefore a degenerate
 three-metric, and spacetime is a **transient** of the recursion, not its limit.
 
-That last point runs opposite to the usual reading, in which signature collapse is pushed
-to extreme curvature. Here collapse happens at convergence.
+That is a derived structural fact about the construction in this file, not a revision of
+anything in the corpus.
 
 ## One numerical note worth keeping
 
