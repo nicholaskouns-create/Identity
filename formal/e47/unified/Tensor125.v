@@ -421,3 +421,83 @@ Theorem totalUp_down_bracket_columns_onehundredtwenty_through_onehundredtwentyfo
 Proof. vm_compute. reflexivity. Qed.
 
 Print Assumptions totalUp_down_bracket_columns_onehundredtwenty_through_onehundredtwentyfour.
+
+(* Exact partition and integration of the 25 separately proved five-column
+   concrete [Up,Down]=2Z certificates. No 15,625-entry recomputation,
+   imported commutator axiom, or assumption about the spectrum. *)
+Definition thirdBracketColumnPartition : list nat :=
+  List.flat_map (fun block =>
+    List.map (fun offset => (5 * block + offset)%nat) (List.seq 0 5))
+    (List.seq 0 25).
+
+Theorem thirdBracketColumnPartition_exact :
+  thirdBracketColumnPartition = List.seq 0 125.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions thirdBracketColumnPartition_exact.
+
+Theorem totalUp_down_bracket_full_columns :
+  List.forallb
+    (fun j => List.forallb (fun i => ud_entry_ok i j) (List.seq 0 125))
+    (List.seq 0 125) = true.
+Proof.
+  set (column_ok := fun j : nat =>
+    List.forallb (fun i => ud_entry_ok i j) (List.seq 0 125)).
+  replace (List.seq 0 125) with
+    (List.seq 0 5 ++
+     List.seq 5 5 ++
+     List.seq 10 5 ++
+     List.seq 15 5 ++
+     List.seq 20 5 ++
+     List.seq 25 5 ++
+     List.seq 30 5 ++
+     List.seq 35 5 ++
+     List.seq 40 5 ++
+     List.seq 45 5 ++
+     List.seq 50 5 ++
+     List.seq 55 5 ++
+     List.seq 60 5 ++
+     List.seq 65 5 ++
+     List.seq 70 5 ++
+     List.seq 75 5 ++
+     List.seq 80 5 ++
+     List.seq 85 5 ++
+     List.seq 90 5 ++
+     List.seq 95 5 ++
+     List.seq 100 5 ++
+     List.seq 105 5 ++
+     List.seq 110 5 ++
+     List.seq 115 5 ++
+     List.seq 120 5)
+    by (vm_compute; reflexivity).
+  repeat rewrite List.forallb_app.
+  unfold column_ok.
+  rewrite totalUp_down_bracket_first_five_columns.
+  rewrite totalUp_down_bracket_next_five_columns.
+  rewrite totalUp_down_bracket_columns_ten_through_fourteen.
+  rewrite totalUp_down_bracket_columns_fifteen_through_nineteen.
+  rewrite totalUp_down_bracket_columns_twenty_through_twentyfour.
+  rewrite totalUp_down_bracket_columns_twentyfive_through_twentynine.
+  rewrite totalUp_down_bracket_columns_thirty_through_thirtyfour.
+  rewrite totalUp_down_bracket_columns_thirtyfive_through_thirtynine.
+  rewrite totalUp_down_bracket_columns_forty_through_fortyfour.
+  rewrite totalUp_down_bracket_columns_fortyfive_through_fortynine.
+  rewrite totalUp_down_bracket_columns_fifty_through_fiftyfour.
+  rewrite totalUp_down_bracket_columns_fiftyfive_through_fiftynine.
+  rewrite totalUp_down_bracket_columns_sixty_through_sixtyfour.
+  rewrite totalUp_down_bracket_columns_sixtyfive_through_sixtynine.
+  rewrite totalUp_down_bracket_columns_seventy_through_seventyfour.
+  rewrite totalUp_down_bracket_columns_seventyfive_through_seventynine.
+  rewrite totalUp_down_bracket_columns_eighty_through_eightyfour.
+  rewrite totalUp_down_bracket_columns_eightyfive_through_eightynine.
+  rewrite totalUp_down_bracket_columns_ninety_through_ninetyfour.
+  rewrite totalUp_down_bracket_columns_ninetyfive_through_ninetynine.
+  rewrite totalUp_down_bracket_columns_onehundred_through_onehundredfour.
+  rewrite totalUp_down_bracket_columns_onehundredfive_through_onehundrednine.
+  rewrite totalUp_down_bracket_columns_onehundredten_through_onehundredfourteen.
+  rewrite totalUp_down_bracket_columns_onehundredfifteen_through_onehundrednineteen.
+  rewrite totalUp_down_bracket_columns_onehundredtwenty_through_onehundredtwentyfour.
+  reflexivity.
+Qed.
+
+Print Assumptions totalUp_down_bracket_full_columns.
