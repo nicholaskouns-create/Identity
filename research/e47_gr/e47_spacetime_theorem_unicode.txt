@@ -1,0 +1,50 @@
+The E₄₇ Spacetime Theorem
+An exact Lorentzian metric from Casimir contraction and spin rotation
+
+Theorem. For the normalized E₄₇ flow with signed form η = 2P − I, the contraction tangent is orthogonal to the rotation tangents. There exists an explicit state family whose induced metric is Lorentzian precisely for ½ < p < 1, where p is the kernel occupancy. At p = 1 its contraction tangent vanishes. The threshold ½ is specific to this family.
+
+Proof
+
+H = V₂ ⊗ V₂ ⊗ V₂,   dim H = 125
+C = J₁² + J₂² + J₃²,   K = (C − 6I)(C − 30I),   A = K²
+E₄₇ = ker A ≅ 5V₂ ⊕ 2V₅,   dim E₄₇ = 5·5 + 2·11 = 47
+P = proj(E₄₇),   η = 2P − I,   η² = I,   ε⋆ = 1/99144
+U(x) = exp(iΣₖ xᵏJₖ),   Φ = exp(−tε⋆A)U(x)Ψ₀,   Ψ = Φ/‖Φ‖
+gμν = Re⟨∂μΨ, η ∂νΨ⟩
+
+Write ∂ₖΨ = iBₖΨ. Each Hermitian Bₖ is a real linear combination of the collective spin generators. Since A is a polynomial in C and P is its kernel projector, Bₖ commutes with both A and η. Differentiating the normalization gives
+
+a = ⟨Ψ,AΨ⟩,   ∂ₜΨ = −ε⋆(A − aI)Ψ
+Dₖ = (A − aI)ηBₖ = Dₖ†
+g₀ₖ = −ε⋆ Re(i⟨Ψ,DₖΨ⟩) = 0.
+
+In the spin-two sector V₂ ⊗ ℂ⁵ choose an orthonormal multiplicity basis eₘ indexed by m ∈ {−2,−1,0,1,2}. Pair it with the spin basis to obtain u. Choose a unit singlet v in the spin-zero sector.
+
+u = (1/√5) Σₘ |2,m⟩ ⊗ eₘ,   Au = 0
+Jₖv = 0,   Cv = 0,   Av = 32400v,   κ = 32400ε⋆
+Re⟨Jᵢu,Jⱼu⟩ = Re tr(JᵢJⱼ) / 5 = 2δᵢⱼ
+
+The trace here is on V₂. Rotational invariance makes the trace form isotropic, and its three diagonal entries sum to the spin-two Casimir value 6 after division by 5.
+
+At x = 0 the normalized state and its occupancy evolve as
+
+Ψ = √p u + √(1−p) v,   p = ‖PΨ‖²
+p(t) = p₀ / [p₀ + (1−p₀) exp(−2κt)],   ṗ = 2κp(1−p)
+gᵢⱼ = 2pδᵢⱼ
+g₀₀ = (∂ₜ√p)² − (∂ₜ√(1−p))² = κ²p(1−p)(1−2p)
+g(t,0) = diag(κ²p(1−p)(1−2p), 2p, 2p, 2p).
+
+Inertia is ordered as (positive, negative, zero).
+
+0 < p < ½   ⇒   (4,0,0)
+p = ½       ⇒   (3,0,1),   ∂ₜΨ ≠ 0
+½ < p < 1   ⇒   (3,1,0)
+p = 1       ⇒   (3,0,1),   ∂ₜΨ = 0
+
+At the first degeneracy the moving tangent is null. At the kernel endpoint the state is stationary in t. For 0 < p₀ < ½ the crossing occurs at t = ln((1−p₀)/p₀)/(2κ); p tends to 1 as t tends to infinity. ∎
+
+Numerical verification
+
+Direct Python evaluation of this explicit family's metric at p ∈ {¼, ½, ¾, 1} gave maximum absolute entrywise error below 4.45 × 10⁻¹⁶.
+
+For the separate sampled state in crf_coframe_derivation.py at Identity commit 73fd0bbf4f74cc4708398e82063d1f6eefd1007c, the 125-dimensional rerun gave det g ≈ −3.118 and scalar curvature R ≈ −25.61877. The flat, curved-reference, and de Sitter controls passed. The original research note reports R ≈ −29.6 for its run. These curvature values refer to sampled states in the numerical construction. The closed-form theorem above establishes the signature for the explicit singlet family.
