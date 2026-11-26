@@ -133,6 +133,44 @@ Proof. vm_compute. reflexivity. Qed.
 Print Assumptions totalUp_down_bracket_diagonal.
 Print Assumptions concrete_casimir_trace.
 
+
+(* Candidate Casimir spectral moments computed from actual diagonal Z weights.
+   These are necessary consistency checks, not an eigenspace or kernel proof.
+   No concrete characteristic polynomial or rank is assumed. *)
+Definition candidateCasimirSpectrum : list (nat * nat) :=
+  List.map (fun j => ((j * (j + 1))%nat,
+    (multiplicity j * (2 * j + 1))%nat)) (List.seq 0 7).
+
+Theorem candidateCasimirSpectrum_exact :
+  candidateCasimirSpectrum =
+    [(0%nat, 1%nat); (2%nat, 9%nat); (6%nat, 25%nat);
+     (12%nat, 28%nat); (20%nat, 27%nat); (30%nat, 22%nat);
+     (42%nat, 13%nat)].
+Proof. vm_compute. reflexivity. Qed.
+
+(* Use binary Z for moments: a 58500%nat numeral overflows the Coq 8.18
+   evaluator stack before the proof. Preserve the failed CI as evidence. *)
+Definition candidateCasimirMoment (p : nat) : Z :=
+  List.fold_right Z.add 0
+    (List.map (fun j =>
+      Z.of_nat (multiplicity j * (2 * j + 1)) *
+      Z.pow (Z.of_nat (j * (j + 1))) (Z.of_nat p)) (List.seq 0 7)).
+
+Theorem candidateCasimirMoments :
+  candidateCasimirMoment 0%nat = 125 /\
+  candidateCasimirMoment 1%nat = 2250 /\
+  candidateCasimirMoment 2%nat = 58500.
+Proof. vm_compute. repeat split; reflexivity. Qed.
+
+Theorem candidateCasimirFirstMomentMatchesConcreteTrace :
+  candidateCasimirMoment 1%nat =
+    List.fold_right Z.add 0 (List.map casimirDiag (List.seq 0 125)).
+Proof. rewrite concrete_casimir_trace. vm_compute. reflexivity. Qed.
+
+Print Assumptions candidateCasimirSpectrum_exact.
+Print Assumptions candidateCasimirMoments.
+Print Assumptions candidateCasimirFirstMomentMatchesConcreteTrace.
+
 (* First five complete columns of [Up,Down]=2Z on the genuine
    125-term matrix products. This includes every off-diagonal row
    in columns 0..4. The remaining columns are not claimed. *)
