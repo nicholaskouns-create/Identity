@@ -63,7 +63,7 @@ theorem highest_weight_counts :
   decide
 
 theorem total_irrep_dim :
-    ((List.range 7).map (fun j => d (j : Int) * (2 * j + 1))).sum = 125 := by
+    ((List.range 7).map (fun j : Nat => d (j : Int) * (2 * (j : Int) + 1))).sum = 125 := by
   decide
 
 theorem kernel_dim_47 :
