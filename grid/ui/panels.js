@@ -4,6 +4,7 @@ import { FUEL } from '../map/map.js';
 import { sparkline, demandChart, kpBars } from './charts.js';
 import { THRESHOLDS, PLAN, MAX_PLACES } from '../live/alerts.js';
 import { detect as detectDisturbance } from '../engine/disturbance.js';
+import { tally as massTally, scaleMass } from '../engine/massenergy.js';
 import * as W from '../live/water.js';
 
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -16,6 +17,60 @@ export function ago(t) {
 const fmt = (v, d = 1) => (Number.isFinite(v) ? v.toLocaleString(undefined, { maximumFractionDigits: d, minimumFractionDigits: d }) : '—');
 const eiaTime = (p) => (p ? new Date(p + ':00:00Z') : null);
 
+// E = mc², read backwards, on the numbers already on this page.
+//
+// Two quantities, kept apart on purpose. STORED is the kinetic energy turning
+// in the synchronous machines right now, which ERCOT publishes as inertia in
+// MW·s; divided by c² it is a mass. FLOWING is demand, which is power, so
+// divided by c² it is a mass *rate* — kilograms per second, not a weight, and
+// not sitting anywhere.
+//
+// The grid does not get heavier. Electricity passes through and leaves as
+// heat; nothing accumulates in the wires. Rest mass genuinely is converted,
+// but at the generator — burning fuel leaves the fuel lighter — and that is
+// upstream of everything Grid can see.
+export function massEnergyHtml(st) {
+  const inertiaMwS = st.ercot?.data?.inertia;
+  const ercotMw = st.ercot?.data?.demand;
+  const eia = st.eia?.data || st.relay?.data?.eia || null;
+  const usRow = eia?.series?.D?.filter?.((p) => Number.isFinite(p.v))?.at?.(-1) || null;
+  const usMw = usRow ? usRow.v : null;
+  if (!Number.isFinite(inertiaMwS) && !Number.isFinite(usMw) && !Number.isFinite(ercotMw)) return '';
+
+  const tx = massTally({ inertiaMwS, loadMw: ercotMw });
+  const us = massTally({ loadMw: usMw });
+  const show = (kg, digits = 3) => { const s = scaleMass(kg); return s ? `${fmt(s.value, digits)} ${s.unit}` : '—'; };
+  const head = `<div class="eyebrow">Mass-energy in the grid ${ev('MODEL', 'E = mc²')}</div>`;
+
+  const stored = Number.isFinite(tx.storedKg)
+    ? `<div class="row"><div class="big">${fmt(tx.storedKg * 1e6, 3)}<small>mg</small></div>
+         <div class="kv"><span>Stored as</span><b>kinetic energy</b><span>Where</span><b>spinning machines</b><span>From</span><b>${fmt(inertiaMwS / 1000, 0)} GW·s</b></div></div>
+       <p class="note">The energy turning in the Texas Interconnection's synchronous generators at this moment, divided by c². This is a mass, not a rate — it is the only figure here that is actually <em>in</em> the grid.</p>`
+    : `<p class="note">ERCOT is not publishing inertia with this reading, so there is no stored figure. The flow rate below does not substitute for it: it is a different quantity in different units.</p>`;
+
+  const rows = [];
+  if (Number.isFinite(tx.flowKgPerSec)) rows.push(['Texas', tx]);
+  if (Number.isFinite(us.flowKgPerSec)) rows.push(['Lower 48', us]);
+  const flow = rows.length
+    ? `<div class="eyebrow">Flowing · a rate, not a weight</div>
+       <table class="t"><thead><tr><th></th><th>per second</th><th>per hour</th><th>per year</th></tr></thead><tbody>
+         ${rows.map(([name, t]) => `<tr><td>${esc(name)}</td><td>${show(t.flowKgPerSec)}</td><td>${show(t.perHourKg)}</td><td>${show(t.perYearKg)}</td></tr>`).join('')}
+       </tbody></table>`
+    : '';
+
+  // Where the mass framing earns itself: stored ÷ flowing has units of time,
+  // and the number it lands on is the inertia constant H/S that power
+  // engineers already use. c² cancels, so this is a standard quantity arrived
+  // at from the other direction — and it is the ride-through the machines give
+  // before frequency has to move.
+  const ride = Number.isFinite(tx.storedAsSecondsOfFlow)
+    ? `<p class="note"><b>${fmt(tx.storedAsSecondsOfFlow, 2)} s.</b> Stored divided by flowing has units of time, and the number is the inertia constant H/S — c² cancels out of the ratio, so this is the quantity power engineers already use, reached from the other side. It is roughly how long the spinning machines can carry Texas before frequency has to move. Wind and solar are inverter-based and add no synchronous inertia, so as their share rises this figure falls, and the same megawatt loss then falls faster — which is what the disturbance reading in the frequency panel measures.</p>`
+    : '';
+
+  return `${head}${stored}${flow}${ride}
+    <p class="note">The grid does not weigh this much more. Electricity passes through and leaves as heat; nothing accumulates in the wires. Rest mass is genuinely converted, but at the generator, where burning fuel leaves the fuel lighter — upstream of anything Grid can see. Inertia covers rotating machines only: field energy in lines, transformers and reactors is also stored, also real, and published by nobody, so the stored figure is a floor.</p>`;
+}
+
 export function renderDemand(el, st) {
   const eia = st.eia?.data || (st.relay?.data?.eia ? st.relay.data.eia : null);
   const via = st.eia?.data ? 'LIVE' : st.relay?.data?.eia ? 'RELAY' : null;
@@ -27,7 +82,8 @@ export function renderDemand(el, st) {
       <div class="row"><div class="big">${fmt(last.v / 1000, 1)}<small>GW</small></div>
       <div class="kv"><span>Hour ending</span><b>${eiaTime(last.t)?.toISOString().slice(11, 16)}Z</b><span>vs forecast</span><b>${dlt === null ? '—' : (dlt >= 0 ? '+' : '') + dlt.toFixed(1) + '%'}</b><span>48 h peak</span><b>${fmt(Math.max(...D.map((p) => p.v)) / 1000, 0)} GW</b></div></div>
       <canvas class="chart" id="c-demand"></canvas>
-      <div class="legend"><span><i style="background:#c1e8ce"></i>demand</span><span><i style="background:#bc9c6c"></i>day-ahead forecast</span><span>${ago(eiaTime(last.t))}</span></div>`;
+      <div class="legend"><span><i style="background:#c1e8ce"></i>demand</span><span><i style="background:#bc9c6c"></i>day-ahead forecast</span><span>${ago(eiaTime(last.t))}</span></div>
+      ${massEnergyHtml(st)}`;
     demandChart(el.querySelector('#c-demand'), D.slice(-48), DF.slice(-60));
     return;
   }
@@ -37,7 +93,8 @@ export function renderDemand(el, st) {
     const sum = live.reduce((a, d) => a + d.load_mw, 0);
     el.innerHTML = `<div class="sub"><span>Load in reporting ISOs/RTOs</span>${ev('RELAY', `${live.length} of 7`)}</div>
       <div class="row"><div class="big">${fmt(sum / 1000, 1)}<small>GW</small></div><div class="kv"><span>Snapshot</span><b>${ago(st.relay.data.generated_utc)}</b></div></div>
-      <p class="note">Sum of the operators’ own latest load values; organised markets serve about two-thirds of U.S. load. Add a free EIA key in Sources for the full Lower-48 balance.</p>`;
+      <p class="note">Sum of the operators’ own latest load values; organised markets serve about two-thirds of U.S. load. Add a free EIA key in Sources for the full Lower-48 balance.</p>
+      ${massEnergyHtml(st)}`;
     return;
   }
   el.innerHTML = `<div class="sub"><span>Lower 48 demand</span>${ev('LIVE', 'EIA-930')}</div>
