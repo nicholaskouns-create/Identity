@@ -15,7 +15,7 @@ Definition stepDenominator : Z := 99144%Z.
 Theorem dimension_split : e47Dim + 78 = carrierDim.
 Proof. reflexivity. Qed.
 Theorem canonical_inside_e47 : canonicalDim < e47Dim.
-Proof. simpl. lia. Qed.
+Proof. unfold canonicalDim, e47Dim. lia. Qed.
 Theorem symmetric_sector_dimension : 1 + 5 + 7 + 9 + 13 = symmetricDim.
 Proof. reflexivity. Qed.
 Theorem total_joint_sector_dimension :
