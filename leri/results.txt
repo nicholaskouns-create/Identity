@@ -1,0 +1,4 @@
+A spectrum: [(0, 5), (11664, 49), (19600, 9), (23328, 21), (24208, 9), (31264, 18), (32400, 1), (186624, 13)]
+adjoint: [(np.int64(0), 1), (np.int64(2), 3), (np.int64(6), 5), (np.int64(12), 7), (np.int64(20), 9)]
+rank 5 contraction 0.8823529411764709 unitary residual 1.437747020048681e-14
+PASS: explicit carrier, exact character counts, spectral contraction, adjoint, 8-qubit statevector dilation
