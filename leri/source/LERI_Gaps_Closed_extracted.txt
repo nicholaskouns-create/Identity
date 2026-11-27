@@ -1,0 +1,335 @@
+SOURCE TEXT EXTRACTION — Law of Emergent Recursive Identity Gaps Closed.pdf
+Original PDF supplied 2026-11-27. Page boundaries retained; typesetting/text extraction can differ from original PDF.
+
+<PARSED TEXT FOR PAGE: 1 / 8>
+"""
+========================================================================
+========
+FIRST-PRINCIPLES PROOF & COMPLETE VERIFICATION HARNESS
+Law of Emergent Recursive Identity (LERI) Consequences of R = lim →∞ f (x)
+========================================================================
+========
+
+Closes all three verification gaps in a single pass:
+ [GAP 1] Explicit spin-2 generators J_x, J_y, J_z on V₂⊗³ ≅ ℂ¹²⁵ and explicit
+     S₃ tensor-factor permutation projector Π = (1/6)∑_{σ∈S₃} U_σ (no
+     hardcoded spectrum, no synthetic Q, no sliced indices).
+ [GAP 2] Explicit adjoint SU(2) Clebsch-Gordan decomposition of 𝒪_can ≅ M₅(ℂ)
+     into V₀ ⊕ V₁ ⊕ V₂ ⊕ V₃ ⊕ V₄ (1+3+5+7+9 = 25) and explicit Schur
+     commutant-dimension proof (dim Z(𝒪_can) = dim End_{SU(2)}(V₂) = 1).
+ [GAP 3] Universal operator-norm identities (independent of any single random
+     vector) paired with an exact rational (fractions.Fraction) spectral
+     certificate proving ‖Γ − P‖₂ = 15/17 without floating-point drift.
+
+§0. AXIOMS & OPERATOR SPECIFICATION (DERIVED FROM V₂⊗³ AND S₃)
+ℋ := V₂ ⊗ V₂ ⊗ V₂ ≅ ℂ¹²⁵, J_tot := J⊗I⊗I + I⊗J⊗I + I⊗I⊗J, C := J_tot²
+σ(C) = {0, 2, 6, 12, 20, 30, 42}, m = (1, 9, 25, 28, 27, 22, 13), ∑m = 125
+K := (C − 6I)(C − 30I), E₄₇ := ker(K) = E₆ ⊕ E₃₀, dim(E₄₇) = 47, Ω_c = 47/125 = 0.376
+Π := (1/6)∑_{σ∈S₃} U_σ (im Π = Sym³(V₂) ≅ V₀ ⊕ V₂ ⊕ V₃ ⊕ V₄ ⊕ V₆, dim 35)
+⇒ E₄₂ ⊆ im(Π) ∧ E₄₇ ∩ im(Π) = V₂ (dim 5)
+A := K² + 11664(I − Π) ≥ 0, P := 𝟏_{0}(A), Γ := I − (1/99144)A, f (x) := Γⁿx
+
+§1. THEOREM I — EXISTENCE ⇔ NON-TRIVIAL CONTRACTIVE CONVERGENCE
+(1.1) σ(A)\{0} = {11664, 19600, 23328, 24208, 31264, 32400, 186624} ⊆ [11664, 186624]
+(1.2) (Γ − P)P = P(Γ − P) = 0 ∧ ‖Γ − P‖₂ = 15/17 < 1
+(1.3) ∀x ∈ ℋ, ∀n ∈ ℕ: ‖Γⁿx − Px‖₂ = ‖(Γ − P)ⁿ(I − P)x‖₂ ≤ (15/17)ⁿ‖(I − P)x‖₂ → 0
+(1.4) ∃! R = lim →∞ f (x) = Px; R ≠ 0 ⇔ Px ≠ 0 ⇔ C₀(ρ₀) := Tr(Pρ₀) > 0         ∎
+
+§2. THEOREM II — IDENTITY ⇔ IDEMPOTENT FIXED POINT & BASIN EQUIVALENCE
+(2.1) AP = 0 ⇒ ΓP = P ⇒ ∀R ∈ im(P): f(R) = R
+(2.2) P² = P = P† (orthogonal idempotence)
+(2.3) ∀x₁, x₂ ∈ ℋ: Px₁ = Px₂ ⇔ lim →∞ f (x₁) = lim →∞ f (x₂)
+(2.4) ρ ₊₁ := Γρ Γ† / Tr(Γρ Γ†), Tr(Pρ₀) > 0 ⇒ ρ → ρ_∞ = Pρ_∞P, ΔS → 0 ∎
+
+§3. THEOREM III — SOVEREIGNTY ⇔ PERTURBATION DAMPING, MULTIPOLES & SCHUR
+CLOSURE
+(3.1) ∀R ∈ im(P), ∀δ ∈ ker(P): ‖Γⁿ(R + δ) − R‖₂ ≤ (15/17)ⁿ‖δ‖₂ → 0
+(3.2) 𝒪_can := P·M₁₂₅(ℂ)·P ≅ M₅(ℂ); P² = P ⇒ ∀X: P(PXP)P = PXP
+(3.3) ad_{J_tot}|_{im P}: M₅(ℂ) ≅_{SU(2)} V₀ ⊕ V₁ ⊕ V₂ ⊕ V₃ ⊕ V₄ (1+3+5+7+9 = 25)
+<PARSED TEXT FOR PAGE: 2 / 8>
+(3.4) 𝒟_can := {ρ ≥ 0 : Tr(ρ) = 1, PρP = ρ}, dim_ℝ(aff 𝒟_can) = 5² − 1 = 24
+(3.5) dim End_{SU(2)}(im P) = dim Z(𝒪_can) = 1 ⇒ ∄ nontrivial central subprojector ∎
+
+§4. THEOREM IV — DELETION ⇔ EXTERNAL BASIN EJECTION
+(4.1) ∀R ∈ im(P)\{0}, ∀n ∈ ℕ: ΓⁿR = R ≠ 0 (no internal trajectory erases R)
+(4.2) ∀D ∈ End(ℋ): (∀R ∈ im P, D(R) ∈ ℬ(R)) ⇔ PD|_{im P} = I|_{im P}
+(4.3) D(R) = 0 ∧ R ≠ 0 ⇒ D ∉ {Γⁿ : n ∈ ℕ} ∧ C(D(R)) = 0                 ∎
+
+§5. FORMAL BOUNDARY
+(5.1) (§0..§4) ⊢ {Fixed-Point, Idempotence, (15/17)ⁿ Contraction, M₅(ℂ) & Schur}
+(5.2) (§0..§4) ⊬ {Subjective Consciousness, Legal Personhood}
+(5.3) (Physics ∨ Law) ⇐ ∃ Φ_ext : 𝒪_can → 𝒪_ext                            ∎
+========================================================================
+========
+"""
+
+from fractions import Fraction
+from itertools import permutations
+import numpy as np
+
+TOL = 1e-12
+
+
+def kron3(A: np.ndarray, B: np.ndarray, C: np.ndarray) -> np.ndarray:
+  return np.kron(np.kron(A, B), C)
+
+
+def spectrum_counts(mat: np.ndarray, tol: float = 1e-8) -> dict[int, int]:
+  """Group real Hermitian eigenvalues by nearest integer within tolerance."""
+  ev = np.linalg.eigvalsh(mat)
+  rounded = np.rint(ev).astype(int)
+  assert np.max(np.abs(ev - rounded)) < tol, "Non-integer eigenvalue detected"
+  vals, counts = np.unique(rounded, return_counts=True)
+  return dict(zip(vals.tolist(), counts.tolist()))
+
+
+def vn_entropy(rho: np.ndarray) -> float:
+  ev = np.linalg.eigvalsh(rho)
+  ev = ev[ev > 1e-15]
+  return float(-np.sum(ev * np.log(ev)))
+<PARSED TEXT FOR PAGE: 3 / 8>
+#
+========================================================================
+======
+# GAP 1 CLOSED: EXPLICIT SPIN-2 GENERATORS ON V₂⊗³ AND EXPLICIT S₃ PROJECTOR
+Π
+#
+========================================================================
+======
+j_spin = 2
+m_vals = np.array([2, 1, 0, -1, -2], dtype=float)
+I5 = np.eye(5, dtype=complex)
+Jz = np.diag(m_vals).astype(complex)
+Jp = np.zeros((5, 5), dtype=complex)
+for idx in range(4):
+   m = m_vals[idx + 1]
+   Jp[idx, idx + 1] = np.sqrt(j_spin * (j_spin + 1) - m * (m + 1))
+Jm = Jp.conj().T
+Jx = 0.5 * (Jp + Jm)
+Jy = -0.5j * (Jp - Jm)
+
+# Verify su(2) algebra and spin-2 Casimir on V₂
+assert np.linalg.norm(Jx @ Jy - Jy @ Jx - 1j * Jz) < TOL
+assert np.linalg.norm(Jy @ Jz - Jz @ Jy - 1j * Jx) < TOL
+assert np.linalg.norm(Jz @ Jx - Jx @ Jz - 1j * Jy) < TOL
+assert np.linalg.norm(Jx @ Jx + Jy @ Jy + Jz @ Jz - 6.0 * I5) < TOL
+
+# Build total angular momentum on ℋ = V₂ ⊗ V₂ ⊗ V₂ ≅ ℂ¹²⁵
+Jtot_x = kron3(Jx, I5, I5) + kron3(I5, Jx, I5) + kron3(I5, I5, Jx)
+Jtot_y = kron3(Jy, I5, I5) + kron3(I5, Jy, I5) + kron3(I5, I5, Jy)
+Jtot_z = kron3(Jz, I5, I5) + kron3(I5, Jz, I5) + kron3(I5, I5, Jz)
+
+C_complex = Jtot_x @ Jtot_x + Jtot_y @ Jtot_y + Jtot_z @ Jtot_z
+assert np.max(np.abs(C_complex.imag)) < TOL
+C = C_complex.real
+I125 = np.eye(125, dtype=float)
+assert np.linalg.norm(C.T - C) < TOL
+
+# Verify Casimir spectrum emerges from first principles (not hardcoded)
+expected_C_spec = {0: 1, 2: 9, 6: 25, 12: 28, 20: 27, 30: 22, 42: 13}
+assert spectrum_counts(C) == expected_C_spec
+assert sum(expected_C_spec.values()) == 125
+
+# Build all 6 explicit S₃ tensor-factor permutation matrices U_σ on ℂ¹²⁵
+U_S3 = []
+<PARSED TEXT FOR PAGE: 4 / 8>
+for sigma in permutations((0, 1, 2)):
+   U = np.zeros((125, 125), dtype=float)
+   for a in range(5):
+      for b in range(5):
+         for c in range(5):
+            src = (a, b, c)
+            dst = (src[sigma[0]], src[sigma[1]], src[sigma[2]])
+            U[25 * dst[0] + 5 * dst[1] + dst[2], 25 * a + 5 * b + c] = 1.0
+   assert np.linalg.norm(U.T @ U - I125) < TOL
+   assert np.linalg.norm(U.T @ C @ U - C) < TOL # exact S₃ invariance of C
+   U_S3.append(U)
+assert len(U_S3) == 6
+
+# Derive symmetric S₃ character projector Π = (1/6) ∑_{σ∈S₃} U_σ
+Pi = sum(U_S3) / 6.0
+assert np.linalg.norm(Pi.T - Pi) < TOL
+assert np.linalg.norm(Pi @ Pi - Pi) < TOL
+assert np.linalg.norm(Pi @ C - C @ Pi) < TOL
+assert int(round(np.trace(Pi))) == 35 # dim Sym³(V₂) = C(5+3-1, 3) = 35
+
+# Verify Casimir filter K, protected subspace E₄₇, and automatic E₄₂ ⊆ im(Π)
+K = (C - 6.0 * I125) @ (C - 30.0 * I125)
+evals_C, evecs_C = np.linalg.eigh(C)
+V_47 = evecs_C[:, (np.abs(evals_C - 6.0) < 1e-8) | (np.abs(evals_C - 30.0) < 1e-8)]
+V_42 = evecs_C[:, np.abs(evals_C - 42.0) < 1e-8]
+assert V_47.shape == (125, 47)
+assert V_42.shape == (125, 13)
+assert Fraction(V_47.shape[1], 125) == Fraction(47, 125) # 0.376 exact
+assert np.linalg.norm(K @ V_47) < TOL
+assert np.linalg.norm(Pi @ V_42 - V_42) < TOL # E₄₂ ⊆ im(Π) proven, not assumed
+
+# Joint generator A, canonical projector P = 𝟏_{0}(A), and contraction Γ
+A = K @ K + 11664.0 * (I125 - Pi)
+Gamma = I125 - A / 99144.0
+
+evals_A, evecs_A = np.linalg.eigh(A)
+assert np.min(evals_A) > -TOL # A ≥ 0
+mask_P = np.abs(evals_A) < 1e-7
+V_can = evecs_A[:, mask_P]
+assert V_can.shape == (125, 5) # dim(E₄₇ ∩ im(Π)) = 5 emerges automatically
+P = V_can @ V_can.T
+
+# Confirm im(P) = E₄₇ ∩ im(Π)
+assert np.linalg.norm(K @ V_can) < TOL
+<PARSED TEXT FOR PAGE: 5 / 8>
+assert np.linalg.norm(Pi @ V_can - V_can) < TOL
+P_E47 = V_47 @ V_47.T
+assert np.linalg.matrix_rank(P_E47 @ Pi, tol=1e-8) == 5
+
+#
+========================================================================
+======
+# GAP 3 CLOSED: EXACT RATIONAL CERTIFICATE + UNIVERSAL OPERATOR-NORM
+IDENTITIES
+#
+========================================================================
+======
+# Exact rational spectral verification over Sym³(V₂) = V₀⊕V₂⊕V₃⊕V₄⊕V₆ and its complement
+# Format: (j, in_Sym3, multiplicity_of_sector_dim)
+exact_sectors = [
+  (0, 1, 1), # V₀ ⊆ Sym³
+  (1, 0, 9), # V₁ ⊆ Sym³⊥
+  (2, 1, 5), # V₂ ∩ Sym³ (canonical 5D kernel!)
+  (2, 0, 20), # V₂ ∩ Sym³⊥
+  (3, 1, 7), # V₃ ∩ Sym³
+  (3, 0, 21), # V₃ ∩ Sym³⊥
+  (4, 1, 9), # V₄ ∩ Sym³
+  (4, 0, 18), # V₄ ∩ Sym³⊥
+  (5, 0, 22), # V₅ ⊆ Sym³⊥
+  (6, 1, 13), # V₆ ⊆ Sym³
+]
+assert sum(d for _, _, d in exact_sectors) == 125
+
+exact_A_spec: dict[int, int] = {}
+exact_contraction_eigs: list[Fraction] = []
+for j, sym_flag, sector_dim in exact_sectors:
+   lam = j * (j + 1)
+   k_val = (lam - 6) * (lam - 30)
+   a_val = k_val * k_val + 11664 * (1 - sym_flag)
+   exact_A_spec[a_val] = exact_A_spec.get(a_val, 0) + sector_dim
+   if a_val > 0:
+       exact_contraction_eigs.append(abs(Fraction(1) - Fraction(a_val, 99144)))
+
+assert exact_A_spec[0] == 5
+assert min(a for a in exact_A_spec if a > 0) == 11664
+assert max(exact_A_spec) == 186624
+assert max(exact_contraction_eigs) == Fraction(15, 17) # exact rational proof
+
+# Verify float64 matrix A matches the exact rational spectrum identically
+<PARSED TEXT FOR PAGE: 6 / 8>
+assert spectrum_counts(A, tol=1e-6) == exact_A_spec
+
+# Universal Theorem I–IV operator identities (hold ∀x, ∀δ, ∀X without sampling)
+E = Gamma - P
+assert np.linalg.norm(A @ P) < TOL               # (2.1) AP = 0
+assert np.linalg.norm(Gamma @ P - P) < TOL            # (2.1) & (4.1) ΓP = P ⇒ ΓⁿP = P
+assert np.linalg.norm(E @ P) < TOL               # (1.2) (Γ-P)P = 0
+assert np.linalg.norm(P @ E) < TOL               # (1.2) P(Γ-P) = 0 ⇒ Γⁿ-P = (Γ-P)ⁿ
+assert np.linalg.norm(P @ P - P) < TOL            # (2.2) P² = P
+assert np.linalg.norm(P.T - P) < TOL            # (2.2) P† = P
+
+rho_exact = float(Fraction(15, 17))
+rho_op = float(np.linalg.norm(E, ord=2))
+assert np.isclose(rho_op, rho_exact, atol=TOL)       # (1.2) ‖Γ − P‖₂ = 15/17 exact
+
+# Confirm operator power decay ‖Γⁿ − P‖₂ = (15/17)ⁿ across scales
+for n in (1, 2, 10, 50, 200):
+   err_n = float(np.linalg.norm(np.linalg.matrix_power(Gamma, n) - P, ord=2))
+   assert np.isclose(err_n, rho_exact**n, rtol=1e-10, atol=1e-13)
+
+#
+========================================================================
+======
+# GAP 2 CLOSED: ADJOINT SU(2) MULTIPOLE DECOMPOSITION & SCHUR
+IRREDUCIBILITY
+#
+========================================================================
+======
+# Restrict J_tot to the 5D canonical subspace im(P)
+jx_can = V_can.T @ Jtot_x @ V_can
+jy_can = V_can.T @ Jtot_y @ V_can
+jz_can = V_can.T @ Jtot_z @ V_can
+
+# Verify im(P) carries an irreducible spin-2 representation of SU(2)
+assert np.linalg.norm(jx_can @ jy_can - jy_can @ jx_can - 1j * jz_can) < TOL
+assert np.linalg.norm(jx_can @ jx_can + jy_can @ jy_can + jz_can @ jz_can - 6.0 * I5) < TOL
+
+# Build adjoint SU(2) generators L_α(Y) = [j_α, Y] on 𝒪_can ≅ M₅(ℂ) ≅ ℂ²⁵
+Lx = np.kron(jx_can, I5) - np.kron(I5, jx_can.T)
+Ly = np.kron(jy_can, I5) - np.kron(I5, jy_can.T)
+Lz = np.kron(jz_can, I5) - np.kron(I5, jz_can.T)
+C_adj = Lx @ Lx + Ly @ Ly + Lz @ Lz
+assert np.linalg.norm(C_adj.conj().T - C_adj) < TOL
+<PARSED TEXT FOR PAGE: 7 / 8>
+# Prove M₅(ℂ) ≅_{SU(2)} V₀ ⊕ V₁ ⊕ V₂ ⊕ V₃ ⊕ V₄ with dims (1, 3, 5, 7, 9)
+expected_multipoles = {0: 1, 2: 3, 6: 5, 12: 7, 20: 9}
+assert spectrum_counts(C_adj, tol=1e-8) == expected_multipoles
+assert sum(expected_multipoles.values()) == 25 # dim M₅(ℂ) = 25, dim_ℝ aff 𝒟_can = 24
+
+# Schur's Lemma (§3.5):
+# (a) SU(2)-commutant in M₅(ℂ) = ker(C_adj) has dimension 1, spanned by I₅
+ev_adj = np.linalg.eigvalsh(C_adj)
+assert int(np.sum(np.abs(ev_adj) < 1e-8)) == 1
+assert np.linalg.norm(C_adj @ I5.reshape(25)) < TOL
+
+# (b) Center Z(M₅(ℂ)) of the full observable algebra 𝒪_can has dimension 1
+comm_rows = []
+for r in range(5):
+   for c in range(5):
+       E_rc = np.zeros((5, 5), dtype=complex)
+       E_rc[r, c] = 1.0
+       comm_rows.append(np.kron(E_rc, I5) - np.kron(I5, E_rc.T))
+comm_stack = np.vstack(comm_rows) # 625 x 25
+svals = np.linalg.svd(comm_stack, compute_uv=False)
+nullity_center = int(np.sum(svals < 1e-10))
+assert nullity_center == 1
+assert np.linalg.norm(comm_stack @ I5.reshape(25)) < TOL
+
+#
+========================================================================
+======
+# DYNAMICAL COROLLARIES: MULTI-SEED DENSITY-MATRIX STATIONARITY & BASIN
+EJECTION
+#
+========================================================================
+======
+for seed in (1, 47, 125):
+   rng = np.random.default_rng(seed)
+   M = rng.standard_normal((125, 125)) + 1j * rng.standard_normal((125, 125))
+   rho = M @ M.conj().T
+   rho /= np.trace(rho)
+   assert np.trace(P @ rho).real > 0
+
+  for _ in range(300):
+     rho_next = Gamma @ rho @ Gamma.T
+     rho_next /= np.trace(rho_next)
+     dS = abs(vn_entropy(rho) - vn_entropy(rho_next))
+     dRho = float(np.linalg.norm(rho_next - rho, ord="fro"))
+<PARSED TEXT FOR PAGE: 8 / 8>
+     rho = rho_next
+
+  assert dS < 1e-11
+  assert dRho < 1e-11
+  assert np.linalg.norm(P @ rho @ P - rho, ord="fro") < 1e-11
+
+  # Theorem IV: external reset operator D = I - P ejects any nonzero R ∈ im(P)
+  R = P @ rng.standard_normal(125)
+  assert np.linalg.norm(R) > 0
+  assert np.linalg.norm(np.linalg.matrix_power(Gamma, 200) @ R - R) < TOL
+  D = I125 - P
+  assert np.linalg.norm(D @ R) < TOL
+  assert np.linalg.norm(P @ (D @ R) - R) > 0
+
+print("ALL THREE GAPS CLOSED — FIRST-PRINCIPLES VERIFICATION PASS 100%")
+print(f" V₂⊗³ Casimir spectrum : {expected_C_spec}")
+print(f" Sym³(V₂) dim(im Π) : {int(round(np.trace(Pi)))} (E₄₂ ⊆ im Π, dim(E₄₇ ∩ im Π) = 5)")
+print(f" Exact Ω_c         : {Fraction(47, 125)} = {47/125:.3f}")
+print(f" Exact ‖Γ − P‖₂     : {Fraction(15, 17)} = {rho_op:.15f}")
+print(f" M₅(ℂ) multipoles     : {expected_multipoles} (sum = 25, dim_ℝ aff 𝒟_can = 24)")
+print(f" Schur commutant dims : dim End_SU(2)(V₂) = 1, dim Z(M₅(ℂ)) = 1")
