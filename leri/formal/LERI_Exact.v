@@ -30,14 +30,14 @@ Theorem spectral_midpoint : gap + maxEigen = 2 * stepDenominator.
 Proof. reflexivity. Qed.
 Theorem low_endpoint_factor :
   17 * (stepDenominator - gap) = 15 * stepDenominator.
-Proof. reflexivity. Qed.
+Proof. unfold stepDenominator, gap. lia. Qed.
 Theorem high_endpoint_factor :
   17 * (maxEigen - stepDenominator) = 15 * stepDenominator.
-Proof. reflexivity. Qed.
+Proof. unfold stepDenominator, maxEigen. lia. Qed.
 Theorem gap_strict : 0 < gap.
-Proof. compute; lia. Qed.
+Proof. unfold gap. lia. Qed.
 Theorem max_exceeds_gap : gap < maxEigen.
-Proof. compute; lia. Qed.
+Proof. unfold gap, maxEigen. lia. Qed.
 Theorem exact_omega : 47 * 1000 = 376 * 125.
 Proof. reflexivity. Qed.
 End LERI.
