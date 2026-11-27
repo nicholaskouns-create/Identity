@@ -1,3 +1,5 @@
+**[LERI · Law of Emergent Recursive Identity](https://nicholaskouns-create.github.io/Identity/leri/)** — First-principles computational identity proof · [independent Python/quantum validation](leri/validate.py) · [original source texts](leri/source/) · [Lean/Coq certificates](leri/formal/). [Alternative page](https://nicholaskouns-create.github.io/Identity/site/leri/).
+
 > ⚛️ **[NEW · Φ₄ QUANTUM CIRCUIT THEATER](https://nicholaskouns-create.github.io/qsvt-phi4/)** — Full 125D Clebsch–Gordan → 250D QSP → 500D two-ancilla LCU circuit · [Interactive instrument](https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/qsvt-phi4-circuit/) · [Exact derivation + executable 14-check certificate](https://github.com/nicholaskouns-create/E47-Kartekeya/tree/main/research/e47/qsp_phi4). E0 algebra / E1 NumPy; hardware not asserted.
 
 # Identity
