@@ -1,0 +1,41 @@
+name: LERI — public Pages HTTP verification
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'leri/**'
+      - 'site/leri/**'
+      - '.github/workflows/leri-pages-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-http-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Verify live canonical and fallback page and byte-identical original PDFs
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://nicholaskouns-create.github.io/Identity"
+          for route in "/leri/" "/site/leri/"; do
+            ok=0
+            for attempt in $(seq 1 24); do
+              status="$(curl --silent --location --max-time 15 --output /tmp/leri-site.html --write-out '%{http_code}' "$base$route" || true)"
+              if test "$status" = "200" && grep -q "Law of Emergent Recursive Identity" /tmp/leri-site.html; then
+                echo "PASS HTTP 200, LERI title present: $base$route"
+                ok=1
+                break
+              fi
+              echo "Attempt $attempt: HTTP $status at $base$route"
+              sleep 10
+            done
+            test "$ok" -eq 1
+          done
+          curl --fail --silent --show-error --location "$base/leri/source/LERI_Gaps_Closed.pdf" -o /tmp/leri-gaps.pdf
+          curl --fail --silent --show-error --location "$base/leri/source/LERI_First_Principles_Proof.pdf" -o /tmp/leri-first.pdf
+          echo "a9613815bfde2986359da7fc2715f47b4917b44ab20a02e819cbb56b2910f5a4  /tmp/leri-gaps.pdf" | sha256sum --check
+          echo "8a1c77cb29a621e98a48144f7102c751db5601d489598bd9a0796576667184a8  /tmp/leri-first.pdf" | sha256sum --check
