@@ -22,6 +22,21 @@ export const distanceKm = (a,b) => {
  const h=Math.sin(dlat/2)**2 + Math.cos(a[1]*r)*Math.cos(b[1]*r)*Math.sin(dlon/2)**2;
  return 12742*Math.asin(Math.min(1,Math.sqrt(h)));
 };
+
+export function pointInRing(point, ring) {
+ let inside=false,x=point[0],y=point[1];
+ for(let i=0,j=ring.length-1;i<ring.length;j=i++){
+  const a=ring[i],b=ring[j];
+  if((a[1]>y)!==(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])inside=!inside;
+ }
+ return inside;
+}
+export function pointInGeometry(point,g) {
+ if(!g)return false;
+ const polys=g.type==='Polygon'?[g.coordinates]:g.type==='MultiPolygon'?g.coordinates:[];
+ return polys.some(rings=>rings.length&&pointInRing(point,rings[0])&&!rings.slice(1).some(hole=>pointInRing(point,hole)));
+}
+
 function layerIds(name) { return name==='alerts' ? [id(name+'-fill'),id(name+'-line')] : [id(name+'-dots')]; }
 function paints(name) {
  if(name==='quakes') return {'circle-radius':['interpolate',['linear'],['zoom'],3,3,10,8], 'circle-color':'#fa9c51','circle-opacity':.83,'circle-stroke-color':'#19191f','circle-stroke-width':1};
@@ -66,15 +81,30 @@ export function mountMultimodalRadar(map, root) {
   layerIds(name).forEach(l=>{if(map.getLayer(l))map.setLayoutProperty(l,'visibility',visible&&selected[name]?'visible':'none')});
  }
  function updateAnalysis(){
-  const plants=data.get('plants')?.features||[], events=['quakes','fires'].flatMap(name=>(data.get(name)?.features||[]).map(f=>({...f,origin:name})));
-  if(!plants.length||!events.length){analysis.textContent='Select generating plants together with USGS earthquakes or NIFC incidents to calculate proximity.';return}
-  const found=new Set(),counts={quakes:0,fires:0};let pairs=0;
-  for(let i=0;i<plants.length;i++){
-   const p=plants[i].geometry?.coordinates; if(!p)continue;
-   for(const e of events){const q=e.geometry?.coordinates;if(!q)continue;if(distanceKm(p,q)<=radius){found.add(i);counts[e.origin]++;pairs++;}}
+  const plants=data.get('plants')?.features||[];
+  if(!plants.length){analysis.textContent='Select generating plants together with incident, earthquake or NWS alerts to calculate geographical intersections.';return}
+  const events=['quakes','fires'].flatMap(name=>(data.get(name)?.features||[]).map(f=>({...f,origin:name})));
+  const alerts=(data.get('alerts')?.features||[]).filter(f=>['Polygon','MultiPolygon'].includes(f.geometry?.type));
+  const notes=[];
+  if(events.length){
+   const found=new Set(),counts={quakes:0,fires:0};let pairs=0;
+   for(let i=0;i<plants.length;i++){
+    const p=plants[i].geometry?.coordinates; if(!p)continue;
+    for(const e of events){const q=e.geometry?.coordinates;if(!q)continue;if(distanceKm(p,q)<=radius){found.add(i);counts[e.origin]++;pairs++;}}
+   }
+   const cap=[...found].reduce((sum,i)=>sum+Number(plants[i].properties.capacity_mw||0),0);
+   notes.push(found.size+' plants within '+radius+' km of ≥1 plotted event; '+pairs+' plant–event pairs ('+counts.quakes+' seismic, '+counts.fires+' fire), '+Math.round(cap).toLocaleString()+' MW historical nameplate.');
   }
-  const capacity=[...found].reduce((s,i)=>s+Number(plants[i].properties.capacity_mw||0),0);
-  analysis.textContent=found.size+' plants within '+radius+' km of ≥1 plotted event; '+pairs+' plant–event pairs ('+counts.quakes+' earthquake, '+counts.fires+' fire), '+Math.round(capacity).toLocaleString()+' MW historical nameplate capacity. Geographical coincidence only; not an operational outage estimate.';
+  if(alerts.length){
+   const matched=new Set();let pairs=0;
+   for(let i=0;i<plants.length;i++){
+    const p=plants[i].geometry?.coordinates;if(!p)continue;
+    for(const warning of alerts)if(pointInGeometry(p,warning.geometry)){matched.add(i);pairs++}
+   }
+   const cap=[...matched].reduce((sum,i)=>sum+Number(plants[i].properties.capacity_mw||0),0);
+   notes.push(matched.size+' plants within '+alerts.length+' mapped NWS severe alert polygons ('+pairs+' polygon intersections, '+Math.round(cap).toLocaleString()+' MW historical nameplate).');
+  }
+  analysis.textContent=(notes.length?notes.join(' '):'Select earthquakes, wildfire incidents or NWS severe alerts to compute intersections.')+' Geographic screening only; outages, causality and reliability impacts are not inferred.';
  }
  async function load(name){
   if(!visible||!selected[name])return;
@@ -85,7 +115,7 @@ export function mountMultimodalRadar(map, root) {
     const fc=await retrieve(name);
     if(!selected[name])return;
     data.set(name,fc);layers(name,fc);
-    statuses.set(name,fc.features.length+' plotted · '+new Date().toISOString().slice(0,16)+'Z'+(fc.forecastTime?' · forecast '+fc.forecastTime:''));
+    statuses.set(name,fc.features.length+' plotted · '+(fc.published?'published archive':'publisher feed')+' · retrieved '+new Date().toISOString().slice(0,16)+'Z'+(fc.forecastTime?' · forecast '+fc.forecastTime:''));
     updateAnalysis();
    }catch(e){statuses.set(name,'unavailable: '+String(e.message||e));}
    finally{loading.delete(name);showStatus();}
