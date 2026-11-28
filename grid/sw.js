@@ -4,7 +4,7 @@
 // as current. The relay snapshot carries its own generation time and may be cached.
 // It also shows Grid's background alerts (Web Push from the grid-alerts edge function)
 // and opens Grid at the county a notification is about.
-const VERSION = 'grid-2026-11-27-radar-1';
+const VERSION = 'grid-2026-11-27-radar-2';
 const PREFS = 'grid-prefs';
 const ALERTS_URL = 'https://gpkjvihkyectnenvnbng.supabase.co/functions/v1/grid-alerts';
 // The City project's public anon key: it names the project and grants only public access.
@@ -45,6 +45,8 @@ self.addEventListener('fetch', (e) => {
     e.respondWith(caches.open(VERSION).then(async (c) => {
       const hit = await c.match(req, { ignoreSearch: true });
       const net = fetch(req).then((r) => { if (r.ok) c.put(req, r.clone()); return r; }).catch(() => hit);
+      // Prefer network for executable shell and navigation; offline fallback remains.
+      if (req.mode === 'navigate' || /\.(?:m?js|html|css)$/.test(url.pathname)) return (await net) || hit || Response.error();
       return hit || net;
     }));
     return;
