@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'site/**'
+      - 'grid/**'
       - 'experiments/e47_ablation_results.json'
       - 'tools/**'
       - 'simulation/**'
@@ -73,6 +74,11 @@ jobs:
           test "$build" = "workflow"
       - if: steps.pages.outcome == 'success'
         uses: actions/configure-pages@v5
+      - if: steps.pages.outcome == 'success'
+        run: |
+          mkdir -p site/grid
+          cp -a grid/. site/grid/
+          test -f site/grid/radar/index.html
       - if: steps.pages.outcome == 'success'
         uses: actions/upload-pages-artifact@v3
         with:
