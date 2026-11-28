@@ -38,7 +38,7 @@ async function retrieve(name) {
   return {type:'FeatureCollection',features,observationTime:a.observed,forecastTime:a.forecast,thinned:true};
  }
  if(name==='plants') {
-  const response=await fetch('../data/plants-us.json',{cache:'force-cache'});
+  const response=await fetch(new URL('../data/plants-us.json',import.meta.url),{cache:'force-cache'});
   if(!response.ok) throw Error('Plant archive HTTP '+response.status);
   const d=await response.json();
   return {type:'FeatureCollection',features:d.rows.map((r,i)=>({type:'Feature',id:i,geometry:{type:'Point',coordinates:[r[0],r[1]]},properties:{capacity_mw:r[2],fuel:r[3],name:r[4],gppd_id:r[5]}})),published:true};
