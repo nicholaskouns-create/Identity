@@ -4,7 +4,7 @@
 // as current. The relay snapshot carries its own generation time and may be cached.
 // It also shows Grid's background alerts (Web Push from the grid-alerts edge function)
 // and opens Grid at the county a notification is about.
-const VERSION = 'grid-2026-11-27-multimodal-1';
+const VERSION = 'grid-2026-11-27-recovery-1';
 const PREFS = 'grid-prefs';
 const ALERTS_URL = 'https://gpkjvihkyectnenvnbng.supabase.co/functions/v1/grid-alerts';
 // The City project's public anon key: it names the project and grants only public access.
@@ -27,10 +27,10 @@ const TILE_HOSTS = ['server.arcgisonline.com', 's3.amazonaws.com', 'gibs.earthda
 const TILE_CACHE = 'grid-tiles-v1', TILE_LIMIT = 2500;
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(VERSION).then((c) => Promise.allSettled(SHELL.map((path) => c.add(new Request(path, {cache:'reload'}))))).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', (e) => {
-  e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== VERSION && k !== TILE_CACHE && k !== PREFS).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
+  e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k.startsWith('grid-2026-') && k !== VERSION).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
 });
 
 async function trimTiles() {
@@ -43,8 +43,8 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(req.url);
   if (url.origin === self.location.origin && url.pathname.includes('/grid/')) {
     e.respondWith(caches.open(VERSION).then(async (c) => {
-      const hit = await c.match(req, { ignoreSearch: true });
-      const net = fetch(req).then((r) => { if (r.ok) c.put(req, r.clone()); return r; }).catch(() => hit);
+      const hit = await c.match(req, { ignoreSearch: true }) || await caches.match(req, {ignoreSearch:true});
+      const net = fetch(req).then((r) => { if (r.ok) { c.put(req, r.clone()).catch(()=>{}); return r; } return hit || r; }).catch(() => hit);
       // Prefer network for executable shell and navigation; offline fallback remains.
       if (req.mode === 'navigate' || /\.(?:m?js|html|css)$/.test(url.pathname)) return (await net) || hit || Response.error();
       return hit || net;
