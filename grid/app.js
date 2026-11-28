@@ -34,7 +34,7 @@ async function syncRadar() {
     radarModule.set(!!layerState.radar);
     if (layerState.radar && !radarAtlasModule) {
       const m = await import('./live/multimodal.js');
-      radarAtlasModule = m.mountMultimodalRadar(gm.map, $('#radar-multimodal-controls'));
+      radarAtlasModule = m.mountMultimodalRadar(gm.map, $('#radar-multimodal-controls'), radarModule);
     }
     if (radarAtlasModule) radarAtlasModule.setVisible(!!layerState.radar);
   } catch(e) { setStatus('mrms','error',String(e.message || e)); }
