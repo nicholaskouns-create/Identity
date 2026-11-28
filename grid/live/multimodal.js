@@ -60,7 +60,7 @@ async function retrieve(name) {
  }
  return EMPTY();
 }
-export function mountMultimodalRadar(map, root) {
+export function mountMultimodalRadar(map, root, radarController=null) {
  if(!root) throw Error('Multimodal controls root missing');
  const store=loadPrefs(), selected=Object.assign({quakes:false,fires:false,alerts:false,aurora:false,plants:false},store.selected||{});
  let radius=clip(Number(store.radius)||40,5,250), density=!!store.density, visible=false, timer=null, loading=new Map(), data=new Map(), statuses=new Map();
@@ -132,11 +132,11 @@ export function mountMultimodalRadar(map, root) {
  qs('[data-mm-density]').onchange=e=>{density=e.target.checked;persist();redraw()};
  range.oninput=()=>{radius=Number(range.value);rlabel.textContent=radius;persist();updateAnalysis()};
  qs('[data-mm-refresh]').onclick=refresh;
- qs('[data-mm-save]').onclick=()=>{const name=qs('[data-mm-preset-name]').value.trim().slice(0,60);if(!name){status.textContent='Enter a preset name first.';return}store.presets ||= {};store.presets[name]={selected:{...selected},radius,density,center:map.getCenter().toArray(),zoom:map.getZoom()};persist();presets();qs('[data-mm-presets]').value=name;status.textContent='Saved '+name+' on this device.';};
- qs('[data-mm-restore]').onclick=()=>{const name=qs('[data-mm-presets]').value,p=store.presets?.[name];if(!p)return;Object.assign(selected,p.selected);radius=clip(p.radius||40,5,250);density=!!p.density;qs('[data-mm-density]').checked=density;range.value=radius;rlabel.textContent=radius;persist();if(Array.isArray(p.center))map.easeTo({center:p.center,zoom:p.zoom});redraw();};
+ qs('[data-mm-save]').onclick=()=>{const name=qs('[data-mm-preset-name]').value.trim().slice(0,60);if(!name){status.textContent='Enter a preset name first.';return}store.presets ||= {};store.presets[name]={selected:{...selected},radius,density,radar:radarController?.getState?.()||null,center:map.getCenter().toArray(),zoom:map.getZoom()};persist();presets();qs('[data-mm-presets]').value=name;status.textContent='Saved '+name+' on this device.';};
+ qs('[data-mm-restore]').onclick=()=>{const name=qs('[data-mm-presets]').value,p=store.presets?.[name];if(!p)return;Object.assign(selected,p.selected);radius=clip(p.radius||40,5,250);density=!!p.density;qs('[data-mm-density]').checked=density;range.value=radius;rlabel.textContent=radius;radarController?.applyState?.(p.radar);persist();if(Array.isArray(p.center))map.easeTo({center:p.center,zoom:p.zoom});redraw();};
  qs('[data-mm-delete]').onclick=()=>{const name=qs('[data-mm-presets]').value;if(!store.presets?.[name])return;delete store.presets[name];persist();presets();status.textContent='Deleted saved view '+name};
  qs('[data-mm-export]').onclick=()=>{
-  const snapshot={format:'Grid Multimodal Radar v1',exported_at:new Date().toISOString(),coordinate_reference:'WGS84',selected:{...selected},radius_km:radius,derived_density:density,sources:Object.fromEntries([...statuses]),counts:Object.fromEntries([...data].map(([k,v])=>[k,v.features.length])),note:'Proximity is not causal evidence. No raw radar velocity or I/Q inferred.'};
+  const snapshot={format:'Grid Multimodal Radar v1',exported_at:new Date().toISOString(),coordinate_reference:'WGS84',selected:{...selected},radius_km:radius,derived_density:density,radar:radarController?.getState?.()||null,map_view:{center:map.getCenter().toArray(),zoom:map.getZoom()},analysis:analysis.textContent,sources:Object.fromEntries([...statuses]),counts:Object.fromEntries([...data].map(([k,v])=>[k,v.features.length])),note:'Proximity is not causal evidence. No raw radar velocity or I/Q inferred.'};
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(snapshot,null,2)],{type:'application/json'}));a.download='grid-multimodal-snapshot.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
  };
  presets();redraw();
