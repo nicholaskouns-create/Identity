@@ -1,1 +1,29 @@
-<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Grid · Live Doppler radar</title><link rel="stylesheet" href="../lib/maplibre/maplibre-gl.css"><style>body{margin:0;background:#101820;color:#eee;font:15px system-ui}header{padding:12px}a{color:#8de5ff}button,input{margin:6px}#map{height:65vh}#controls{padding:10px}button{padding:8px}</style><header><a href="../">← Grid</a> · NOAA MRMS live color radar · <a href="https://radar.weather.gov/">Official NOAA radar</a><div id="status" role="status">Loading map</div></header><div id="map"></div><div id="controls"></div><script type="module">import * as lib from '../lib/maplibre/maplibre-gl.mjs';import {mountRadar} from '../live/radar.js';const M=lib.default||lib;const status=document.querySelector('#status');try{const map=new M.Map({container:'map',style:{version:8,sources:{base:{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}'],tileSize:256,attribution:'Esri'}},layers:[{id:'base',type:'raster',source:'base'}]},center:[-98,39],zoom:3.5});map.on('load',()=>{const radar=mountRadar(map,document.querySelector('#controls'),(id,state,msg)=>status.textContent=msg,()=>navigator.geolocation?navigator.geolocation.getCurrentPosition(p=>map.flyTo({center:[p.coords.longitude,p.coords.latitude],zoom:8}),()=>status.textContent='Location unavailable; pan to your region'):null,()=>map.fitBounds([[-125,24],[-66,50]],{padding:20}));radar.set(true)});map.on('error',e=>status.textContent=e.error?.message||'Map source error')}catch(e){status.textContent=e.message}</script></html>
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Grid × Radar · Multimodal Live Observatory</title>
+<link rel="stylesheet" href="../lib/maplibre/maplibre-gl.css">
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#101820;color:#eaf5fa;font:14px system-ui,sans-serif;line-height:1.4}header{padding:12px 14px;background:#101e2b}h1{font-size:20px;margin:4px 0}h2{font-size:16px;margin:0 0 7px}.muted{color:#a9c0d1;font-size:12px}a{color:#91e8ff}nav{display:flex;flex-wrap:wrap;gap:12px}.tag{font-size:11px;color:#c3eee5}#map{height:56vh;min-height:300px;width:100%}.shell{max-width:1040px;margin:auto}.panels{display:grid;grid-template-columns:repeat(auto-fit,minmax(275px,1fr));gap:12px;padding:12px}.panel{background:#162737;border:1px solid #35536a;border-radius:12px;padding:12px;min-width:0}.btn,button{background:#264457;color:#e9ffff;border:1px solid #648393;padding:7px 10px;border-radius:8px;cursor:pointer;font-size:12px}input,select{max-width:100%;color:#eaf5fa;background:#162c3c;border:1px solid #638090;border-radius:6px;padding:5px}input[type=range]{vertical-align:middle;padding:0}input[type=checkbox]{accent-color:#69cdda}.eyebrow{text-transform:uppercase;letter-spacing:.08em;color:#7cdbdb;font-size:11px;font-weight:bold}#status{font-size:12px;color:#d6e2e7}footer{padding:14px;color:#a4b4bf;font-size:12px}
+</style></head><body>
+<div class="shell"><header><nav><a href="../">← Grid</a><a href="https://nicholaskouns-create.github.io/Radar/optical-radar-atlas/">Radar I/Q primer</a><a href="https://radar.weather.gov/">NOAA official radar</a></nav>
+<h1>Grid × Radar · Multimodal Observatory</h1><div class="tag">NOAA MRMS reflectivity · USGS · NWS · SWPC · NIFC · generation infrastructure</div><div id="status" role="status">Initializing map…</div></header></div>
+<div id="map" role="region" aria-label="Interactive radar and environmental feeds map"></div>
+<div class="shell"><div class="panels"><section class="panel"><h2>NOAA radar</h2><p class="muted">Observed precipitation reflectivity (dBZ), not radial wind velocity.</p><div id="controls"></div></section><section class="panel"><h2>Independent overlays and saved views</h2><div id="multimodal"></div></section></div>
+<footer>Feed-specific publication, acquisition and sampling times differ. Geographic proximity is a screening calculation, not a claim of causation or an operational risk score. Local presets remain in this browser; no remote storage.</footer></div>
+<script type="module">
+import * as lib from '../lib/maplibre/maplibre-gl.mjs';
+import {mountRadar} from '../live/radar.js';
+import {mountMultimodalRadar} from '../live/multimodal.js';
+const M = lib.default || lib, status=document.getElementById('status');
+try {
+ const map=new M.Map({container:'map',style:{version:8,sources:{base:{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}'],tileSize:256,attribution:'Esri'}},layers:[{id:'base',type:'raster',source:'base'}]},center:[-98,39],zoom:3.5});
+ map.on('load',()=>{
+  const radar=mountRadar(map,document.getElementById('controls'),(id,state,msg)=>{status.textContent='NOAA MRMS · '+state+' · '+msg},
+   ()=>{if(navigator.geolocation)navigator.geolocation.getCurrentPosition(p=>map.flyTo({center:[p.coords.longitude,p.coords.latitude],zoom:8}),()=>status.textContent='Location permission unavailable; pan manually');},
+   ()=>map.fitBounds([[-125,24],[-66,50]],{padding:20}));
+  radar.set(true);
+  const mm=mountMultimodalRadar(map,document.getElementById('multimodal'));mm.setVisible(true);
+ });
+ map.on('error',e=>{console.warn('Radar map error',e.error);if(e.error)status.textContent='Map source error: '+String(e.error.message||e.error)});
+} catch(e){status.textContent='Map initialization failure: '+String(e.message||e);}
+</script></body></html>
