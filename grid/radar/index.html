@@ -22,7 +22,7 @@ try {
    ()=>{if(navigator.geolocation)navigator.geolocation.getCurrentPosition(p=>map.flyTo({center:[p.coords.longitude,p.coords.latitude],zoom:8}),()=>status.textContent='Location permission unavailable; pan manually');},
    ()=>map.fitBounds([[-125,24],[-66,50]],{padding:20}));
   radar.set(true);
-  const mm=mountMultimodalRadar(map,document.getElementById('multimodal'));mm.setVisible(true);
+  const mm=mountMultimodalRadar(map,document.getElementById('multimodal'),radar);mm.setVisible(true);
  });
  map.on('error',e=>{console.warn('Radar map error',e.error);if(e.error)status.textContent='Map source error: '+String(e.error.message||e.error)});
 } catch(e){status.textContent='Map initialization failure: '+String(e.message||e);}
