@@ -1,0 +1,24 @@
+name: Grid Multimodal Radar Source Tests
+on:
+  push:
+    paths:
+      - 'grid/**'
+      - '.github/workflows/grid-multimodal-radar.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Parse JavaScript modules
+        run: |
+          for p in grid/live/radar.js grid/live/multimodal.js grid/live/sources.js grid/app.js; do
+            node --input-type=module --check < "$p"
+          done
+      - name: Deterministic source contracts
+        run: node --test tools/grid/test_multimodal_radar.mjs
