@@ -21,6 +21,18 @@ const st = { status: {}, gps: null, eia: null, relay: null, space: null, aurora:
 let settings = SRC.loadSettings();
 let gm = null, flight = null, hud = null, plants = null, plantsGeo = null, exposure = null, local = {};
 const layerState = {};
+let radarModule = null, radarPending = null;
+async function syncRadar() {
+  if (!gm?.ready) return;
+  if (!layerState.radar && !radarModule) return;
+  try {
+    if (!radarModule) {
+      radarPending ||= import('./live/radar.js').then(m => m.mountRadar(gm.map, $('#radar-controls'), setStatus, () => { if (st.gps?.source === 'device') gm.map.flyTo({center:[st.gps.lon,st.gps.lat],zoom:8}); else gm.map.easeTo({zoom:8}); }, () => gm.fitConus())).catch(e => { radarPending=null; throw e; });
+      radarModule = await radarPending;
+    }
+    radarModule.set(!!layerState.radar);
+  } catch(e) { setStatus('mrms','error',String(e.message || e)); }
+}
 const ticker = [];
 
 // ----------------------------------------------------------------- status
@@ -85,6 +97,7 @@ async function cityModule(path) {
 
 // ----------------------------------------------------------------- layers rail
 const LAYERS = [
+  { id: 'radar', label: 'Doppler radar (NOAA MRMS)', src: 'mrms', layers: [], on: false },
   { id: 'lines', label: 'Transmission (HIFLD)', src: 'hifld', layers: ['lines-glow', 'lines-core'], on: true },
   { id: 'osm', label: 'Local grid around you (OSM)', src: 'overpass', layers: ['osm-line-glow', 'osm-line', 'osm-area', 'osm-point'], on: true },
   { id: 'plants', label: 'Generating plants', src: 'plants', layers: ['plants-heat', 'plants-glow', 'plants-core'], on: true },
@@ -106,9 +119,11 @@ function buildLayerRail() {
   $('#layer-list').innerHTML = LAYERS.map((l) => `<li><label><input type="checkbox" data-layer="${l.id}" ${l.on ? 'checked' : ''}><span>${l.label}</span><span class="meta">${l.src ? `<span class="dot idle" data-src-dot="${l.src}"></span>` : ''}</span></label></li>`).join('');
   $('#layer-list').addEventListener('change', (e) => { const id = e.target.dataset.layer; if (id) setLayer(id, e.target.checked); });
   LAYERS.forEach((l) => { layerState[l.id] = l.on; });
+  const radarControls = document.createElement('div'); radarControls.id='radar-controls'; $('#layer-list').after(radarControls);
 }
 function setLayer(id, on) {
   layerState[id] = on;
+  if (id === 'radar') { syncRadar(); return; }
   const l = LAYERS.find((x) => x.id === id); if (!l || !gm) return;
   if (id === 'terminator') { gm.paint('terminator', 'raster-opacity', on && (gm.scene === 'satellite' || gm.scene === 'terrain') ? 0.82 : 0); return; }
   gm.vis(l.layers, on);
@@ -132,6 +147,7 @@ async function bootMap() {
     gm.map.once('idle', dismissBoot); setTimeout(dismissBoot, 1200);
     gm.setScene('night');
     for (const l of LAYERS) gm.vis(l.layers, l.on);
+    syncRadar();
     setStatus('terrain', 'ok', 'AWS Terrain Tiles (Terrarium)');
     setStatus('night', 'ok', 'NASA GIBS');
     if (!st.status.imagery || st.status.imagery.state === 'idle') setStatus('imagery', 'ok', 'Esri World Imagery');
