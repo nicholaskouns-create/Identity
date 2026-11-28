@@ -17,7 +17,7 @@ const escaped = s => String(s || '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'
 const clip = (x,lo,hi) => Math.max(lo, Math.min(hi,x));
 const loadPrefs = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch { return {}; } };
 const savePrefs = prefs => { try { localStorage.setItem(KEY, JSON.stringify(prefs)); } catch {} };
-const distanceKm = (a,b) => {
+export const distanceKm = (a,b) => {
  const r = Math.PI/180, dlat=(b[1]-a[1])*r, dlon=(b[0]-a[0])*r;
  const h=Math.sin(dlat/2)**2 + Math.cos(a[1]*r)*Math.cos(b[1]*r)*Math.sin(dlon/2)**2;
  return 12742*Math.asin(Math.min(1,Math.sqrt(h)));
