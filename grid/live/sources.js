@@ -32,6 +32,7 @@ async function getJSON(url, { timeout = 15000, init = {} } = {}) {
 
 // ---------------------------------------------------------------- registry
 export const SOURCES = [
+  { id: 'mrms', label: 'Doppler radar color reflectivity (MRMS)', provider: 'NOAA / NWS', evidence: 'LIVE', cadence: 300, onDemand: true, url: 'https://mapservices.weather.noaa.gov/eventdriven/rest/services/radar/radar_base_reflectivity_time/ImageServer', why: 'Optional observed precipitation echo overlay; historical requests up to four hours. Not radial velocity or raw I/Q.' },
   { id: 'swpc-kp', label: 'Planetary K-index (estimated, 1-minute and 3-hour)', provider: 'NOAA Space Weather Prediction Center', evidence: 'LIVE', cadence: 60, url: 'https://services.swpc.noaa.gov/json/planetary_k_index_1m.json', why: 'Geomagnetic storms drive geomagnetically induced currents in high-voltage transformers.' },
   { id: 'swpc-scales', label: 'NOAA space-weather scales (G, S, R)', provider: 'NOAA SWPC', evidence: 'LIVE', cadence: 300, url: 'https://services.swpc.noaa.gov/products/noaa-scales.json', why: 'G-scale is the operational storm level grid operators act on.' },
   { id: 'swpc-alerts', label: 'Space-weather alerts, watches and warnings', provider: 'NOAA SWPC', evidence: 'LIVE', cadence: 300, url: 'https://services.swpc.noaa.gov/products/alerts.json', why: 'K-index warnings and geomagnetic storm watches.' },
