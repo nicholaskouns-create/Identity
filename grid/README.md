@@ -1,5 +1,12 @@
 # Grid
 
+## Multimodal Radar / environmental feed observatory
+
+[**Open standalone radar and overlays**](https://nicholaskouns-create.github.io/Identity/grid/radar/) · [Companion Radar instrument](https://nicholaskouns-create.github.io/Radar/doppler/) · [Radar provenance guide](https://github.com/nicholaskouns-create/Radar/blob/main/MULTIMODAL.md).
+
+Grid's MRMS reflectivity layer now cross-links independently switchable USGS earthquakes, NIFC wildfire incidents, NWS warning polygons, NOAA SWPC aurora forecast and published generating plants. Browser-local named presets retain layer choices and map view. Derived overlays count plant–earthquake/fire proximity and plant-in-warning-polygon intersections without implying causal damage, current generation output, Doppler velocity, or measured complex I/Q.
+
+
 **Live U.S. power-grid monitor with a certified spectral auditor.**
 Open it at **https://nicholaskouns-create.github.io/Identity/grid/**. It runs entirely in the browser, installs as an app, and keeps working offline on its last certified state.
 
