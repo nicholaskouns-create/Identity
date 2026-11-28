@@ -7,7 +7,7 @@ E₄₇ = ker A ≅ 5V₂ ⊕ 2V₅
 B = A + 11664(I − Πₛ)
 E₅ = ker B = E₄₇ ∩ Sym³(V₂)
 P₅ = ΠₛP₄₇
-Ω꜀ = 47/125
+Ω₌ = 47/125
 Γ = I − A/99144
 Γ₅ = I − B/99144
 125 → 47 → 5</pre><p>Both A and B have gap 11664 and maximum 186624. The joint spectrum follows from simultaneous diagonalization of C and Πₛ; the J=6 sector is symmetric, while the J=5 sector is mixed. The minimum positive eigenvalue remains 11664. Therefore both contractions have exact rate 15/17.</p><h2>Universal factorization</h2><pre>Γⁿ → P₄₇
@@ -17,7 +17,7 @@ F ∘ Γ = F ⇔ ∃! continuous f : E₄₇ → Y, F = f ∘ P₄₇</pre><p>Fo
 x(t) = exp(−tA)x₀
 τ(t) = ∫₀ᵗ ‖Ax(s)‖ ds
 p = ‖Px‖²/‖x‖²
-ṗ ≥ 2Δp(1−p)</pre><p>The last inequality holds under normalized gradient flow. For p₀&gt;0, p tends to one. These are operational definitions, not a derivation of subjective consciousness or physical proper time.</p><h2>Quantum realization</h2><pre>D = √(I−T²)
+ṗ ≥ 2Δp(1−p)</pre><p>The last inequality holds under normalized gradient flow. For p₀>0, p tends to one. These are operational definitions, not a derivation of subjective consciousness or physical proper time.</p><h2>Quantum realization</h2><pre>D = √(I−T²)
 U = [[T,D],[D,−T]]
 U†U = I
-Pr(n successful outcomes) = ‖Tⁿψ‖² → ‖Pψ‖²</pre><h2>Executed numerical evidence</h2><p>12/12 checks passed in NumPy, including both ranks, projector identities, kernel annihilation, convergence, Born probabilities and 250-dimensional unitary dilations. At n=220, state residuals were 6.59e−13 and 6.95e−13; unitarity errors 1.04e−14 and 1.45e−14. No physical hardware or proof compiler was used.</p><h2>Interactive exact convergence bound</h2><label>Iterations <output id="n">220</output><input id="s" type="range" min="0" max="300" value="220"></label><pre id="v"></pre><script>function draw(){n.value=s.value;v.textContent='‖Tⁿ − P‖₂ = '+Math.pow(15/17,+s.value).toExponential(8)}s.oninput=draw;draw()</script><p><a href="../universal-invariant/">Return to Universal Recursive Identity</a></p></main></html>
+Pr(n successful outcomes) = ‖Tⁿψ‖² → ‖Pψ‖²</pre><h2>Executed numerical evidence</h2><p>12/12 checks passed in NumPy, including both ranks, projector identities, kernel annihilation, convergence, Born probabilities and 250-dimensional unitary dilations. At n=220, state residuals were 6.59e−13 and 6.95e−13; unitarity errors 1.04e−14 and 1.45e−14. No physical hardware or proof compiler was used.</p><p>Independent spectral certificate and full-matrix results: <a href="VALIDATION.md">VALIDATION.md</a>.</p><h2>Interactive exact convergence bound</h2><label>Iterations <output id="n">220</output><input id="s" type="range" min="0" max="300" value="220"></label><pre id="v"></pre><script>function draw(){n.value=s.value;v.textContent='‖Tⁿ − P‖₂ = '+Math.pow(15/17,+s.value).toExponential(8)}s.oninput=draw;draw()</script><p><a href="../universal-invariant/">Return to Universal Recursive Identity</a></p></main></html>
