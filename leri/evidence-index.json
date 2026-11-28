@@ -1,0 +1,51 @@
+{
+  "schema": "leri-evidence-index-v1",
+  "generated": "2026-11-28",
+  "surfaces": [
+    {
+      "id": "apotheosis",
+      "title": "Spectral Apotheosis and Universal Recursive Identity Theorem",
+      "page": "https://nicholaskouns-create.github.io/Identity/leri/apotheosis/",
+      "source": "leri/apotheosis/index.html",
+      "certificate": "leri/apotheosis/VALIDATION.md",
+      "tier": "Numerical",
+      "key_claims": ["dim H=125", "dim E47=47", "dim E5=5", "gap=11664", "rate=15/17", "unitary dilation"]
+    },
+    {
+      "id": "universal-invariant",
+      "title": "Universal Recursive Identity Theorem",
+      "page": "https://nicholaskouns-create.github.io/Identity/leri/universal-invariant/",
+      "source": "leri/universal-invariant/index.html",
+      "certificate": "leri/universal-invariant/evidence.md",
+      "tier": "Numerical + Kernel-accepted (stubs)",
+      "key_claims": ["F ∘ Γ = F ⇔ F = f ∘ P", "125 → 47 → 5"]
+    },
+    {
+      "id": "leri-parent",
+      "title": "Law of Emergent Recursive Identity",
+      "page": "https://nicholaskouns-create.github.io/Identity/leri/",
+      "source": "leri/index.html",
+      "certificate": "leri/results.txt",
+      "tier": "Numerical",
+      "key_claims": ["explicit 125x125 carrier", "rank E5=5", "contraction 15/17"]
+    },
+    {
+      "id": "rank-nullity",
+      "title": "Rank-nullity 125 = 47 + 78",
+      "page": "https://nicholaskouns-create.github.io/Identity/",
+      "source": "formal/e47/unified/RankNullity47.lean",
+      "certificate": "formal/e47/FORMAL_VALIDATION_20261026.md",
+      "tier": "Kernel-accepted",
+      "key_claims": ["derived from coupling 2⊗2⊗2 and (x-6)(x-30)"]
+    },
+    {
+      "id": "contraction-receipt",
+      "title": "E47 contraction factor 15/17",
+      "page": "https://nicholaskouns-create.github.io/Identity/",
+      "source": "formal/e47/certificates/e47-contraction-receipt.json",
+      "certificate": "formal/e47/certificates/e47-contraction-receipt.json",
+      "tier": "Exact arithmetic",
+      "key_claims": ["ρ = 15/17"]
+    }
+  ]
+}
