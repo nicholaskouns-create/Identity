@@ -20,6 +20,15 @@ test('Five independent modalities remain distinct from radar reflectivity',()=>{
  assert.ok(x.every(e=>e.provider&&e.kind));
  assert.ok(!x.some(e=>/velocity|doppler I.Q/i.test(e.label)));
 });
+test('NWS polygon containment respects boundaries and interior holes',()=>{
+ const outer=[[0,0],[4,0],[4,4],[0,4],[0,0]],hole=[[1,1],[2,1],[2,2],[1,2],[1,1]];
+ const geometry={type:'Polygon',coordinates:[outer,hole]};
+ assert.equal(multi.pointInGeometry([3,3],geometry),true);
+ assert.equal(multi.pointInGeometry([1.5,1.5],geometry),false);
+ assert.equal(multi.pointInGeometry([10,10],geometry),false);
+ const multiPoly={type:'MultiPolygon',coordinates:[[[[20,20],[21,20],[21,21],[20,20]]],[outer]]};
+ assert.equal(multi.pointInGeometry([3,3],multiPoly),true);
+});
 test('MRMS tile requests preserve EPSG:3857 placeholder and optional historical time',()=>{
  assert.ok(radar.tileURL().includes('bbox={bbox-epsg-3857}'));
  assert.ok(!radar.tileURL().includes('&time='));
