@@ -22,6 +22,7 @@ let settings = SRC.loadSettings();
 let gm = null, flight = null, hud = null, plants = null, plantsGeo = null, exposure = null, local = {};
 const layerState = {};
 let radarModule = null, radarPending = null;
+let radarAtlasModule = null;
 async function syncRadar() {
   if (!gm?.ready) return;
   if (!layerState.radar && !radarModule) return;
@@ -31,6 +32,11 @@ async function syncRadar() {
       radarModule = await radarPending;
     }
     radarModule.set(!!layerState.radar);
+    if (layerState.radar && !radarAtlasModule) {
+      const m = await import('./live/multimodal.js');
+      radarAtlasModule = m.mountMultimodalRadar(gm.map, $('#radar-multimodal-controls'));
+    }
+    if (radarAtlasModule) radarAtlasModule.setVisible(!!layerState.radar);
   } catch(e) { setStatus('mrms','error',String(e.message || e)); }
 }
 const ticker = [];
@@ -120,6 +126,7 @@ function buildLayerRail() {
   $('#layer-list').addEventListener('change', (e) => { const id = e.target.dataset.layer; if (id) setLayer(id, e.target.checked); });
   LAYERS.forEach((l) => { layerState[l.id] = l.on; });
   const radarControls = document.createElement('div'); radarControls.id='radar-controls'; $('#layer-list').after(radarControls);
+  const mmControls = document.createElement('div'); mmControls.id = 'radar-multimodal-controls'; mmControls.hidden = true; radarControls.after(mmControls);
 }
 function setLayer(id, on) {
   layerState[id] = on;
